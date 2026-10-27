@@ -8,8 +8,13 @@ import { PhotoCarousel } from "@/components/photo-carousel";
 
 type Props = { params: Promise<{ venueId: string }> };
 
+function baseUrl() {
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+}
+
 async function fetchVenue(venueId: string) {
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/api/venues/${venueId}`;
+  const url = `${baseUrl()}/api/venues/${venueId}`;
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return null;
   const data = await res.json();
@@ -20,7 +25,7 @@ async function fetchMonthSlots(venueId: string, hallId: string, year: number, mo
   const from = `${year}-${String(month + 1).padStart(2, "0")}-01`;
   const last = new Date(year, month + 1, 0).getDate();
   const to = `${year}-${String(month + 1).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
-  const url = `${process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"}/api/venues/${venueId}/halls/${hallId}/slots?from=${from}&to=${to}`;
+  const url = `${baseUrl()}/api/venues/${venueId}/halls/${hallId}/slots?from=${from}&to=${to}`;
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return [];
   const data = await res.json();

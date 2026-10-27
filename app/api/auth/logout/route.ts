@@ -8,5 +8,5 @@ export async function POST() {
 
 export async function GET() {
   await clearSession();
-  return NextResponse.redirect(new URL("/login", process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"));
+  return NextResponse.redirect(new URL("/login", process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : (process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000")));
 }
