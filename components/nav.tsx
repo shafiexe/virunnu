@@ -27,8 +27,8 @@ export function NavUser() {
 
   if (!session) {
     return (
-      <div className="hidden md:flex items-center gap-2">
-        <Link href="/apply/venue" className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+      <div className="flex items-center gap-2">
+        <Link href="/apply/venue" className="hidden md:block text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
           Add your venue
         </Link>
         <Link href="/login" className="text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-4 py-1.5 rounded-lg transition-colors">
@@ -41,7 +41,7 @@ export function NavUser() {
   const navLink = "text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors";
 
   return (
-    <div className="hidden md:flex items-center gap-1">
+    <div className="flex items-center gap-1">
       {session.role === "OWNER" && (
         <Link href="/owner/dashboard" className={navLink}>Dashboard</Link>
       )}
