@@ -24,22 +24,29 @@ export default async function OwnerDashboard({ searchParams }: Props) {
   const now = new Date();
   const currentYear = now.getFullYear();
   const year = parseInt(sp.year ?? String(currentYear)) || currentYear;
-  const nowMonth = year < currentYear ? 11 : now.getMonth();
+  // For current year: cap chart/table at current month so "future" months aren't shown as empty
+  // For past/future years: show all 12 months
+  const nowMonth = year === currentYear ? now.getMonth() : 11;
 
   const yearStart = new Date(year, 0, 1);
   const yearEnd = new Date(year + 1, 0, 1);
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-  const [allYearBookings, earliest, monthExpenses, yearExpenses, pendingBookings] = await Promise.all([
+  const [allYearBookings, earliest, latestSlot, monthExpenses, yearExpenses, pendingBookings] = await Promise.all([
     db.booking.findMany({
-      where: { orgId: session.orgId!, createdAt: { gte: yearStart, lt: yearEnd } },
-      select: { status: true, totalPaise: true, advancePaise: true, discountPaise: true, refundPaise: true, paymentMethod: true, createdAt: true },
+      where: { orgId: session.orgId!, hallSlot: { date: { gte: yearStart, lt: yearEnd } } },
+      select: { status: true, totalPaise: true, advancePaise: true, discountPaise: true, refundPaise: true, paymentMethod: true, createdAt: true, hallSlot: { select: { date: true } } },
     }),
     db.booking.findFirst({
       where: { orgId: session.orgId! },
       orderBy: { createdAt: "asc" },
       select: { createdAt: true },
+    }),
+    db.hallSlot.findFirst({
+      where: { hall: { venue: { orgId: session.orgId! } }, bookings: { some: {} } },
+      orderBy: { date: "desc" },
+      select: { date: true },
     }),
     db.expense.findMany({
       where: { orgId: session.orgId!, date: { gte: thisMonthStart, lte: thisMonthEnd } },
@@ -64,7 +71,9 @@ export default async function OwnerDashboard({ searchParams }: Props) {
   ]);
 
   const firstYear = earliest ? earliest.createdAt.getFullYear() : currentYear;
-  const availableYears = Array.from({ length: currentYear - firstYear + 1 }, (_, i) => currentYear - i);
+  const lastBookingYear = latestSlot ? latestSlot.date.getFullYear() : currentYear;
+  const maxYear = Math.max(currentYear, lastBookingYear);
+  const availableYears = Array.from({ length: maxYear - firstYear + 1 }, (_, i) => maxYear - i);
 
   // --- Monthly aggregation for charts ---
   const monthData = MONTHS.map((month) => ({
@@ -73,7 +82,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
   }));
 
   for (const b of allYearBookings) {
-    const m = b.createdAt.getMonth();
+    const m = new Date(b.hallSlot.date).getMonth();
     const d = monthData[m];
     if (b.status === "CONFIRMED") {
       d.confirmed++;

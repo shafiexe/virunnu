@@ -418,13 +418,16 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
-            {monthData.slice(0, nowMonth + 1).map((m, i) => {
+            {monthData.map((m, i) => {
+              const isFuture = i > nowMonth;
               const isBest = m.month === bestMonth;
               const monthExp = expenseMonthData[i]?.totalPaise ?? 0;
               const netRevenue = m.revenuePaise - m.refundedPaise;
               const net = netRevenue - monthExp;
+              const hasData = m.confirmed || m.advancePaid || m.cancelled || netRevenue !== 0 || monthExp > 0 || m.cashCount;
+              if (isFuture && !hasData) return null;
               return (
-                <tr key={m.month} className={isBest ? "bg-amber-50/50 dark:bg-amber-950/10" : ""}>
+                <tr key={m.month} className={`${isBest ? "bg-amber-50/50 dark:bg-amber-950/10" : ""} ${isFuture ? "opacity-60" : ""}`}>
                   <td className="py-2 font-medium text-zinc-700 dark:text-zinc-300">
                     <span className="flex items-center gap-1">
                       {m.month}{isBest && <span className="text-amber-500 text-[10px]">★ best</span>}
