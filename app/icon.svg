@@ -1,9 +1,11 @@
 <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-  <!-- Amber rounded square background -->
-  <rect width="32" height="32" rx="8" fill="#f59e0b"/>
-  <!-- Stylised V lettermark — rounded terminals matching Manjari's organic weight -->
+  <rect width="32" height="32" rx="7" fill="#f59e0b"/>
   <path
-    d="M7 9 C7 8.5 7.6 8 8.2 8 L11.4 8 C11.9 8 12.3 8.4 12.5 8.9 L16 19.8 L19.5 8.9 C19.7 8.4 20.1 8 20.6 8 L23.8 8 C24.4 8 25 8.5 25 9 C25 9.2 24.9 9.5 24.8 9.7 L17.5 25.1 C17.2 25.7 16.6 26 16 26 C15.4 26 14.8 25.7 14.5 25.1 L7.2 9.7 C7.1 9.5 7 9.2 7 9 Z"
-    fill="white"
+    d="M8 8 L16 24 L24 8"
+    fill="none"
+    stroke="white"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
   />
 </svg>
