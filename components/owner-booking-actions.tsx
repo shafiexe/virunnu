@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MoreHorizontal, X } from "lucide-react";
 
+type DropdownPos = { top: number; right: number };
+
 type Status = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
 type PaymentMethod = "ONLINE" | "CASH";
 
@@ -23,8 +25,10 @@ type Panel = "cancel" | "restore" | "cash" | "adjust" | null;
 export function OwnerBookingActions({ bookingId, status, totalPaise, advancePaise, cancelReason, discountPaise, discountReason }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<DropdownPos>({ top: 0, right: 0 });
   const [panel, setPanel] = useState<Panel>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -36,6 +40,17 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [open]);
+
+  function openDropdown() {
+    if (open) { setOpen(false); return; }
+    if (triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setPos({ top: r.bottom + 4, right: window.innerWidth - r.right });
+    }
+    setPanel(null);
+    setError("");
+    setOpen(true);
+  }
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -103,14 +118,18 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
   return (
     <div className="relative" ref={containerRef}>
       <button
-        onClick={() => { setOpen(!open); setPanel(null); setError(""); }}
+        ref={triggerRef}
+        onClick={openDropdown}
         className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
       >
         <MoreHorizontal className="h-4 w-4" />
       </button>
 
       {open && (
-        <div className="absolute right-0 top-8 z-20 w-48 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1">
+        <div
+          className="fixed z-50 w-48 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1"
+          style={{ top: pos.top, right: pos.right }}
+        >
           {cancelReason && (
             <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800">
               <p className="text-[10px] text-zinc-400 uppercase font-semibold">Cancel reason</p>

@@ -6,6 +6,7 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { formatRupees, withGST, GST_RATE } from "@/lib/gst";
 import { PrintButton } from "@/components/print-button";
+import { VirunnuLogo } from "@/components/virunnu-logo";
 
 type Params = { params: Promise<{ bookingId: string }> };
 
@@ -59,6 +60,14 @@ export default async function InvoicePage({ params }: Params) {
 
   return (
     <>
+      {/* Hide nav/sidebar/tabs when printing — only invoice content should appear */}
+      <style>{`
+        @media print {
+          header, aside, footer, nav { display: none !important; }
+          body > div, main { padding: 0 !important; }
+        }
+      `}</style>
+
       {/* Print controls — hidden in print */}
       <div className="print:hidden bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 py-3 flex items-center justify-between gap-3">
         <span className="text-sm text-zinc-600 dark:text-zinc-400">Invoice {invoiceNo}</span>
@@ -72,7 +81,7 @@ export default async function InvoicePage({ params }: Params) {
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>
-            <div className="text-2xl font-bold text-amber-500 mb-0.5">വിരുന്ന്</div>
+            <div className="mb-1"><VirunnuLogo fontSize={26} /></div>
             <div className="text-sm font-semibold text-zinc-700">{venue.org?.name ?? "Virunnu Technologies"}</div>
             <div className="text-xs text-zinc-500 mt-0.5">{venue.name}</div>
             <div className="text-xs text-zinc-500">{venue.address}, {venue.city}</div>
