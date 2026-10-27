@@ -5,31 +5,16 @@ import { notFound } from "next/navigation";
 import { MapPin, Users, ArrowLeft, IndianRupee } from "lucide-react";
 import { SlotCalendar } from "@/components/slot-calendar";
 import { PhotoCarousel } from "@/components/photo-carousel";
+import { getVenue, getHallAvailability } from "@/services/venue.service";
+import { releaseExpiredHolds } from "@/services/booking.service";
 
 type Props = { params: Promise<{ venueId: string }> };
 
-function baseUrl() {
-  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
-  return process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-}
-
-async function fetchVenue(venueId: string) {
-  const url = `${baseUrl()}/api/venues/${venueId}`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data.venue;
-}
-
-async function fetchMonthSlots(venueId: string, hallId: string, year: number, month: number) {
-  const from = `${year}-${String(month + 1).padStart(2, "0")}-01`;
-  const last = new Date(year, month + 1, 0).getDate();
-  const to = `${year}-${String(month + 1).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
-  const url = `${baseUrl()}/api/venues/${venueId}/halls/${hallId}/slots?from=${from}&to=${to}`;
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data.slots ?? [];
+async function fetchMonthSlots(hallId: string, year: number, month: number) {
+  const from = new Date(Date.UTC(year, month, 1));
+  const last = new Date(Date.UTC(year, month + 1, 0));
+  await releaseExpiredHolds();
+  return getHallAvailability(hallId, from, last);
 }
 
 // ── Facility types ────────────────────────────────────────────────────────────
@@ -83,7 +68,7 @@ function AmenityIcon({ name }: { name: string }) {
 export default async function VenuePage({ params }: Props) {
   await connection();
   const { venueId } = await params;
-  const venue = await fetchVenue(venueId);
+  const venue = await getVenue(venueId);
   if (!venue) notFound();
 
   const now = new Date();
@@ -94,7 +79,7 @@ export default async function VenuePage({ params }: Props) {
   const hallsWithSlots = await Promise.all(
     venue.halls.map(async (hall: Hall) => ({
       ...hall,
-      slots: await fetchMonthSlots(venueId, hall.id, year, month),
+      slots: await fetchMonthSlots(hall.id, year, month),
     }))
   );
 
