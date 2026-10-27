@@ -84,6 +84,21 @@ export async function getBooking(bookingId: string) {
   });
 }
 
+export async function getPublicBooking(bookingId: string) {
+  return db.booking.findUnique({
+    where: { id: bookingId },
+    include: {
+      hallSlot: {
+        include: {
+          template: true,
+          hall: { include: { venue: { select: { name: true, address: true, phone: true } } } },
+        },
+      },
+      user: { select: { name: true, phone: true } },
+    },
+  });
+}
+
 export async function releaseExpiredHolds() {
   const now = new Date();
 

@@ -1,33 +1,70 @@
 {
-  "app": {
-    "name": "Virunnu",
-    "tagline": "Book the perfect hall for your celebration"
+  "hero": {
+    "badge": "Kerala's hall & catering marketplace",
+    "tagline": "Your perfect venue,\njust a search away",
+    "subtitle": "Browse convention halls, auditoriums, and banquet spaces across Kerala — check availability and book instantly, without signing in."
   },
-  "auth": {
-    "enterPhone": "Enter your phone number",
-    "sendOtp": "Send OTP",
-    "enterOtp": "Enter OTP",
-    "verify": "Verify",
-    "logout": "Logout"
+  "venues": {
+    "heading": "Convention halls & venues",
+    "subtitle": "Auditoriums, banquet halls & convention centers across Kerala",
+    "matching": "Matching venues",
+    "count": "{count, plural, =1 {# venue} other {# venues}}",
+    "resultsFound": "{count, plural, =1 {# result found} other {# results found}}",
+    "nearbyResults": "{count, plural, =1 {# venue} other {# venues}} within {km} km of your location",
+    "noVenues": "No venues found",
+    "noVenuesSub": "Try a different city or remove filters",
+    "clearFilters": "Clear filters"
   },
-  "venue": {
-    "search": "Search venues",
-    "guests": "Number of guests",
-    "date": "Date",
-    "available": "Available",
-    "held": "Held",
-    "booked": "Booked"
+  "catering": {
+    "heading": "Catering services",
+    "subtitle": "Reach out directly — discuss menus, pricing and availability",
+    "count": "{count, plural, =1 {# caterer} other {# caterers}}",
+    "found": "{count, plural, =1 {# caterer found} other {# caterers found}}",
+    "noCaterers": "No catering services found",
+    "noCaterersSub": "Try a different city or cuisine",
+    "clearFilters": "Clear catering filters"
   },
-  "booking": {
-    "hold": "Reserve this slot",
-    "holdExpiry": "Hold expires in 15 minutes",
-    "pay": "Proceed to payment",
-    "confirmed": "Booking confirmed",
-    "cancelled": "Booking cancelled"
+  "cta": {
+    "forProviders": "For service providers",
+    "growHeading": "Grow your business with Virunnu",
+    "growSub": "Join Kerala's growing network of halls and catering services. Get discovered by thousands of families planning their events.",
+    "hallTitle": "I own a Convention Hall",
+    "hallDesc": "List your convention center, auditorium, or banquet hall. Set your hall details, slot schedules, and pricing — then let customers book directly through Virunnu.",
+    "hallFeatures": ["Instant online bookings", "Manage your calendar & slots", "Advance payment collection", "Customer booking history"],
+    "addVenue": "Add my venue →",
+    "catTitle": "I offer Catering Services",
+    "catDesc": "Showcase your catering business — Kerala sadya, multi-cuisine, wedding catering and more. Reach families planning events across Kerala and let them contact you directly.",
+    "catFeatures": ["Get discovered by event planners", "Showcase your menu & specialties", "Direct call & WhatsApp enquiries", "Free to list your services"],
+    "addCatering": "Add my catering →"
   },
-  "errors": {
-    "slotUnavailable": "This slot is no longer available",
-    "unauthorized": "Please log in to continue",
-    "generic": "Something went wrong. Please try again."
+  "howItWorks": {
+    "title": "How it works",
+    "subtitle": "Book your venue in three simple steps",
+    "steps": [
+      { "num": "01", "title": "Search & filter", "desc": "Browse venues by city, date, and guest count. No login needed to explore." },
+      { "num": "02", "title": "Check availability", "desc": "View real-time slot calendar, pricing, and hall photos on the venue page." },
+      { "num": "03", "title": "Confirm & pay", "desc": "Log in with your phone number and complete your booking with a secure advance payment." }
+    ]
+  },
+  "search": {
+    "btn": "Search",
+    "aiBtn": "Search",
+    "placeholder": "e.g. auditorium for 500 guests in Kochi on Dec 15  |  sadya caterer in Thrissur",
+    "listening": "Listening…",
+    "micTitle": "Search by voice",
+    "filterShow": "Filter manually",
+    "filterHide": "Hide filters",
+    "aiLabel": "AI Search",
+    "aiSub": "— describe what you need in plain words"
+  },
+  "nav": {
+    "addVenue": "Add my venue",
+    "signIn": "Sign in",
+    "langToggle": "Change language / ഭാഷ മാറ്റുക"
+  },
+  "footer": {
+    "copyright": "© 2025 Virunnu Technologies, Kerala",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   }
 }

@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 export const instant = false;
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, Users, ArrowLeft, IndianRupee } from "lucide-react";
@@ -9,6 +10,57 @@ import { getVenue, getHallAvailability } from "@/services/venue.service";
 import { releaseExpiredHolds } from "@/services/booking.service";
 
 type Props = { params: Promise<{ venueId: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { venueId } = await params;
+  const venue = await getVenue(venueId);
+  if (!venue) return {};
+
+  const city = [venue.city, venue.state].filter(Boolean).join(", ");
+  const maxCap = venue.halls.length
+    ? Math.max(...venue.halls.map((h) => h.capacity))
+    : null;
+  const minPrice = venue.halls.length
+    ? Math.min(...venue.halls.map((h) => h.pricePerSlot))
+    : null;
+  const hallTypes = venue.halls.map((h) => h.name).slice(0, 2).join(" & ");
+
+  const title = `${venue.name}${city ? ` — ${city}` : ""} | Virunnu`;
+  const description = [
+    `Book ${venue.name}${city ? ` in ${city}` : ""} on Virunnu.`,
+    hallTypes && `Halls: ${hallTypes}.`,
+    maxCap && `Capacity up to ${maxCap.toLocaleString("en-IN")} guests.`,
+    minPrice && `Starting from ₹${(minPrice / 100).toLocaleString("en-IN")}.`,
+    "Check availability and book instantly.",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const ogImage =
+    venue.halls.flatMap((h) => h.photos).find((p) => p?.url)?.url ?? null;
+
+  const url = `https://virunnu.com/venues/${venueId}`;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      url,
+      title,
+      description,
+      siteName: "Virunnu",
+      ...(ogImage ? { images: [{ url: ogImage, width: 1200, height: 630, alt: venue.name }] } : {}),
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title,
+      description,
+      ...(ogImage ? { images: [ogImage] } : {}),
+    },
+  };
+}
 
 async function fetchMonthSlots(hallId: string, year: number, month: number) {
   const from = new Date(Date.UTC(year, month, 1));
@@ -114,8 +166,31 @@ export default async function VenuePage({ params }: Props) {
   const openInMapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.name}, ${venue.address}, ${venue.city}`)}`;
   const openStreetMapHref = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EventVenue",
+    name: venue.name,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: venue.address,
+      addressLocality: venue.city ?? undefined,
+      addressRegion: venue.state ?? undefined,
+      postalCode: venue.pincode ?? undefined,
+      addressCountry: "IN",
+    },
+    geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
+    telephone: venue.phone ?? undefined,
+    url: `https://virunnu.com/venues/${venueId}`,
+    ...(allPhotos[0]?.url ? { image: allPhotos[0].url } : {}),
+    ...(maxCap ? { maximumAttendeeCapacity: maxCap } : {}),
+  };
+
   return (
     <div className="bg-zinc-50 dark:bg-zinc-950 min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Back link */}
       <div className="mx-auto max-w-6xl px-4 pt-4 pb-2">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">

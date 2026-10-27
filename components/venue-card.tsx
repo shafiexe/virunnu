@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MapPin, Users, IndianRupee } from "lucide-react";
+import { MapPin, Users, IndianRupee, Navigation } from "lucide-react";
 
 type Hall = {
   id: string;
@@ -31,7 +31,7 @@ function gradientFor(id: string) {
   return GRAD_COLORS[idx];
 }
 
-export function VenueCard({ venue }: { venue: Venue }) {
+export function VenueCard({ venue, distanceKm }: { venue: Venue; distanceKm?: number }) {
   const minPrice = venue.halls.length ? Math.min(...venue.halls.map((h) => h.pricePerSlot)) : 0;
   const maxCapacity = venue.halls.length ? Math.max(...venue.halls.map((h) => h.capacity)) : 0;
   const grad = gradientFor(venue.id);
@@ -74,6 +74,12 @@ export function VenueCard({ venue }: { venue: Venue }) {
           <span className="text-white text-[10px] font-semibold bg-black/40 backdrop-blur-sm rounded-full px-2.5 py-1">
             {categoryLabel}
           </span>
+          {distanceKm !== undefined && (
+            <span className="text-white text-[10px] font-semibold bg-emerald-600/80 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1">
+              <Navigation className="h-2.5 w-2.5" />
+              {distanceKm < 1 ? `${Math.round(distanceKm * 1000)} m` : `${distanceKm.toFixed(1)} km`}
+            </span>
+          )}
         </div>
         <div className="absolute top-3 right-3">
           <span className="text-white text-[10px] font-semibold bg-black/40 backdrop-blur-sm rounded-full px-2.5 py-1 flex items-center gap-1">
