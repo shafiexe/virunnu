@@ -311,7 +311,15 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
     const orderRes = await fetch("/api/payments/create-order", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hallSlotId: payCtx.hallSlotId, amountPaise }),
+      body: JSON.stringify({
+        hallSlotId: payCtx.hallSlotId,
+        amountPaise,
+        isFullPayment,
+        guestName,
+        guestPhone,
+        guestEmail: guestEmail || null,
+        guestAddress: guestAddress || null,
+      }),
     });
     if (!orderRes.ok) {
       setPayError("Could not initiate payment. Try again.");
