@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { getAppUrl } from "@/lib/app-url";
 
 function getMailTransport() {
   return nodemailer.createTransport({
@@ -51,7 +52,7 @@ export async function sendCredentialsMail(opts: {
           <p style="color:#6b7280;font-size:13px;margin:0 0 20px">
             Please change your password after your first login.
           </p>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL ?? "https://virunnu.com"}/login"
+          <a href="${getAppUrl()}/login"
              style="display:inline-block;background:#f59e0b;color:#fff;font-weight:600;padding:12px 24px;border-radius:8px;text-decoration:none">
             Log in to Virunnu →
           </a>
@@ -84,7 +85,7 @@ export async function sendCredentialsWhatsApp(opts: {
   }
 
   const twilio = require("twilio")(accountSid, authToken);
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://virunnu.com";
+  const appUrl = getAppUrl();
   const body = [
     `🎉 *Virunnu — Welcome, ${name}!*`,
     ``,
@@ -155,7 +156,7 @@ async function sendMail(to: string, subject: string, html: string) {
 // ── 1. Booking Approved ───────────────────────────────────────────────────────
 export async function notifyBookingApproved(opts: BookingNotifyOpts) {
   const { customerPhone, customerEmail, customerName, venueName, hallName, date, timeSlot, totalPaise, bookingRef } = opts;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://virunnu.com";
+  const appUrl = getAppUrl();
 
   const waBody = [
     `✅ *Booking Approved — Virunnu*`,
@@ -204,7 +205,7 @@ export async function notifyBookingApproved(opts: BookingNotifyOpts) {
 // ── 2. Booking Confirmed (full / advance paid) ────────────────────────────────
 export async function notifyBookingConfirmed(opts: BookingNotifyOpts) {
   const { customerPhone, customerEmail, customerName, venueName, hallName, date, timeSlot, totalPaise, paidPaise, bookingRef } = opts;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://virunnu.com";
+  const appUrl = getAppUrl();
   const balancePaise = totalPaise - (paidPaise ?? totalPaise);
   const isFullyPaid = balancePaise <= 0;
 
@@ -261,7 +262,7 @@ export async function notifyBookingConfirmed(opts: BookingNotifyOpts) {
 // ── 3. Balance Reminder (owner manually triggers) ─────────────────────────────
 export async function notifyBalanceReminder(opts: BookingNotifyOpts) {
   const { customerPhone, customerEmail, customerName, venueName, hallName, date, timeSlot, totalPaise, paidPaise, bookingRef } = opts;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://virunnu.com";
+  const appUrl = getAppUrl();
   const balancePaise = totalPaise - (paidPaise ?? 0);
 
   const waBody = [

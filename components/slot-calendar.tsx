@@ -204,11 +204,10 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
       const from = `${y}-${String(m + 1).padStart(2, "0")}-01`;
       const last = new Date(y, m + 1, 0).getDate();
       const to = `${y}-${String(m + 1).padStart(2, "0")}-${String(last).padStart(2, "0")}`;
-      const base = process.env.NEXT_PUBLIC_BASE_URL ?? "";
       const updated = await Promise.all(
         initialHalls.map(async (hall) => {
           const res = await fetch(
-            `${base}/api/venues/${venueId}/halls/${hall.id}/slots?from=${from}&to=${to}`
+            `/api/venues/${venueId}/halls/${hall.id}/slots?from=${from}&to=${to}`
           );
           const data = res.ok ? await res.json() : { slots: [] };
           return { ...hall, slots: data.slots ?? [] };
