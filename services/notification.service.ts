@@ -259,7 +259,75 @@ export async function notifyBookingConfirmed(opts: BookingNotifyOpts) {
   ]);
 }
 
-// ── 3. Balance Reminder (owner manually triggers) ─────────────────────────────
+// ── 3. Owner — New Booking Request ───────────────────────────────────────────
+
+export type OwnerBookingAlertOpts = {
+  ownerPhone: string;
+  ownerEmail?: string | null;
+  customerName: string;
+  customerPhone: string;
+  venueName: string;
+  hallName: string;
+  date: string;
+  timeSlot: string;
+  totalPaise: number;
+  bookingRef: string;
+};
+
+export async function notifyOwnerNewBooking(opts: OwnerBookingAlertOpts) {
+  const { ownerPhone, ownerEmail, customerName, customerPhone, venueName, hallName, date, timeSlot, totalPaise, bookingRef } = opts;
+  const appUrl = getAppUrl();
+
+  const waBody = [
+    `🔔 *New Booking Request — Virunnu*`,
+    ``,
+    `You have a new booking request for *${venueName}*.`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━`,
+    `👤 *Customer:* ${customerName}`,
+    `📱 ${customerPhone}`,
+    `🏛️ *Hall:* ${hallName}`,
+    `📅 *Date:* ${date}`,
+    `⏰ *Slot:* ${timeSlot}`,
+    `💰 *Amount:* ${paiseToRupees(totalPaise)}`,
+    `🔖 *Ref:* ${bookingRef}`,
+    `━━━━━━━━━━━━━━━━━━`,
+    ``,
+    `👉 Review and approve on your dashboard:`,
+    `${appUrl}/owner/bookings`,
+    ``,
+    `_Please respond within 1 hour — the slot hold expires._`,
+    `— Team Virunnu`,
+  ].join("\n");
+
+  const emailHtml = `
+    <div style="font-family:sans-serif;max-width:560px;margin:auto">
+      <div style="background:#d97706;padding:24px 32px;border-radius:12px 12px 0 0">
+        <h1 style="margin:0;color:#fff;font-size:22px">🔔 New Booking Request</h1>
+        <p style="margin:4px 0 0;color:rgba(255,255,255,0.85);font-size:14px">${venueName}</p>
+      </div>
+      <div style="background:#fff;padding:28px 32px;border:1px solid #e5e7eb;border-radius:0 0 12px 12px">
+        <p style="color:#374151;margin:0 0 16px">A customer has submitted a booking request. Please review and approve within <strong>1 hour</strong> — the slot hold expires after that.</p>
+        <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:16px 20px;margin:0 0 20px">
+          <p style="margin:0 0 8px;color:#374151"><strong>Customer:</strong> ${customerName}</p>
+          <p style="margin:0 0 8px;color:#374151"><strong>Phone:</strong> ${customerPhone}</p>
+          <p style="margin:0 0 8px;color:#374151"><strong>Hall:</strong> ${hallName}</p>
+          <p style="margin:0 0 8px;color:#374151"><strong>Date:</strong> ${date}</p>
+          <p style="margin:0 0 8px;color:#374151"><strong>Slot:</strong> ${timeSlot}</p>
+          <p style="margin:0 0 8px;color:#374151"><strong>Amount:</strong> ${paiseToRupees(totalPaise)}</p>
+          <p style="margin:0;color:#6b7280;font-size:13px">Ref: ${bookingRef}</p>
+        </div>
+        <a href="${appUrl}/owner/bookings" style="display:inline-block;background:#d97706;color:#fff;font-weight:600;padding:12px 24px;border-radius:8px;text-decoration:none">Review Booking →</a>
+      </div>
+    </div>`;
+
+  await Promise.allSettled([
+    sendWhatsApp(ownerPhone, waBody),
+    ownerEmail ? sendMail(ownerEmail, `New Booking Request — ${venueName} (${date})`, emailHtml) : Promise.resolve(),
+  ]);
+}
+
+// ── 4. Balance Reminder (owner manually triggers) ─────────────────────────────
 export async function notifyBalanceReminder(opts: BookingNotifyOpts) {
   const { customerPhone, customerEmail, customerName, venueName, hallName, date, timeSlot, totalPaise, paidPaise, bookingRef } = opts;
   const appUrl = getAppUrl();

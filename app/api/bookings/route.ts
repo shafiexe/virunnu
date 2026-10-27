@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { withGST } from "@/lib/gst";
 import { releaseExpiredHolds } from "@/services/booking.service";
+import { notifyOwnerNewBooking } from "@/services/notification.service";
 
 const HOLD_MINUTES = 60;
 const VIRTUAL_PREFIX = "virtual_";
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
     const result = await db.$transaction(async (tx) => {
       const slot = await tx.hallSlot.findUnique({
         where: { id: hallSlotId },
-        include: { hall: { include: { venue: true } } },
+        include: { hall: { include: { venue: true } }, template: true },
       });
 
       if (!slot) throw new Error("SLOT_NOT_FOUND");
@@ -97,8 +98,40 @@ export async function POST(req: NextRequest) {
         requireFullPayment: slot.hall.requireFullPayment,
         venueName: slot.hall.venue.name,
         venuePhone: slot.hall.venue.phone,
+        orgId: slot.hall.venue.orgId,
+        hallName: slot.hall.name,
+        slotDate: slot.date,
+        templateName: slot.template?.name,
+        templateStart: slot.template?.startTime,
+        templateEnd: slot.template?.endTime,
       };
     });
+
+    // Fire owner notification non-blocking — don't delay the response
+    db.user.findFirst({
+      where: { orgId: result.orgId, role: "OWNER" },
+      select: { phone: true, email: true },
+    }).then((owner) => {
+      if (!owner) return;
+      const dateStr = new Date(result.slotDate).toLocaleDateString("en-IN", {
+        weekday: "long", day: "numeric", month: "long", year: "numeric",
+      });
+      const timeSlot = result.templateName
+        ? `${result.templateName} (${result.templateStart}–${result.templateEnd})`
+        : "";
+      notifyOwnerNewBooking({
+        ownerPhone: owner.phone,
+        ownerEmail: owner.email,
+        customerName: guestName,
+        customerPhone: guestPhone,
+        venueName: result.venueName,
+        hallName: result.hallName,
+        date: dateStr,
+        timeSlot,
+        totalPaise: result.booking.totalPaise,
+        bookingRef: result.booking.id.slice(-8).toUpperCase(),
+      }).catch((e) => console.error("[notify-owner]", e));
+    }).catch((e) => console.error("[notify-owner-lookup]", e));
 
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
