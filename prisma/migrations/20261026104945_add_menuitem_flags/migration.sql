@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "MenuItem" ADD COLUMN     "isSpecial" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "isVeg" BOOLEAN NOT NULL DEFAULT true;

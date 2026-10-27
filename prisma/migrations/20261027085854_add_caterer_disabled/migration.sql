@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Caterer" ADD COLUMN     "disabled" BOOLEAN NOT NULL DEFAULT false;

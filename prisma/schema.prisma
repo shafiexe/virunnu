@@ -1,0 +1,359 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String        @id @default(cuid())
+  phone     String        @unique
+  name      String?
+  email     String?       @unique
+  password  String?
+  role      UserRole      @default(CUSTOMER)
+  orgId     String?
+  org       Organization? @relation(fields: [orgId], references: [id])
+  bookings  Booking[]
+  otpCodes  OtpCode[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+enum UserRole {
+  CUSTOMER
+  OWNER
+  CATERER
+  ADMIN
+}
+
+enum OrgType {
+  CONVENTION
+  CATERING
+}
+
+model Organization {
+  id               String            @id @default(cuid())
+  name             String
+  type             OrgType           @default(CONVENTION)
+  disabled         Boolean           @default(false)
+  users            User[]
+  venues           Venue[]
+  caterers         Caterer[]
+  facilities       Facility[]
+  expenses         Expense[]
+  employees        Employee[]
+  expenseCategories ExpenseCategory[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Facility {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  amountPaise Int          @default(0)
+  category    String       @default("GENERAL")
+  icon        String       @default("⚡")
+  isCustom    Boolean      @default(false)
+  isActive    Boolean      @default(true)
+  sortOrder   Int          @default(0)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Venue {
+  id                String       @id @default(cuid())
+  name              String
+  address           String
+  city              String?
+  state             String?
+  pincode           String?
+  lat               Float
+  lng               Float
+  googleMapsUrl     String?
+  googleRating      Float?
+  googleReviewCount Int?
+  googleReviewUrl   String?
+  websiteUrl        String?
+  phone             String?
+  email             String?
+  approved          Boolean      @default(false)
+  orgId             String
+  org               Organization @relation(fields: [orgId], references: [id])
+  halls             Hall[]
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+}
+
+model Hall {
+  id            String         @id @default(cuid())
+  name          String
+  capacity      Int
+  pricePerSlot  Int
+  amenities     String[]
+  description           String?
+  minimumAdvancePaise   Int            @default(50000)
+  requireFullPayment    Boolean        @default(false)
+  venueId       String
+  venue         Venue          @relation(fields: [venueId], references: [id])
+  slotTemplates SlotTemplate[]
+  hallSlots     HallSlot[]
+  photos        HallPhoto[]
+  blockedDates  BlockedDate[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model HallPhoto {
+  id        String   @id @default(cuid())
+  hallId    String
+  hall      Hall     @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  url       String
+  caption   String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model SlotTemplate {
+  id        String     @id @default(cuid())
+  name      String
+  startTime String
+  endTime   String
+  hallId    String
+  hall      Hall       @relation(fields: [hallId], references: [id])
+  hallSlots HallSlot[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model HallSlot {
+  id            String       @id @default(cuid())
+  date          DateTime     @db.Date
+  status        SlotStatus   @default(AVAILABLE)
+  priceOverride Int?
+  heldUntil     DateTime?
+  hallId        String
+  hall          Hall         @relation(fields: [hallId], references: [id])
+  templateId    String
+  template      SlotTemplate @relation(fields: [templateId], references: [id])
+  bookings      Booking[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([hallId, templateId, date])
+}
+
+enum SlotStatus {
+  AVAILABLE
+  HELD
+  BOOKED
+}
+
+model Booking {
+  id            String         @id @default(cuid())
+  status        BookingStatus  @default(PENDING)
+  totalPaise    Int
+  advancePaise  Int?
+  cancelReason    String?
+  discountPaise   Int            @default(0)
+  discountReason  String?
+  refundPaise     Int            @default(0)
+  refundNote      String?
+  guestName         String?
+  guestPhone        String?
+  guestEmail        String?
+  guestAddress      String?
+  razorpayOrderId   String?        @unique
+  razorpayPaymentId String?        @unique
+  paymentMethod PaymentMethod  @default(ONLINE)
+  orgId         String
+  userId        String?
+  user          User?          @relation(fields: [userId], references: [id])
+  hallSlotId    String
+  hallSlot      HallSlot       @relation(fields: [hallSlotId], references: [id])
+  payment       Payment?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+enum PaymentMethod {
+  ONLINE
+  CASH
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  ADVANCE_PAID
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  bookingId         String        @unique
+  booking           Booking       @relation(fields: [bookingId], references: [id])
+  razorpayOrderId   String        @unique
+  razorpayPaymentId String?       @unique
+  amountPaise       Int
+  status            PaymentStatus @default(CREATED)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+}
+
+enum PaymentStatus {
+  CREATED
+  PAID
+  FAILED
+  REFUNDED
+}
+
+model Caterer {
+  id          String        @id @default(cuid())
+  name        String
+  phone       String
+  city        String
+  state       String        @default("Kerala")
+  description String?
+  cuisines    String[]
+  approved    Boolean       @default(false)
+  disabled    Boolean       @default(false)
+  orgId       String?
+  org         Organization? @relation(fields: [orgId], references: [id])
+  menuItems   MenuItem[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model MenuItem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  priceRupees Int
+  category    String?
+  isVeg       Boolean  @default(true)
+  isSpecial   Boolean  @default(false)
+  catererId   String
+  caterer     Caterer  @relation(fields: [catererId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BlockedDate {
+  id        String   @id @default(cuid())
+  hallId    String
+  hall      Hall     @relation(fields: [hallId], references: [id], onDelete: Cascade)
+  date      DateTime @db.Date
+  reason    String?
+  createdAt DateTime @default(now())
+
+  @@unique([hallId, date])
+}
+
+
+model Employee {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id])
+  name        String
+  role        String
+  phone       String?
+  salaryPaise Int?
+  isActive    Boolean      @default(true)
+  expenses    Expense[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Expense {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id])
+  category    String
+  label       String
+  amountPaise Int
+  date        DateTime     @db.Date
+  notes       String?
+  employeeId  String?
+  employee    Employee?    @relation(fields: [employeeId], references: [id])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model ExpenseCategory {
+  id        String        @id @default(cuid())
+  orgId     String
+  org       Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  name      String
+  icon      String        @default("📌")
+  sortOrder Int           @default(0)
+  items     ExpenseItem[]
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@unique([orgId, name])
+}
+
+model ExpenseItem {
+  id                 String          @id @default(cuid())
+  categoryId         String
+  category           ExpenseCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  orgId              String
+  name               String
+  defaultAmountPaise Int             @default(0)
+  notes              String?
+  sortOrder          Int             @default(0)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+}
+
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model OwnerApplication {
+  id        String            @id @default(cuid())
+  orgName   String
+  phone     String
+  email     String
+  address   String
+  city      String
+  website   String?
+  status    ApplicationStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model CatererApplication {
+  id        String            @id @default(cuid())
+  name      String
+  phone     String
+  email     String
+  address   String
+  city      String
+  cuisines  String[]
+  website   String?
+  status    ApplicationStatus @default(PENDING)
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model OtpCode {
+  id        String   @id @default(cuid())
+  phone     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}

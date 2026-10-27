@@ -1,0 +1,33 @@
+{
+  "app": {
+    "name": "Virunnu",
+    "tagline": "Book the perfect hall for your celebration"
+  },
+  "auth": {
+    "enterPhone": "Enter your phone number",
+    "sendOtp": "Send OTP",
+    "enterOtp": "Enter OTP",
+    "verify": "Verify",
+    "logout": "Logout"
+  },
+  "venue": {
+    "search": "Search venues",
+    "guests": "Number of guests",
+    "date": "Date",
+    "available": "Available",
+    "held": "Held",
+    "booked": "Booked"
+  },
+  "booking": {
+    "hold": "Reserve this slot",
+    "holdExpiry": "Hold expires in 15 minutes",
+    "pay": "Proceed to payment",
+    "confirmed": "Booking confirmed",
+    "cancelled": "Booking cancelled"
+  },
+  "errors": {
+    "slotUnavailable": "This slot is no longer available",
+    "unauthorized": "Please log in to continue",
+    "generic": "Something went wrong. Please try again."
+  }
+}

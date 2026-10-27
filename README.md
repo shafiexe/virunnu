@@ -1,36 +1,83 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Virunnu
 
-## Getting Started
+Hall and venue booking for celebrations.
 
-First, run the development server:
+## Quick start
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. Copy env file and fill in your values:
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Start the database:
+   ```bash
+   docker compose up -d
+   ```
+
+3. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+
+4. Run migrations and seed:
+   ```bash
+   pnpm db:migrate
+   pnpm db:seed
+   ```
+
+5. Start the dev server:
+   ```bash
+   pnpm dev
+   ```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Stack
+
+- **Next.js 16** — App Router, Cache Components enabled
+- **Prisma** — ORM with PostgreSQL + PostGIS
+- **Razorpay** — Payments (keep in test mode)
+- **shadcn/ui** — Components (base-nova)
+- **jose** — JWT session cookies
+- **Zod** — Validation
+
+## Project layout
+
+```
+app/api/           Route handlers (thin — delegate to services/)
+  auth/            send-otp, verify-otp, logout
+  venues/          list, create, get, hall availability
+  bookings/        hold, status, payment order
+  webhooks/        razorpay payment confirmation
+services/          Business logic (auth, venue, booking, payment)
+lib/               Shared utilities (db client, session helpers)
+prisma/            Schema and migrations
+messages/          i18n strings (en, ml)
+components/ui/     shadcn components
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key rules
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- All money stored as integer paise (₹1 = 100 paise)
+- Payment confirmed only from Razorpay webhook — never from the browser redirect
+- Booking hold lasts 15 minutes, auto-released by `releaseExpiredHolds()` in a background job
+- Every owner-facing table has `orgId`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Webhooks (local dev)
 
-## Learn More
+Use [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/) or ngrok to receive webhooks locally:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx cloudflared tunnel --url http://localhost:3000
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Set the tunnel URL + `/api/webhooks/razorpay` in your Razorpay test dashboard.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Session secret
 
-## Deploy on Vercel
+Generate one with:
+```bash
+openssl rand -base64 32
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Put the result in `.env` as `SESSION_SECRET`.
