@@ -17,11 +17,20 @@ export async function POST(_req: NextRequest, { params }: Params) {
   if (!venue) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (venue.approved) return NextResponse.json({ error: "Cannot reject an already-approved venue" }, { status: 400 });
 
-  // Delete halls first (cascades to HallPhoto, SlotTemplate, HallSlot), then the venue
-  await db.$transaction([
-    db.hall.deleteMany({ where: { venueId } }),
-    db.venue.delete({ where: { id: venueId } }),
-  ]);
+  // Collect hall IDs so we can delete child records that lack onDelete: Cascade
+  const halls = await db.hall.findMany({ where: { venueId }, select: { id: true } });
+  const hallIds = halls.map((h) => h.id);
+
+  await db.$transaction(async (tx) => {
+    // Bookings → HallSlots → SlotTemplates (no cascade); HallPhoto/BlockedDate do cascade
+    if (hallIds.length > 0) {
+      await tx.booking.deleteMany({ where: { hallSlot: { hallId: { in: hallIds } } } });
+      await tx.hallSlot.deleteMany({ where: { hallId: { in: hallIds } } });
+      await tx.slotTemplate.deleteMany({ where: { hallId: { in: hallIds } } });
+      await tx.hall.deleteMany({ where: { venueId } });
+    }
+    await tx.venue.delete({ where: { id: venueId } });
+  });
 
   return NextResponse.redirect(new URL("/admin", _req.url), 303);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { VirunnuLogo } from "@/components/virunnu-logo";
 
 const MESSAGES = [
   "Finding beautiful halls across Kerala…",
@@ -62,13 +63,10 @@ export function PageLoader() {
         </div>
       </div>
 
-      {/* Brand name */}
-      <span
-        className="text-5xl font-bold text-amber-500 mb-1 tracking-tight"
-        style={{ fontFamily: "'Manjari', sans-serif" }}
-      >
-        Virunnu
-      </span>
+      {/* Brand wordmark */}
+      <div className="mb-1">
+        <VirunnuLogo fontSize={44} vColor="#D97706" flameColor="#F0A010" textColor="#D97706" />
+      </div>
 
       {/* Tagline */}
       <p className="text-zinc-400 dark:text-zinc-500 text-[11px] font-semibold tracking-[0.2em] uppercase mb-10">
