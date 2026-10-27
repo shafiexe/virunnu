@@ -82,8 +82,9 @@ export function HeroBackground() {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    const ctxOrNull = canvas.getContext("2d");
+    if (!ctxOrNull) return;
+    const ctx = ctxOrNull;
 
     let w = 0, h = 0;
     const resize = () => {
