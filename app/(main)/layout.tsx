@@ -5,6 +5,7 @@ import "../globals.css";
 import { NavUser } from "@/components/nav";
 import { BottomNav } from "@/components/bottom-nav";
 import { Analytics } from "@vercel/analytics/next";
+import { VirunnuLogo } from "@/components/virunnu-logo";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f59e0b",
+  themeColor: "#D97706",
   width: "device-width",
   initialScale: 1,
 };
@@ -30,13 +31,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en" className={`${geist.variable} h-full antialiased`}>
       <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Cormorant+Garamond:ital,wght@1,600&display=swap" />
       </head>
       <body className="min-h-full flex flex-col bg-zinc-50 dark:bg-zinc-950 font-sans">
         <header className="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-sm">
           <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between">
-            <a href="/" className="flex items-center gap-1.5">
-              <span className="text-2xl font-bold text-amber-500" style={{ fontFamily: "'Manjari', sans-serif" }}>Virunnu</span>
+            <a href="/" className="flex items-center">
+              <VirunnuLogo fontSize={24} />
             </a>
             <Suspense fallback={<div className="h-8 w-20 rounded-lg bg-zinc-100 animate-pulse" />}>
               <NavUser />

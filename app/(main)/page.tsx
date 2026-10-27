@@ -7,6 +7,7 @@ import { CatererCard } from "@/components/caterer-card";
 import { db } from "@/lib/db";
 import { Building2, UtensilsCrossed, CheckCircle2 } from "lucide-react";
 import { HeroBackground } from "@/components/hero-background";
+import { VirunnuLogo } from "@/components/virunnu-logo";
 
 type Props = { searchParams: Promise<{ city?: string; guests?: string; date?: string; type?: string }> };
 
@@ -63,7 +64,7 @@ export default async function HomePage({ searchParams }: Props) {
   return (
     <div className="bg-zinc-50 dark:bg-zinc-950">
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-amber-600 via-amber-500 to-orange-400">
+      <div className="relative overflow-hidden" style={{ background: "linear-gradient(135deg, #D97706 0%, #C96A20 60%, #DB5F2E 100%)" }}>
         <HeroBackground />
         {/* Decorative circles */}
         <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/10 pointer-events-none" />
@@ -76,9 +77,16 @@ export default async function HomePage({ searchParams }: Props) {
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               <span className="text-white text-xs font-semibold">Kerala's hall & catering marketplace</span>
             </div>
-            <h1 className="leading-tight">
-              <span className="block text-5xl sm:text-6xl font-bold text-white mb-2" style={{ fontFamily: "'Manjari', sans-serif" }}>Virunnu</span>
-              <span className="block text-2xl sm:text-3xl font-semibold text-white/90">Your perfect venue,<br />just a search away</span>
+            <h1 className="space-y-3">
+              <span className="block">
+                <VirunnuLogo fontSize={52} vColor="white" flameColor="#F0A010" textColor="white" />
+              </span>
+              <span
+                className="block text-3xl sm:text-4xl text-white/95 leading-tight"
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic", fontWeight: 600 }}
+              >
+                Your perfect venue,<br />just a search away
+              </span>
             </h1>
             <p className="text-white/85 text-lg leading-relaxed max-w-lg">
               Browse convention halls, auditoriums, and banquet spaces across Kerala —
