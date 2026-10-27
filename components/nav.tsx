@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { ResponsiveText } from "@/components/responsive-text";
 
 type SessionInfo = { role: string } | null;
 
@@ -43,7 +44,9 @@ export function NavUser() {
   return (
     <div className="flex items-center gap-1">
       {session.role === "OWNER" && (
-        <Link href="/owner/dashboard" className={navLink}>Dashboard</Link>
+        <Link href="/owner/dashboard" className={navLink}>
+          <ResponsiveText mobile="Dashboard" desktop="Owner Dashboard" />
+        </Link>
       )}
       {session.role === "CATERER" && (
         <Link href="/caterer/dashboard" className={navLink}>Dashboard</Link>
@@ -52,13 +55,15 @@ export function NavUser() {
         <Link href="/admin" className={navLink}>Admin</Link>
       )}
       {session.role === "CUSTOMER" && (
-        <Link href="/bookings" className={navLink}>My bookings</Link>
+        <Link href="/bookings" className={navLink}>
+          <ResponsiveText mobile="Bookings" desktop="My bookings" />
+        </Link>
       )}
       <button
         onClick={logout}
         className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors ml-1"
       >
-        Logout
+        <ResponsiveText mobile="Out" desktop="Logout" />
       </button>
     </div>
   );
