@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { BookingStatus, SlotStatus } from "@prisma/client";
 import { splitGST } from "@/lib/gst";
+import { notifyBookingExpired } from "@/services/notification.service";
 
 const HOLD_MINUTES = 60;
 const VIRTUAL_PREFIX = "virtual_";
@@ -88,7 +89,18 @@ export async function releaseExpiredHolds() {
 
   const expiredSlots = await db.hallSlot.findMany({
     where: { status: SlotStatus.HELD, heldUntil: { lt: now } },
-    select: { id: true },
+    include: {
+      bookings: {
+        where: { status: BookingStatus.PENDING },
+        select: {
+          guestPhone: true,
+          guestName: true,
+          user: { select: { phone: true, name: true } },
+        },
+      },
+      template: true,
+      hall: { include: { venue: { select: { name: true } } } },
+    },
   });
 
   if (expiredSlots.length === 0) return 0;
@@ -105,6 +117,28 @@ export async function releaseExpiredHolds() {
       data: { status: BookingStatus.EXPIRED },
     }),
   ]);
+
+  // Notify customers non-blocking — one message per expired pending booking
+  for (const slot of expiredSlots) {
+    for (const booking of slot.bookings) {
+      const phone = booking.user?.phone ?? booking.guestPhone;
+      if (!phone) continue;
+      const dateStr = new Date(slot.date).toLocaleDateString("en-IN", {
+        weekday: "long", day: "numeric", month: "short", year: "numeric",
+      });
+      const timeSlot = slot.template
+        ? `${slot.template.name} (${slot.template.startTime}–${slot.template.endTime})`
+        : "";
+      notifyBookingExpired({
+        customerPhone: phone,
+        customerName: booking.user?.name ?? booking.guestName ?? "Customer",
+        venueName: slot.hall.venue.name,
+        hallName: slot.hall.name,
+        date: dateStr,
+        timeSlot,
+      }).catch((e) => console.error("[notify/hold-expired]", e));
+    }
+  }
 
   return slotIds.length;
 }

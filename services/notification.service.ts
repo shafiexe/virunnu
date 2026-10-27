@@ -327,7 +327,41 @@ export async function notifyOwnerNewBooking(opts: OwnerBookingAlertOpts) {
   ]);
 }
 
-// ── 4. Balance Reminder (owner manually triggers) ─────────────────────────────
+// ── 4. Booking Hold Expired ───────────────────────────────────────────────────
+
+export async function notifyBookingExpired(opts: {
+  customerPhone: string;
+  customerName: string;
+  venueName: string;
+  hallName: string;
+  date: string;
+  timeSlot: string;
+}) {
+  const { customerPhone, customerName, venueName, hallName, date, timeSlot } = opts;
+  const appUrl = getAppUrl();
+
+  const waBody = [
+    `⏰ *Booking Hold Expired — Virunnu*`,
+    ``,
+    `Hi ${customerName}, your 1-hour slot hold has expired and the slot has been released.`,
+    ``,
+    `━━━━━━━━━━━━━━━━━━`,
+    `📍 *${venueName}*`,
+    `🏛️ ${hallName}`,
+    `📅 ${date}`,
+    `⏰ ${timeSlot}`,
+    `━━━━━━━━━━━━━━━━━━`,
+    ``,
+    `If you'd still like to book this slot, please check if it's still available:`,
+    `${appUrl}`,
+    ``,
+    `— Team Virunnu`,
+  ].join("\n");
+
+  await sendWhatsApp(customerPhone, waBody);
+}
+
+// ── 5. Balance Reminder (owner manually triggers) ─────────────────────────────
 export async function notifyBalanceReminder(opts: BookingNotifyOpts) {
   const { customerPhone, customerEmail, customerName, venueName, hallName, date, timeSlot, totalPaise, paidPaise, bookingRef } = opts;
   const appUrl = getAppUrl();
