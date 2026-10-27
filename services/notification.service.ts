@@ -173,7 +173,9 @@ export async function notifyBookingApproved(opts: BookingNotifyOpts) {
     `━━━━━━━━━━━━━━━━━━`,
     ``,
     `Please complete your payment to confirm the booking.`,
-    `${appUrl}/bookings/${bookingRef}`,
+    ``,
+    `📲 Track your booking:`,
+    `${appUrl}/track/${bookingRef}`,
     ``,
     `— Team Virunnu`,
   ].join("\n");
@@ -228,6 +230,10 @@ export async function notifyBookingConfirmed(opts: BookingNotifyOpts) {
     `━━━━━━━━━━━━━━━━━━`,
     ``,
     `See you at the venue! 🙏`,
+    ``,
+    `📲 Track your booking:`,
+    `${appUrl}/track/${bookingRef}`,
+    ``,
     `— Team Virunnu`,
   ].join("\n");
 
@@ -385,6 +391,9 @@ export async function notifyBalanceReminder(opts: BookingNotifyOpts) {
     ``,
     `Please settle the balance before the event date.`,
     `Contact the venue for payment arrangements.`,
+    ``,
+    `📲 Track your booking:`,
+    `${appUrl}/track/${bookingRef}`,
     ``,
     `— Team Virunnu`,
   ].join("\n");

@@ -53,5 +53,8 @@
     "tsx": "^4.23.15",
     "typescript": "^5"
   },
-  "packageManager": "pnpm@12.15.0"
+  "packageManager": "pnpm@12.15.0",
+  "pnpm": {
+    "onlyBuiltDependencies": ["@parcel/watcher", "@swc/core"]
+  }
 }
