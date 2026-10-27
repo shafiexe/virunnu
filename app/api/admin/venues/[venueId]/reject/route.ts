@@ -9,7 +9,19 @@ export async function POST(_req: NextRequest, { params }: Params) {
   if (!session || session.role !== "ADMIN") {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+
   const { venueId } = await params;
-  await db.venue.update({ where: { id: venueId }, data: { approved: false } });
+
+  // Only reject venues that are still pending — never silently delete an approved venue
+  const venue = await db.venue.findUnique({ where: { id: venueId }, select: { approved: true } });
+  if (!venue) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (venue.approved) return NextResponse.json({ error: "Cannot reject an already-approved venue" }, { status: 400 });
+
+  // Delete halls first (cascades to HallPhoto, SlotTemplate, HallSlot), then the venue
+  await db.$transaction([
+    db.hall.deleteMany({ where: { venueId } }),
+    db.venue.delete({ where: { id: venueId } }),
+  ]);
+
   return NextResponse.redirect(new URL("/admin", _req.url), 303);
 }
