@@ -74,10 +74,9 @@ export default async function HomePage({ searchParams }: Props) {
               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
               <span className="text-white text-xs font-semibold">Kerala's hall & catering marketplace</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
-              <span className="block text-white/70 text-2xl sm:text-3xl font-normal mb-1">വിരുന്ന്</span>
-              Your perfect venue,<br />
-              just a search away
+            <h1 className="leading-tight">
+              <span className="block text-5xl sm:text-6xl font-bold text-white mb-2" style={{ fontFamily: "'Manjari', sans-serif" }}>Virunnu</span>
+              <span className="block text-2xl sm:text-3xl font-semibold text-white/90">Your perfect venue,<br />just a search away</span>
             </h1>
             <p className="text-white/85 text-lg leading-relaxed max-w-lg">
               Browse convention halls, auditoriums, and banquet spaces across Kerala —
