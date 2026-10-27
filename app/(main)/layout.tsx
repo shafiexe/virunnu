@@ -12,7 +12,7 @@ import { getMessages, getLocale } from "next-intl/server";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
-export const dynamic = "force-dynamic";
+export const instant = false;
 
 export const metadata: Metadata = {
   title: "Virunnu — Book the perfect hall",
