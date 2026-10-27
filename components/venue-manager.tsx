@@ -883,7 +883,7 @@ function VenueCard({ venue: initialVenue }: { venue: Venue }) {
               className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
               value={venueForm.websiteUrl}
               onChange={(e) => setVenueForm((f) => ({ ...f, websiteUrl: e.target.value }))}
-              placeholder="https://zawajconvention.com"
+              placeholder="https://yourconvention.com"
             />
           </div>
 
@@ -905,7 +905,7 @@ function VenueCard({ venue: initialVenue }: { venue: Venue }) {
                 className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
                 value={venueForm.email}
                 onChange={(e) => setVenueForm((f) => ({ ...f, email: e.target.value }))}
-                placeholder="info@zawaj.com"
+                placeholder="info@yourconvention.com"
               />
             </div>
           </div>

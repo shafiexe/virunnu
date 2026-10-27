@@ -305,7 +305,7 @@ export function OwnerOnboardingForm() {
             </div>
             <div className="space-y-1">
               <Label htmlFor="websiteUrl" className="text-xs">Website</Label>
-              <Input id="websiteUrl" type="url" placeholder="https://zawajconvention.com"
+              <Input id="websiteUrl" type="url" placeholder="https://yourconvention.com"
                 value={s1.websiteUrl} onChange={(e) => setS1({ ...s1, websiteUrl: e.target.value })} />
             </div>
           </div>
