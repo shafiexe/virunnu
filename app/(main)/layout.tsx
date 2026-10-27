@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import "../globals.css";
 import { NavUser } from "@/components/nav";
 import { BottomNav } from "@/components/bottom-nav";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -55,6 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </div>
         </footer>
+        <SpeedInsights />
       </body>
     </html>
   );
