@@ -7,10 +7,12 @@ const schema = z.object({
   amountPaise: z.number().int().positive(),
 });
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID ?? "rzp_test_placeholder",
-  key_secret: process.env.RAZORPAY_KEY_SECRET ?? "placeholder",
-});
+function getRazorpay() {
+  return new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID!,
+    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+  });
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
   const { hallSlotId, amountPaise } = parsed.data;
 
   try {
-    const order = await razorpay.orders.create({
+    const order = await getRazorpay().orders.create({
       amount: amountPaise,
       currency: "INR",
       receipt: hallSlotId.slice(0, 40),
