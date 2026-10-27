@@ -12,6 +12,8 @@ import { getMessages, getLocale } from "next-intl/server";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Virunnu — Book the perfect hall",
   description: "Find and book halls for weddings, receptions and celebrations across Kerala.",
