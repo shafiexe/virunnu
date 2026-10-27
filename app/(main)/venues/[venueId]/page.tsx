@@ -77,10 +77,16 @@ export default async function VenuePage({ params }: Props) {
   const initialMonth = `${year}-${String(month + 1).padStart(2, "0")}`;
 
   const hallsWithSlots = await Promise.all(
-    venue.halls.map(async (hall: Hall) => ({
-      ...hall,
-      slots: await fetchMonthSlots(hall.id, year, month),
-    }))
+    venue.halls.map(async (hall) => {
+      const rawSlots = await fetchMonthSlots(hall.id, year, month);
+      return {
+        ...hall,
+        slots: rawSlots.map((s) => ({
+          ...s,
+          date: s.date instanceof Date ? s.date.toISOString().slice(0, 10) : s.date,
+        })),
+      };
+    })
   );
 
   // Facilities (from the venue's org, fetched inside getVenue)
