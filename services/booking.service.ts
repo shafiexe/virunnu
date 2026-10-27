@@ -84,19 +84,23 @@ export async function getBooking(bookingId: string) {
   });
 }
 
-export async function getPublicBooking(bookingId: string) {
-  return db.booking.findUnique({
-    where: { id: bookingId },
-    include: {
-      hallSlot: {
-        include: {
-          template: true,
-          hall: { include: { venue: { select: { name: true, address: true, phone: true } } } },
-        },
+export async function getPublicBooking(ref: string) {
+  const include = {
+    hallSlot: {
+      include: {
+        template: true,
+        hall: { include: { venue: { select: { name: true, address: true, phone: true } } } },
       },
-      user: { select: { name: true, phone: true } },
     },
-  });
+    user: { select: { name: true, phone: true } },
+  } as const;
+
+  // Short refs (≤8 chars) are the last 8 chars of the booking ID, uppercased.
+  // Accept both the short ref and the full ID.
+  if (ref.length <= 8) {
+    return db.booking.findFirst({ where: { id: { endsWith: ref.toLowerCase() } }, include });
+  }
+  return db.booking.findUnique({ where: { id: ref }, include });
 }
 
 export async function releaseExpiredHolds() {
