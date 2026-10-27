@@ -4,6 +4,7 @@ import crypto from "crypto";
 import { db } from "@/lib/db";
 import { splitGST } from "@/lib/gst";
 import { releaseExpiredHolds } from "@/services/booking.service";
+import { notifyBookingConfirmed } from "@/services/notification.service";
 
 const VIRTUAL_PREFIX = "virtual_";
 const BLOCKED_PREFIX = "blocked_";
@@ -85,7 +86,7 @@ export async function POST(req: NextRequest) {
     const result = await db.$transaction(async (tx) => {
       const slot = await tx.hallSlot.findUnique({
         where: { id: hallSlotId },
-        include: { hall: { include: { venue: true } } },
+        include: { hall: { include: { venue: true } }, template: true },
       });
 
       if (!slot) throw new Error("SLOT_NOT_FOUND");
@@ -126,10 +127,37 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      return { bookingId: booking.id };
+      return {
+        bookingId: booking.id,
+        status: bookingStatus,
+        totalPaise,
+        orgId: slot.hall.venue.orgId,
+        venueName: slot.hall.venue.name,
+        hallName: slot.hall.name,
+        slotDate: slot.date,
+        template: slot.template,
+      };
     });
 
-    return NextResponse.json(result, { status: 201 });
+    // Customer confirmation — non-blocking
+    notifyBookingConfirmed({
+      customerPhone: guestPhone,
+      customerEmail: guestEmail ?? null,
+      customerName: guestName,
+      venueName: result.venueName,
+      hallName: result.hallName,
+      date: new Date(result.slotDate).toLocaleDateString("en-IN", {
+        weekday: "long", day: "numeric", month: "short", year: "numeric",
+      }),
+      timeSlot: result.template
+        ? `${result.template.name} (${result.template.startTime}–${result.template.endTime})`
+        : "",
+      totalPaise: result.totalPaise,
+      paidPaise: amountPaise,
+      bookingRef: result.bookingId.slice(-8).toUpperCase(),
+    }).catch((e) => console.error("[notify/confirm-payment]", e));
+
+    return NextResponse.json({ bookingId: result.bookingId }, { status: 201 });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "";
     if (msg === "SLOT_UNAVAILABLE") return NextResponse.json({ error: "Slot no longer available" }, { status: 409 });
