@@ -6,6 +6,7 @@ import { VenueCard } from "@/components/venue-card";
 import { CatererCard } from "@/components/caterer-card";
 import { db } from "@/lib/db";
 import { Building2, UtensilsCrossed, CheckCircle2 } from "lucide-react";
+import { HeroBackground } from "@/components/hero-background";
 
 type Props = { searchParams: Promise<{ city?: string; guests?: string; date?: string; type?: string }> };
 
@@ -63,6 +64,7 @@ export default async function HomePage({ searchParams }: Props) {
     <div className="bg-zinc-50 dark:bg-zinc-950">
       {/* ── Hero ─────────────────────────────────────────────── */}
       <div className="relative overflow-hidden bg-gradient-to-br from-amber-600 via-amber-500 to-orange-400">
+        <HeroBackground />
         {/* Decorative circles */}
         <div className="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-white/10 pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full bg-orange-600/15 pointer-events-none" />
