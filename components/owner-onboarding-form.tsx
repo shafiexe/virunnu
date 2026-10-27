@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -80,6 +80,7 @@ export function OwnerOnboardingForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [manualGeo, setManualGeo] = useState(false);
+  const submitting = useRef(false);
 
   function handleMapsUrl(url: string) {
     const coords = parseGoogleMapsCoords(url);
@@ -110,7 +111,8 @@ export function OwnerOnboardingForm() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!step2Valid()) return;
+    if (!step2Valid() || submitting.current) return;
+    submitting.current = true;
     setError("");
     setLoading(true);
 
@@ -144,6 +146,7 @@ export function OwnerOnboardingForm() {
     });
 
     setLoading(false);
+    submitting.current = false;
     if (!res.ok) {
       setError("Something went wrong. Please check your inputs and try again.");
       return;
