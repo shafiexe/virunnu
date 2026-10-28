@@ -5,6 +5,7 @@ import "../globals.css";
 import { NavUser } from "@/components/nav";
 import { LanguageToggle } from "@/components/language-toggle";
 import { BottomNav } from "@/components/bottom-nav";
+import { getSession } from "@/lib/session";
 import { Analytics } from "@vercel/analytics/next";
 import { VirunnuLogo } from "@/components/virunnu-logo";
 import { NextIntlClientProvider } from "next-intl";
@@ -34,6 +35,8 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const session = await getSession();
+  const showLanguageToggle = !session || session.role === "CUSTOMER";
   const f = (messages as Record<string, Record<string, string>>).footer ?? {};
 
   return (
@@ -50,7 +53,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                 <VirunnuLogo fontSize={24} />
               </a>
               <div className="flex items-center gap-2">
-                <LanguageToggle />
+                {showLanguageToggle && <LanguageToggle />}
                 <Suspense fallback={<div className="h-8 w-20 rounded-lg bg-zinc-100 animate-pulse" />}>
                   <NavUser />
                 </Suspense>
