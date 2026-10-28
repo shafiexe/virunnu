@@ -59,6 +59,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                 <ThemeToggle />
                 <div className="hidden sm:block w-px h-5 mx-2 bg-zinc-200 dark:bg-zinc-700 shrink-0" />
                 {showLanguageToggle && <LanguageToggle />}
+                {showLanguageToggle && <div className="hidden sm:block w-px h-5 mx-2 bg-zinc-200 dark:bg-zinc-700 shrink-0" />}
                 <Suspense fallback={<div className="h-8 w-20 rounded-lg bg-zinc-100 animate-pulse" />}>
                   <NavUser />
                 </Suspense>
