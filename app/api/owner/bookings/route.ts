@@ -4,6 +4,47 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 import { BookingStatus, SlotStatus } from "@prisma/client";
 
+export async function GET(req: NextRequest) {
+  const session = await getSession();
+  if (!session || session.role !== "OWNER") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  const sp = new URL(req.url).searchParams;
+  const page = Math.max(1, parseInt(sp.get("page") ?? "1") || 1);
+  const pageSize = Math.min(500, Math.max(25, parseInt(sp.get("pageSize") ?? "50") || 50));
+  const search = (sp.get("search") ?? "").trim();
+  const status = sp.get("status") ?? "ALL";
+
+  const where = {
+    orgId: session.orgId!,
+    ...(status !== "ALL" ? { status: status as BookingStatus } : {}),
+    ...(search ? {
+      OR: [
+        { user: { name: { contains: search, mode: "insensitive" as const } } },
+        { user: { phone: { contains: search } } },
+        { guestName: { contains: search, mode: "insensitive" as const } },
+        { guestPhone: { contains: search } },
+      ],
+    } : {}),
+  };
+
+  const [total, data] = await Promise.all([
+    db.booking.count({ where }),
+    db.booking.findMany({
+      where,
+      include: {
+        user: { select: { phone: true, name: true } },
+        hallSlot: { include: { template: true, hall: { include: { venue: { select: { name: true } } } } } },
+        payment: true,
+      },
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    }),
+  ]);
+
+  return NextResponse.json({ data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
+}
+
 const schema = z.object({
   venueId: z.string().cuid(),
   hallId: z.string().cuid(),

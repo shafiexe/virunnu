@@ -18,9 +18,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const { searchParams } = new URL(req.url);
-  const month = searchParams.get("month");
-  const year = searchParams.get("year");
+  const sp = new URL(req.url).searchParams;
+  const month = sp.get("month");
+  const year = sp.get("year");
+  const search = (sp.get("search") ?? "").trim();
+  const page = Math.max(1, parseInt(sp.get("page") ?? "1") || 1);
+  const pageSize = Math.min(500, Math.max(25, parseInt(sp.get("pageSize") ?? "50") || 50));
 
   const from = month && year
     ? new Date(parseInt(year), parseInt(month) - 1, 1)
@@ -29,12 +32,40 @@ export async function GET(req: NextRequest) {
     ? new Date(parseInt(year), parseInt(month), 0)
     : new Date(new Date().getFullYear(), 11, 31);
 
+  const where = {
+    orgId: session.orgId,
+    date: { gte: from, lte: to },
+    ...(search ? {
+      OR: [
+        { label: { contains: search, mode: "insensitive" as const } },
+        { category: { contains: search, mode: "insensitive" as const } },
+        { notes: { contains: search, mode: "insensitive" as const } },
+      ],
+    } : {}),
+  };
+
+  const paginate = sp.has("page") || sp.has("pageSize");
+
+  if (paginate) {
+    const [total, expenses] = await Promise.all([
+      db.expense.count({ where }),
+      db.expense.findMany({
+        where,
+        include: { employee: { select: { id: true, name: true, role: true } } },
+        orderBy: { date: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+    ]);
+    return NextResponse.json({ data: expenses, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
+  }
+
+  // Legacy: return all for the month (used by ExpenseManager on initial load)
   const expenses = await db.expense.findMany({
-    where: { orgId: session.orgId, date: { gte: from, lte: to } },
+    where,
     include: { employee: { select: { id: true, name: true, role: true } } },
     orderBy: { date: "desc" },
   });
-
   return NextResponse.json({ expenses });
 }
 

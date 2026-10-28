@@ -29,11 +29,8 @@ export function NavUser() {
   if (!session) {
     return (
       <div className="flex items-center gap-2">
-        <Link href="/track" className="hidden md:block text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-          Track booking
-        </Link>
-        <Link href="/apply/venue" className="hidden md:block text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-          Add my venue
+        <Link href="/track" className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+          <ResponsiveText mobile="Track" desktop="Track booking" />
         </Link>
         <Link href="/login" className="text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-4 py-1.5 rounded-lg transition-colors">
           Sign in
@@ -48,7 +45,7 @@ export function NavUser() {
     <div className="flex items-center gap-1">
       {session.role === "OWNER" && (
         <Link href="/owner/dashboard" className={navLink}>
-          <ResponsiveText mobile="Dashboard" desktop="Owner Dashboard" />
+          Dashboard
         </Link>
       )}
       {session.role === "CATERER" && (
@@ -58,9 +55,12 @@ export function NavUser() {
         <Link href="/admin" className={navLink}>Admin</Link>
       )}
       {session.role === "CUSTOMER" && (
-        <Link href="/bookings" className={navLink}>
-          <ResponsiveText mobile="Bookings" desktop="My bookings" />
-        </Link>
+        <>
+          <Link href="/bookings" className={navLink}>
+            <ResponsiveText mobile="Bookings" desktop="My bookings" />
+          </Link>
+          <Link href="/track" className={navLink}>Track</Link>
+        </>
       )}
       <button
         onClick={logout}

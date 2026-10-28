@@ -1,9 +1,11 @@
 import type { MetadataRoute } from "next";
+import { connection } from "next/server";
 import { db } from "@/lib/db";
 
 const BASE = "https://virunnu.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  await connection();
   const venues = await db.venue.findMany({
     where: { approved: true, org: { disabled: false } },
     select: { id: true, updatedAt: true },

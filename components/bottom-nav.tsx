@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CalendarCheck, Building2, LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2, Search } from "lucide-react";
+import { LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2, CalendarCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Session = { role: string } | null;
@@ -23,6 +23,9 @@ export function BottomNav() {
 
   const role = session?.role;
 
+  // Guests and customers use the top header — no bottom nav needed.
+  if (!role || role === "CUSTOMER") return null;
+
   const links =
     role === "OWNER"
       ? [
@@ -33,25 +36,13 @@ export function BottomNav() {
         ]
       : role === "CATERER"
       ? [
-          { href: "/", icon: Home, label: "Home" },
           { href: "/caterer/dashboard", icon: UtensilsCrossed, label: "Dashboard" },
         ]
       : role === "ADMIN"
       ? [
-          { href: "/", icon: Home, label: "Home" },
           { href: "/admin", icon: Shield, label: "Admin" },
         ]
-      : role === "CUSTOMER"
-      ? [
-          { href: "/", icon: Home, label: "Home" },
-          { href: "/bookings", icon: CalendarCheck, label: "Bookings" },
-          { href: "/track", icon: Search, label: "Track" },
-        ]
-      : [
-          { href: "/", icon: Home, label: "Home" },
-          { href: "/track", icon: Search, label: "Track" },
-          { href: "/apply/venue", icon: Building2, label: "List venue" },
-        ];
+      : [];
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-zinc-100 dark:border-zinc-800 bg-white/98 dark:bg-zinc-900/98 backdrop-blur-md md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>

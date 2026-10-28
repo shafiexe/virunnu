@@ -6,6 +6,7 @@ import {
   Plus, X, Pencil, Trash2, ChevronLeft, ChevronRight,
   Search, LayoutList, Tags, ChevronDown, ChevronUp, Zap, Users,
 } from "lucide-react";
+import { PaginationBar } from "@/components/pagination-bar";
 import { cn } from "@/lib/utils";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -55,7 +56,7 @@ type FormState = {
 
 const STAFF_ROLES = ["Cleaning Staff", "Security", "Supervisor", "Manager", "Driver", "Cook", "Helper", "Other"];
 
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 50;
 
 const EMPTY_FORM: FormState = {
   category: "",
@@ -116,6 +117,7 @@ export function ExpenseManager({
   const [search, setSearch] = useState("");
   const [filterCategory, setFilterCategory] = useState("ALL");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [customCat, setCustomCat] = useState(false); // true = user typed a free-text category
 
   // ── Employees state ───────────────────────────────────────────────────────────
@@ -193,9 +195,9 @@ export function ExpenseManager({
     return list;
   }, [expenses, filterCategory, search]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const currentPage = Math.min(page, totalPages);
-  const paginated = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const paginated = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const totalPaise = filtered.reduce((s, e) => s + e.amountPaise, 0);
 
@@ -621,32 +623,19 @@ export function ExpenseManager({
                 </div>
 
                 {/* Footer: total + pagination */}
-                <div className="bg-zinc-50 dark:bg-zinc-800/40 px-4 py-3 flex flex-wrap items-center justify-between gap-3 border-t border-zinc-100 dark:border-zinc-800">
+                <div className="bg-zinc-50 dark:bg-zinc-800/40 px-4 py-3 border-t border-zinc-100 dark:border-zinc-800">
                   <span className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">
                     {filtered.length} item{filtered.length !== 1 ? "s" : ""} · ₹{(totalPaise / 100).toLocaleString("en-IN")}
                   </span>
-                  {totalPages > 1 && (
-                    <div className="flex items-center gap-1">
-                      <button
-                        disabled={currentPage === 1}
-                        onClick={() => setPage((p) => p - 1)}
-                        className="p-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-40"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </button>
-                      <span className="text-xs text-zinc-500 min-w-[80px] text-center">
-                        Page {currentPage} of {totalPages}
-                      </span>
-                      <button
-                        disabled={currentPage === totalPages}
-                        onClick={() => setPage((p) => p + 1)}
-                        className="p-1 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 disabled:opacity-40"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
                 </div>
+                <PaginationBar
+                  page={currentPage}
+                  totalPages={totalPages}
+                  total={filtered.length}
+                  pageSize={pageSize}
+                  onPage={(p) => setPage(p)}
+                  onPageSize={(ps) => { setPageSize(ps); setPage(1); }}
+                />
               </>
             )}
           </div>

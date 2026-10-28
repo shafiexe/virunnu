@@ -290,22 +290,6 @@ export default async function VenuePage({ params }: Props) {
       <div className="mx-auto max-w-6xl px-4 pt-5 pb-10 space-y-8">
         {hallsWithSlots.map((hall: Hall) => (
           <section key={hall.id} id={`hall-${hall.id}`} className="scroll-mt-4">
-            {/* Hall section label */}
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-zinc-800 dark:text-zinc-100">{hall.name}</h2>
-              <div className="flex items-center gap-3">
-                <span className="flex items-center gap-1 text-sm text-zinc-500">
-                  <Users className="h-3.5 w-3.5" />
-                  {hall.capacity.toLocaleString()} guests
-                </span>
-                <span className="flex items-center gap-1 text-sm font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-3 py-1 rounded-full border border-amber-200 dark:border-amber-800/40">
-                  <IndianRupee className="h-3 w-3" />
-                  {(hall.pricePerSlot / 100).toLocaleString("en-IN")}
-                  <span className="text-xs font-normal text-zinc-500 ml-0.5">/slot</span>
-                </span>
-              </div>
-            </div>
-
             {/* Two-column: sticky calendar left, content right */}
             <div className="grid lg:grid-cols-[340px_1fr] gap-6 items-start">
 
