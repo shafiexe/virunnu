@@ -29,10 +29,10 @@ export function NavUser() {
   if (!session) {
     return (
       <div className="flex items-center gap-2">
-        <Link href="/track" className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-          <ResponsiveText mobile="Track" desktop="Track booking" />
+        <Link href="/track" className="hidden sm:block text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+          Track booking
         </Link>
-        <Link href="/login" className="text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-4 py-1.5 rounded-lg transition-colors">
+        <Link href="/login" className="text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-3 sm:px-4 py-1.5 rounded-lg transition-colors whitespace-nowrap">
           Sign in
         </Link>
       </div>
