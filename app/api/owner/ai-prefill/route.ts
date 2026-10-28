@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import Anthropic from "@anthropic-ai/sdk";
 
+if (!process.env.ANTHROPIC_API_KEY) {
+  console.error("ANTHROPIC_API_KEY is not set");
+}
 const client = new Anthropic();
 
 const SYSTEM_PROMPT = `You are a data extraction assistant for a venue and convention centre directory in Kerala, India.
@@ -104,6 +107,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Please provide a URL or some text to extract from" }, { status: 400 });
   }
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: "AI features are not configured on this server." }, { status: 503 });
+  }
+
   try {
     const message = await client.messages.create({
       model: "claude-haiku-5-5",
@@ -119,6 +126,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ extracted });
   } catch (err) {
     console.error("AI prefill error:", err);
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("auth") || msg.includes("API key") || msg.includes("401")) {
+      return NextResponse.json({ error: "AI API key is invalid or missing. Check server configuration." }, { status: 503 });
+    }
     return NextResponse.json({ error: "Failed to extract data. Please try again." }, { status: 500 });
   }
 }
