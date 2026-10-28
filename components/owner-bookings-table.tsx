@@ -54,7 +54,7 @@ type Booking = {
 type PendingBooking = {
   id: string; guestName: string | null; guestPhone: string | null; guestEmail: string | null;
   totalPaise: number; createdAt: string;
-  hallSlot: { heldUntil: string | null; date: string; template: { name: string; startTime: string; endTime: string }; hall: { name: string; venue: { name: string } } };
+  hallSlot: { date: string; template: { name: string; startTime: string; endTime: string }; hall: { name: string; venue: { name: string } } };
 };
 
 function getAmounts(b: Booking) {
@@ -254,7 +254,7 @@ export function OwnerBookingsTable() {
           <PendingRequests
             bookings={pending.map((b) => ({
               id: b.id, guestName: b.guestName, guestPhone: b.guestPhone, guestEmail: b.guestEmail,
-              totalPaise: b.totalPaise, createdAt: b.createdAt, heldUntil: b.hallSlot.heldUntil ?? null,
+              totalPaise: b.totalPaise, createdAt: b.createdAt,
               hallSlot: { date: b.hallSlot.date, template: b.hallSlot.template, hall: b.hallSlot.hall },
             }))}
           />

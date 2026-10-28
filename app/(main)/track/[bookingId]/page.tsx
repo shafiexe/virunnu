@@ -12,10 +12,10 @@ type Props = { params: Promise<{ bookingId: string }>; searchParams: Promise<{ p
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; style: string; note: string }> = {
   PENDING: {
-    label: "Awaiting approval",
+    label: "Request received",
     icon: <Clock className="h-5 w-5" />,
     style: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/40",
-    note: "The venue owner is reviewing your booking request.",
+    note: "Your contact request has been sent. The owner will call you to confirm.",
   },
   APPROVED: {
     label: "Approved — payment pending",

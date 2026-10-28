@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Clock, Phone, User, IndianRupee, CheckCircle2, XCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { MessageCircle, Phone, User, IndianRupee, CheckCircle2, XCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type PendingBooking = {
@@ -12,7 +12,6 @@ type PendingBooking = {
   guestEmail: string | null;
   totalPaise: number;
   createdAt: string;
-  heldUntil: string | null;
   hallSlot: {
     date: string;
     template: { name: string; startTime: string; endTime: string };
@@ -20,20 +19,6 @@ type PendingBooking = {
   };
 };
 
-function TimeLeft({ until }: { until: string | null }) {
-  const [, forceRender] = useState(0);
-  if (!until) return null;
-  const ms = new Date(until).getTime() - Date.now();
-  if (ms <= 0) return <span className="text-xs text-red-500 font-medium">Expired</span>;
-  const mins = Math.floor(ms / 60000);
-  const secs = Math.floor((ms % 60000) / 1000);
-  setTimeout(() => forceRender((n) => n + 1), 1000);
-  return (
-    <span className={cn("text-xs font-semibold tabular-nums", mins < 10 ? "text-red-500" : "text-amber-600 dark:text-amber-400")}>
-      {mins}m {secs}s left
-    </span>
-  );
-}
 
 export function PendingRequests({ bookings: initial }: { bookings: PendingBooking[] }) {
   const [bookings, setBookings] = useState(initial);
@@ -88,7 +73,7 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
       >
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-          <span className="font-semibold text-zinc-900 dark:text-zinc-50">Booking Requests</span>
+          <span className="font-semibold text-zinc-900 dark:text-zinc-50">Contact Requests</span>
           <span className="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">{bookings.length}</span>
         </div>
         {expanded ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}
@@ -106,8 +91,7 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
               <div key={b.id} className="px-5 py-4 space-y-3">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div className="space-y-0.5">
-                    <div className="flex items-center gap-1.5 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-                      <Clock className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                    <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
                       {b.hallSlot.hall.name} — {b.hallSlot.template.name}
                     </div>
                     <div className="text-xs text-zinc-500">
@@ -115,7 +99,16 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                     </div>
                     <div className="text-xs text-zinc-400">{b.hallSlot.hall.venue.name}</div>
                   </div>
-                  <TimeLeft until={b.heldUntil} />
+                  {b.guestPhone && (
+                    <a
+                      href={`https://wa.me/${b.guestPhone.replace(/\D/g, "")}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#25D366] hover:bg-[#1ebe5c] px-3 py-1.5 rounded-lg transition-colors shrink-0"
+                    >
+                      <MessageCircle className="h-3.5 w-3.5" />
+                      WhatsApp
+                    </a>
+                  )}
                 </div>
 
                 <div className="flex flex-wrap gap-3 text-xs text-zinc-500 dark:text-zinc-400">

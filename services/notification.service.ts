@@ -181,13 +181,12 @@ Please contact the venue to arrange payment before the event date.
 
 — Team Virunnu`,
 
-  owner_new_booking_whatsapp: `🔔 *New Booking Request — Virunnu*
+  owner_new_booking_whatsapp: `🔔 *New Contact Request — Virunnu*
 
-You have a new booking request for *{{venueName}}*.
+*{{customerName}}* wants to book *{{venueName}}*.
 
 ━━━━━━━━━━━━━━━━━━
-👤 *Customer:* {{customerName}}
-📱 {{customerPhone}}
+📱 *Call:* {{customerPhone}}
 🏛️ *Hall:* {{hallName}}
 📅 *Date:* {{date}}
 ⏰ *Slot:* {{timeSlot}}
@@ -195,15 +194,14 @@ You have a new booking request for *{{venueName}}*.
 🔖 *Ref:* {{bookingRef}}
 ━━━━━━━━━━━━━━━━━━
 
-👉 Review and approve on your dashboard:
+👉 Call the customer to confirm, then approve or record payment on your dashboard:
 {{dashboardUrl}}
 
-_Please respond within 1 hour — the slot hold expires._
 — Team Virunnu`,
 
-  owner_new_booking_email_subject: `New Booking Request — {{venueName}} on {{date}}`,
+  owner_new_booking_email_subject: `New Contact Request — {{venueName}} on {{date}}`,
 
-  owner_new_booking_email: `A customer has submitted a booking request. Please review and approve within 1 hour.
+  owner_new_booking_email: `A customer has submitted a contact request. Call them to confirm, then approve or record payment.
 
 Customer: {{customerName}}
 Phone: {{customerPhone}}

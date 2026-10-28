@@ -18,16 +18,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ boo
   if (!booking) return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   if (booking.status !== "PENDING") return NextResponse.json({ error: "Booking is not pending" }, { status: 400 });
 
-  await db.$transaction([
-    db.booking.update({
-      where: { id: bookingId },
-      data: { status: "CANCELLED", cancelReason: reason ?? "Rejected by owner" },
-    }),
-    db.hallSlot.update({
-      where: { id: booking.hallSlotId },
-      data: { status: "AVAILABLE", heldUntil: null },
-    }),
-  ]);
+  await db.booking.update({
+    where: { id: bookingId },
+    data: { status: "CANCELLED", cancelReason: reason ?? "Rejected by owner" },
+  });
 
   return NextResponse.json({ ok: true });
 }

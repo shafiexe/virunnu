@@ -135,9 +135,11 @@ export default async function BookingPage({ params }: Props) {
           </div>
         </div>
 
-        {booking.status === "PENDING" && heldUntil && (
+        {booking.status === "PENDING" && (
           <div className="px-5 pb-5">
-            <HoldCountdown heldUntil={heldUntil.toISOString()} />
+            <div className="rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-xs text-amber-700 dark:text-amber-400">
+              The owner will contact you directly to confirm this booking.
+            </div>
           </div>
         )}
       </div>

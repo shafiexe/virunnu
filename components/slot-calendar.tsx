@@ -557,12 +557,11 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
 
                 {/* Request submitted confirmation */}
                 {checkoutStep === "requested" && (
-                  <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/20 px-4 py-4 space-y-2">
-                    <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">Booking request sent</p>
-                    <div className="text-xs text-amber-700 dark:text-amber-400 space-y-1">
-                      <p>The owner will approve or reject your request within <strong>1 hour</strong>.</p>
-                      <p className="text-red-600 dark:text-red-400 font-medium">⚠ If the owner does not respond in 1 hour, the slot will be automatically released and your request cancelled.</p>
-                      <p>You will be contacted on <span className="font-semibold">{guestPhone}</span> with the decision.</p>
+                  <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-4 space-y-2">
+                    <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">Contact request sent ✓</p>
+                    <div className="text-xs text-emerald-700 dark:text-emerald-400 space-y-1">
+                      <p>The owner has been notified and will call you on <span className="font-semibold">{guestPhone}</span> to confirm availability.</p>
+                      <p className="text-zinc-500 dark:text-zinc-400">No payment needed right now. The owner will guide you on next steps.</p>
                     </div>
                   </div>
                 )}

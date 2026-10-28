@@ -67,14 +67,12 @@ export async function POST(req: NextRequest) {
       });
 
       if (!slot) throw new Error("SLOT_NOT_FOUND");
-      if (slot.status !== "AVAILABLE") throw new Error("SLOT_UNAVAILABLE");
+      // Block requests on already-booked slots; allow AVAILABLE (and ignore HELD — someone may be mid-payment)
+      if (slot.status === "BOOKED") throw new Error("SLOT_UNAVAILABLE");
 
-      const heldUntil = new Date(Date.now() + HOLD_MINUTES * 60 * 1000);
-
-      await tx.hallSlot.update({
-        where: { id: hallSlotId, status: "AVAILABLE" },
-        data: { status: "HELD", heldUntil },
-      });
+      // Do NOT hold the slot — this is a contact request, not a reservation.
+      // The slot stays AVAILABLE so other customers can still pay & book.
+      // Owner will call the customer and approve/reject manually.
 
       const { totalPaise } = withGST(slot.priceOverride ?? slot.hall.pricePerSlot);
 
@@ -93,7 +91,7 @@ export async function POST(req: NextRequest) {
 
       return {
         booking,
-        heldUntil,
+        heldUntil: null,
         minimumAdvancePaise: slot.hall.minimumAdvancePaise,
         requireFullPayment: slot.hall.requireFullPayment,
         venueName: slot.hall.venue.name,
