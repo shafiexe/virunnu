@@ -33,7 +33,6 @@ export function NavUser() {
         <Link href="/track" className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-2.5 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
           <Navigation className="h-4 w-4 shrink-0" />
           <span className="hidden sm:inline">Track booking</span>
-          <span className="sm:hidden">Track</span>
         </Link>
         <Link href="/login" className="flex items-center gap-1.5 text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">
           <LogIn className="h-4 w-4 shrink-0" />
