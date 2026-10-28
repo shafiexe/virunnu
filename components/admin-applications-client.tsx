@@ -10,7 +10,7 @@ type OwnerApp = {
   id: string;
   orgName: string;
   phone: string;
-  email: string;
+  email: string | null;
   address: string;
   city: string;
   website: string | null;
@@ -74,7 +74,7 @@ function AppCard({
   name, phone, email, address, city, website, cuisines, status,
   onApprove, onReject,
 }: {
-  name: string; phone: string; email: string; address: string; city: string;
+  name: string; phone: string; email: string | null; address: string; city: string;
   website?: string | null; cuisines?: string[]; status: ApplicationStatus;
   onApprove: () => Promise<void>; onReject: (reason?: string) => Promise<void>;
 }) {

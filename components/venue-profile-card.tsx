@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { Building2, Pencil, X, Loader2, CheckCircle2, Phone, Mail, MapPin, Globe, MessageCircle } from "lucide-react";
+import { VENUE_TYPE_OPTIONS, venueTypeLabel, type VenueTypeKey } from "@/lib/venue-types";
 
 interface VenueProfile {
   id: string;
   name: string;
+  venueType: string;
   phone: string | null;
   whatsappPhone: string | null;
   email: string | null;
@@ -59,6 +61,9 @@ function InfoRow({ icon, value, href, label }: { icon: React.ReactNode; value: s
 export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
   const [venue, setVenue] = useState(initial);
   const [editing, setEditing] = useState(false);
+  const [venueType, setVenueType] = useState<VenueTypeKey>(
+    (initial.venueType as VenueTypeKey) ?? "CONVENTION_CENTER"
+  );
   const [form, setForm] = useState({
     name: initial.name,
     phone: initial.phone ?? "",
@@ -73,6 +78,7 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
   const [saved, setSaved] = useState(false);
 
   function startEdit() {
+    setVenueType((venue.venueType as VenueTypeKey) ?? "CONVENTION_CENTER");
     setForm({
       name: venue.name,
       phone: venue.phone ?? "",
@@ -99,6 +105,7 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name.trim(),
+          venueType,
           phone: `+91${phone}`,
           whatsappPhone: form.whatsappPhone.replace(/\D/g, "").length === 10
             ? `+91${form.whatsappPhone.replace(/\D/g, "")}`
@@ -135,7 +142,12 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
           </div>
           <div className="min-w-0">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-50 truncate">{venue.name}</h2>
-            <p className="text-xs text-zinc-400 mt-0.5">{[venue.city, "Kerala"].filter(Boolean).join(", ")}</p>
+            <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
+                {venueTypeLabel(venue.venueType)}
+              </span>
+              {venue.city && <span className="text-xs text-zinc-400">{venue.city}, Kerala</span>}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -177,8 +189,29 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
       {/* Edit mode */}
       {editing && (
         <form onSubmit={handleSave} className="px-5 pb-5 space-y-4 border-t border-zinc-100 dark:border-zinc-800 pt-4">
+          {/* Venue type chips */}
           <div>
-            <label className={LABEL}>Convention center name *</label>
+            <label className={LABEL}>Type of space</label>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {VENUE_TYPE_OPTIONS.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setVenueType(t.key)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                    venueType === t.key
+                      ? "bg-amber-500 border-amber-500 text-white"
+                      : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300 dark:hover:border-amber-700"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={LABEL}>Name *</label>
             <input value={form.name} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} required minLength={2} placeholder="e.g. Zawaj Convention Centre" className={FIELD} />
           </div>
 

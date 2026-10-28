@@ -3,9 +3,11 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 
 const phoneRegex = /^(\+?91)?[6-9]\d{9}$/;
+const VENUE_TYPES = ["CONVENTION_CENTER", "AUDITORIUM", "BANQUET_HALL", "RESORT", "HOTEL_RESTAURANT"] as const;
 
 const schema = z.object({
   orgName: z.string().min(2, "Convention center name required"),
+  venueType: z.enum(VENUE_TYPES).optional(),
   phone: z.string().regex(phoneRegex, "Enter a valid Indian mobile number"),
   whatsappPhone: z.string().regex(phoneRegex, "Enter a valid Indian mobile number").optional().or(z.literal("")),
   email: z.string().email("Enter a valid email address").optional().or(z.literal("")),
@@ -22,7 +24,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
     }
 
-    const { orgName, phone, whatsappPhone, email, address, city, website } = parsed.data;
+    const { orgName, venueType, phone, whatsappPhone, email, address, city, website } = parsed.data;
 
     // Normalize phone to +91XXXXXXXXXX
     const normalizePhone = (p: string) => {
@@ -49,6 +51,7 @@ export async function POST(req: NextRequest) {
     await db.ownerApplication.create({
       data: {
         orgName,
+        venueType: venueType ?? "CONVENTION_CENTER",
         phone: normalized,
         whatsappPhone: normalizedWa,
         email: normalizedEmail,

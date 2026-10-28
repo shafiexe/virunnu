@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, CheckCircle } from "lucide-react";
+import { VENUE_TYPE_OPTIONS, type VenueTypeKey } from "@/lib/venue-types";
 
 const FIELD_CLS = "w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-300";
 const LABEL_CLS = "block text-xs font-medium text-zinc-500 mb-1";
 
 export default function ApplyVenuePage() {
   const router = useRouter();
+  const [venueType, setVenueType] = useState<VenueTypeKey>("CONVENTION_CENTER");
   const [form, setForm] = useState({ orgName: "", phone: "", whatsappPhone: "", email: "", address: "", city: "", website: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -26,7 +28,7 @@ export default function ApplyVenuePage() {
     const res = await fetch("/api/apply/venue", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...form, phone: form.phone.replace(/\D/g, "") }),
+      body: JSON.stringify({ ...form, venueType, phone: form.phone.replace(/\D/g, "") }),
     });
     const data = await res.json();
     setLoading(false);
@@ -75,8 +77,29 @@ export default function ApplyVenuePage() {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-6 space-y-4">
+          {/* Venue type chips */}
           <div>
-            <label className={LABEL_CLS}>Convention center name *</label>
+            <label className={LABEL_CLS}>Type of space *</label>
+            <div className="flex flex-wrap gap-2 mt-1">
+              {VENUE_TYPE_OPTIONS.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  onClick={() => setVenueType(t.key)}
+                  className={`px-3.5 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                    venueType === t.key
+                      ? "bg-amber-500 border-amber-500 text-white"
+                      : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300 dark:hover:border-amber-700"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={LABEL_CLS}>Name *</label>
             <input value={form.orgName} onChange={set("orgName")} placeholder="e.g. Zawaj Convention Centre" required minLength={2} className={FIELD_CLS} />
           </div>
 

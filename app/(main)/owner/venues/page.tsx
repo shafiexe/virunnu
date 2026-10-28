@@ -52,6 +52,7 @@ export default async function OwnerVenuesPage() {
                 venue={{
                   id: v.id,
                   name: v.name,
+                  venueType: v.venueType,
                   phone: v.phone,
                   whatsappPhone: v.whatsappPhone,
                   email: v.email,

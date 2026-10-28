@@ -33,6 +33,14 @@ enum OrgType {
   CATERING
 }
 
+enum VenueType {
+  CONVENTION_CENTER
+  AUDITORIUM
+  BANQUET_HALL
+  RESORT
+  HOTEL_RESTAURANT
+}
+
 model Organization {
   id               String               @id @default(cuid())
   name             String
@@ -91,6 +99,7 @@ model Venue {
   googleRating      Float?
   googleReviewCount Int?
   googleReviewUrl   String?
+  venueType         VenueType    @default(CONVENTION_CENTER)
   websiteUrl        String?
   phone             String?
   whatsappPhone     String?
@@ -335,6 +344,7 @@ enum ApplicationStatus {
 model OwnerApplication {
   id            String            @id @default(cuid())
   orgName       String
+  venueType     VenueType         @default(CONVENTION_CENTER)
   phone         String
   whatsappPhone String?
   email         String?

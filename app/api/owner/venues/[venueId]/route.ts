@@ -5,8 +5,11 @@ import { db } from "@/lib/db";
 
 type Params = { params: Promise<{ venueId: string }> };
 
+const VENUE_TYPES = ["CONVENTION_CENTER", "AUDITORIUM", "BANQUET_HALL", "RESORT", "HOTEL_RESTAURANT"] as const;
+
 const patchSchema = z.object({
   name: z.string().min(2).optional(),
+  venueType: z.enum(VENUE_TYPES).optional(),
   address: z.string().min(3).optional(),
   city: z.string().nullable().optional(),
   googleMapsUrl: z.string().nullable().optional(),

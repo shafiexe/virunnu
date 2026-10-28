@@ -1,0 +1,8 @@
+-- CreateEnum
+CREATE TYPE "VenueType" AS ENUM ('CONVENTION_CENTER', 'AUDITORIUM', 'BANQUET_HALL', 'RESORT', 'HOTEL', 'RESTAURANT');
+
+-- AlterTable
+ALTER TABLE "OwnerApplication" ADD COLUMN     "venueType" "VenueType" NOT NULL DEFAULT 'CONVENTION_CENTER';
+
+-- AlterTable
+ALTER TABLE "Venue" ADD COLUMN     "venueType" "VenueType" NOT NULL DEFAULT 'CONVENTION_CENTER';

@@ -55,7 +55,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   // Send notifications (non-blocking — failures don't roll back the approval)
   const notifyName = app.orgName;
   Promise.allSettled([
-    sendCredentialsMail({ to: app.email, name: notifyName, phone: app.phone, password: plainPassword, type: "owner" }),
+    app.email ? sendCredentialsMail({ to: app.email, name: notifyName, phone: app.phone, password: plainPassword, type: "owner" }) : Promise.resolve(),
     sendCredentialsWhatsApp({ to: app.phone, name: notifyName, phone: app.phone, password: plainPassword, type: "owner" }),
   ]).then((results) => {
     results.forEach((r, i) => {
