@@ -41,7 +41,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const f = (messages as Record<string, Record<string, string>>).footer ?? {};
 
   return (
-    <html lang={locale} className={`${geist.variable} h-full antialiased`}>
+    <html lang={locale} className={`${geist.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         {/* Anti-flash: apply saved theme class before first paint */}
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark')}else if(t==='light'){document.documentElement.classList.remove('dark')}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark')}}catch(e){}})();` }} />
