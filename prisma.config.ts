@@ -22,5 +22,7 @@ export default defineConfig({
   schema: "./prisma/schema.prisma",
   datasource: {
     url: process.env.DATABASE_URL!,
+    // Direct (non-pooler) URL used for migrations — avoids advisory lock timeout on Neon pooler
+    directUrl: process.env.DIRECT_DATABASE_URL,
   },
 });
