@@ -121,9 +121,15 @@ export async function POST(req: NextRequest) {
     });
 
     const text = message.content[0].type === "text" ? message.content[0].text : "";
-    const jsonStr = text.trim().replace(/^```json\n?/, "").replace(/\n?```$/, "").trim();
-    const extracted = JSON.parse(jsonStr);
 
+    // Robust JSON extraction: find the outermost { ... } block in the response
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      console.error("No JSON found in AI response:", text.slice(0, 500));
+      return NextResponse.json({ error: "Could not parse AI response. Please try again." }, { status: 500 });
+    }
+
+    const extracted = JSON.parse(jsonMatch[0]);
     return NextResponse.json({ extracted });
   } catch (err) {
     console.error("AI prefill error:", err);
@@ -131,6 +137,9 @@ export async function POST(req: NextRequest) {
     if (msg.includes("auth") || msg.includes("API key") || msg.includes("401")) {
       return NextResponse.json({ error: "AI API key is invalid or missing. Check server configuration." }, { status: 503 });
     }
-    return NextResponse.json({ error: "Failed to extract data. Please try again." }, { status: 500 });
+    if (msg.includes("model") || msg.includes("not found") || msg.includes("404")) {
+      return NextResponse.json({ error: `Model error: ${msg}` }, { status: 503 });
+    }
+    return NextResponse.json({ error: `Extraction failed: ${msg}` }, { status: 500 });
   }
 }
