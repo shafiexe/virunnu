@@ -18,11 +18,12 @@ interface Props {
   cancelReason?: string | null;
   discountPaise?: number | null;
   discountReason?: string | null;
+  onSuccess?: () => void;
 }
 
 type Panel = "cancel" | "restore" | "cash" | "adjust" | null;
 
-export function OwnerBookingActions({ bookingId, status, totalPaise, advancePaise, cancelReason, discountPaise, discountReason }: Props) {
+export function OwnerBookingActions({ bookingId, status, totalPaise, advancePaise, cancelReason, discountPaise, discountReason, onSuccess }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<DropdownPos>({ top: 0, right: 0 });
@@ -82,22 +83,24 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
     }
   }
 
+  function done() { setPanel(null); setOpen(false); router.refresh(); onSuccess?.(); }
+
   async function handleCancel() {
     if (!reason.trim()) { setError("Please enter a reason"); return; }
     const ok = await call(`/api/owner/bookings/${bookingId}`, "DELETE", { reason });
-    if (ok) { setPanel(null); setOpen(false); router.refresh(); }
+    if (ok) done();
   }
 
   async function handleRestore() {
     const ok = await call(`/api/owner/bookings/${bookingId}/restore`, "POST");
-    if (ok) { setPanel(null); setOpen(false); router.refresh(); }
+    if (ok) done();
   }
 
   async function handleCash() {
     const advanceP = cashFull ? 0 : Math.round(parseFloat(cashRupees || "0") * 100);
     const method = cashMethod === "CASH" ? "CASH" : "ONLINE";
     const ok = await call(`/api/owner/bookings/${bookingId}/cash`, "POST", { advancePaise: advanceP, method });
-    if (ok) { setPanel(null); setOpen(false); router.refresh(); }
+    if (ok) done();
   }
 
   async function handleDiscount() {
@@ -107,7 +110,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
       discountPaise: Math.round(rupees * 100),
       discountReason: discountReasonInput.trim() || null,
     });
-    if (ok) { setPanel(null); setOpen(false); router.refresh(); }
+    if (ok) done();
   }
 
   const canCancel = status !== "CANCELLED" && status !== "EXPIRED";

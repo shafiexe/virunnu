@@ -69,6 +69,7 @@ export async function POST(req: NextRequest) {
   if (phone) {
     const slot = booking.hallSlot;
     notifyBookingConfirmed({
+      orgId: booking.orgId,
       customerPhone: phone,
       customerEmail: booking.user?.email ?? booking.guestEmail,
       customerName: booking.user?.name ?? booking.guestName ?? "Customer",

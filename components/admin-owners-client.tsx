@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Building2, X, Check } from "lucide-react";
+import Link from "next/link";
+import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Building2, X, Check, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type OwnerUser = { id: string; name: string | null; phone: string };
@@ -97,14 +98,14 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Convention Owners</h1>
+          <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Convention Centers</h1>
           <p className="text-sm text-zinc-500 mt-0.5">{orgs.length} registered</p>
         </div>
         <button
           onClick={() => { setShowAdd(true); setEditId(null); setForm(EMPTY_FORM); setError(""); }}
           className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 transition-colors"
         >
-          <Plus className="h-4 w-4" /> Add owner
+          <Plus className="h-4 w-4" /> Add convention center
         </button>
       </div>
 
@@ -112,7 +113,7 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
       <input
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by venue name, owner name or phone…"
+        placeholder="Search by convention center name or phone…"
         className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
       />
 
@@ -120,12 +121,12 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
       {(showAdd || editId) && (
         <div className="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-amber-50/60 dark:bg-amber-950/20 p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">{showAdd ? "Add new owner" : "Edit owner"}</h2>
+            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">{showAdd ? "Add convention center" : "Edit convention center"}</h2>
             <button onClick={closeForm} className="p-1 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="space-y-1">
-              <span className="text-xs font-medium text-zinc-500">Owner name</span>
+              <span className="text-xs font-medium text-zinc-500">Contact name</span>
               <input
                 value={form.ownerName}
                 onChange={(e) => setForm((f) => ({ ...f, ownerName: e.target.value }))}
@@ -134,7 +135,7 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
               />
             </label>
             <label className="space-y-1">
-              <span className="text-xs font-medium text-zinc-500">Owner phone</span>
+              <span className="text-xs font-medium text-zinc-500">Contact phone</span>
               <input
                 value={form.ownerPhone}
                 onChange={(e) => setForm((f) => ({ ...f, ownerPhone: e.target.value }))}
@@ -205,7 +206,7 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
                     )}
                     {org.venues.length > 0 && (
                       <div className="text-xs text-zinc-400">
-                        {org.venues.length} venue{org.venues.length !== 1 ? "s" : ""}{liveVenues > 0 ? ` · ${liveVenues} live` : " · pending approval"}
+                        {liveVenues > 0 ? `${liveVenues} live` : "pending approval"}
                       </div>
                     )}
                   </div>
@@ -232,10 +233,17 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
                       >
                         {org.disabled ? <ToggleRight className="h-5 w-5" /> : <ToggleLeft className="h-5 w-5" />}
                       </button>
+                      <Link
+                        href={`/admin/owners/${org.id}`}
+                        className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                        title="Manage venue"
+                      >
+                        <Settings className="h-4 w-4" />
+                      </Link>
                       <button
                         onClick={() => openEdit(org)}
                         className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
-                        title="Edit"
+                        title="Edit owner"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>

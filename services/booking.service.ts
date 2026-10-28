@@ -118,7 +118,7 @@ export async function releaseExpiredHolds() {
         },
       },
       template: true,
-      hall: { include: { venue: { select: { name: true } } } },
+      hall: { include: { venue: { select: { name: true, orgId: true } } } },
     },
   });
 
@@ -149,6 +149,7 @@ export async function releaseExpiredHolds() {
         ? `${slot.template.name} (${slot.template.startTime}–${slot.template.endTime})`
         : "";
       notifyBookingExpired({
+        orgId: slot.hall.venue.orgId,
         customerPhone: phone,
         customerName: booking.user?.name ?? booking.guestName ?? "Customer",
         venueName: slot.hall.venue.name,

@@ -6,14 +6,15 @@ type Params = { params: Promise<{ hallId: string; templateId: string }> };
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") {
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { hallId, templateId } = await params;
-  const template = await db.slotTemplate.findFirst({
-    where: { id: templateId, hallId, hall: { venue: { orgId: session.orgId! } } },
-  });
+  const whereClause = session.role === "ADMIN"
+    ? { id: templateId, hallId }
+    : { id: templateId, hallId, hall: { venue: { orgId: session.orgId! } } };
+  const template = await db.slotTemplate.findFirst({ where: whereClause });
   if (!template) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   // Block if future confirmed bookings use this template's slots

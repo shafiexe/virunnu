@@ -34,10 +34,10 @@ enum OrgType {
 }
 
 model Organization {
-  id               String            @id @default(cuid())
+  id               String               @id @default(cuid())
   name             String
-  type             OrgType           @default(CONVENTION)
-  disabled         Boolean           @default(false)
+  type             OrgType              @default(CONVENTION)
+  disabled         Boolean              @default(false)
   users            User[]
   venues           Venue[]
   caterers         Caterer[]
@@ -45,8 +45,21 @@ model Organization {
   expenses         Expense[]
   employees        Employee[]
   expenseCategories ExpenseCategory[]
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+  messageTemplates OrgMessageTemplate[]
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+}
+
+model OrgMessageTemplate {
+  id        String       @id @default(cuid())
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  key       String
+  body      String       @db.Text
+  subject   String?
+  updatedAt DateTime     @updatedAt
+
+  @@unique([orgId, key])
 }
 
 model Facility {
@@ -80,6 +93,7 @@ model Venue {
   googleReviewUrl   String?
   websiteUrl        String?
   phone             String?
+  whatsappPhone     String?
   email             String?
   approved          Boolean      @default(false)
   orgId             String
@@ -319,13 +333,14 @@ enum ApplicationStatus {
 }
 
 model OwnerApplication {
-  id        String            @id @default(cuid())
-  orgName   String
-  phone     String
-  email     String
-  address   String
-  city      String
-  website   String?
+  id            String            @id @default(cuid())
+  orgName       String
+  phone         String
+  whatsappPhone String?
+  email         String?
+  address       String
+  city          String
+  website       String?
   status    ApplicationStatus @default(PENDING)
   notes     String?
   createdAt DateTime          @default(now())

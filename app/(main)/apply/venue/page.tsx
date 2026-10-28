@@ -9,7 +9,7 @@ const LABEL_CLS = "block text-xs font-medium text-zinc-500 mb-1";
 
 export default function ApplyVenuePage() {
   const router = useRouter();
-  const [form, setForm] = useState({ orgName: "", phone: "", email: "", address: "", city: "", website: "" });
+  const [form, setForm] = useState({ orgName: "", phone: "", whatsappPhone: "", email: "", address: "", city: "", website: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
@@ -45,7 +45,7 @@ export default function ApplyVenuePage() {
           <p className="text-zinc-500 text-sm leading-relaxed">
             Thank you for registering your convention center on Virunnu. Our team will review your application
             and get back to you within 1–2 business days. You will receive your login credentials via
-            WhatsApp and email once approved.
+            WhatsApp once approved.
           </p>
           <button
             onClick={() => router.push("/")}
@@ -98,9 +98,24 @@ export default function ApplyVenuePage() {
               </div>
             </div>
             <div>
-              <label className={LABEL_CLS}>Email address *</label>
-              <input type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" required className={FIELD_CLS} />
+              <label className={LABEL_CLS}>WhatsApp (if different)</label>
+              <div className="flex">
+                <span className="inline-flex items-center px-3 rounded-l-xl border border-r-0 border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 text-sm">+91</span>
+                <input
+                  value={form.whatsappPhone}
+                  onChange={(e) => setForm((f) => ({ ...f, whatsappPhone: e.target.value.replace(/\D/g, "").slice(0, 10) }))}
+                  placeholder="9876543210"
+                  inputMode="numeric"
+                  maxLength={10}
+                  className={`${FIELD_CLS} rounded-l-none`}
+                />
+              </div>
             </div>
+          </div>
+
+          <div>
+            <label className={LABEL_CLS}>Email address <span className="text-zinc-400">(optional — needed for email notifications)</span></label>
+            <input type="email" value={form.email} onChange={set("email")} placeholder="you@example.com" className={FIELD_CLS} />
           </div>
 
           <div>

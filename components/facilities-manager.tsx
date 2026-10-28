@@ -86,9 +86,10 @@ type EditForm = { description: string; amountRupees: string };
 interface Props {
   initial: Facility[];
   isEmpty: boolean;
+  orgId?: string;
 }
 
-export function FacilitiesManager({ initial }: Props) {
+export function FacilitiesManager({ initial, orgId }: Props) {
   const [facilities, setFacilities] = useState<Facility[]>(initial);
   const [activeTab, setActiveTab] = useState("ALL");
 
@@ -158,7 +159,7 @@ export function FacilitiesManager({ initial }: Props) {
     if (addType === "paid" && paise <= 0) { setAddError("Enter a price greater than 0"); return; }
     setAdding(true);
     setAddError("");
-    const payload = {
+    const payload: Record<string, unknown> = {
       name,
       description: addDescription.trim() || null,
       amountPaise: paise,
@@ -166,6 +167,7 @@ export function FacilitiesManager({ initial }: Props) {
       icon: selected?.icon ?? "stars",
       isCustom: !selected,
     };
+    if (orgId) payload.orgId = orgId;
     const res = await fetch("/api/owner/facilities", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

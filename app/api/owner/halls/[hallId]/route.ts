@@ -22,14 +22,23 @@ async function getOwnedHall(hallId: string, orgId: string) {
   });
 }
 
+async function getAdminHall(hallId: string) {
+  return db.hall.findFirst({
+    where: { id: hallId },
+    include: { venue: true },
+  });
+}
+
 export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") {
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { hallId } = await params;
-  const hall = await getOwnedHall(hallId, session.orgId!);
+  const hall = session.role === "ADMIN"
+    ? await getAdminHall(hallId)
+    : await getOwnedHall(hallId, session.orgId!);
   if (!hall) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json().catch(() => null);
@@ -58,12 +67,14 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") {
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { hallId } = await params;
-  const hall = await getOwnedHall(hallId, session.orgId!);
+  const hall = session.role === "ADMIN"
+    ? await getAdminHall(hallId)
+    : await getOwnedHall(hallId, session.orgId!);
   if (!hall) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   // Block deletion if there are confirmed future bookings

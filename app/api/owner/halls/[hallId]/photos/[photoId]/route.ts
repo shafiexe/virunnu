@@ -9,11 +9,11 @@ export async function DELETE(
   { params }: { params: Promise<{ hallId: string; photoId: string }> }
 ) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { hallId, photoId } = await params;
   const photo = await db.hallPhoto.findUnique({ where: { id: photoId }, include: { hall: { include: { venue: { select: { orgId: true } } } } } });
-  if (!photo || photo.hallId !== hallId || photo.hall.venue.orgId !== session.orgId) {
+  if (!photo || photo.hallId !== hallId || (session.role !== "ADMIN" && photo.hall.venue.orgId !== session.orgId)) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 

@@ -42,16 +42,16 @@ export async function GET(req: NextRequest) {
       LEFT JOIN "User" u ON u.id = b."userId"
       WHERE b."orgId" = $1 AND b.status != 'EXPIRED'
       ${searchClause}
-      GROUP BY cid, b."userId", b."guestPhone", b."guestName", u.name, u.phone
+      GROUP BY cid, b."userId", b."guestPhone"
     ) sub
   `;
 
   const dataSql = `
     SELECT
-      COALESCE(b."userId"::text, 'g_' || COALESCE(b."guestPhone", b.id)) as id,
+      COALESCE(b."userId"::text, 'g_' || COALESCE(b."guestPhone", MIN(b.id))) as id,
       b."userId" as user_id,
-      COALESCE(u.name, b."guestName") as name,
-      COALESCE(u.phone, b."guestPhone") as phone,
+      COALESCE(MAX(u.name), MAX(b."guestName")) as name,
+      COALESCE(MAX(u.phone), b."guestPhone") as phone,
       COUNT(*) as booking_count,
       COUNT(*) FILTER (WHERE b.status = 'CONFIRMED') as confirmed_count,
       COUNT(*) FILTER (WHERE b.status = 'CANCELLED') as cancelled_count,
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
     ${searchClause}
     GROUP BY
       COALESCE(b."userId"::text, 'g_' || COALESCE(b."guestPhone", b.id)),
-      b."userId", b."guestPhone", b."guestName", u.name, u.phone
+      b."userId", b."guestPhone"
     ORDER BY last_booking DESC
     LIMIT $${search ? 3 : 2} OFFSET $${search ? 4 : 3}
   `;

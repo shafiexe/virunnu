@@ -14,9 +14,10 @@ const updateSchema = z.object({
 
 async function guardOwner(facilityId: string) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") return { error: "Forbidden", status: 403 };
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) return { error: "Forbidden", status: 403 as const };
   const facility = await db.facility.findUnique({ where: { id: facilityId } });
-  if (!facility || facility.orgId !== session.orgId) return { error: "Not found", status: 404 };
+  if (!facility) return { error: "Not found", status: 404 as const };
+  if (session.role !== "ADMIN" && facility.orgId !== session.orgId) return { error: "Not found", status: 404 as const };
   return { session, facility };
 }
 

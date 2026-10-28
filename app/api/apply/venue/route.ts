@@ -2,10 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 
+const phoneRegex = /^(\+?91)?[6-9]\d{9}$/;
+
 const schema = z.object({
   orgName: z.string().min(2, "Convention center name required"),
-  phone: z.string().regex(/^(\+?91)?[6-9]\d{9}$/, "Enter a valid Indian mobile number"),
-  email: z.string().email("Enter a valid email address"),
+  phone: z.string().regex(phoneRegex, "Enter a valid Indian mobile number"),
+  whatsappPhone: z.string().regex(phoneRegex, "Enter a valid Indian mobile number").optional().or(z.literal("")),
+  email: z.string().email("Enter a valid email address").optional().or(z.literal("")),
   address: z.string().min(5, "Address required"),
   city: z.string().min(2, "City required"),
   website: z.string().url().optional().or(z.literal("")).or(z.undefined()),
@@ -19,15 +22,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
     }
 
-    const { orgName, phone, email, address, city, website } = parsed.data;
+    const { orgName, phone, whatsappPhone, email, address, city, website } = parsed.data;
 
     // Normalize phone to +91XXXXXXXXXX
-    const digits = phone.replace(/\D/g, "");
-    const normalized = digits.length === 12 ? `+${digits}` : digits.length === 11 ? `+${digits}` : `+91${digits}`;
+    const normalizePhone = (p: string) => {
+      const d = p.replace(/\D/g, "");
+      return d.length === 12 ? `+${d}` : d.length === 11 ? `+${d}` : `+91${d}`;
+    };
+    const normalized = normalizePhone(phone);
+    const normalizedWa = whatsappPhone ? normalizePhone(whatsappPhone) : null;
+    const normalizedEmail = email || null;
+
+    const orConditions: object[] = [{ phone: normalized }];
+    if (normalizedEmail) orConditions.push({ email: normalizedEmail });
 
     const existing = await db.ownerApplication.findFirst({
       where: {
-        OR: [{ phone: normalized }, { email }],
+        OR: orConditions,
         status: { in: ["PENDING" as const, "APPROVED" as const] },
       },
     });
@@ -39,7 +50,8 @@ export async function POST(req: NextRequest) {
       data: {
         orgName,
         phone: normalized,
-        email,
+        whatsappPhone: normalizedWa,
+        email: normalizedEmail,
         address,
         city,
         website: website || null,

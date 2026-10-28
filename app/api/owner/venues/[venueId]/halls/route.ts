@@ -19,12 +19,15 @@ type Params = { params: Promise<{ venueId: string }> };
 
 export async function POST(req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") {
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { venueId } = await params;
-  const venue = await db.venue.findFirst({ where: { id: venueId, orgId: session.orgId! } });
+  const whereClause = session.role === "ADMIN"
+    ? { id: venueId }
+    : { id: venueId, orgId: session.orgId! };
+  const venue = await db.venue.findFirst({ where: whereClause });
   if (!venue) return NextResponse.json({ error: "Venue not found" }, { status: 404 });
 
   const body = await req.json().catch(() => null);

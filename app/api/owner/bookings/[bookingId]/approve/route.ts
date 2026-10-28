@@ -50,6 +50,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ boo
   if (phone) {
     const slot = booking.hallSlot;
     notifyBookingApproved({
+      orgId: session.orgId!,
       customerPhone: phone,
       customerEmail: resolvedUser?.email ?? booking.guestEmail,
       customerName: resolvedUser?.name ?? booking.guestName ?? "Customer",

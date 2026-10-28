@@ -13,14 +13,15 @@ const schema = z.object({
 
 export async function POST(req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") {
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { hallId } = await params;
-  const hall = await db.hall.findFirst({
-    where: { id: hallId, venue: { orgId: session.orgId! } },
-  });
+  const whereClause = session.role === "ADMIN"
+    ? { id: hallId }
+    : { id: hallId, venue: { orgId: session.orgId! } };
+  const hall = await db.hall.findFirst({ where: whereClause });
   if (!hall) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json().catch(() => null);

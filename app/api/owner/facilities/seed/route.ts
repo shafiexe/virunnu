@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 
@@ -33,17 +33,26 @@ const DEFAULT_FACILITIES = [
   { name: "First Aid Station", description: "Qualified first-aid personnel on site", amountPaise: 200000, category: "SERVICES", icon: "🩺", sortOrder: 53 },
 ];
 
-export async function POST() {
+export async function POST(req: NextRequest) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const existing = await db.facility.count({ where: { orgId: session.orgId! } });
+  let orgId: string;
+  if (session.role === "ADMIN") {
+    const body = await req.json().catch(() => null);
+    if (!body?.orgId) return NextResponse.json({ error: "orgId required in body for ADMIN" }, { status: 400 });
+    orgId = body.orgId as string;
+  } else {
+    orgId = session.orgId!;
+  }
+
+  const existing = await db.facility.count({ where: { orgId } });
   if (existing > 0) return NextResponse.json({ error: "Facilities already exist" }, { status: 409 });
 
   await db.facility.createMany({
     data: DEFAULT_FACILITIES.map((f) => ({
       ...f,
-      orgId: session.orgId!,
+      orgId,
       isCustom: false,
     })),
   });

@@ -9,11 +9,11 @@ export async function POST(
   { params }: { params: Promise<{ hallId: string }> }
 ) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { hallId } = await params;
   const hall = await db.hall.findUnique({ where: { id: hallId }, include: { venue: { select: { orgId: true } } } });
-  if (!hall || hall.venue.orgId !== session.orgId) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!hall || (session.role !== "ADMIN" && hall.venue.orgId !== session.orgId)) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const contentType = req.headers.get("content-type") ?? "";
   const count = await db.hallPhoto.count({ where: { hallId } });

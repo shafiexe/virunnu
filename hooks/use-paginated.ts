@@ -29,6 +29,7 @@ export function usePaginated<T>(opts: Options) {
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const cache = useRef(new Map<string, PagedResult<T>>());
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -69,13 +70,19 @@ export function usePaginated<T>(opts: Options) {
     try {
       const params = new URLSearchParams({ page: String(p), pageSize: String(ps), search: s, ...ep });
       const res = await fetch(`${opts.url}?${params}`, { signal: ctrl.signal });
-      if (!res.ok) return;
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({})) as { error?: string };
+        setError(errData.error ?? `Error ${res.status}`);
+        return;
+      }
       const json: PagedResult<T> = await res.json();
+      setError(null);
       cache.current.set(key, json);
       applyResult(json);
       silentPrefetch(p + 1, ps, s, ep);
     } catch (e) {
       if ((e as { name?: string }).name === "AbortError") return;
+      setError("Network error. Check your connection.");
     } finally {
       setLoading(false);
     }
@@ -109,5 +116,17 @@ export function usePaginated<T>(opts: Options) {
     setPage(1);
   }, []);
 
-  return { data, total, totalPages, page, pageSize, loading, goToPage, changePageSize, onSearchChange, changeExtraParams };
+  const refresh = useCallback(() => {
+    // Drop the current page from cache so it re-fetches fresh data
+    setPage((p) => {
+      const key = cacheKey(p, pageSize, search, extraParams);
+      cache.current.delete(key);
+      return p;
+    });
+    setError(null);
+    // Trigger re-fetch by bumping a counter via extraParams trick — just re-run doFetch directly
+    doFetch(page, pageSize, search, extraParams);
+  }, [page, pageSize, search, extraParams, doFetch]);
+
+  return { data, total, totalPages, page, pageSize, loading, error, goToPage, changePageSize, onSearchChange, changeExtraParams, refresh };
 }

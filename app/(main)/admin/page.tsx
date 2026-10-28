@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { CheckCircle, XCircle, Clock, Building2, UtensilsCrossed, Users, FileText } from "lucide-react";
+import { CheckCircle, XCircle, Clock, Building2, UtensilsCrossed, FileText } from "lucide-react";
 
 export default async function AdminPage() {
   await connection();
@@ -27,20 +27,20 @@ export default async function AdminPage() {
     <div className="mx-auto max-w-5xl px-4 py-8 space-y-10">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Admin Panel</h1>
-        <p className="text-sm text-zinc-500 mt-1">Manage venues, caterers and owners.</p>
+        <p className="text-sm text-zinc-500 mt-1">Manage convention centers, caterers and sign-up requests.</p>
       </div>
 
       {/* Quick-nav cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Link
           href="/admin/owners"
           className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 hover:border-amber-300 dark:hover:border-amber-700 transition-colors group"
         >
           <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center mb-3">
-            <Users className="h-5 w-5 text-amber-600" />
+            <Building2 className="h-5 w-5 text-amber-600" />
           </div>
-          <div className="font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 transition-colors">Convention Owners</div>
-          <div className="text-sm text-zinc-500 mt-0.5">{ownerOrgs} registered</div>
+          <div className="font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 transition-colors">Convention Centers</div>
+          <div className="text-sm text-zinc-500 mt-0.5">{approvedVenues.length} live · {pendingVenues.length} pending approval</div>
         </Link>
         <Link
           href="/admin/caterers"
@@ -52,13 +52,6 @@ export default async function AdminPage() {
           <div className="font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 transition-colors">Caterers</div>
           <div className="text-sm text-zinc-500 mt-0.5">{approvedCaterers.length} live · {pendingCaterers.length} pending</div>
         </Link>
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center mb-3">
-            <Building2 className="h-5 w-5 text-emerald-600" />
-          </div>
-          <div className="font-semibold text-zinc-900 dark:text-zinc-50">Venues</div>
-          <div className="text-sm text-zinc-500 mt-0.5">{approvedVenues.length} live · {pendingVenues.length} pending</div>
-        </div>
         <Link
           href="/admin/applications"
           className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 hover:border-amber-300 dark:hover:border-amber-700 transition-colors group relative"
@@ -66,8 +59,8 @@ export default async function AdminPage() {
           <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/30 flex items-center justify-center mb-3">
             <FileText className="h-5 w-5 text-sky-600" />
           </div>
-          <div className="font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 transition-colors">Applications</div>
-          <div className="text-sm text-zinc-500 mt-0.5">{pendingOwnerApps + pendingCatererApps} pending</div>
+          <div className="font-semibold text-zinc-900 dark:text-zinc-50 group-hover:text-amber-600 transition-colors">New Requests</div>
+          <div className="text-sm text-zinc-500 mt-0.5">Sign-up requests · {pendingOwnerApps + pendingCatererApps} pending</div>
           {(pendingOwnerApps + pendingCatererApps) > 0 && (
             <span className="absolute top-3 right-3 w-5 h-5 rounded-full bg-amber-500 text-white text-[10px] font-bold flex items-center justify-center">
               {pendingOwnerApps + pendingCatererApps}
@@ -79,8 +72,8 @@ export default async function AdminPage() {
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "Pending venues", value: pendingVenues.length, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-950/30", icon: Clock },
-          { label: "Live venues", value: approvedVenues.length, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/30", icon: Building2 },
+          { label: "Pending approval", value: pendingVenues.length, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-950/30", icon: Clock },
+          { label: "Live centers", value: approvedVenues.length, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/30", icon: Building2 },
           { label: "Pending caterers", value: pendingCaterers.length, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-950/30", icon: Clock },
           { label: "Live caterers", value: approvedCaterers.length, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/30", icon: UtensilsCrossed },
         ].map((s) => (
@@ -96,15 +89,18 @@ export default async function AdminPage() {
         ))}
       </div>
 
-      {/* Pending venues */}
+      {/* Pending convention centers */}
       <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <div className="w-1 h-5 rounded-full bg-amber-500" />
-          <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Pending venues ({pendingVenues.length})</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-1 h-5 rounded-full bg-amber-500" />
+            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Pending convention centers ({pendingVenues.length})</h2>
+          </div>
+          <Link href="/admin/owners" className="text-xs font-semibold text-amber-600 hover:underline">Manage all →</Link>
         </div>
         {pendingVenues.length === 0 ? (
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 text-center text-zinc-400">
-            No pending venues.
+            No pending convention centers.
           </div>
         ) : (
           <div className="space-y-2">

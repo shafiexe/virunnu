@@ -141,6 +141,7 @@ export async function POST(req: NextRequest) {
 
     // Customer confirmation — non-blocking
     notifyBookingConfirmed({
+      orgId: result.orgId,
       customerPhone: guestPhone,
       customerEmail: guestEmail ?? null,
       customerName: guestName,

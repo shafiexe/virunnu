@@ -8,12 +8,14 @@ type Params = { params: Promise<{ venueId: string }> };
 const patchSchema = z.object({
   name: z.string().min(2).optional(),
   address: z.string().min(3).optional(),
+  city: z.string().nullable().optional(),
   googleMapsUrl: z.string().nullable().optional(),
   googleRating: z.number().min(0).max(5).nullable().optional(),
   googleReviewCount: z.number().int().min(0).nullable().optional(),
   googleReviewUrl: z.string().nullable().optional(),
   websiteUrl: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),
+  whatsappPhone: z.string().nullable().optional(),
   email: z.string().email().nullable().optional(),
   lat: z.number().optional(),
   lng: z.number().optional(),
@@ -21,12 +23,16 @@ const patchSchema = z.object({
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER") {
+  if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const { venueId } = await params;
-  const venue = await db.venue.findFirst({ where: { id: venueId, orgId: session.orgId! } });
+  // Owners can only edit their own org's venues; admins can edit any
+  const whereClause = session.role === "ADMIN"
+    ? { id: venueId }
+    : { id: venueId, orgId: session.orgId! };
+  const venue = await db.venue.findFirst({ where: whereClause });
   if (!venue) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json().catch(() => null);

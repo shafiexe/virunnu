@@ -120,6 +120,7 @@ export async function POST(req: NextRequest) {
         ? `${result.templateName} (${result.templateStart}–${result.templateEnd})`
         : "";
       notifyOwnerNewBooking({
+        orgId: result.orgId,
         ownerPhone: owner.phone,
         ownerEmail: owner.email,
         customerName: guestName,
