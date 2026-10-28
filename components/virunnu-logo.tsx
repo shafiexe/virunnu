@@ -13,9 +13,9 @@ type Props = {
 
 export function VirunnuLogo({
   fontSize = 26,
-  vColor = "#2A1505",
+  vColor = "currentColor",
   flameColor = "#D97706",
-  textColor = "#2A1505",
+  textColor = "currentColor",
 }: Props) {
   const markH = Math.round(fontSize * 1.1);
   const markW = Math.round(markH * 0.9);

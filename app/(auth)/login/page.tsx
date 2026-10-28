@@ -81,7 +81,7 @@ export default function LoginPage() {
       <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 bg-white dark:bg-zinc-950">
 
         {/* Mobile brand */}
-        <div className="lg:hidden mb-10 text-center space-y-1">
+        <div className="lg:hidden mb-10 text-center space-y-1 text-zinc-900 dark:text-zinc-50">
           <VirunnuLogo fontSize={34} />
           <p className="text-[11px] text-zinc-400 tracking-[0.18em] uppercase mt-2">
             Kerala's hall booking platform
@@ -94,7 +94,7 @@ export default function LoginPage() {
           <div className="w-8 h-1 rounded-full mb-7" style={{ background: "#D97706" }} />
 
           <div className="mb-8 space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight" style={{ color: "#2A1505" }}>
+            <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
               Welcome back
             </h1>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">

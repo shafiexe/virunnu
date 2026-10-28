@@ -5,6 +5,7 @@ import "../globals.css";
 import { NavUser } from "@/components/nav";
 import { LanguageToggle } from "@/components/language-toggle";
 import { BottomNav } from "@/components/bottom-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { getSession } from "@/lib/session";
 import { Analytics } from "@vercel/analytics/next";
 import { VirunnuLogo } from "@/components/virunnu-logo";
@@ -42,6 +43,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang={locale} className={`${geist.variable} h-full antialiased`}>
       <head>
+        {/* Anti-flash: apply saved theme class before first paint */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark')}else if(t==='light'){document.documentElement.classList.remove('dark')}else if(window.matchMedia('(prefers-color-scheme: dark)').matches){document.documentElement.classList.add('dark')}}catch(e){}})();` }} />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&family=Cormorant+Garamond:ital,wght@1,600&display=swap" />
       </head>
@@ -49,10 +52,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <NextIntlClientProvider locale={locale} messages={messages}>
           <header className="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-sm">
             <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between">
-              <a href="/" className="flex items-center">
+              <a href="/" className="flex items-center text-zinc-900 dark:text-zinc-50">
                 <VirunnuLogo fontSize={24} />
               </a>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
+                <ThemeToggle />
                 {showLanguageToggle && <LanguageToggle />}
                 <Suspense fallback={<div className="h-8 w-20 rounded-lg bg-zinc-100 animate-pulse" />}>
                   <NavUser />
@@ -68,7 +72,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <div className="mx-auto max-w-5xl px-4 space-y-6">
               {/* Top row: brand + social */}
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
-                <div className="space-y-1.5 text-center md:text-left">
+                <div className="space-y-1.5 text-center md:text-left text-zinc-900 dark:text-zinc-50">
                   <VirunnuLogo fontSize={22} />
                   <p className="text-xs text-zinc-400 max-w-xs leading-relaxed mx-auto md:mx-0">
                     Find and book halls for weddings, receptions &amp; celebrations across Kerala.
