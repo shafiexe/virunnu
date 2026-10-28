@@ -40,28 +40,41 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
   const [expanded, setExpanded] = useState(true);
   const [rejecting, setRejecting] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
-  const [pending, startTransition] = useTransition();
+  const [actingId, setActingId] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
   const router = useRouter();
 
   async function approve(bookingId: string) {
-    const res = await fetch(`/api/owner/bookings/${bookingId}/approve`, { method: "POST" });
-    if (res.ok) {
-      setBookings((b) => b.filter((x) => x.id !== bookingId));
-      startTransition(() => router.refresh());
+    if (actingId) return;
+    setActingId(bookingId);
+    try {
+      const res = await fetch(`/api/owner/bookings/${bookingId}/approve`, { method: "POST" });
+      if (res.ok) {
+        setBookings((b) => b.filter((x) => x.id !== bookingId));
+        startTransition(() => router.refresh());
+      }
+    } finally {
+      setActingId(null);
     }
   }
 
   async function reject(bookingId: string) {
-    const res = await fetch(`/api/owner/bookings/${bookingId}/reject`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reason: rejectReason || undefined }),
-    });
-    if (res.ok) {
-      setRejecting(null);
-      setRejectReason("");
-      setBookings((b) => b.filter((x) => x.id !== bookingId));
-      startTransition(() => router.refresh());
+    if (actingId) return;
+    setActingId(bookingId);
+    try {
+      const res = await fetch(`/api/owner/bookings/${bookingId}/reject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: rejectReason || undefined }),
+      });
+      if (res.ok) {
+        setRejecting(null);
+        setRejectReason("");
+        setBookings((b) => b.filter((x) => x.id !== bookingId));
+        startTransition(() => router.refresh());
+      }
+    } finally {
+      setActingId(null);
     }
   }
 
@@ -131,10 +144,10 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                     />
                     <button
                       onClick={() => reject(b.id)}
-                      disabled={pending}
+                      disabled={actingId === b.id}
                       className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors disabled:opacity-60"
                     >
-                      Confirm reject
+                      {actingId === b.id ? "Rejecting…" : "Confirm reject"}
                     </button>
                     <button
                       onClick={() => { setRejecting(null); setRejectReason(""); }}
@@ -147,15 +160,15 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                   <div className="flex gap-2">
                     <button
                       onClick={() => approve(b.id)}
-                      disabled={pending}
+                      disabled={!!actingId}
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-60"
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
-                      Approve
+                      {actingId === b.id ? "Approving…" : "Approve"}
                     </button>
                     <button
                       onClick={() => setRejecting(b.id)}
-                      disabled={pending}
+                      disabled={!!actingId}
                       className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors disabled:opacity-60"
                     >
                       <XCircle className="h-3.5 w-3.5" />

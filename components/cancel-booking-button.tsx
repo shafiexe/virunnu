@@ -11,19 +11,20 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
   const [reason, setReason] = useState("");
 
   async function cancel() {
+    if (loading) return;
     setLoading(true);
     setError("");
-    const res = await fetch(`/api/bookings/${bookingId}/cancel`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ reason: reason.trim() || undefined }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      setError("Could not cancel. Please try again.");
-      return;
+    try {
+      const res = await fetch(`/api/bookings/${bookingId}/cancel`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: reason.trim() || undefined }),
+      });
+      if (!res.ok) { setError("Could not cancel. Please try again."); return; }
+      router.refresh();
+    } finally {
+      setLoading(false);
     }
-    router.refresh();
   }
 
   if (confirming) {

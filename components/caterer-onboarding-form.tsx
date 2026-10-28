@@ -31,21 +31,21 @@ export function CatererOnboardingForm() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError("");
     setLoading(true);
-    const res = await fetch("/api/caterer/onboard", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Something went wrong.");
-      return;
+    try {
+      const res = await fetch("/api/caterer/onboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) { const data = await res.json().catch(() => ({})); setError(data.error ?? "Something went wrong."); return; }
+      router.push("/caterer/dashboard");
+      router.refresh();
+    } finally {
+      setLoading(false);
     }
-    router.push("/caterer/dashboard");
-    router.refresh();
   }
 
   return (

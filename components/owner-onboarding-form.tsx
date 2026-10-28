@@ -139,21 +139,19 @@ export function OwnerOnboardingForm() {
     if (s1.googleReviewUrl.trim()) body.googleReviewUrl = s1.googleReviewUrl.trim();
     if (s1.websiteUrl.trim()) body.websiteUrl = s1.websiteUrl.trim();
 
-    const res = await fetch("/api/owner/onboard", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    setLoading(false);
-    submitting.current = false;
-    if (!res.ok) {
-      setError("Something went wrong. Please check your inputs and try again.");
-      return;
+    try {
+      const res = await fetch("/api/owner/onboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) { setError("Something went wrong. Please check your inputs and try again."); return; }
+      router.push("/owner/dashboard");
+      router.refresh();
+    } finally {
+      setLoading(false);
+      submitting.current = false;
     }
-
-    router.push("/owner/dashboard");
-    router.refresh();
   }
 
   const hasPin = !!(s1.lat && s1.lng && parseFloat(s1.lat) !== 0 && parseFloat(s1.lng) !== 0);

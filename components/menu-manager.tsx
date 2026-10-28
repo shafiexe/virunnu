@@ -57,39 +57,40 @@ export function MenuManager({ initialItems }: { initialItems: MenuItem[] }) {
       setError("Name, category, and a valid price are required.");
       return;
     }
+    if (loading) return;
     setLoading(true);
-    const res = await fetch("/api/caterer/menu", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: form.name,
-        category: form.category,
-        description: form.description || undefined,
-        priceRupees: price,
-        isVeg: form.isVeg,
-        isSpecial: form.isSpecial,
-      }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      const data = await res.json().catch(() => ({}));
-      setError(data.error ?? "Something went wrong.");
-      return;
+    try {
+      const res = await fetch("/api/caterer/menu", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          category: form.category,
+          description: form.description || undefined,
+          priceRupees: price,
+          isVeg: form.isVeg,
+          isSpecial: form.isSpecial,
+        }),
+      });
+      if (!res.ok) { const data = await res.json().catch(() => ({})); setError(data.error ?? "Something went wrong."); return; }
+      const data = await res.json();
+      setItems((prev) => [...prev, data.item]);
+      setForm(EMPTY_FORM);
+      setShowForm(false);
+      router.refresh();
+    } finally {
+      setLoading(false);
     }
-    const data = await res.json();
-    setItems((prev) => [...prev, data.item]);
-    setForm(EMPTY_FORM);
-    setShowForm(false);
-    router.refresh();
   }
 
   async function deleteItem(id: string) {
+    if (deletingId) return;
     setDeletingId(id);
-    const res = await fetch(`/api/caterer/menu/${id}`, { method: "DELETE" });
-    setDeletingId(null);
-    if (res.ok) {
-      setItems((prev) => prev.filter((i) => i.id !== id));
-      router.refresh();
+    try {
+      const res = await fetch(`/api/caterer/menu/${id}`, { method: "DELETE" });
+      if (res.ok) { setItems((prev) => prev.filter((i) => i.id !== id)); router.refresh(); }
+    } finally {
+      setDeletingId(null);
     }
   }
 

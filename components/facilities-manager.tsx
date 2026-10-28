@@ -113,6 +113,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -168,16 +169,19 @@ export function FacilitiesManager({ initial, orgId }: Props) {
       isCustom: !selected,
     };
     if (orgId) payload.orgId = orgId;
-    const res = await fetch("/api/owner/facilities", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    setAdding(false);
-    if (!res.ok) { const d = await res.json(); setAddError(d.error ?? "Failed"); return; }
-    const created = await res.json();
-    setFacilities((prev) => [...prev, created]);
-    setShowAdd(false);
+    try {
+      const res = await fetch("/api/owner/facilities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) { const d = await res.json(); setAddError(d.error ?? "Failed"); return; }
+      const created = await res.json();
+      setFacilities((prev) => [...prev, created]);
+      setShowAdd(false);
+    } finally {
+      setAdding(false);
+    }
   }
 
   function openEdit(f: Facility) {
@@ -192,40 +196,47 @@ export function FacilitiesManager({ initial, orgId }: Props) {
     if (isNaN(amount) || amount < 0) { setEditError("Enter a valid amount (0 or more)"); return; }
     setEditLoading(true);
     setEditError("");
-    const res = await fetch(`/api/owner/facilities/${editTarget.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        description: editForm.description.trim() || null,
-        amountPaise: Math.round(amount * 100),
-      }),
-    });
-    setEditLoading(false);
-    if (!res.ok) { const d = await res.json(); setEditError(d.error ?? "Failed"); return; }
-    const updated = await res.json();
-    setFacilities((prev) => prev.map((f) => f.id === updated.id ? updated : f));
-    setEditTarget(null);
+    try {
+      const res = await fetch(`/api/owner/facilities/${editTarget.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description: editForm.description.trim() || null,
+          amountPaise: Math.round(amount * 100),
+        }),
+      });
+      if (!res.ok) { const d = await res.json(); setEditError(d.error ?? "Failed"); return; }
+      const updated = await res.json();
+      setFacilities((prev) => prev.map((f) => f.id === updated.id ? updated : f));
+      setEditTarget(null);
+    } finally {
+      setEditLoading(false);
+    }
   }
 
   async function handleToggle(f: Facility) {
-    const res = await fetch(`/api/owner/facilities/${f.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isActive: !f.isActive }),
-    });
-    if (res.ok) {
-      setFacilities((prev) => prev.map((x) => x.id === f.id ? { ...x, isActive: !x.isActive } : x));
+    if (togglingId) return;
+    setTogglingId(f.id);
+    try {
+      const res = await fetch(`/api/owner/facilities/${f.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !f.isActive }),
+      });
+      if (res.ok) setFacilities((prev) => prev.map((x) => x.id === f.id ? { ...x, isActive: !x.isActive } : x));
+    } finally {
+      setTogglingId(null);
     }
   }
 
   async function handleDelete() {
     if (!deleteId) return;
     setDeleteLoading(true);
-    const res = await fetch(`/api/owner/facilities/${deleteId}`, { method: "DELETE" });
-    setDeleteLoading(false);
-    if (res.ok) {
-      setFacilities((prev) => prev.filter((f) => f.id !== deleteId));
-      setDeleteId(null);
+    try {
+      const res = await fetch(`/api/owner/facilities/${deleteId}`, { method: "DELETE" });
+      if (res.ok) { setFacilities((prev) => prev.filter((f) => f.id !== deleteId)); setDeleteId(null); }
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
@@ -322,7 +333,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                         )}
                       </div>
                       <div className="flex items-center gap-0.5 shrink-0">
-                        <button onClick={() => handleToggle(f)} title={f.isActive ? "Deactivate" : "Activate"}>
+                        <button onClick={() => handleToggle(f)} disabled={togglingId === f.id} title={f.isActive ? "Deactivate" : "Activate"}>
                           {f.isActive
                             ? <ToggleRight className="h-4 w-4 text-emerald-500" />
                             : <ToggleLeft className="h-4 w-4 text-zinc-400" />}
@@ -376,7 +387,8 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                       </div>
                       <button
                         onClick={() => handleToggle(f)}
-                        className="shrink-0 mt-0.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+                        disabled={togglingId === f.id}
+                        className="shrink-0 mt-0.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors disabled:opacity-40"
                         title={f.isActive ? "Deactivate" : "Activate"}
                       >
                         {f.isActive

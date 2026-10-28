@@ -55,28 +55,24 @@ function DiscountEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (
   const [error, setError] = useState("");
 
   async function save() {
+    if (loading) return;
     const rupees = parseFloat(amount);
     if (isNaN(rupees) || rupees < 0) { setError("Enter a valid amount (0 to remove)"); return; }
     setLoading(true);
     setError("");
-    const res = await fetch(`/api/owner/bookings/${booking.id}/discount`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ discountPaise: Math.round(rupees * 100), discountReason: reason.trim() || null }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      const d = await res.json().catch(() => ({}));
-      setError(d.error ?? "Failed to save discount");
-      return;
+    try {
+      const res = await fetch(`/api/owner/bookings/${booking.id}/discount`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ discountPaise: Math.round(rupees * 100), discountReason: reason.trim() || null }),
+      });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error ?? "Failed to save discount"); return; }
+      const data = await res.json();
+      onUpdated({ ...booking, discountPaise: data.booking.discountPaise, discountReason: data.booking.discountReason });
+      setOpen(false);
+    } finally {
+      setLoading(false);
     }
-    const data = await res.json();
-    onUpdated({
-      ...booking,
-      discountPaise: data.booking.discountPaise,
-      discountReason: data.booking.discountReason,
-    });
-    setOpen(false);
   }
 
   if (!open) {
@@ -143,19 +139,23 @@ function RefundEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (b:
   const [error, setError] = useState("");
 
   async function save() {
+    if (loading) return;
     const rupees = parseFloat(amount || "0");
     if (isNaN(rupees) || rupees < 0) { setError("Enter a valid amount"); return; }
     setLoading(true); setError("");
-    const res = await fetch(`/api/owner/bookings/${booking.id}/refund`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refundPaise: Math.round(rupees * 100), refundNote: note.trim() || null }),
-    });
-    setLoading(false);
-    if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error ?? "Failed to save"); return; }
-    const data = await res.json();
-    onUpdated({ ...booking, refundPaise: data.booking.refundPaise, refundNote: data.booking.refundNote });
-    setOpen(false);
+    try {
+      const res = await fetch(`/api/owner/bookings/${booking.id}/refund`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refundPaise: Math.round(rupees * 100), refundNote: note.trim() || null }),
+      });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error ?? "Failed to save"); return; }
+      const data = await res.json();
+      onUpdated({ ...booking, refundPaise: data.booking.refundPaise, refundNote: data.booking.refundNote });
+      setOpen(false);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (!open) {
@@ -210,20 +210,20 @@ function CashPaymentEditor({ booking }: { booking: Booking }) {
     const amountPaise = Math.round(rupees * 100);
     const isFull = amountPaise >= remaining;
     const advancePaise = isFull ? 0 : amountPaise;
+    if (loading) return;
     setLoading(true);
     setError("");
-    const res = await fetch(`/api/owner/bookings/${booking.id}/cash`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ advancePaise, method: method === "CASH" ? "CASH" : "ONLINE" }),
-    });
-    setLoading(false);
-    if (!res.ok) {
-      const d = await res.json().catch(() => ({}));
-      setError(d.error ?? "Failed to record payment");
-      return;
+    try {
+      const res = await fetch(`/api/owner/bookings/${booking.id}/cash`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ advancePaise, method: method === "CASH" ? "CASH" : "ONLINE" }),
+      });
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error ?? "Failed to record payment"); return; }
+      window.location.reload();
+    } finally {
+      setLoading(false);
     }
-    window.location.reload();
   }
 
   if (!open) {

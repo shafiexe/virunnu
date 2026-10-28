@@ -116,7 +116,7 @@ function AppCard({
             {!showReject ? (
               <>
                 <button
-                  onClick={async () => { setLoadingApprove(true); await onApprove(); setLoadingApprove(false); }}
+                  onClick={async () => { if (loadingApprove) return; setLoadingApprove(true); try { await onApprove(); } finally { setLoadingApprove(false); } }}
                   disabled={loadingApprove}
                   className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60"
                 >
@@ -139,7 +139,7 @@ function AppCard({
                   className="text-xs border border-zinc-200 dark:border-zinc-700 rounded-lg px-2 py-1.5 w-40 focus:outline-none focus:ring-1 focus:ring-red-300"
                 />
                 <button
-                  onClick={async () => { setLoadingReject(true); await onReject(rejectReason); setLoadingReject(false); }}
+                  onClick={async () => { if (loadingReject) return; setLoadingReject(true); try { await onReject(rejectReason); } finally { setLoadingReject(false); } }}
                   disabled={loadingReject}
                   className="text-xs font-bold text-red-600 hover:underline disabled:opacity-60"
                 >

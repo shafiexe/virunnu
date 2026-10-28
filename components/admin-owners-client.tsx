@@ -20,6 +20,9 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [formLoading, setFormLoading] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [deletingActing, setDeletingActing] = useState(false);
   const [, startTransition] = useTransition();
   const router = useRouter();
 
@@ -47,49 +50,63 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
   }
 
   async function handleAdd() {
+    if (formLoading) return;
     setError("");
-    const res = await fetch("/api/admin/owners", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      // orgName derived from ownerName on the backend
-      body: JSON.stringify({ orgName: form.ownerName, ownerName: form.ownerName, ownerPhone: form.ownerPhone }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error ?? "Failed"); return; }
-    closeForm();
-    window.location.reload();
+    setFormLoading(true);
+    try {
+      const res = await fetch("/api/admin/owners", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orgName: form.ownerName, ownerName: form.ownerName, ownerPhone: form.ownerPhone }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? "Failed"); return; }
+      closeForm();
+      window.location.reload();
+    } finally {
+      setFormLoading(false);
+    }
   }
 
   async function handleEdit() {
-    if (!editId) return;
+    if (!editId || formLoading) return;
     setError("");
-    const res = await fetch(`/api/admin/owners/${editId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ownerName: form.ownerName || undefined,
-        ownerPhone: form.ownerPhone || undefined,
-      }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error ?? "Failed"); return; }
-    closeForm();
-    window.location.reload();
+    setFormLoading(true);
+    try {
+      const res = await fetch(`/api/admin/owners/${editId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ownerName: form.ownerName || undefined, ownerPhone: form.ownerPhone || undefined }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? "Failed"); return; }
+      closeForm();
+      window.location.reload();
+    } finally {
+      setFormLoading(false);
+    }
   }
 
   async function handleToggle(orgId: string) {
-    const res = await fetch(`/api/admin/owners/${orgId}/toggle`, { method: "POST" });
-    const data = await res.json();
-    if (res.ok) {
-      setOrgs((prev) => prev.map((o) => o.id === orgId ? { ...o, disabled: data.disabled } : o));
+    if (togglingId) return;
+    setTogglingId(orgId);
+    try {
+      const res = await fetch(`/api/admin/owners/${orgId}/toggle`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) setOrgs((prev) => prev.map((o) => o.id === orgId ? { ...o, disabled: data.disabled } : o));
+    } finally {
+      setTogglingId(null);
     }
   }
 
   async function handleDelete(orgId: string) {
-    const res = await fetch(`/api/admin/owners/${orgId}`, { method: "DELETE" });
-    if (res.ok) {
-      setOrgs((prev) => prev.filter((o) => o.id !== orgId));
-      setDeleteId(null);
+    if (deletingActing) return;
+    setDeletingActing(true);
+    try {
+      const res = await fetch(`/api/admin/owners/${orgId}`, { method: "DELETE" });
+      if (res.ok) { setOrgs((prev) => prev.filter((o) => o.id !== orgId)); setDeleteId(null); }
+    } finally {
+      setDeletingActing(false);
     }
   }
 
@@ -148,10 +165,11 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
           <div className="flex gap-2">
             <button
               onClick={showAdd ? handleAdd : handleEdit}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors"
+              disabled={formLoading}
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-60"
             >
               <Check className="h-3.5 w-3.5" />
-              {showAdd ? "Create" : "Save changes"}
+              {formLoading ? "Saving…" : showAdd ? "Create" : "Save changes"}
             </button>
             <button onClick={closeForm} className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-500 hover:text-zinc-700 transition-colors">
               Cancel
@@ -216,15 +234,16 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
                   {isDeleting ? (
                     <div className="flex items-center gap-1.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl px-3 py-1.5">
                       <span className="text-xs text-red-700 dark:text-red-400 font-medium">Delete?</span>
-                      <button onClick={() => handleDelete(org.id)} className="text-xs font-bold text-red-600 hover:underline">Yes</button>
+                      <button onClick={() => handleDelete(org.id)} disabled={deletingActing} className="text-xs font-bold text-red-600 hover:underline disabled:opacity-50">Yes</button>
                       <button onClick={() => setDeleteId(null)} className="text-xs text-zinc-400 hover:text-zinc-600">No</button>
                     </div>
                   ) : (
                     <>
                       <button
                         onClick={() => handleToggle(org.id)}
+                        disabled={togglingId === org.id}
                         className={cn(
-                          "p-1.5 rounded-lg transition-colors",
+                          "p-1.5 rounded-lg transition-colors disabled:opacity-40",
                           org.disabled
                             ? "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
                             : "text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"

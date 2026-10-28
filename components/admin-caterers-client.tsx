@@ -27,6 +27,10 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
   const [form, setForm] = useState(EMPTY_FORM);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [formLoading, setFormLoading] = useState(false);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [approvingId, setApprovingId] = useState<string | null>(null);
+  const [deletingActing, setDeletingActing] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const filtered = caterers.filter((c) => {
@@ -59,52 +63,74 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
   }
 
   async function handleAdd() {
+    if (formLoading) return;
     setError("");
-    const res = await fetch("/api/admin/caterers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formToPayload()),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error ?? "Failed"); return; }
-    closeForm();
-    window.location.reload();
+    setFormLoading(true);
+    try {
+      const res = await fetch("/api/admin/caterers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formToPayload()),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? "Failed"); return; }
+      closeForm();
+      window.location.reload();
+    } finally {
+      setFormLoading(false);
+    }
   }
 
   async function handleEdit() {
-    if (!editId) return;
+    if (!editId || formLoading) return;
     setError("");
-    const res = await fetch(`/api/admin/caterers/${editId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formToPayload()),
-    });
-    const data = await res.json();
-    if (!res.ok) { setError(data.error ?? "Failed"); return; }
-    closeForm();
-    window.location.reload();
+    setFormLoading(true);
+    try {
+      const res = await fetch(`/api/admin/caterers/${editId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formToPayload()),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? "Failed"); return; }
+      closeForm();
+      window.location.reload();
+    } finally {
+      setFormLoading(false);
+    }
   }
 
   async function handleToggle(catererId: string) {
-    const res = await fetch(`/api/admin/caterers/${catererId}/toggle`, { method: "POST" });
-    const data = await res.json();
-    if (res.ok) {
-      setCaterers((prev) => prev.map((c) => c.id === catererId ? { ...c, disabled: data.disabled } : c));
+    if (togglingId) return;
+    setTogglingId(catererId);
+    try {
+      const res = await fetch(`/api/admin/caterers/${catererId}/toggle`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) setCaterers((prev) => prev.map((c) => c.id === catererId ? { ...c, disabled: data.disabled } : c));
+    } finally {
+      setTogglingId(null);
     }
   }
 
   async function handleApprove(catererId: string) {
-    const res = await fetch(`/api/admin/caterers/${catererId}/approve`, { method: "POST" });
-    if (res.ok) {
-      setCaterers((prev) => prev.map((c) => c.id === catererId ? { ...c, approved: true } : c));
+    if (approvingId) return;
+    setApprovingId(catererId);
+    try {
+      const res = await fetch(`/api/admin/caterers/${catererId}/approve`, { method: "POST" });
+      if (res.ok) setCaterers((prev) => prev.map((c) => c.id === catererId ? { ...c, approved: true } : c));
+    } finally {
+      setApprovingId(null);
     }
   }
 
   async function handleDelete(catererId: string) {
-    const res = await fetch(`/api/admin/caterers/${catererId}`, { method: "DELETE" });
-    if (res.ok) {
-      setCaterers((prev) => prev.filter((c) => c.id !== catererId));
-      setDeleteId(null);
+    if (deletingActing) return;
+    setDeletingActing(true);
+    try {
+      const res = await fetch(`/api/admin/caterers/${catererId}`, { method: "DELETE" });
+      if (res.ok) { setCaterers((prev) => prev.filter((c) => c.id !== catererId)); setDeleteId(null); }
+    } finally {
+      setDeletingActing(false);
     }
   }
 
@@ -170,11 +196,11 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
           <div className="flex gap-2">
             <button
               onClick={showAdd ? handleAdd : handleEdit}
-              disabled={pending}
+              disabled={formLoading}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-60"
             >
               <Check className="h-3.5 w-3.5" />
-              {showAdd ? "Create" : "Save changes"}
+              {formLoading ? "Saving…" : showAdd ? "Create" : "Save changes"}
             </button>
             <button onClick={closeForm} className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-500 hover:text-zinc-700 transition-colors">
               Cancel
@@ -225,7 +251,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                   {isDeleting ? (
                     <div className="flex items-center gap-1.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl px-3 py-1.5">
                       <span className="text-xs text-red-700 dark:text-red-400 font-medium">Delete?</span>
-                      <button onClick={() => handleDelete(c.id)} className="text-xs font-bold text-red-600 hover:underline">Yes</button>
+                      <button onClick={() => handleDelete(c.id)} disabled={deletingActing} className="text-xs font-bold text-red-600 hover:underline disabled:opacity-50">Yes</button>
                       <button onClick={() => setDeleteId(null)} className="text-xs text-zinc-400 hover:text-zinc-600">No</button>
                     </div>
                   ) : (
@@ -233,7 +259,8 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                       {!c.approved && (
                         <button
                           onClick={() => handleApprove(c.id)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 px-2 py-1.5 rounded-lg transition-colors"
+                          disabled={!!approvingId}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 px-2 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                           title="Approve"
                         >
                           <CheckCircle className="h-3.5 w-3.5" /> Approve
@@ -241,8 +268,9 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                       )}
                       <button
                         onClick={() => handleToggle(c.id)}
+                        disabled={togglingId === c.id}
                         className={cn(
-                          "p-1.5 rounded-lg transition-colors",
+                          "p-1.5 rounded-lg transition-colors disabled:opacity-40",
                           c.disabled
                             ? "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
                             : "text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"

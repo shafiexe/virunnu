@@ -35,35 +35,40 @@ export function LoginForm() {
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    if (loading) return;
     setError("");
     setLoading(true);
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, password }),
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (!res.ok) {
-      setError(data.error ?? "Invalid phone number or password");
-      return;
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.error ?? "Invalid phone number or password"); return; }
+      redirectByRole(data.role);
+    } finally {
+      setLoading(false);
     }
-    redirectByRole(data.role);
   }
 
   async function handleForgot(e: React.FormEvent) {
     e.preventDefault();
+    if (fpLoading) return;
     setFpError("");
     setFpLoading(true);
-    const res = await fetch("/api/auth/forgot-password", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: fpPhone }),
-    });
-    const data = await res.json().catch(() => ({}));
-    setFpLoading(false);
-    if (data.devPassword) setDevPassword(data.devPassword);
-    setStep("forgot-sent");
+    try {
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: fpPhone }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.devPassword) setDevPassword(data.devPassword);
+      setStep("forgot-sent");
+    } finally {
+      setFpLoading(false);
+    }
   }
 
   // ── Forgot password sent ──────────────────────────────────
