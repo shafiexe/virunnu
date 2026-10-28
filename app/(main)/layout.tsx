@@ -98,7 +98,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               {/* Divider */}
               <div className="border-t border-zinc-100 dark:border-zinc-800" />
               {/* Bottom row: copyright + legal */}
-              <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-400">
+              <div className="flex flex-wrap items-center justify-center md:justify-between gap-3 text-xs text-zinc-400">
                 <span>{f.copyright ?? "© 2025 Virunnu Technologies, Kerala"}</span>
                 <div className="flex items-center gap-4">
                   <a href="/terms" className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">{f.terms ?? "Terms of Service"}</a>
