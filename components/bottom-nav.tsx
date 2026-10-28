@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CalendarCheck, Building2, LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2 } from "lucide-react";
+import { Home, CalendarCheck, Building2, LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Session = { role: string } | null;
@@ -41,10 +41,16 @@ export function BottomNav() {
           { href: "/", icon: Home, label: "Home" },
           { href: "/admin", icon: Shield, label: "Admin" },
         ]
-      : [
+      : role === "CUSTOMER"
+      ? [
           { href: "/", icon: Home, label: "Home" },
           { href: "/bookings", icon: CalendarCheck, label: "Bookings" },
-          { href: "/owner/onboarding", icon: Building2, label: "List venue" },
+          { href: "/track", icon: Search, label: "Track" },
+        ]
+      : [
+          { href: "/", icon: Home, label: "Home" },
+          { href: "/track", icon: Search, label: "Track" },
+          { href: "/apply/venue", icon: Building2, label: "List venue" },
         ];
 
   return (
