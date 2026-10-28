@@ -269,6 +269,10 @@ function whatsappClient() {
   return require("twilio")(sid, token);
 }
 
+export async function sendRawWhatsApp(to: string, body: string) {
+  return sendWhatsApp(to, body);
+}
+
 async function sendWhatsApp(to: string, body: string) {
   const client = whatsappClient();
   if (!client) { console.warn("[WhatsApp] Not configured — skipping"); return; }

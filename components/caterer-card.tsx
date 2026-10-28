@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Phone, MapPin, UtensilsCrossed } from "lucide-react";
 
 type Caterer = {
@@ -14,9 +15,12 @@ export function CatererCard({ caterer }: { caterer: Caterer }) {
   const waLink = `https://wa.me/${caterer.phone.replace(/\D/g, "")}`;
 
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+    <div className="relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+      {/* Full-card link — sits behind the action buttons */}
+      <Link href={`/caterers/${caterer.id}`} className="absolute inset-0 z-0" aria-label={`View ${caterer.name} profile`} />
+
       {/* Card header with icon */}
-      <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 px-5 pt-5 pb-4 border-b border-zinc-100 dark:border-zinc-800">
+      <div className="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/20 dark:to-amber-950/20 px-5 pt-5 pb-4 border-b border-zinc-100 dark:border-zinc-800 relative z-10 pointer-events-none">
         <div className="flex items-start justify-between gap-2">
           <div>
             <div className="font-bold text-zinc-900 dark:text-zinc-50">{caterer.name}</div>
@@ -31,12 +35,12 @@ export function CatererCard({ caterer }: { caterer: Caterer }) {
         </div>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-3 relative z-10">
         {caterer.description && (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">{caterer.description}</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2 pointer-events-none">{caterer.description}</p>
         )}
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5 pointer-events-none">
           {caterer.cuisines.map((c) => (
             <span key={c} className="text-xs px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 font-medium">
               {c}

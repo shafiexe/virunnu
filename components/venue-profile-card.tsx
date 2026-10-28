@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Pencil, X, Loader2, CheckCircle2, Phone, Mail, MapPin, Globe, MessageCircle, ChevronDown, ChevronUp, Star } from "lucide-react";
+import { Building2, Pencil, X, Loader2, CheckCircle2, Phone, Mail, MapPin, Globe, MessageCircle, ChevronDown, ChevronUp, Star, Sparkles } from "lucide-react";
 import { VENUE_TYPE_OPTIONS, venueTypeLabel, type VenueTypeKey } from "@/lib/venue-types";
 
 interface VenueProfile {
@@ -115,6 +115,59 @@ export function VenueProfileCard({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+
+  // AI prefill state
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiUrl, setAiUrl] = useState("");
+  const [aiText, setAiText] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState("");
+  const [aiAmenities, setAiAmenities] = useState<string[]>([]);
+
+  async function handleAiPrefill() {
+    if (!aiUrl.trim() && !aiText.trim()) {
+      setAiError("Enter a URL or paste some text to extract from");
+      return;
+    }
+    setAiLoading(true);
+    setAiError("");
+    setAiAmenities([]);
+    try {
+      const res = await fetch("/api/owner/ai-prefill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: aiUrl.trim(), rawText: aiText.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setAiError(data.error ?? "Failed to extract"); return; }
+      const e = data.extracted ?? {};
+
+      setForm((f) => ({
+        ...f,
+        name: e.name || f.name,
+        phone: e.phone ? e.phone.replace(/^\+91/, "").replace(/\D/g, "").slice(0, 10) : f.phone,
+        whatsappPhone: e.whatsappPhone ? e.whatsappPhone.replace(/^\+91/, "").replace(/\D/g, "").slice(0, 10) : f.whatsappPhone,
+        email: e.email || f.email,
+        address: e.address || f.address,
+        city: e.city || f.city,
+        websiteUrl: e.websiteUrl || f.websiteUrl,
+        instagramUrl: e.instagramUrl || f.instagramUrl,
+        facebookUrl: e.facebookUrl || f.facebookUrl,
+        googleMapsUrl: e.googleMapsUrl || f.googleMapsUrl,
+      }));
+
+      if (e.venueType) {
+        const vt = e.venueType.toUpperCase().replace(/\s+/g, "_") as VenueTypeKey;
+        if (VENUE_TYPE_OPTIONS.some((o) => o.key === vt)) setVenueType(vt);
+      }
+
+      if (e.amenities?.length) setAiAmenities(e.amenities);
+    } catch {
+      setAiError("Something went wrong. Try again or paste the text manually.");
+    } finally {
+      setAiLoading(false);
+    }
+  }
 
   function startEdit() {
     setVenueType((venue.venueType as VenueTypeKey) ?? "CONVENTION_CENTER");
@@ -299,6 +352,67 @@ export function VenueProfileCard({
       {/* Edit mode */}
       {editing && (
         <form onSubmit={handleSave} className="px-5 pb-5 space-y-4 border-t border-zinc-100 dark:border-zinc-800 pt-4">
+          {/* AI Prefill */}
+          <div className="rounded-xl border border-purple-200 dark:border-purple-800/50 bg-purple-50 dark:bg-purple-950/20 overflow-hidden">
+            <button
+              type="button"
+              onClick={() => { setAiOpen((v) => !v); setAiError(""); }}
+              className="w-full flex items-center justify-between px-4 py-3 text-left"
+            >
+              <div className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-500" />
+                <span className="text-sm font-semibold text-purple-700 dark:text-purple-300">AI Prefill</span>
+                <span className="text-xs text-purple-500 dark:text-purple-400">Paste a URL or text to auto-fill fields</span>
+              </div>
+              {aiOpen ? <ChevronUp className="h-4 w-4 text-purple-400" /> : <ChevronDown className="h-4 w-4 text-purple-400" />}
+            </button>
+
+            {aiOpen && (
+              <div className="px-4 pb-4 space-y-3 border-t border-purple-200 dark:border-purple-800/40 pt-3">
+                <div>
+                  <label className="block text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">
+                    URL (Google Maps, Instagram, Facebook, website)
+                  </label>
+                  <input
+                    type="url"
+                    value={aiUrl}
+                    onChange={(e) => setAiUrl(e.target.value)}
+                    placeholder="https://www.google.com/maps/place/..."
+                    className="w-full rounded-xl border border-purple-200 dark:border-purple-700 bg-white dark:bg-zinc-800/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">
+                    Or paste any text (brochure, description, Google listing text…)
+                  </label>
+                  <textarea
+                    value={aiText}
+                    onChange={(e) => setAiText(e.target.value)}
+                    rows={3}
+                    placeholder="Paste any info about the venue here…"
+                    className="w-full rounded-xl border border-purple-200 dark:border-purple-700 bg-white dark:bg-zinc-800/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-400 resize-none"
+                  />
+                </div>
+                {aiError && <p className="text-xs text-red-500">{aiError}</p>}
+                {aiAmenities.length > 0 && (
+                  <div className="rounded-lg bg-purple-100 dark:bg-purple-900/30 px-3 py-2">
+                    <p className="text-xs font-medium text-purple-600 dark:text-purple-400 mb-1">Amenities found (add these in Facilities section):</p>
+                    <p className="text-xs text-purple-700 dark:text-purple-300">{aiAmenities.join(" · ")}</p>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={handleAiPrefill}
+                  disabled={aiLoading}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+                >
+                  {aiLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                  {aiLoading ? "Extracting…" : "Extract & Prefill"}
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* Venue type chips */}
           <div>
             <label className={LABEL}>Type of space</label>

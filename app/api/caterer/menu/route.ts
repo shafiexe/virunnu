@@ -14,7 +14,7 @@ const schema = z.object({
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
-  if (!session || session.role !== "CATERER") {
+  if (!session || (session.role !== "CATERER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -24,9 +24,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid input", details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const caterer = session.orgId
-    ? await db.caterer.findFirst({ where: { orgId: session.orgId } })
-    : null;
+  // Admin can pass catererId directly; caterer uses their own orgId
+  let caterer;
+  if (session.role === "ADMIN" && body?.catererId) {
+    caterer = await db.caterer.findUnique({ where: { id: body.catererId } });
+  } else {
+    caterer = session.orgId
+      ? await db.caterer.findFirst({ where: { orgId: session.orgId } })
+      : null;
+  }
 
   if (!caterer) {
     return NextResponse.json({ error: "Caterer profile not found" }, { status: 404 });
@@ -45,4 +51,44 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({ item }, { status: 201 });
+}
+
+// Bulk create menu items (used by AI prefill)
+export async function PUT(req: NextRequest) {
+  const session = await getSession();
+  if (!session || (session.role !== "CATERER" && session.role !== "ADMIN")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
+  const body = await req.json().catch(() => null);
+  const items: Array<{ name: string; category: string; description?: string; priceRupees: number; isVeg: boolean; isSpecial: boolean }> = body?.items ?? [];
+  if (!Array.isArray(items) || items.length === 0) {
+    return NextResponse.json({ error: "No items provided" }, { status: 400 });
+  }
+
+  let caterer;
+  if (session.role === "ADMIN" && body?.catererId) {
+    caterer = await db.caterer.findUnique({ where: { id: body.catererId } });
+  } else {
+    caterer = session.orgId
+      ? await db.caterer.findFirst({ where: { orgId: session.orgId } })
+      : null;
+  }
+
+  if (!caterer) return NextResponse.json({ error: "Caterer not found" }, { status: 404 });
+
+  const created = await db.menuItem.createMany({
+    data: items.slice(0, 50).map((i) => ({
+      name: String(i.name).slice(0, 80),
+      category: String(i.category).slice(0, 50),
+      description: i.description ? String(i.description).slice(0, 300) : null,
+      priceRupees: Math.max(0, Math.floor(Number(i.priceRupees) || 0)),
+      isVeg: Boolean(i.isVeg),
+      isSpecial: Boolean(i.isSpecial),
+      catererId: caterer.id,
+    })),
+    skipDuplicates: true,
+  });
+
+  return NextResponse.json({ count: created.count }, { status: 201 });
 }

@@ -239,20 +239,50 @@ enum PaymentStatus {
 }
 
 model Caterer {
-  id          String        @id @default(cuid())
-  name        String
-  phone       String
-  city        String
-  state       String        @default("Kerala")
-  description String?
-  cuisines    String[]
-  approved    Boolean       @default(false)
-  disabled    Boolean       @default(false)
-  orgId       String?
-  org         Organization? @relation(fields: [orgId], references: [id])
-  menuItems   MenuItem[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id             String            @id @default(cuid())
+  name           String
+  phone          String
+  city           String
+  state          String            @default("Kerala")
+  description    String?
+  cuisines       String[]
+  approved       Boolean           @default(false)
+  disabled       Boolean           @default(false)
+  orgId          String?
+  org            Organization?     @relation(fields: [orgId], references: [id])
+  menuItems      MenuItem[]
+  enquiries      CateringEnquiry[]
+  // contact & social
+  whatsappNumber String?
+  email          String?
+  instagramUrl   String?
+  facebookUrl    String?
+  youtubeUrl     String?
+  websiteUrl     String?
+  // service profile
+  services       String[]
+  photos         String[]
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model CateringEnquiry {
+  id         String        @id @default(cuid())
+  catererId  String
+  caterer    Caterer       @relation(fields: [catererId], references: [id])
+  name       String
+  phone      String
+  eventDate  DateTime?
+  guestCount Int?
+  message    String?
+  status     EnquiryStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+}
+
+enum EnquiryStatus {
+  PENDING
+  ATTENDED
+  IGNORED
 }
 
 model MenuItem {

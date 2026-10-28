@@ -6,6 +6,8 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { VenueManager } from "@/components/venue-manager";
 import { FacilitiesManager } from "@/components/facilities-manager";
+import { AdminCreateVenueForm } from "@/components/admin-create-venue-form";
+import { AdminAiSetup } from "@/components/admin-ai-setup";
 import { ArrowLeft } from "lucide-react";
 
 export default async function AdminOwnerDetailPage({
@@ -70,6 +72,9 @@ export default async function AdminOwnerDetailPage({
         )}
       </div>
 
+      {/* ── AI Quick Setup ──────────────────────────────────── */}
+      <AdminAiSetup orgId={orgId} hasVenue={org.venues.length > 0} />
+
       {/* ── Venue profile + Halls & Slots ───────────────────── */}
       <div>
         <div className="mb-4">
@@ -81,9 +86,7 @@ export default async function AdminOwnerDetailPage({
             <VenueManager key={v.id} venues={[v]} />
           ))
         ) : (
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 text-center">
-            <p className="text-sm text-zinc-400">No venues added yet for this organization.</p>
-          </div>
+          <AdminCreateVenueForm orgId={orgId} />
         )}
       </div>
 

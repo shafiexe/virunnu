@@ -40,7 +40,7 @@ const EMPTY_FORM = {
   isSpecial: false,
 };
 
-export function MenuManager({ initialItems }: { initialItems: MenuItem[] }) {
+export function MenuManager({ initialItems, catererId }: { initialItems: MenuItem[]; catererId?: string }) {
   const router = useRouter();
   const [items, setItems] = useState<MenuItem[]>(initialItems);
   const [showForm, setShowForm] = useState(false);
@@ -70,6 +70,7 @@ export function MenuManager({ initialItems }: { initialItems: MenuItem[] }) {
           priceRupees: price,
           isVeg: form.isVeg,
           isSpecial: form.isSpecial,
+          ...(catererId ? { catererId } : {}),
         }),
       });
       if (!res.ok) { const data = await res.json().catch(() => ({})); setError(data.error ?? "Something went wrong."); return; }

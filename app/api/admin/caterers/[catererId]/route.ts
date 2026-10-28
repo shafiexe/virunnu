@@ -8,8 +8,16 @@ const updateSchema = z.object({
   phone: z.string().min(10).optional(),
   city: z.string().min(1).optional(),
   state: z.string().optional(),
-  description: z.string().optional(),
+  description: z.string().nullable().optional(),
   cuisines: z.array(z.string()).optional(),
+  whatsappNumber: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+  instagramUrl: z.string().nullable().optional(),
+  facebookUrl: z.string().nullable().optional(),
+  youtubeUrl: z.string().nullable().optional(),
+  websiteUrl: z.string().nullable().optional(),
+  services: z.array(z.string()).optional(),
+  photos: z.array(z.string()).optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ catererId: string }> }) {
@@ -38,6 +46,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ c
   const caterer = await db.caterer.findUnique({ where: { id: catererId } });
   if (!caterer) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
+  // Delete related records before deleting caterer to avoid FK constraint errors
+  await db.menuItem.deleteMany({ where: { catererId } });
+  await db.cateringEnquiry.deleteMany({ where: { catererId } });
   await db.caterer.delete({ where: { id: catererId } });
 
   return NextResponse.json({ ok: true });
