@@ -104,6 +104,8 @@ model Venue {
   phone             String?
   whatsappPhone     String?
   email             String?
+  instagramUrl      String?
+  facebookUrl       String?
   approved          Boolean      @default(false)
   orgId             String
   org               Organization @relation(fields: [orgId], references: [id])

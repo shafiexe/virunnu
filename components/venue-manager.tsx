@@ -2,10 +2,11 @@
 
 import { useState, useRef } from "react";
 import {
-  Plus, Pencil, X, ChevronDown, ChevronUp,
+  Plus, Pencil, X,
   Building2, Users, IndianRupee, Clock, Camera, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VenueProfileCard } from "@/components/venue-profile-card";
 
 type SlotTemplate = { id: string; name: string; startTime: string; endTime: string };
 type HallPhoto = { id: string; url: string; caption: string | null };
@@ -24,6 +25,7 @@ type Hall = {
 type Venue = {
   id: string;
   name: string;
+  venueType: string;
   address: string;
   city: string | null;
   approved: boolean;
@@ -33,25 +35,15 @@ type Venue = {
   googleReviewUrl: string | null;
   websiteUrl: string | null;
   phone: string | null;
+  whatsappPhone: string | null;
   email: string | null;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
   lat: number;
   lng: number;
   halls: Hall[];
 };
 
-function parseMapsCoords(url: string): { lat: number; lng: number } | null {
-  try {
-    const m3d = url.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
-    if (m3d) return { lat: parseFloat(m3d[1]), lng: parseFloat(m3d[2]) };
-    if (url.includes("/maps/dir/")) {
-      const m1d = url.match(/!1d(-?\d+\.?\d*)!2d(-?\d+\.?\d*)/);
-      if (m1d) return { lat: parseFloat(m1d[2]), lng: parseFloat(m1d[1]) };
-    }
-    const mat = url.match(/\/@(-?\d+\.?\d*),(-?\d+\.?\d*),\d+[zm]/);
-    if (mat) return { lat: parseFloat(mat[1]), lng: parseFloat(mat[2]) };
-  } catch { /* ignore */ }
-  return null;
-}
 
 const AMENITIES = [
   "AC", "Projector", "Stage", "Parking", "Catering Kitchen",
@@ -653,290 +645,60 @@ function HallCard({
   );
 }
 
-type VenueForm = {
-  name: string;
-  address: string;
-  googleMapsUrl: string;
-  lat: string;
-  lng: string;
-  googleRating: string;
-  googleReviewCount: string;
-  googleReviewUrl: string;
-  websiteUrl: string;
-  phone: string;
-  email: string;
-};
-
-function venueToForm(v: Venue): VenueForm {
-  return {
-    name: v.name,
-    address: v.address,
-    googleMapsUrl: v.googleMapsUrl ?? "",
-    lat: v.lat ? String(v.lat) : "",
-    lng: v.lng ? String(v.lng) : "",
-    googleRating: v.googleRating ? String(v.googleRating) : "",
-    googleReviewCount: v.googleReviewCount ? String(v.googleReviewCount) : "",
-    googleReviewUrl: v.googleReviewUrl ?? "",
-    websiteUrl: v.websiteUrl ?? "",
-    phone: v.phone ?? "",
-    email: v.email ?? "",
-  };
-}
-
 function VenueCard({ venue: initialVenue }: { venue: Venue }) {
-  const [venue, setVenue] = useState(initialVenue);
   const [halls, setHalls] = useState<Hall[]>(initialVenue.halls);
   const [collapsed, setCollapsed] = useState(false);
-  const [editingVenue, setEditingVenue] = useState(false);
-  const [venueForm, setVenueForm] = useState<VenueForm>(() => venueToForm(initialVenue));
-  const [venueLoading, setVenueLoading] = useState(false);
-  const [venueError, setVenueError] = useState("");
 
   function onHallUpdated(updated: Hall) {
     setHalls((prev) => prev.map((h) => (h.id === updated.id ? updated : h)));
   }
 
-  function handleVenueMapsUrl(url: string) {
-    const coords = parseMapsCoords(url);
-    setVenueForm((f) => ({
-      ...f,
-      googleMapsUrl: url,
-      lat: coords ? coords.lat.toFixed(6) : f.lat,
-      lng: coords ? coords.lng.toFixed(6) : f.lng,
-    }));
-  }
-
-  async function saveVenue(e: React.FormEvent) {
-    e.preventDefault();
-    setVenueLoading(true);
-    setVenueError("");
-    try {
-      const body: Record<string, unknown> = {
-        name: venueForm.name.trim(),
-        address: venueForm.address.trim(),
-        lat: venueForm.lat ? parseFloat(venueForm.lat) : undefined,
-        lng: venueForm.lng ? parseFloat(venueForm.lng) : undefined,
-        googleMapsUrl: venueForm.googleMapsUrl.trim() || null,
-        googleRating: venueForm.googleRating ? parseFloat(venueForm.googleRating) : null,
-        googleReviewCount: venueForm.googleReviewCount ? parseInt(venueForm.googleReviewCount) : null,
-        googleReviewUrl: venueForm.googleReviewUrl.trim() || null,
-        websiteUrl: venueForm.websiteUrl.trim() || null,
-        phone: venueForm.phone.trim() || null,
-        email: venueForm.email.trim() || null,
-      };
-      const res = await fetch(`/api/owner/venues/${venue.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) { setVenueError((data as { error?: string }).error ?? "Error saving"); return; }
-      setVenue((v) => ({ ...v, ...(data as { venue: Venue }).venue }));
-      setEditingVenue(false);
-    } finally {
-      setVenueLoading(false);
-    }
-  }
-
   return (
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
-      {/* Venue header */}
-      <div className="flex items-center justify-between px-5 py-4">
-        <div
-          className="flex items-center gap-3 min-w-0 flex-1 cursor-pointer"
-          onClick={() => setCollapsed((c) => !c)}
-        >
-          <div className="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center shrink-0">
-            <Building2 className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-          </div>
-          <div className="min-w-0">
-            <div className="font-semibold text-zinc-900 dark:text-zinc-50 truncate">{venue.name}</div>
-            <div className="text-xs text-zinc-500 truncate">
-              {venue.address}
-            </div>
-            {venue.googleRating && (
-              <div className="flex items-center gap-1 mt-0.5">
-                <span className="text-amber-400 text-[10px]">★</span>
-                <span className="text-[10px] text-zinc-500">
-                  {venue.googleRating.toFixed(1)}
-                  {venue.googleReviewCount ? ` · ${venue.googleReviewCount} reviews` : ""}
-                </span>
-                {venue.googleMapsUrl && (
-                  <a href={venue.googleMapsUrl} target="_blank" rel="noopener noreferrer"
-                    onClick={(e) => e.stopPropagation()}
-                    className="text-[10px] text-amber-500 hover:underline ml-1">
-                    View on Google ↗
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <span className={cn(
-            "text-[10px] font-semibold px-2 py-0.5 rounded-full",
-            venue.approved
-              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
-              : "bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400"
-          )}>
-            {venue.approved ? "Listed" : "Pending"}
-          </span>
-          <button
-            onClick={() => { setEditingVenue((v) => !v); setVenueForm(venueToForm(venue)); setVenueError(""); setCollapsed(false); }}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
-            title="Edit venue info"
-          >
-            <Pencil className="h-3.5 w-3.5" />
-          </button>
-          <button
-            onClick={() => setCollapsed((c) => !c)}
-            className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-          >
-            {collapsed ? <ChevronDown className="h-4 w-4 text-zinc-400" /> : <ChevronUp className="h-4 w-4 text-zinc-400" />}
-          </button>
-        </div>
-      </div>
+      {/* Profile section (embedded — no inner border) */}
+      <VenueProfileCard
+        embedded
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed((c) => !c)}
+        venue={{
+          id: initialVenue.id,
+          name: initialVenue.name,
+          venueType: initialVenue.venueType,
+          approved: initialVenue.approved,
+          phone: initialVenue.phone,
+          whatsappPhone: initialVenue.whatsappPhone,
+          email: initialVenue.email,
+          address: initialVenue.address,
+          city: initialVenue.city,
+          websiteUrl: initialVenue.websiteUrl,
+          googleMapsUrl: initialVenue.googleMapsUrl,
+          googleRating: initialVenue.googleRating,
+          googleReviewCount: initialVenue.googleReviewCount,
+          googleReviewUrl: initialVenue.googleReviewUrl,
+          lat: initialVenue.lat,
+          lng: initialVenue.lng,
+          instagramUrl: initialVenue.instagramUrl,
+          facebookUrl: initialVenue.facebookUrl,
+        }}
+      />
 
-      {/* Venue info edit form */}
-      {editingVenue && (
-        <form onSubmit={saveVenue} className="mx-5 mb-4 rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50/50 dark:bg-amber-950/10 p-4 space-y-3">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">Edit venue info</span>
-            <button type="button" onClick={() => setEditingVenue(false)} className="text-zinc-400 hover:text-zinc-600">
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Convention center name</label>
-            <input
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
-              value={venueForm.name}
-              onChange={(e) => setVenueForm((f) => ({ ...f, name: e.target.value }))}
-              placeholder="ZAWAJ Convention Centre"
-              required
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Address</label>
-            <input
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
-              value={venueForm.address}
-              onChange={(e) => setVenueForm((f) => ({ ...f, address: e.target.value }))}
-              placeholder="Full address"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">
-              Google Maps link
-              {venueForm.googleMapsUrl && parseMapsCoords(venueForm.googleMapsUrl) && (
-                <span className="ml-2 normal-case font-normal text-emerald-600 dark:text-emerald-400">
-                  ✓ location parsed
-                </span>
-              )}
-            </label>
-            <input
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
-              value={venueForm.googleMapsUrl}
-              onChange={(e) => handleVenueMapsUrl(e.target.value)}
-              placeholder="https://www.google.com/maps/place/..."
-            />
-          </div>
-
-          <div className="grid grid-cols-3 gap-2">
-            <div className="space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Rating</label>
-              <input type="number" step="0.1" min="0" max="5"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
-                value={venueForm.googleRating}
-                onChange={(e) => setVenueForm((f) => ({ ...f, googleRating: e.target.value }))}
-                placeholder="4.1"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Reviews</label>
-              <input type="number" min="0"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-amber-400"
-                value={venueForm.googleReviewCount}
-                onChange={(e) => setVenueForm((f) => ({ ...f, googleReviewCount: e.target.value }))}
-                placeholder="16"
-              />
-            </div>
-            <div className="space-y-1" />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Google review link</label>
-            <input
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
-              value={venueForm.googleReviewUrl}
-              onChange={(e) => setVenueForm((f) => ({ ...f, googleReviewUrl: e.target.value }))}
-              placeholder="https://search.google.com/local/writereview?placeid=..."
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Website</label>
-            <input
-              className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
-              value={venueForm.websiteUrl}
-              onChange={(e) => setVenueForm((f) => ({ ...f, websiteUrl: e.target.value }))}
-              placeholder="https://yourconvention.com"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
-            <div className="space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Phone</label>
-              <input
-                type="tel"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                value={venueForm.phone}
-                onChange={(e) => setVenueForm((f) => ({ ...f, phone: e.target.value }))}
-                placeholder="+91 98765 43210"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Email</label>
-              <input
-                type="email"
-                className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                value={venueForm.email}
-                onChange={(e) => setVenueForm((f) => ({ ...f, email: e.target.value }))}
-                placeholder="info@yourconvention.com"
-              />
-            </div>
-          </div>
-
-          {venueError && <p className="text-xs text-red-500">{venueError}</p>}
-
-          <div className="flex gap-2 pt-1">
-            <button type="submit" disabled={venueLoading}
-              className="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold disabled:opacity-50">
-              {venueLoading ? "Saving…" : "Save venue info"}
-            </button>
-            <button type="button" onClick={() => setEditingVenue(false)}
-              className="px-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800">
-              Cancel
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* Hall list */}
+      {/* Halls & Slots section */}
       {!collapsed && (
-        <div className="px-5 pb-5 space-y-3 border-t border-zinc-100 dark:border-zinc-800 pt-4">
-          {halls.map((hall) => (
-            <HallCard
-              key={hall.id}
-              hall={hall}
-              venueId={venue.id}
-              onUpdated={onHallUpdated}
-            />
-          ))}
-        </div>
+        <>
+          <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100 dark:border-zinc-800">
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Halls &amp; Slots</span>
+          </div>
+          <div className="px-5 pb-5 space-y-3">
+            {halls.map((hall) => (
+              <HallCard
+                key={hall.id}
+                hall={hall}
+                venueId={initialVenue.id}
+                onUpdated={onHallUpdated}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

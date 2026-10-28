@@ -20,6 +20,8 @@ const patchSchema = z.object({
   phone: z.string().nullable().optional(),
   whatsappPhone: z.string().nullable().optional(),
   email: z.string().email().nullable().optional(),
+  instagramUrl: z.string().nullable().optional(),
+  facebookUrl: z.string().nullable().optional(),
   lat: z.number().optional(),
   lng: z.number().optional(),
 });

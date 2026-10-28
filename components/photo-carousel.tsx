@@ -5,7 +5,7 @@ import { ChevronLeft, ChevronRight, Images, X } from "lucide-react";
 
 type Photo = { id: string; url: string; caption: string | null };
 
-export function PhotoCarousel({ photos, venueName }: { photos: Photo[]; venueName: string }) {
+export function PhotoCarousel({ photos, venueName, overlay }: { photos: Photo[]; venueName: string; overlay?: React.ReactNode }) {
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState(false);
 
@@ -48,8 +48,8 @@ export function PhotoCarousel({ photos, venueName }: { photos: Photo[]; venueNam
           </div>
         ))}
 
-        {/* Bottom gradient */}
-        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/70 via-black/20 to-transparent z-20 pointer-events-none" />
+        {/* Bottom gradient — taller when overlay content is present */}
+        <div className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/40 to-transparent z-20 pointer-events-none ${overlay ? "h-4/5" : "h-32"}`} />
 
         {/* Top-right counter */}
         <div className="absolute top-4 right-4 z-30 text-xs font-semibold text-white bg-black/40 backdrop-blur-sm px-2.5 py-1 rounded-lg">
@@ -74,6 +74,15 @@ export function PhotoCarousel({ photos, venueName }: { photos: Photo[]; venueNam
               <ChevronRight className="h-5 w-5" />
             </button>
           </>
+        )}
+
+        {/* Venue info overlay (rendered between gradient and controls) */}
+        {overlay && (
+          <div className="absolute inset-x-0 bottom-14 z-[25] px-5 pointer-events-none flex flex-col items-center text-center">
+            <div className="pointer-events-auto w-full max-w-3xl">
+              {overlay}
+            </div>
+          </div>
         )}
 
         {/* Bottom bar: dot indicators + "See all photos" */}

@@ -4,7 +4,6 @@ import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { VenueProfileCard } from "@/components/venue-profile-card";
 import { VenueManager } from "@/components/venue-manager";
 import { FacilitiesManager } from "@/components/facilities-manager";
 import { ArrowLeft } from "lucide-react";
@@ -71,42 +70,16 @@ export default async function AdminOwnerDetailPage({
         )}
       </div>
 
-      {/* ── Venue profile ───────────────────────────────────── */}
-      {org.venues.length > 0 && (
-        <div>
-          <div className="mb-4">
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">My Venue</h2>
-            <p className="text-sm text-zinc-500 mt-0.5">Contact details shown to customers and used for notifications</p>
-          </div>
-          <div className="space-y-3">
-            {org.venues.map((v) => (
-              <VenueProfileCard
-                key={v.id}
-                venue={{
-                  id: v.id,
-                  name: v.name,
-                  venueType: v.venueType,
-                  phone: v.phone,
-                  whatsappPhone: v.whatsappPhone,
-                  email: v.email,
-                  address: v.address,
-                  city: v.city,
-                  websiteUrl: v.websiteUrl,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Halls & Slots ───────────────────────────────────── */}
+      {/* ── Venue profile + Halls & Slots ───────────────────── */}
       <div>
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Halls &amp; Slots</h2>
-          <p className="text-sm text-zinc-500 mt-0.5">Manage halls, time slots, photos and pricing</p>
+        <div className="mb-4">
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Venue</h2>
+          <p className="text-sm text-zinc-500 mt-0.5">Manage profile, halls, slots and photos</p>
         </div>
         {org.venues.length > 0 ? (
-          <VenueManager venues={org.venues} />
+          org.venues.map((v) => (
+            <VenueManager key={v.id} venues={[v]} />
+          ))
         ) : (
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-8 text-center">
             <p className="text-sm text-zinc-400">No venues added yet for this organization.</p>

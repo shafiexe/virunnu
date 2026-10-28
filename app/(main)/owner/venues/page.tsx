@@ -6,7 +6,6 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { VenueManager } from "@/components/venue-manager";
 import { FacilitiesManager } from "@/components/facilities-manager";
-import { VenueProfileCard } from "@/components/venue-profile-card";
 import { Plus } from "lucide-react";
 
 export default async function OwnerVenuesPage() {
@@ -38,40 +37,12 @@ export default async function OwnerVenuesPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 space-y-10">
-      {/* ── My Venue profile ────────────────────────────────── */}
-      {venues.length > 0 && (
-        <div>
-          <div className="mb-4">
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">My Venue</h1>
-            <p className="text-sm text-zinc-500 mt-0.5">Contact details shown to customers and used for notifications</p>
-          </div>
-          <div className="space-y-3">
-            {venues.map((v) => (
-              <VenueProfileCard
-                key={v.id}
-                venue={{
-                  id: v.id,
-                  name: v.name,
-                  venueType: v.venueType,
-                  phone: v.phone,
-                  whatsappPhone: v.whatsappPhone,
-                  email: v.email,
-                  address: v.address,
-                  city: v.city,
-                  websiteUrl: v.websiteUrl,
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ── Halls & Slots section ────────────────────────────── */}
+      {/* ── My Venue (profile + halls + slots) ───────────────── */}
       <div>
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Halls &amp; Slots</h2>
-            <p className="text-sm text-zinc-500 mt-0.5">Manage halls, time slots, photos and pricing</p>
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">My Venue</h1>
+            <p className="text-sm text-zinc-500 mt-0.5">Manage your venue profile, halls, slots and photos</p>
           </div>
           {venues.length === 0 && (
             <Link
@@ -83,16 +54,19 @@ export default async function OwnerVenuesPage() {
             </Link>
           )}
         </div>
-        <VenueManager venues={venues} />
+
+        {venues.map((v) => (
+          <VenueManager key={v.id} venues={[v]} />
+        ))}
+
+        {venues.length === 0 && <VenueManager venues={[]} />}
       </div>
 
-      {/* ── Facilities / Add-ons section ─────────────────────── */}
+      {/* ── Amenities & Add-ons ──────────────────────────────── */}
       <div>
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Amenities &amp; Add-ons</h2>
-            <p className="text-sm text-zinc-500 mt-0.5">What your venue offers — add what applies and set a price if it&apos;s extra</p>
-          </div>
+        <div className="mb-4">
+          <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Amenities &amp; Add-ons</h2>
+          <p className="text-sm text-zinc-500 mt-0.5">What your venue offers — add what applies and set a price if it&apos;s extra</p>
         </div>
         <FacilitiesManager initial={facilities} isEmpty={facilities.length === 0} />
       </div>

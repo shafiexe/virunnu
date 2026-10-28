@@ -3,7 +3,7 @@ export const instant = false;
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPin, Users, ArrowLeft, IndianRupee } from "lucide-react";
+import { MapPin, Users, ArrowLeft, IndianRupee, Phone, MessageCircle, Globe, Mail, Star } from "lucide-react";
 import { SlotCalendar } from "@/components/slot-calendar";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { getVenue, getHallAvailability } from "@/services/venue.service";
@@ -12,6 +12,7 @@ import { releaseExpiredHolds } from "@/services/booking.service";
 type Props = { params: Promise<{ venueId: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  await connection();
   const { venueId } = await params;
   const venue = await getVenue(venueId);
   if (!venue) return {};
@@ -197,94 +198,128 @@ export default async function VenuePage({ params }: Props) {
         </Link>
       </div>
 
-      {/* Hero photo carousel */}
+      {/* Hero photo carousel with info overlay */}
       <div className="mx-auto max-w-6xl px-4 mb-0">
         <div className="rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm">
-          <PhotoCarousel photos={allPhotos} venueName={venue.name} />
+          <PhotoCarousel
+            photos={allPhotos}
+            venueName={venue.name}
+            overlay={
+              <div className="space-y-2 text-center">
+                {/* Venue name */}
+                <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-sm leading-tight">
+                  {venue.name}
+                </h1>
+                {/* Meta chips */}
+                <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-1.5 text-sm text-white/85">
+                  <span className="flex items-center gap-1">
+                    <MapPin className="h-3.5 w-3.5 shrink-0 text-white/60" />
+                    {venue.address}
+                  </span>
+                  {maxCap > 0 && (
+                    <span className="flex items-center gap-1">
+                      <Users className="h-3.5 w-3.5 shrink-0 text-white/60" />
+                      Up to {maxCap.toLocaleString()} guests
+                    </span>
+                  )}
+                  {minPrice > 0 && (
+                    <span className="flex items-center gap-1 font-semibold text-amber-300">
+                      <IndianRupee className="h-3 w-3 shrink-0" />
+                      from {(minPrice / 100).toLocaleString("en-IN")} per slot
+                    </span>
+                  )}
+                </div>
+                {/* Rating row */}
+                {venue.googleRating && (
+                  <div className="flex flex-wrap justify-center items-center gap-3">
+                    <a
+                      href={venue.googleMapsUrl ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name)}`}
+                      target="_blank" rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-white hover:text-amber-300 transition-colors"
+                    >
+                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                      {venue.googleRating.toFixed(1)}
+                      {venue.googleReviewCount && (
+                        <span className="text-xs font-normal text-white/70">({venue.googleReviewCount} Google reviews)</span>
+                      )}
+                    </a>
+                    {venue.googleReviewUrl && (
+                      <a href={venue.googleReviewUrl} target="_blank" rel="noopener noreferrer"
+                        className="text-xs font-semibold text-amber-300 hover:underline">
+                        ✏️ Write a review
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            }
+          />
         </div>
       </div>
 
-      {/* Venue header */}
-      <div className="mx-auto max-w-6xl px-4 pt-5 pb-0">
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-6 py-5">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50 mb-2">
-            {venue.name}
-          </h1>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-zinc-500">
-            <span className="flex items-center gap-1">
-              <MapPin className="h-4 w-4 text-amber-500 shrink-0" />
-              {venue.address}
-            </span>
-            {maxCap > 0 && (
-              <span className="flex items-center gap-1">
-                <Users className="h-4 w-4 text-amber-500 shrink-0" />
-                Up to {maxCap.toLocaleString()} guests
-              </span>
-            )}
-            {minPrice > 0 && (
-              <span className="flex items-center gap-1 font-semibold text-amber-600 dark:text-amber-400">
-                <IndianRupee className="h-3.5 w-3.5 shrink-0" />
-                from {(minPrice / 100).toLocaleString("en-IN")} per slot
-              </span>
-            )}
-          </div>
-          {/* Info row — ratings, contact, website */}
-          {(venue.googleRating || venue.websiteUrl || venue.googleMapsUrl || venue.googleReviewUrl || venue.phone || venue.email) && (
-            <div className="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-              {venue.googleRating && (
-                <a
-                  href={venue.googleMapsUrl ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(venue.name)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:text-amber-600 transition-colors"
-                >
-                  <span className="text-amber-400">★</span>
-                  {venue.googleRating.toFixed(1)}
-                  {venue.googleReviewCount && (
-                    <span className="text-xs font-normal text-zinc-400">({venue.googleReviewCount} Google reviews)</span>
-                  )}
-                </a>
-              )}
-              {venue.googleReviewUrl && (
-                <a
-                  href={venue.googleReviewUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 dark:text-amber-400 hover:underline"
-                >
-                  ✏️ Write a review
-                </a>
-              )}
+      {/* Contact strip */}
+      {(venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email || venue.instagramUrl || venue.facebookUrl) && (
+        <div className="mx-auto max-w-6xl px-4 pt-4">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-5 py-4">
+            <div className="flex flex-wrap justify-center items-center gap-2.5">
               {venue.phone && (
-                <a
-                  href={`tel:${venue.phone}`}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
-                >
-                  📞 {venue.phone}
+                <a href={`tel:${venue.phone}`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors shadow-sm">
+                  <Phone className="h-4 w-4" />
+                  Call
                 </a>
               )}
-              {venue.email && (
+              {(venue.whatsappPhone ?? venue.phone) && (
                 <a
-                  href={`mailto:${venue.email}`}
-                  className="inline-flex items-center gap-1 text-xs font-medium text-zinc-600 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
-                >
-                  ✉️ {venue.email}
+                  href={`https://wa.me/${(venue.whatsappPhone ?? venue.phone)!.replace(/\D/g, "")}`}
+                  target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5c] text-white text-sm font-semibold transition-colors shadow-sm">
+                  <MessageCircle className="h-4 w-4" />
+                  WhatsApp
                 </a>
               )}
               {venue.websiteUrl && (
-                <a
-                  href={venue.websiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-zinc-500 hover:text-amber-600 transition-colors underline"
-                >
-                  {venue.websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                <a href={venue.websiteUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-semibold hover:border-amber-400 transition-colors">
+                  <Globe className="h-4 w-4 text-amber-500" />
+                  Website
+                </a>
+              )}
+              {venue.email && (
+                <a href={`mailto:${venue.email}`}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-semibold hover:border-amber-400 transition-colors">
+                  <Mail className="h-4 w-4 text-amber-500" />
+                  Email
+                </a>
+              )}
+              {/* Divider before social */}
+              {(venue.instagramUrl || venue.facebookUrl) && (venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email) && (
+                <span className="h-7 w-px bg-zinc-200 dark:bg-zinc-700 mx-1" />
+              )}
+              {venue.instagramUrl && (
+                <a href={venue.instagramUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#E1306C] hover:border-pink-300 transition-colors">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
+                    <rect x="2" y="2" width="20" height="20" rx="5"/>
+                    <circle cx="12" cy="12" r="4"/>
+                    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
+                  </svg>
+                  <span className="text-sm font-semibold">Instagram</span>
+                </a>
+              )}
+              {venue.facebookUrl && (
+                <a href={venue.facebookUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#1877F2] hover:border-blue-300 transition-colors">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
+                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                  </svg>
+                  <span className="text-sm font-semibold">Facebook</span>
                 </a>
               )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Per-hall sections */}
       <div className="mx-auto max-w-6xl px-4 pt-5 pb-10 space-y-8">

@@ -1,19 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { Building2, Pencil, X, Loader2, CheckCircle2, Phone, Mail, MapPin, Globe, MessageCircle } from "lucide-react";
+import { Building2, Pencil, X, Loader2, CheckCircle2, Phone, Mail, MapPin, Globe, MessageCircle, ChevronDown, ChevronUp, Star } from "lucide-react";
 import { VENUE_TYPE_OPTIONS, venueTypeLabel, type VenueTypeKey } from "@/lib/venue-types";
 
 interface VenueProfile {
   id: string;
   name: string;
   venueType: string;
+  approved?: boolean;
   phone: string | null;
   whatsappPhone: string | null;
   email: string | null;
   address: string;
   city: string | null;
   websiteUrl: string | null;
+  googleMapsUrl?: string | null;
+  googleRating?: number | null;
+  googleReviewCount?: number | null;
+  googleReviewUrl?: string | null;
+  lat?: number | null;
+  lng?: number | null;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
+}
+
+function parseMapsCoords(url: string): { lat: number; lng: number } | null {
+  try {
+    const m3d = url.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
+    if (m3d) return { lat: parseFloat(m3d[1]), lng: parseFloat(m3d[2]) };
+    if (url.includes("/maps/dir/")) {
+      const m1d = url.match(/!1d(-?\d+\.?\d*)!2d(-?\d+\.?\d*)/);
+      if (m1d) return { lat: parseFloat(m1d[2]), lng: parseFloat(m1d[1]) };
+    }
+    const mat = url.match(/\/@(-?\d+\.?\d*),(-?\d+\.?\d*),\d+[zm]/);
+    if (mat) return { lat: parseFloat(mat[1]), lng: parseFloat(mat[2]) };
+  } catch { /* ignore */ }
+  return null;
 }
 
 const FIELD = "w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400";
@@ -58,7 +81,17 @@ function InfoRow({ icon, value, href, label }: { icon: React.ReactNode; value: s
   );
 }
 
-export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
+export function VenueProfileCard({
+  venue: initial,
+  embedded,
+  collapsed,
+  onToggleCollapse,
+}: {
+  venue: VenueProfile;
+  embedded?: boolean;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
+}) {
   const [venue, setVenue] = useState(initial);
   const [editing, setEditing] = useState(false);
   const [venueType, setVenueType] = useState<VenueTypeKey>(
@@ -72,6 +105,12 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
     address: initial.address,
     city: initial.city ?? "",
     websiteUrl: initial.websiteUrl ?? "",
+    googleMapsUrl: initial.googleMapsUrl ?? "",
+    googleRating: initial.googleRating ? String(initial.googleRating) : "",
+    googleReviewCount: initial.googleReviewCount ? String(initial.googleReviewCount) : "",
+    googleReviewUrl: initial.googleReviewUrl ?? "",
+    instagramUrl: initial.instagramUrl ?? "",
+    facebookUrl: initial.facebookUrl ?? "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -87,6 +126,12 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
       address: venue.address,
       city: venue.city ?? "",
       websiteUrl: venue.websiteUrl ?? "",
+      googleMapsUrl: venue.googleMapsUrl ?? "",
+      googleRating: venue.googleRating ? String(venue.googleRating) : "",
+      googleReviewCount: venue.googleReviewCount ? String(venue.googleReviewCount) : "",
+      googleReviewUrl: venue.googleReviewUrl ?? "",
+      instagramUrl: venue.instagramUrl ?? "",
+      facebookUrl: venue.facebookUrl ?? "",
     });
     setError("");
     setEditing(true);
@@ -100,6 +145,8 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
       const phone = form.phone.replace(/\D/g, "");
       if (phone.length !== 10) { setError("Phone number must be 10 digits"); setLoading(false); return; }
 
+      const mapsUrl = form.googleMapsUrl.trim() || null;
+      const coords = mapsUrl ? parseMapsCoords(mapsUrl) : null;
       const res = await fetch(`/api/owner/venues/${venue.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -114,6 +161,13 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
           address: form.address.trim(),
           city: form.city.trim() || null,
           websiteUrl: form.websiteUrl.trim() || null,
+          googleMapsUrl: mapsUrl,
+          googleRating: form.googleRating ? parseFloat(form.googleRating) : null,
+          googleReviewCount: form.googleReviewCount ? parseInt(form.googleReviewCount) : null,
+          googleReviewUrl: form.googleReviewUrl.trim() || null,
+          ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
+          instagramUrl: form.instagramUrl.trim() || null,
+          facebookUrl: form.facebookUrl.trim() || null,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -132,8 +186,12 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
     ? venue.whatsappPhone
     : null;
 
+  const wrapperClass = embedded
+    ? "overflow-hidden"
+    : "rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden";
+
   return (
-    <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
+    <div className={wrapperClass}>
       {/* Header */}
       <div className="flex items-start justify-between px-5 py-4">
         <div className="flex items-center gap-3 min-w-0">
@@ -146,8 +204,32 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400">
                 {venueTypeLabel(venue.venueType)}
               </span>
+              {venue.approved !== undefined && (
+                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                  venue.approved
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400"
+                    : "bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400"
+                }`}>
+                  {venue.approved ? "Listed" : "Pending"}
+                </span>
+              )}
               {venue.city && <span className="text-xs text-zinc-400">{venue.city}, Kerala</span>}
             </div>
+            {venue.googleRating && (
+              <div className="flex items-center gap-1 mt-0.5">
+                <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                <span className="text-[11px] text-zinc-500">
+                  {venue.googleRating.toFixed(1)}
+                  {venue.googleReviewCount ? ` · ${venue.googleReviewCount} reviews` : ""}
+                </span>
+                {venue.googleMapsUrl && (
+                  <a href={venue.googleMapsUrl} target="_blank" rel="noopener noreferrer"
+                    className="text-[10px] text-amber-500 hover:underline ml-1">
+                    Google Maps ↗
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
@@ -165,6 +247,16 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
               <X className="h-4 w-4" />
             </button>
           )}
+          {embedded && onToggleCollapse && (
+            <button
+              onClick={onToggleCollapse}
+              className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            >
+              {collapsed
+                ? <ChevronDown className="h-4 w-4 text-zinc-400" />
+                : <ChevronUp className="h-4 w-4 text-zinc-400" />}
+            </button>
+          )}
         </div>
       </div>
 
@@ -178,6 +270,24 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
           )}
           <InfoRow icon={<Mail className="h-3.5 w-3.5" />} value={venue.email} href={venue.email ? `mailto:${venue.email}` : undefined} />
           <InfoRow icon={<Globe className="h-3.5 w-3.5" />} value={venue.websiteUrl} href={venue.websiteUrl ?? undefined} />
+          {(venue.instagramUrl || venue.facebookUrl) && (
+            <div className="flex items-center gap-3 pt-1">
+              {venue.instagramUrl && (
+                <a href={venue.instagramUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-[#E1306C] transition-colors">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/></svg>
+                  Instagram
+                </a>
+              )}
+              {venue.facebookUrl && (
+                <a href={venue.facebookUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-[#1877F2] transition-colors">
+                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                  Facebook
+                </a>
+              )}
+            </div>
+          )}
           {!venue.phone && (
             <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
               ⚠ No phone number — tap Edit to add one
@@ -250,6 +360,71 @@ export function VenueProfileCard({ venue: initial }: { venue: VenueProfile }) {
               <label className={LABEL}>Website (optional)</label>
               <input type="url" value={form.websiteUrl} onChange={(e) => setForm((f) => ({ ...f, websiteUrl: e.target.value }))} placeholder="https://yoursite.com" className={FIELD} />
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={LABEL}>Instagram (optional)</label>
+              <input type="url" value={form.instagramUrl} onChange={(e) => setForm((f) => ({ ...f, instagramUrl: e.target.value }))} placeholder="https://instagram.com/yourpage" className={FIELD} />
+            </div>
+            <div>
+              <label className={LABEL}>Facebook (optional)</label>
+              <input type="url" value={form.facebookUrl} onChange={(e) => setForm((f) => ({ ...f, facebookUrl: e.target.value }))} placeholder="https://facebook.com/yourpage" className={FIELD} />
+            </div>
+          </div>
+
+          <div>
+            <label className={LABEL}>
+              Google Maps link
+              {form.googleMapsUrl && parseMapsCoords(form.googleMapsUrl) && (
+                <span className="ml-2 normal-case font-normal text-emerald-600 dark:text-emerald-400">✓ location parsed</span>
+              )}
+            </label>
+            <input
+              type="url"
+              value={form.googleMapsUrl}
+              onChange={(e) => setForm((f) => ({ ...f, googleMapsUrl: e.target.value }))}
+              placeholder="https://www.google.com/maps/place/..."
+              className={FIELD}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={LABEL}>Google rating (0–5)</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                value={form.googleRating}
+                onChange={(e) => setForm((f) => ({ ...f, googleRating: e.target.value }))}
+                placeholder="4.1"
+                className={FIELD}
+              />
+            </div>
+            <div>
+              <label className={LABEL}>Review count</label>
+              <input
+                type="number"
+                min="0"
+                value={form.googleReviewCount}
+                onChange={(e) => setForm((f) => ({ ...f, googleReviewCount: e.target.value }))}
+                placeholder="120"
+                className={FIELD}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className={LABEL}>Google review link (optional)</label>
+            <input
+              type="url"
+              value={form.googleReviewUrl}
+              onChange={(e) => setForm((f) => ({ ...f, googleReviewUrl: e.target.value }))}
+              placeholder="https://search.google.com/local/writereview?placeid=..."
+              className={FIELD}
+            />
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
