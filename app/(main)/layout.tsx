@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           <Suspense>
             <BottomNav />
           </Suspense>
-          <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 pt-8 pb-24 md:pb-6">
+          <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 pt-8 pb-32 md:pb-6">
             <div className="mx-auto max-w-5xl px-4 space-y-6">
               {/* Top row: brand + social */}
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
