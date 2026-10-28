@@ -49,16 +49,62 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ or
   return NextResponse.json({ ok: true });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ orgId: string }> }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ orgId: string }> }) {
   const session = await getSession();
   if (!session || session.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { orgId } = await params;
 
-  const org = await db.organization.findFirst({ where: { id: orgId, type: "CONVENTION" } });
+  const org = await db.organization.findFirst({
+    where: { id: orgId, type: "CONVENTION" },
+    include: {
+      venues: { include: { halls: { select: { id: true } } } },
+    },
+  });
   if (!org) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  await db.organization.delete({ where: { id: orgId } });
+  const hallIds = org.venues.flatMap((v) => v.halls.map((h) => h.id));
+  const venueIds = org.venues.map((v) => v.id);
+
+  try {
+    await db.$transaction(async (tx) => {
+      // 1. Payments → Bookings → HallSlots (leaf dependencies first)
+      if (hallIds.length > 0) {
+        const slotIds = (await tx.hallSlot.findMany({ where: { hallId: { in: hallIds } }, select: { id: true } })).map((s) => s.id);
+        if (slotIds.length > 0) {
+          await tx.payment.deleteMany({ where: { booking: { hallSlotId: { in: slotIds } } } });
+          await tx.booking.deleteMany({ where: { hallSlotId: { in: slotIds } } });
+          await tx.hallSlot.deleteMany({ where: { hallId: { in: hallIds } } });
+        }
+        // SlotTemplates, photos, blocked dates cascade from Hall; delete halls manually
+        await tx.slotTemplate.deleteMany({ where: { hallId: { in: hallIds } } });
+        await tx.hallPhoto.deleteMany({ where: { hallId: { in: hallIds } } });
+        await tx.blockedDate.deleteMany({ where: { hallId: { in: hallIds } } });
+        await tx.hall.deleteMany({ where: { id: { in: hallIds } } });
+      }
+
+      // 2. Venues
+      if (venueIds.length > 0) {
+        await tx.venue.deleteMany({ where: { id: { in: venueIds } } });
+      }
+
+      // 3. Employees & Expenses
+      await tx.employee.deleteMany({ where: { orgId } });
+      await tx.expense.deleteMany({ where: { orgId } });
+
+      // 4. Caterers owned by this org
+      await tx.caterer.deleteMany({ where: { orgId } });
+
+      // 5. Users (owners / staff)
+      await tx.user.deleteMany({ where: { orgId } });
+
+      // 6. Organization — cascade handles Facility, OrgMessageTemplate, ExpenseCategory/Item
+      await tx.organization.delete({ where: { id: orgId } });
+    });
+  } catch (err) {
+    console.error("org DELETE error", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
