@@ -2,39 +2,33 @@
 
 import { useEffect, useState } from "react";
 
-type Theme = "system" | "light" | "dark";
+type Theme = "light" | "dark";
+
+function resolveInitial(): Theme {
+  try {
+    const saved = localStorage.getItem("theme") as Theme | null;
+    if (saved === "light" || saved === "dark") return saved;
+  } catch {}
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
 
 function applyTheme(theme: Theme) {
-  const root = document.documentElement;
-  if (theme === "dark") {
-    root.classList.add("dark");
-  } else if (theme === "light") {
-    root.classList.remove("dark");
-  } else {
-    root.classList.toggle("dark", window.matchMedia("(prefers-color-scheme: dark)").matches);
-  }
+  document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("system");
+  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    const t = resolveInitial();
+    setTheme(t);
+    applyTheme(t);
     setMounted(true);
-    const saved = (localStorage.getItem("theme") as Theme) ?? "system";
-    setTheme(saved);
-    applyTheme(saved);
-
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const onSystemChange = () => {
-      if ((localStorage.getItem("theme") ?? "system") === "system") applyTheme("system");
-    };
-    mq.addEventListener("change", onSystemChange);
-    return () => mq.removeEventListener("change", onSystemChange);
   }, []);
 
-  function cycle() {
-    const next: Theme = theme === "system" ? "light" : theme === "light" ? "dark" : "system";
+  function toggle() {
+    const next: Theme = theme === "dark" ? "light" : "dark";
     setTheme(next);
     localStorage.setItem("theme", next);
     applyTheme(next);
@@ -44,12 +38,12 @@ export function ThemeToggle() {
 
   return (
     <button
-      onClick={cycle}
-      title={theme === "dark" ? "Dark theme" : theme === "light" ? "Light theme" : "System theme"}
-      aria-label={`Switch theme (current: ${theme})`}
+      onClick={toggle}
+      title={theme === "dark" ? "Switch to light" : "Switch to dark"}
+      aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
       className="p-1.5 rounded-lg text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
     >
-      {theme === "dark" ? <MoonIcon /> : theme === "light" ? <SunIcon /> : <SystemIcon />}
+      {theme === "dark" ? <SunIcon /> : <MoonIcon />}
     </button>
   );
 }
@@ -74,16 +68,6 @@ function MoonIcon() {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-    </svg>
-  );
-}
-
-function SystemIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <rect x="2" y="3" width="20" height="14" rx="2" />
-      <line x1="8" y1="21" x2="16" y2="21" />
-      <line x1="12" y1="17" x2="12" y2="21" />
     </svg>
   );
 }
