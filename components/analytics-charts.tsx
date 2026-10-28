@@ -7,7 +7,7 @@ import {
   Tooltip, Legend, ResponsiveContainer, ReferenceLine, Cell,
   PieChart, Pie,
 } from "recharts";
-import { TrendingUp, TrendingDown, AlertTriangle, CalendarCheck, IndianRupee, BarChart3, Receipt } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, CalendarCheck, IndianRupee, BarChart3, Receipt, Activity } from "lucide-react";
 
 interface MonthData {
   month: string;
@@ -42,6 +42,8 @@ interface Props {
   availableYears: number[];
   monthData: MonthData[];
   expenseMonthData: { month: string; totalPaise: number }[];
+  occupancyData: { month: string; pct: number | null }[];
+  avgOccupancy: number | null;
   insights: Insights;
 }
 
@@ -81,6 +83,18 @@ function RevenueTooltip({ active, payload, label }: { active?: boolean; payload?
   );
 }
 
+function OccupancyTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number | null }[]; label?: string }) {
+  if (!active || !payload?.length || payload[0]?.value == null) return null;
+  const pct = payload[0].value;
+  const color = pct >= 70 ? "text-emerald-600" : pct >= 40 ? "text-amber-600" : "text-red-500";
+  return (
+    <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg p-3 text-sm">
+      <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">{label}</p>
+      <p className={color}>Occupancy: {pct}%</p>
+    </div>
+  );
+}
+
 function BookingTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number; name: string; fill: string }[]; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
@@ -93,7 +107,7 @@ function BookingTooltip({ active, payload, label }: { active?: boolean; payload?
   );
 }
 
-export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthData, insights }: Props) {
+export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthData, occupancyData, avgOccupancy, insights }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -198,7 +212,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
       </div>
 
       {/* KPI cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <KpiCard
           icon={<BarChart3 className="h-5 w-5 text-zinc-600 dark:text-zinc-400" />}
           bg="bg-zinc-100 dark:bg-zinc-800"
@@ -231,6 +245,14 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
           value={`${cancellationRate}%`}
           sub={`${totalCancelled} cancelled`}
           valueColor={cancellationRate >= 20 ? "text-red-500" : "text-blue-600"}
+        />
+        <KpiCard
+          icon={<Activity className="h-5 w-5 text-violet-600" />}
+          bg="bg-violet-50 dark:bg-violet-950/30"
+          label="Avg occupancy"
+          value={avgOccupancy !== null ? `${avgOccupancy}%` : "—"}
+          sub={avgOccupancy !== null ? (avgOccupancy >= 70 ? "High demand" : avgOccupancy >= 40 ? "Moderate" : "Low demand") : "No data yet"}
+          valueColor={avgOccupancy === null ? "text-zinc-400" : avgOccupancy >= 70 ? "text-emerald-600" : avgOccupancy >= 40 ? "text-amber-600" : "text-red-500"}
         />
       </div>
 
@@ -364,6 +386,32 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
           </BarChart>
         </ResponsiveContainer>
       </div>
+
+      {/* Occupancy rate chart */}
+      {occupancyData.some((d) => d.pct !== null) && (
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
+          <div className="mb-5">
+            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Occupancy rate</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">% of available slots filled per month · green ≥70% · amber 40–69% · red &lt;40%</p>
+          </div>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={occupancyData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }} barCategoryGap="30%">
+              <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" strokeOpacity={0.5} vertical={false} />
+              <XAxis dataKey="month" tick={{ fontSize: 11, fill: "#a1a1aa" }} axisLine={false} tickLine={false} />
+              <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10, fill: "#a1a1aa" }} axisLine={false} tickLine={false} width={36} />
+              <Tooltip content={<OccupancyTooltip />} />
+              <Bar dataKey="pct" radius={[4, 4, 0, 0]} maxBarSize={32}>
+                {occupancyData.map((d, i) => (
+                  <Cell
+                    key={i}
+                    fill={d.pct === null ? "transparent" : d.pct >= 70 ? "#10b981" : d.pct >= 40 ? "#f59e0b" : "#f87171"}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Payment method split */}
       {(totalCash + totalOnline) > 0 && (

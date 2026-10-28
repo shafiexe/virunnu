@@ -33,7 +33,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-  const [allYearBookings, earliest, latestSlot, monthExpenses, yearExpenses, pendingBookings] = await Promise.all([
+  const [allYearBookings, earliest, latestSlot, monthExpenses, yearExpenses, hallCount, templateCount, pendingBookings] = await Promise.all([
     db.booking.findMany({
       where: { orgId: session.orgId!, hallSlot: { date: { gte: yearStart, lt: yearEnd } } },
       select: { status: true, totalPaise: true, advancePaise: true, discountPaise: true, refundPaise: true, paymentMethod: true, createdAt: true, hallSlot: { select: { date: true } } },
@@ -56,6 +56,8 @@ export default async function OwnerDashboard({ searchParams }: Props) {
       where: { orgId: session.orgId!, date: { gte: yearStart, lt: yearEnd } },
       select: { amountPaise: true, date: true },
     }),
+    db.hall.count({ where: { venue: { orgId: session.orgId! } } }),
+    db.slotTemplate.count({ where: { hall: { venue: { orgId: session.orgId! } } } }),
     db.booking.findMany({
       where: { orgId: session.orgId!, status: "PENDING" },
       include: {
@@ -105,6 +107,20 @@ export default async function OwnerDashboard({ searchParams }: Props) {
     }
     if (b.paymentMethod === "CASH") d.cashCount++;
   }
+
+  // --- Occupancy rate ---
+  const avgTemplates = hallCount > 0 ? Math.max(1, Math.round(templateCount / hallCount)) : 1;
+  const occupancyData = MONTHS.map((month, i) => {
+    const daysInMonth = new Date(year, i + 1, 0).getDate();
+    const available = hallCount * avgTemplates * daysInMonth;
+    const booked = monthData[i].confirmed + monthData[i].advancePaid;
+    const pct = available > 0 && i <= nowMonth ? Math.min(100, Math.round((booked / available) * 100)) : null;
+    return { month, pct };
+  });
+  const avgOccupancy = (() => {
+    const actuals = occupancyData.filter((d) => d.pct !== null).map((d) => d.pct as number);
+    return actuals.length > 0 ? Math.round(actuals.reduce((a, b) => a + b, 0) / actuals.length) : null;
+  })();
 
   // --- Stat card data (selected year) ---
   const totalRevenuePaise = allYearBookings.reduce((sum, b) => {
@@ -275,6 +291,8 @@ export default async function OwnerDashboard({ searchParams }: Props) {
         availableYears={availableYears}
         monthData={monthData}
         expenseMonthData={expenseMonthData}
+        occupancyData={occupancyData}
+        avgOccupancy={avgOccupancy}
         insights={{
           totalBookings: allYearBookings.length,
           totalConfirmed,
