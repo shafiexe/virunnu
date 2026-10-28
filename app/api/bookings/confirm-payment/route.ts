@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { splitGST } from "@/lib/gst";
 import { releaseExpiredHolds } from "@/services/booking.service";
 import { notifyBookingConfirmed } from "@/services/notification.service";
+import { getSession } from "@/lib/session";
 
 const VIRTUAL_PREFIX = "virtual_";
 const BLOCKED_PREFIX = "blocked_";
@@ -49,6 +50,7 @@ async function resolveSlotId(id: string): Promise<string> {
 
 export async function POST(req: NextRequest) {
   await releaseExpiredHolds();
+  const session = await getSession();
 
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
@@ -114,6 +116,7 @@ export async function POST(req: NextRequest) {
           guestAddress: guestAddress ?? null,
           razorpayOrderId,
           razorpayPaymentId,
+          ...(session?.userId ? { userId: session.userId } : {}),
         },
       });
 

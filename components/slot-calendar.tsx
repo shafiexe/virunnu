@@ -369,7 +369,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
         setPaying(false);
         if (confirmRes.ok) {
           const { bookingId } = await confirmRes.json();
-          router.push(`/bookings/${bookingId}?paid=1`);
+          router.push(`/track/${bookingId}?paid=1`);
         } else if (confirmRes.status === 409) {
           setPayError("Slot was just taken by someone else. A refund will be issued automatically.");
         } else {

@@ -8,7 +8,7 @@ import {
   CalendarDays, Users, CreditCard, ArrowLeft, Phone,
 } from "lucide-react";
 
-type Props = { params: Promise<{ bookingId: string }> };
+type Props = { params: Promise<{ bookingId: string }>; searchParams: Promise<{ paid?: string }> };
 
 const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; style: string; note: string }> = {
   PENDING: {
@@ -53,9 +53,10 @@ function fmt(paise: number) {
   return `₹${(paise / 100).toLocaleString("en-IN")}`;
 }
 
-export default async function PublicBookingPage({ params }: Props) {
+export default async function PublicBookingPage({ params, searchParams }: Props) {
   await connection();
   const { bookingId } = await params;
+  const { paid } = await searchParams;
   const booking = await getPublicBooking(bookingId);
   if (!booking) notFound();
 
@@ -84,6 +85,17 @@ export default async function PublicBookingPage({ params }: Props) {
         <ArrowLeft className="h-4 w-4" />
         Track another booking
       </Link>
+
+      {/* Payment success flash */}
+      {paid === "1" && (
+        <div className="rounded-2xl bg-emerald-500 px-5 py-4 flex items-center gap-3 text-white shadow-lg">
+          <CheckCircle2 className="h-6 w-6 shrink-0" />
+          <div>
+            <p className="font-bold text-base">Payment received!</p>
+            <p className="text-sm text-white/85">Your slot is booked. You&apos;ll get a confirmation on your phone.</p>
+          </div>
+        </div>
+      )}
 
       {/* Status banner */}
       <div className={`rounded-2xl border p-5 flex items-start gap-3 ${cfg.style}`}>

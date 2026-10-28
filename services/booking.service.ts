@@ -3,7 +3,7 @@ import { BookingStatus, SlotStatus } from "@prisma/client";
 import { splitGST } from "@/lib/gst";
 import { notifyBookingExpired } from "@/services/notification.service";
 
-const HOLD_MINUTES = 60;
+const HOLD_MINUTES = 15;
 const VIRTUAL_PREFIX = "virtual_";
 
 async function materializeVirtualSlot(virtualId: string): Promise<string> {

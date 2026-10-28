@@ -5,7 +5,7 @@ import { withGST } from "@/lib/gst";
 import { releaseExpiredHolds } from "@/services/booking.service";
 import { notifyOwnerNewBooking } from "@/services/notification.service";
 
-const HOLD_MINUTES = 60;
+const HOLD_MINUTES = 15;
 const VIRTUAL_PREFIX = "virtual_";
 const BLOCKED_PREFIX = "blocked_";
 
