@@ -419,17 +419,34 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
       {selectedDay && (
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
           {/* Panel header */}
-          <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800">
-            <div>
-              <span className="font-semibold text-zinc-900 dark:text-zinc-50">
-                {new Date(selectedDay + "T12:00:00").toLocaleDateString("en-IN", {
-                  weekday: "long", day: "numeric", month: "long", year: "numeric",
-                })}
-              </span>
-              <span className="ml-2 text-xs text-zinc-400">
-                {selectedDaySlots.length} slot{selectedDaySlots.length !== 1 ? "s" : ""}
-              </span>
+          <div className="px-5 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800 space-y-2.5">
+            {/* Row 1: date + close */}
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <div className="font-semibold text-zinc-900 dark:text-zinc-50 leading-snug">
+                  <span className="sm:hidden">
+                    {new Date(selectedDay + "T12:00:00").toLocaleDateString("en-IN", {
+                      weekday: "short", day: "numeric", month: "short", year: "numeric",
+                    })}
+                  </span>
+                  <span className="hidden sm:inline">
+                    {new Date(selectedDay + "T12:00:00").toLocaleDateString("en-IN", {
+                      weekday: "long", day: "numeric", month: "long", year: "numeric",
+                    })}
+                  </span>
+                </div>
+                <div className="text-xs text-zinc-400 mt-0.5">
+                  {selectedDaySlots.length} slot{selectedDaySlots.length !== 1 ? "s" : ""}
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedDay(null)}
+                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-400 transition-colors shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
+            {/* Row 2: action buttons */}
             <div className="flex items-center gap-2">
               {(() => {
                 const isDateBlocked = blockedDates.some((b) => b.date === selectedDay);
@@ -454,12 +471,6 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add booking
-              </button>
-              <button
-                onClick={() => setSelectedDay(null)}
-                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-400 transition-colors"
-              >
-                <X className="h-4 w-4" />
               </button>
             </div>
           </div>
