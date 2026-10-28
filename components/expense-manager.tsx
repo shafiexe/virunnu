@@ -1011,8 +1011,8 @@ export function ExpenseManager({
 
       {/* ── ADD / EDIT EXPENSE MODAL ────────────────────────────────────────────── */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg border border-zinc-200 dark:border-zinc-800 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg border-t sm:border border-zinc-200 dark:border-zinc-800 flex flex-col" style={{ maxHeight: "calc(92vh - env(safe-area-inset-bottom, 0px))" }}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900 z-10">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">
                 {editId ? "Edit expense" : "Add expense"}
@@ -1022,6 +1022,7 @@ export function ExpenseManager({
               </button>
             </div>
 
+            <div className="overflow-y-auto flex-1" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 1rem)" }}>
             {/* Quick pick from items */}
             {!editId && categories.some((c) => c.items.length > 0) && (
               <div className="px-5 pt-4 pb-2">
@@ -1213,6 +1214,7 @@ export function ExpenseManager({
                 </button>
               </div>
             </form>
+            </div>{/* end scrollable body */}
           </div>
         </div>
       )}
