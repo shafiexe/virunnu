@@ -156,15 +156,13 @@ export default async function VenuePage({ params }: Props) {
     ? Math.min(...hallsWithSlots.map((h: Hall) => h.pricePerSlot))
     : 0;
 
-  // OpenStreetMap embed URL using venue coordinates
   const lat: number = venue.lat ?? 10.85;
   const lng: number = venue.lng ?? 76.27;
-  const delta = 0.012;
-  const mapSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - delta},${lat - delta},${lng + delta},${lat + delta}&layer=mapnik&marker=${lat},${lng}`;
-  // Google Maps links — directions prompts user for their location; open page shows the place
+  const mapSrc = venue.lat && venue.lng
+    ? `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`
+    : null;
   const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
   const openInMapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.name}, ${venue.address}, ${venue.city}`)}`;
-  const openStreetMapHref = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=15/${lat}/${lng}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -423,26 +421,21 @@ export default async function VenuePage({ params }: Props) {
                 >
                   Open in Google Maps
                 </a>
-                <a
-                  href={openStreetMapHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 px-2 py-1.5 rounded-lg transition-colors"
-                >
-                  OpenStreetMap ↗
-                </a>
               </div>
             </div>
           </div>
           {/* Embedded map */}
-          <div className="relative h-72 sm:h-96">
-            <iframe
-              src={mapSrc}
-              className="w-full h-full border-0"
-              loading="lazy"
-              title={`Map showing location of ${venue.name}`}
-            />
-          </div>
+          {mapSrc && (
+            <div className="relative h-72 sm:h-96">
+              <iframe
+                src={mapSrc}
+                className="w-full h-full border-0"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`Map showing location of ${venue.name}`}
+              />
+            </div>
+          )}
         </section>
 
       </div>
