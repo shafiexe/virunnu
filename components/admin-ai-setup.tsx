@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles, Loader2, ChevronDown, ChevronUp, CheckCircle2, Building2, Users, Zap, IndianRupee, RotateCcw } from "lucide-react";
+import { Sparkles, Loader2, ChevronDown, ChevronUp, CheckCircle2, Building2, Users, Zap, IndianRupee, RotateCcw, ImageIcon } from "lucide-react";
 import { VENUE_TYPE_OPTIONS, type VenueTypeKey } from "@/lib/venue-types";
 
 type Hall = { name: string; capacitySeated?: number | null; capacityStanding?: number | null; priceRupees?: number | null };
@@ -21,6 +21,7 @@ type ExtractedData = {
   venueType?: string | null;
   amenities?: string[];
   halls?: Hall[];
+  photos?: string[];
 };
 
 export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boolean }) {
@@ -38,6 +39,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
   const [venueType, setVenueType] = useState<VenueTypeKey>("CONVENTION_CENTER");
   const [hallPrices, setHallPrices] = useState<Record<number, string>>({});
   const [selectedAmenities, setSelectedAmenities] = useState<Set<string>>(new Set());
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
 
   // Apply
   const [applying, setApplying] = useState(false);
@@ -65,6 +67,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
       (e.halls ?? []).forEach((h, i) => { prices[i] = h.priceRupees ? String(h.priceRupees) : ""; });
       setHallPrices(prices);
       setSelectedAmenities(new Set(e.amenities ?? []));
+      setSelectedPhotos(new Set(e.photos ?? []));
 
       if (e.venueType) {
         const vt = e.venueType.toUpperCase().replace(/\s+/g, "_") as VenueTypeKey;
@@ -111,6 +114,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
           },
           halls,
           amenities: Array.from(selectedAmenities),
+          photos: Array.from(selectedPhotos),
         }),
       });
       const data = await res.json();
@@ -130,6 +134,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
 
   const halls = extracted?.halls ?? [];
   const amenities = extracted?.amenities ?? [];
+  const photos = extracted?.photos ?? [];
   const hasContent = !!(extracted?.name || extracted?.address || halls.length || amenities.length);
 
   return (
@@ -316,6 +321,44 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                           }`}
                         >
                           {amenity}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {/* Photos */}
+              {photos.length > 0 && (
+                <section>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <ImageIcon className="h-3.5 w-3.5 text-purple-500" />
+                    <span className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">Photos Found</span>
+                    <span className="text-[11px] text-zinc-400 ml-1">Tap to deselect any to exclude · added to first hall</span>
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {photos.map(photoUrl => {
+                      const on = selectedPhotos.has(photoUrl);
+                      return (
+                        <button
+                          key={photoUrl}
+                          type="button"
+                          onClick={() => setSelectedPhotos(s => {
+                            const n = new Set(s);
+                            on ? n.delete(photoUrl) : n.add(photoUrl);
+                            return n;
+                          })}
+                          className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${
+                            on ? "border-purple-500" : "border-transparent opacity-40"
+                          }`}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={photoUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+                          {on && (
+                            <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center">
+                              <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+                            </div>
+                          )}
                         </button>
                       );
                     })}

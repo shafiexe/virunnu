@@ -95,6 +95,7 @@ const bodySchema = z.object({
   venue: venueSchema,
   halls: z.array(hallSchema).max(20).default([]),
   amenities: z.array(z.string()).default([]),
+  photos: z.array(z.string().url()).max(20).default([]),
 });
 
 export async function POST(req: NextRequest) {
@@ -109,7 +110,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
   }
 
-  const { orgId, venue: venueData, halls, amenities } = parsed.data;
+  const { orgId, venue: venueData, halls, amenities, photos } = parsed.data;
 
   const org = await db.organization.findFirst({ where: { id: orgId, type: "CONVENTION" } });
   if (!org) return NextResponse.json({ error: "Organization not found" }, { status: 404 });
@@ -119,94 +120,121 @@ export async function POST(req: NextRequest) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const result = await db.$transaction(async (tx) => {
-    // 1. Create or update venue
-    let venue = await tx.venue.findFirst({ where: { orgId } });
-    const venueName = venueData.name || org.name;
-    const venueFields = {
-      name: venueName,
-      venueType: venueData.venueType,
-      address: venueData.address || "Address not set — please edit",
-      city: venueData.city ?? null,
-      phone: venueData.phone ?? null,
-      whatsappPhone: venueData.whatsappPhone ?? null,
-      email: venueData.email ?? null,
-      websiteUrl: venueData.websiteUrl ?? null,
-      instagramUrl: venueData.instagramUrl ?? null,
-      facebookUrl: venueData.facebookUrl ?? null,
-      googleMapsUrl: venueData.googleMapsUrl ?? null,
-      lat: venueData.lat ?? 0,
-      lng: venueData.lng ?? 0,
-    };
+  const DAYS = 60;
+  const DEFAULT_SLOT_DEFS = [
+    { name: "Morning", startTime: "08:00", endTime: "14:00" },
+    { name: "Evening", startTime: "14:00", endTime: "22:00" },
+  ];
 
-    if (venue) {
-      venue = await tx.venue.update({ where: { id: venue.id }, data: venueFields });
-    } else {
-      venue = await tx.venue.create({ data: { ...venueFields, approved: false, orgId } });
-    }
+  try {
+    // ── Step 1: venue + halls + facilities in a short transaction ──────────────
+    const { venueId, createdHalls, facilitiesAdded, hallTemplates } = await db.$transaction(async (tx) => {
+      const venueName = venueData.name || org.name;
+      const venueFields = {
+        name: venueName,
+        venueType: venueData.venueType,
+        address: venueData.address || "Address not set — please edit",
+        city: venueData.city ?? null,
+        phone: venueData.phone ?? null,
+        whatsappPhone: venueData.whatsappPhone ?? null,
+        email: venueData.email ?? null,
+        websiteUrl: venueData.websiteUrl ?? null,
+        instagramUrl: venueData.instagramUrl ?? null,
+        facebookUrl: venueData.facebookUrl ?? null,
+        googleMapsUrl: venueData.googleMapsUrl ?? null,
+        lat: venueData.lat ?? 0,
+        lng: venueData.lng ?? 0,
+      };
 
-    // 2. Create halls with default slot templates (Morning + Evening, 90 days)
-    const createdHalls: string[] = [];
-    for (const hall of halls) {
-      const h = await tx.hall.create({
-        data: {
-          name: hall.name,
-          capacity: hall.capacitySeated,
-          pricePerSlot: Math.max(hall.priceRupees, 1) * 100,
-          minimumAdvancePaise: 50000,
-          requireFullPayment: false,
-          amenities: [],
-          venueId: venue.id,
-        },
-      });
+      let existingVenue = await tx.venue.findFirst({ where: { orgId } });
+      const venue = existingVenue
+        ? await tx.venue.update({ where: { id: existingVenue.id }, data: venueFields })
+        : await tx.venue.create({ data: { ...venueFields, approved: false, orgId } });
 
-      const defaultSlots = [
-        { name: "Morning", startTime: "08:00", endTime: "14:00" },
-        { name: "Evening", startTime: "14:00", endTime: "22:00" },
-      ];
+      // Create halls + slot templates (no slots yet — done in bulk after)
+      const createdHalls: string[] = [];
+      const hallTemplates: { hallId: string; templateId: string }[] = [];
 
-      for (const slotDef of defaultSlots) {
-        const template = await tx.slotTemplate.create({
-          data: { name: slotDef.name, startTime: slotDef.startTime, endTime: slotDef.endTime, hallId: h.id },
+      for (const hall of halls) {
+        const h = await tx.hall.create({
+          data: {
+            name: hall.name,
+            capacity: hall.capacitySeated,
+            pricePerSlot: Math.max(hall.priceRupees, 1) * 100,
+            minimumAdvancePaise: 50000,
+            requireFullPayment: false,
+            amenities: [],
+            venueId: venue.id,
+          },
         });
-        for (let i = 0; i < 90; i++) {
-          const date = new Date(today);
-          date.setDate(today.getDate() + i);
-          await tx.hallSlot.create({
-            data: { hallId: h.id, templateId: template.id, date, status: "AVAILABLE" },
+
+        for (const slotDef of DEFAULT_SLOT_DEFS) {
+          const tpl = await tx.slotTemplate.create({
+            data: { name: slotDef.name, startTime: slotDef.startTime, endTime: slotDef.endTime, hallId: h.id },
           });
+          hallTemplates.push({ hallId: h.id, templateId: tpl.id });
         }
+
+        createdHalls.push(h.name);
       }
 
-      createdHalls.push(h.name);
+      // Facilities
+      const existing = await tx.facility.findMany({ where: { orgId }, select: { name: true } });
+      const existingNames = new Set(existing.map(f => f.name.toLowerCase()));
+      const toCreate = matchedFacilities.filter(f => !existingNames.has(f.name.toLowerCase()));
+
+      if (toCreate.length > 0) {
+        await tx.facility.createMany({
+          data: toCreate.map((f, i) => ({
+            orgId,
+            name: f.name,
+            description: f.description,
+            amountPaise: 0,
+            category: f.category,
+            icon: f.icon,
+            isCustom: false,
+            sortOrder: existing.length + i,
+          })),
+        });
+      }
+
+      return {
+        venueId: venue.id,
+        createdHalls,
+        facilitiesAdded: toCreate.map(f => f.name),
+        hallTemplates,
+      };
+    });
+
+    // ── Step 2: bulk-insert hall slots outside the transaction ─────────────────
+    if (hallTemplates.length > 0) {
+      const slotRows = hallTemplates.flatMap(({ hallId, templateId }) =>
+        Array.from({ length: DAYS }, (_, i) => {
+          const date = new Date(today);
+          date.setDate(today.getDate() + i);
+          return { hallId, templateId, date, status: "AVAILABLE" as const };
+        })
+      );
+      await db.hallSlot.createMany({ data: slotRows, skipDuplicates: true });
     }
 
-    // 3. Add matched amenities as facilities (skip any that already exist by name)
-    const existing = await tx.facility.findMany({ where: { orgId }, select: { name: true } });
-    const existingNames = new Set(existing.map(f => f.name.toLowerCase()));
-    const toCreate = matchedFacilities.filter(f => !existingNames.has(f.name.toLowerCase()));
-
-    if (toCreate.length > 0) {
-      await tx.facility.createMany({
-        data: toCreate.map((f, i) => ({
-          orgId,
-          name: f.name,
-          description: f.description,
-          amountPaise: 0,
-          category: f.category,
-          icon: f.icon,
-          isCustom: false,
-          sortOrder: existing.length + i,
+    // ── Step 3: add extracted photos to the first hall ─────────────────────────
+    const firstHallId = hallTemplates[0]?.hallId ?? null;
+    if (firstHallId && photos.length > 0) {
+      await db.hallPhoto.createMany({
+        data: photos.slice(0, 20).map((url, i) => ({
+          hallId: firstHallId,
+          url,
+          caption: null,
+          sortOrder: i,
         })),
+        skipDuplicates: true,
       });
     }
 
-    return {
-      venueId: venue.id,
-      hallsCreated: createdHalls,
-      facilitiesAdded: toCreate.map(f => f.name),
-    };
-  });
-
-  return NextResponse.json(result, { status: 201 });
+    return NextResponse.json({ venueId, hallsCreated: createdHalls, facilitiesAdded, photosAdded: photos.length }, { status: 201 });
+  } catch (err) {
+    console.error("ai-setup error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }

@@ -35,7 +35,8 @@ const USER_PROMPT = (text: string) => `Extract information about this convention
       "capacityStanding": number | null, // standing/reception capacity
       "priceRupees": number | null      // price per booking slot in rupees (0 if not mentioned)
     }
-  ]
+  ],
+  "photos": string[]                    // direct image URLs found in the page (jpg/png/webp), max 20
 }
 
 Raw text / page content:
