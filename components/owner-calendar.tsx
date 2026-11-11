@@ -790,6 +790,14 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                     placeholder="9876543210"
                     value={addForm.customerPhone}
                     onChange={(e) => setAddForm((f) => ({ ...f, customerPhone: e.target.value }))}
+                    // a returning customer's name fills in once the number is typed
+                    onBlur={async (e) => {
+                      const digits = e.target.value.replace(/\D/g, "").slice(-10);
+                      if (digits.length < 10) return;
+                      const res = await fetch(`/api/owner/customers?search=${digits}&pageSize=25`).then((r) => r.json()).catch(() => null);
+                      const name: string | undefined = (res?.data ?? res?.customers ?? [])[0]?.name;
+                      if (name) setAddForm((f) => (f.customerName.trim() ? f : { ...f, customerName: name }));
+                    }}
                     maxLength={15}
                     className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                     required

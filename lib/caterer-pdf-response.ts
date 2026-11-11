@@ -8,11 +8,19 @@ type CatererRow = Parameters<typeof toParty>[0] & { orgId: string | null };
 type CustomerRow = Parameters<typeof toParty>[1];
 type BillRow = Parameters<typeof toInvoiceBill>[0];
 
-// The business logo as PNG/JPEG bytes (a PDF cannot hold WebP), or null
+// The business logo as PNG/JPEG bytes (a PDF cannot hold WebP, so those are converted), or null
 async function logoBytes(orgId: string | null) {
   if (!orgId) return null;
   const logo = await db.orgLogo.findUnique({ where: { orgId } });
-  return logo && (logo.contentType === "image/png" || logo.contentType === "image/jpeg") ? Buffer.from(logo.data) : null;
+  if (!logo) return null;
+  const data = Buffer.from(logo.data);
+  if (logo.contentType === "image/png" || logo.contentType === "image/jpeg") return data;
+  try {
+    const { default: sharp } = await import("sharp");
+    return await sharp(data).png().toBuffer();
+  } catch {
+    return null;
+  }
 }
 
 const safe = (s: string) => s.replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-").slice(0, 40) || "customer";

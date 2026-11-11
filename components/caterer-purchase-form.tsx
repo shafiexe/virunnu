@@ -1,7 +1,8 @@
 "use client";
 
 import { enterToNext } from "@/hooks/use-enter-next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDraft } from "@/hooks/use-draft";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, X } from "lucide-react";
 import { PURCHASE_CATEGORIES } from "@/lib/caterer-purchases";
@@ -59,6 +60,19 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
+  // the way of paying used last time is chosen already
+  useEffect(() => { try { const m = localStorage.getItem("virunnu.payMode"); if (m && !initial) setMethod(m); } catch { /* ignore */ } }, [initial]);
+
+  // an unfinished new purchase is kept, so nothing typed is lost
+  const draft = useDraft("virunnu.draft.purchase", { date, supplierId, billNo, category, employeeId, orderId, notes, rows, justTotal, total, paid, method }, { enabled: !initial, meaningful: (v) => !!(v.supplierId || v.rows.length || v.total || v.billNo) });
+  function restoreDraft() {
+    const d = draft.pending?.value;
+    if (!d) return;
+    setDate(d.date); setSupplierId(d.supplierId); setBillNo(d.billNo); setCategory(d.category); setEmployeeId(d.employeeId); setOrderId(d.orderId);
+    setNotes(d.notes); setRows(d.rows); setJustTotal(d.justTotal); setTotal(d.total); setPaid(d.paid); setMethod(d.method);
+    draft.dismiss();
+  }
+
   const itemsTotal = rows.reduce((s, r) => s + num(r.quantity) * num(r.rate), 0);
   const grand = justTotal || rows.length === 0 ? num(total) : itemsTotal;
   const paidNum = num(paid);
@@ -104,6 +118,8 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not save"); return; }
+      try { if (paidNum > 0) localStorage.setItem("virunnu.payMode", method); } catch { /* ignore */ }
+      draft.clear();
       router.push("/caterer/purchases");
       router.refresh();
     } finally {
@@ -113,6 +129,15 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
 
   return (
     <div className="space-y-5 pb-28" onKeyDown={enterToNext(() => { if (!saving) submit(); })}>
+      {draft.pending && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+          <span>You have an unfinished purchase from {new Date(draft.pending.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}.</span>
+          <span className="flex gap-2">
+            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white">Continue it</button>
+            <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold">Start fresh</button>
+          </span>
+        </div>
+      )}
       <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
         <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Purchase details</h2>
         <div className="grid gap-3 sm:grid-cols-2">
