@@ -6,12 +6,13 @@ import { CatererSearchForm } from "@/components/caterer-search-form";
 import { VenueCard } from "@/components/venue-card";
 import { CatererCard } from "@/components/caterer-card";
 import { db } from "@/lib/db";
+import { matchCaterers } from "@/lib/caterer-search";
 import { Building2, UtensilsCrossed, CheckCircle2 } from "lucide-react";
 import { HeroBackground } from "@/components/hero-background";
 import { VirunnuLogo } from "@/components/virunnu-logo";
 import { getTranslations } from "next-intl/server";
 
-type Props = { searchParams: Promise<{ city?: string; guests?: string; date?: string; type?: string; lat?: string; lng?: string; radiusKm?: string; catCity?: string; catCuisine?: string }> };
+type Props = { searchParams: Promise<{ city?: string; guests?: string; date?: string; type?: string; lat?: string; lng?: string; radiusKm?: string; catCity?: string; catCuisine?: string; catGuests?: string; catDate?: string; catMeal?: string }> };
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
@@ -45,7 +46,7 @@ export default async function HomePage({ searchParams }: Props) {
   const nearbyFilter = sp.lat && sp.lng && sp.radiusKm
     ? { lat: parseFloat(sp.lat), lng: parseFloat(sp.lng), radiusKm: parseFloat(sp.radiusKm) }
     : null;
-  const isCatFiltering = !!(sp.catCity || sp.catCuisine);
+  const isCatFiltering = !!(sp.catCity || sp.catCuisine || sp.catGuests || sp.catDate || sp.catMeal);
 
 
   // Build halls.some filter — merge guests capacity + date availability into a single condition
@@ -108,7 +109,6 @@ export default async function HomePage({ searchParams }: Props) {
       where: {
         approved: true,
         disabled: false,
-        ...(sp.catCity ? { city: { contains: sp.catCity, mode: "insensitive" } } : {}),
       },
       orderBy: { name: "asc" },
     }),
@@ -122,11 +122,17 @@ export default async function HomePage({ searchParams }: Props) {
     : allVenues.map((v) => ({ ...v, distanceKm: undefined }));
   const venues = venuesWithDistance;
 
-  const caterers = sp.catCuisine
-    ? allCaterers.filter((c) =>
-        c.cuisines.some((cu) => cu.toLowerCase().includes(sp.catCuisine!.toLowerCase()))
-      )
+  const catGuests = sp.catGuests ? parseInt(sp.catGuests) : undefined;
+  const cuisineMatched = sp.catCuisine
+    ? allCaterers.filter((c) => c.cuisines.some((cu) => cu.toLowerCase().includes(sp.catCuisine!.toLowerCase())))
     : allCaterers;
+  const { caterers, tooLate } = matchCaterers(cuisineMatched, {
+    place: sp.catCity,
+    guests: catGuests && catGuests > 0 ? catGuests : undefined,
+    date: sp.catDate,
+    meal: sp.catMeal,
+  });
+  const enquiry = { place: sp.catCity, guests: catGuests, date: sp.catDate, meal: sp.catMeal };
 
   return (
     <div className="bg-zinc-50 dark:bg-zinc-950">
@@ -233,13 +239,16 @@ export default async function HomePage({ searchParams }: Props) {
 
           {/* Catering search */}
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm p-4 sm:p-5 mb-5">
-            <CatererSearchForm defaults={{ catCity: sp.catCity, catCuisine: sp.catCuisine }} />
+            <CatererSearchForm defaults={{ catCity: sp.catCity, catCuisine: sp.catCuisine, catGuests: sp.catGuests, catDate: sp.catDate, catMeal: sp.catMeal }} />
           </div>
 
           {caterers.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-10 text-center">
               <UtensilsCrossed className="h-8 w-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
               <p className="text-zinc-500 font-medium">{tc("noCaterers")}</p>
+              {tooLate > 0 && (
+                <p className="text-sm text-zinc-500 mt-1">{tooLate} team{tooLate !== 1 ? "s" : ""} serve this area but need more notice for that date — try a later date.</p>
+              )}
               {isCatFiltering && (
                 <>
                   <p className="text-sm text-zinc-400 mt-1">{tc("noCaterersSub")}</p>
@@ -252,7 +261,7 @@ export default async function HomePage({ searchParams }: Props) {
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {caterers.map((c) => (
-                <CatererCard key={c.id} caterer={c} />
+                <CatererCard key={c.id} caterer={c} enquiry={enquiry} />
               ))}
             </div>
           )}

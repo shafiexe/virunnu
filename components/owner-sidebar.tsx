@@ -10,21 +10,26 @@ import { cn } from "@/lib/utils";
 
 const NAV = [
   { href: "/owner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/owner/calendar", icon: CalendarDays, label: "Schedule" },
+  { href: "/owner/calendar", icon: CalendarDays, label: "Calendar" },
   { href: "/owner/bookings", icon: CalendarCheck, label: "Bookings" },
   { href: "/owner/customers", icon: Users2, label: "Customers" },
-  { href: "/owner/venues", icon: Building2, label: "My Venues" },
+  { href: "/owner/venues", icon: Building2, label: "Venue Profile" },
   { href: "/owner/expenses", icon: Receipt, label: "Expenses" },
   { href: "/owner/workflows", icon: Workflow, label: "Templates" },
 ];
 
-export function OwnerSidebar() {
+export function OwnerSidebar({ logoUrl, name }: { logoUrl?: string | null; name?: string }) {
   const pathname = usePathname();
   return (
     <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-3 gap-0.5">
-      <div className="px-3 mb-1">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
-          Convention Centre
+      <div className="px-4 mb-2 flex items-center gap-2.5">
+        {logoUrl
+          // eslint-disable-next-line @next/next/no-img-element
+          ? <img src={logoUrl} alt="" className="h-9 w-9 shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white object-contain p-0.5" />
+          : null}
+        <span className="min-w-0">
+          {name && <span className="block truncate text-sm font-bold text-zinc-900 dark:text-zinc-50">{name}</span>}
+          <span className="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Convention Centre</span>
         </span>
       </div>
       {NAV.map(({ href, icon: Icon, label }) => {

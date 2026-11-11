@@ -2,13 +2,14 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, Search, Download, LayoutList, LayoutGrid } from "lucide-react";
+import { AlertCircle, Search, Download, LayoutList, LayoutGrid, Plus } from "lucide-react";
 import { usePaginated } from "@/hooks/use-paginated";
 import { PaginationBar } from "@/components/pagination-bar";
 import { SendReminderButton } from "@/components/send-reminder";
 import { OwnerBookingActions } from "@/components/owner-booking-actions";
 import { QuickPayButton } from "@/components/quick-pay-button";
 import { PendingRequests } from "@/components/pending-requests";
+import { addonSummary, type BookingAddonItem } from "@/components/booking-addons-button";
 import { cn } from "@/lib/utils";
 
 type BookingStatus = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
@@ -47,8 +48,9 @@ type Booking = {
   paymentMethod: string; createdAt: string;
   user: { name: string | null; phone: string } | null;
   guestName: string | null; guestPhone: string | null;
-  hallSlot: { date: string; template: { name: string; startTime: string; endTime: string }; hall: { name: string; venue: { name: string } } };
+  hallSlot: { date: string; template: { name: string; startTime: string; endTime: string }; hall: { name: string; venue: { id?: string; name: string } } };
   payment: { status: string; amountPaise: number } | null;
+  addons?: BookingAddonItem[];
 };
 
 type PendingBooking = {
@@ -86,7 +88,7 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
         {/* Top row: date/slot + status badge */}
         <div className="flex items-start justify-between gap-2">
           <div>
-            <div className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm">{date}</div>
+            <Link href={`/owner/bookings/${b.id}`} className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm hover:text-amber-600 hover:underline">{date}</Link>
             <div className="text-xs text-zinc-500 mt-0.5">
               {b.hallSlot.template.name} · {b.hallSlot.template.startTime}–{b.hallSlot.template.endTime}
             </div>
@@ -104,7 +106,7 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
           </div>
           <div className="min-w-0">
             <div className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">{name}</div>
-            <div className="text-xs text-zinc-500 truncate">{phone}</div>
+            <div className="text-xs text-zinc-500 truncate">{phone !== "—" ? <a href={`tel:${phone}`} className="hover:text-amber-600 hover:underline">{phone}</a> : phone}</div>
           </div>
         </div>
 
@@ -112,6 +114,7 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
         <div className="flex items-end justify-between gap-2">
           <div>
             <div className="text-base font-bold text-zinc-900 dark:text-zinc-50">₹{(b.totalPaise / 100).toLocaleString("en-IN")}</div>
+            {(b.addons?.length ?? 0) > 0 && <div className="text-xs text-zinc-400">incl. {addonSummary(b.addons!)}</div>}
             {disc > 0 && <div className="text-xs text-amber-600 dark:text-amber-400">🏷️ −₹{(disc / 100).toLocaleString("en-IN")}</div>}
           </div>
           <div className="text-right text-xs space-y-0.5">
@@ -128,6 +131,9 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
 
         {/* Actions */}
         <div className="flex items-center gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex-wrap">
+          <Link href={`/owner/bookings/${b.id}`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline">
+            Details
+          </Link>
           <Link href={`/owner/bookings/${b.id}/invoice`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline">
             Invoice
           </Link>
@@ -151,6 +157,7 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
               bookingId={b.id} status={status} totalPaise={b.totalPaise} advancePaise={b.advancePaise}
               paymentMethod={b.paymentMethod as "ONLINE" | "CASH"} cancelReason={b.cancelReason}
               discountPaise={b.discountPaise} discountReason={b.discountReason}
+              venueId={b.hallSlot.hall.venue.id} addons={b.addons}
               onSuccess={onSuccess}
             />
           </div>
@@ -162,9 +169,11 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export function OwnerBookingsTable() {
-  const [status, setStatus] = useState("ALL");
-  const [searchInput, setSearchInput] = useState("");
+export type BookingsUrlState = { status: string; search: string; page: number; pageSize: number };
+
+export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
+  const [status, setStatus] = useState(initial.status);
+  const [searchInput, setSearchInput] = useState(initial.search);
   const [pending, setPending] = useState<PendingBooking[]>([]);
   const [view, setView] = useState<"list" | "card">("list");
   useEffect(() => {
@@ -175,7 +184,24 @@ export function OwnerBookingsTable() {
   }, []);
 
   const { data: bookings, total, totalPages, page, pageSize, loading, error, goToPage, changePageSize, onSearchChange, changeExtraParams, refresh } =
-    usePaginated<Booking>({ url: "/api/owner/bookings", defaultPageSize: 50 });
+    usePaginated<Booking>({
+      url: "/api/owner/bookings",
+      defaultPageSize: initial.pageSize,
+      initialPage: initial.page,
+      initialSearch: initial.search,
+      extraParams: initial.status !== "ALL" ? { status: initial.status } : {},
+    });
+
+  // Keep the filters in the address bar so the view can be shared or reloaded as-is.
+  useEffect(() => {
+    const p = new URLSearchParams();
+    if (status !== "ALL") p.set("status", status);
+    if (searchInput.trim()) p.set("search", searchInput.trim());
+    if (page > 1) p.set("page", String(page));
+    if (pageSize !== 50) p.set("pageSize", String(pageSize));
+    const qs = p.toString();
+    window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
+  }, [status, searchInput, page, pageSize]);
 
   useEffect(() => {
     fetch("/api/owner/bookings?page=1&pageSize=200&status=PENDING")
@@ -212,6 +238,9 @@ export function OwnerBookingsTable() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href="/owner/calendar" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors">
+            <Plus className="h-4 w-4" /> Add booking
+          </Link>
           {/* View toggle */}
           <div className="flex items-center rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
             <button onClick={() => toggleView("list")} title="List view"
@@ -340,18 +369,23 @@ export function OwnerBookingsTable() {
                   const date = new Date(b.hallSlot.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
                   return (
                     <tr key={b.id} className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
-                      <td className="px-4 py-3 text-xs font-medium text-zinc-400 tabular-nums">{(page - 1) * pageSize + idx + 1}</td>
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <div className="text-zinc-900 dark:text-zinc-50">{date}</div>
-                        <div className="text-zinc-500 text-xs">{b.hallSlot.template.name} · {b.hallSlot.template.startTime}–{b.hallSlot.template.endTime}</div>
+                      <td className="p-0 text-xs font-medium text-zinc-400 tabular-nums">
+                        <Link href={`/owner/bookings/${b.id}`} className="block px-4 py-3" aria-label="Open booking details">{(page - 1) * pageSize + idx + 1}</Link>
+                      </td>
+                      <td className="p-0 whitespace-nowrap">
+                        <Link href={`/owner/bookings/${b.id}`} className="block px-4 py-3 hover:bg-amber-50/60 dark:hover:bg-amber-950/10 transition-colors">
+                          <div className="text-zinc-900 dark:text-zinc-50">{date}</div>
+                          <div className="text-zinc-500 text-xs">{b.hallSlot.template.name} · {b.hallSlot.template.startTime}–{b.hallSlot.template.endTime}</div>
+                        </Link>
                       </td>
                       <td className="px-4 py-3">
                         <div className="text-zinc-900 dark:text-zinc-50">{b.user?.name ?? b.guestName ?? "—"}</div>
-                        <div className="text-zinc-500 text-xs">{b.user?.phone ?? b.guestPhone ?? "—"}</div>
+                        <div className="text-zinc-500 text-xs">{(b.user?.phone ?? b.guestPhone) ? <a href={`tel:${b.user?.phone ?? b.guestPhone}`} className="hover:text-amber-600 hover:underline">{b.user?.phone ?? b.guestPhone}</a> : "—"}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="space-y-0.5 text-xs">
                           <div className="font-semibold text-sm text-zinc-900 dark:text-zinc-50">₹{(b.totalPaise / 100).toLocaleString("en-IN")}</div>
+                          {(b.addons?.length ?? 0) > 0 && <div className="text-zinc-400 max-w-[180px] truncate" title={addonSummary(b.addons!)}>incl. {addonSummary(b.addons!)}</div>}
                           {disc > 0 && <div className="text-amber-600 dark:text-amber-400" title={b.discountReason ?? undefined}>🏷️ −₹{(disc / 100).toLocaleString("en-IN")}{b.discountReason && <span className="text-zinc-400 ml-1">· {b.discountReason}</span>}</div>}
                           {!cancelled && !awaiting && paid > 0 && <div className="text-emerald-600 dark:text-emerald-400">Paid ₹{(paid / 100).toLocaleString("en-IN")}</div>}
                           {!cancelled && !awaiting && balance > 0 && <div className="text-red-500 dark:text-red-400 font-medium">Due ₹{(balance / 100).toLocaleString("en-IN")}</div>}
@@ -368,6 +402,7 @@ export function OwnerBookingsTable() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2 flex-wrap">
+                          <Link href={`/owner/bookings/${b.id}`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline whitespace-nowrap">Details</Link>
                           <Link href={`/owner/bookings/${b.id}/invoice`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline whitespace-nowrap">Invoice</Link>
                           {(b.status === "PENDING" || b.status === "APPROVED" || b.status === "ADVANCE_PAID") && (
                             <QuickPayButton
@@ -389,6 +424,7 @@ export function OwnerBookingsTable() {
                             bookingId={b.id} status={s} totalPaise={b.totalPaise} advancePaise={b.advancePaise}
                             paymentMethod={b.paymentMethod as "ONLINE" | "CASH"} cancelReason={b.cancelReason}
                             discountPaise={b.discountPaise} discountReason={b.discountReason}
+                            venueId={b.hallSlot.hall.venue.id} addons={b.addons}
                             onSuccess={refresh}
                           />
                         </div>

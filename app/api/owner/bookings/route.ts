@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { z } from "zod";
 import { BookingStatus, SlotStatus } from "@prisma/client";
+import { priceAddon } from "@/lib/addons";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -33,8 +34,9 @@ export async function GET(req: NextRequest) {
       where,
       include: {
         user: { select: { phone: true, name: true } },
-        hallSlot: { include: { template: true, hall: { include: { venue: { select: { name: true } } } } } },
+        hallSlot: { include: { template: true, hall: { include: { venue: { select: { id: true, name: true } } } } } },
         payment: true,
+        addons: true,
       },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
@@ -54,6 +56,7 @@ const schema = z.object({
   customerName: z.string().min(1).max(100).optional(),
   amountRupees: z.number().int().min(1),
   advanceRupees: z.number().int().min(0).optional(),
+  addons: z.array(z.object({ id: z.string(), quantity: z.number().min(0.5).max(48).default(1) })).max(20).optional(),
 });
 
 export async function POST(req: NextRequest) {
@@ -68,13 +71,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
 
-  const { venueId, hallId, templateId, date, customerPhone, customerName, amountRupees, advanceRupees } = parsed.data;
+  const { venueId, hallId, templateId, date, customerPhone, customerName, amountRupees, advanceRupees, addons: addonPicks } = parsed.data;
 
   // Verify hall belongs to this owner's venue
   const hall = await db.hall.findFirst({
     where: { id: hallId, venueId, venue: { orgId: session.orgId! } },
   });
   if (!hall) return NextResponse.json({ error: "Hall not found" }, { status: 404 });
+
+  const dateObj = new Date(date);
+
+  const dateBlocked = await db.blockedDate.findUnique({ where: { hallId_date: { hallId, date: dateObj } } });
+  if (dateBlocked) {
+    return NextResponse.json({ error: "This date is blocked — unblock it before adding a booking" }, { status: 409 });
+  }
+
+  // Chosen add-ons are priced from the venue's own list, never from the request
+  const venueAddons = addonPicks?.length
+    ? await db.venueAddon.findMany({ where: { id: { in: addonPicks.map((p) => p.id) }, venueId, active: true } })
+    : [];
+  if (venueAddons.length !== new Set((addonPicks ?? []).map((p) => p.id)).size) {
+    return NextResponse.json({ error: "An add-on you picked is no longer available" }, { status: 400 });
+  }
+  const addons = venueAddons.map((a) => ({ name: a.name, ...priceAddon(a, addonPicks!.find((p) => p.id === a.id)!.quantity) }));
+  const addonsPaise = addons.reduce((sum, a) => sum + a.pricePaise, 0);
 
   // Find or create customer
   let user = await db.user.findUnique({ where: { phone: customerPhone } });
@@ -85,8 +105,6 @@ export async function POST(req: NextRequest) {
   } else if (customerName && !user.name) {
     user = await db.user.update({ where: { id: user.id }, data: { name: customerName } });
   }
-
-  const dateObj = new Date(date);
 
   const result = await db.$transaction(async (tx) => {
     const existing = await tx.hallSlot.findUnique({
@@ -111,7 +129,7 @@ export async function POST(req: NextRequest) {
       slotId = existing.id;
     }
 
-    const totalPaise = amountRupees * 100;
+    const totalPaise = amountRupees * 100 + addonsPaise;
     const advPaise = advanceRupees != null ? advanceRupees * 100 : null;
     const bookingStatus =
       advPaise != null && advPaise > 0 && advPaise < totalPaise
@@ -127,6 +145,7 @@ export async function POST(req: NextRequest) {
         advancePaise: advPaise,
         status: bookingStatus,
         paymentMethod: "CASH",
+        addons: { create: addons },
       },
     });
 
@@ -137,7 +156,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (!result) {
-    return NextResponse.json({ error: "Slot is already booked or on hold" }, { status: 409 });
+    return NextResponse.json({ error: "That slot is booked, held or blocked — unblock it first" }, { status: 409 });
   }
 
   return NextResponse.json({ booking: result, user }, { status: 201 });

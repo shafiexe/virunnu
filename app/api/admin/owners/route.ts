@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { z } from "zod";
-
-const createSchema = z.object({
-  orgName: z.string().min(2),
-  ownerName: z.string().min(1),
-  ownerPhone: z.string().min(10),
-});
+import { centerSchema, createCenter, CenterError, sendCenterCredentials } from "@/services/center-setup.service";
 
 export async function GET() {
   const session = await getSession();
@@ -30,19 +24,17 @@ export async function POST(req: NextRequest) {
   if (!session || session.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json().catch(() => null);
-  const parsed = createSchema.safeParse(body);
+  const parsed = centerSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
+  if (!parsed.data.email) return NextResponse.json({ error: "Email is required" }, { status: 400 });
 
-  const { orgName, ownerName, ownerPhone } = parsed.data;
-
-  const existing = await db.user.findUnique({ where: { phone: ownerPhone } });
-  if (existing) return NextResponse.json({ error: "A user with this phone already exists" }, { status: 409 });
-
-  const org = await db.$transaction(async (tx) => {
-    const org = await tx.organization.create({ data: { name: orgName, type: "CONVENTION" } });
-    await tx.user.create({ data: { phone: ownerPhone, name: ownerName, role: "OWNER", orgId: org.id } });
-    return org;
-  });
-
-  return NextResponse.json({ orgId: org.id }, { status: 201 });
+  try {
+    const created = await createCenter(parsed.data);
+    sendCenterCredentials({ name: parsed.data.name, phone: created.phone, email: parsed.data.email, password: created.password });
+    return NextResponse.json(created, { status: 201 });
+  } catch (err) {
+    if (err instanceof CenterError) return NextResponse.json({ error: err.message }, { status: err.status });
+    console.error("[admin/owners POST]", err);
+    return NextResponse.json({ error: "Could not create the convention center" }, { status: 500 });
+  }
 }

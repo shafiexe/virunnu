@@ -139,12 +139,12 @@ export async function POST(req: NextRequest) {
   try {
     const message = await client.messages.create({
       model: "claude-haiku-5-5",
-      max_tokens: 2048,
+      max_tokens: 8000,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: USER_PROMPT(rawText.slice(0, 5000)) }],
     });
 
-    const text = message.content[0].type === "text" ? message.content[0].text : "";
+    const text = message.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n");
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {

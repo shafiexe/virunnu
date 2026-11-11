@@ -25,7 +25,10 @@ export async function GET(req: NextRequest) {
 
   const venue = await db.venue.findFirst({
     where: { id: venueId, orgId: session.orgId! },
-    include: { halls: { include: { slotTemplates: true } } },
+    include: {
+      halls: { include: { slotTemplates: true } },
+      addons: { where: { active: true }, orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] },
+    },
   });
 
   if (!venue) return NextResponse.json({ error: "Venue not found" }, { status: 404 });
@@ -52,6 +55,7 @@ export async function GET(req: NextRequest) {
             guestName: true,
             guestPhone: true,
             user: { select: { name: true, phone: true } },
+            addons: { select: { id: true, name: true, pricePaise: true, unit: true, quantity: true, unitPricePaise: true } },
           },
           take: 1,
         },

@@ -220,8 +220,8 @@ export function OwnerCustomersTable() {
                       const balance = Math.max(0, net - c.advancePaise);
                       return (
                         <tr key={c.id} className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
-                          <td className="px-4 py-3">
-                            <Link href={`/owner/customers/${c.userId ?? c.id}`} className="flex items-center gap-3 group">
+                          <td className="p-0">
+                            <Link href={`/owner/customers/${c.userId ?? c.id}`} className="flex items-center gap-3 group px-4 py-3 hover:bg-amber-50/60 dark:hover:bg-amber-950/10 transition-colors">
                               <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0">
                                 {((c.name ?? c.phone ?? "?")[0]).toUpperCase()}
                               </div>

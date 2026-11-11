@@ -70,7 +70,7 @@ export function QuickPayButton({ bookingId, totalPaise, advancePaise, onSuccess 
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Record payment received</h3>
+              <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Payment received</h3>
               <button onClick={() => setOpen(false)} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
                 <X className="h-4 w-4" />
               </button>

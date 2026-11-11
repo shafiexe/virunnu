@@ -233,14 +233,14 @@ function CashPaymentEditor({ booking }: { booking: Booking }) {
         className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-600 transition-colors"
       >
         <Banknote className="h-3 w-3" />
-        Record payment
+        Payment received
       </button>
     );
   }
 
   return (
     <div className="mt-3 p-3 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20 space-y-2 w-full">
-      <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Record payment received</p>
+      <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">Payment received</p>
 
       {/* Method selector */}
       <div className="grid grid-cols-3 gap-1.5">

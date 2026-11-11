@@ -10,7 +10,8 @@ import { CancelBookingButton } from "@/components/cancel-booking-button";
 import { AdvancePaymentForm, RemainingPaymentSection } from "@/components/advance-payment";
 import { CheckCircle, MapPin, ArrowLeft, Calendar, Clock, CreditCard, AlertCircle } from "lucide-react";
 import { HoldCountdown } from "@/components/hold-countdown";
-import { GST_RATE } from "@/lib/gst";
+import { splitForVenue } from "@/lib/gst";
+import { addonDetail } from "@/lib/addons";
 
 type Props = { params: Promise<{ bookingId: string }> };
 
@@ -54,8 +55,7 @@ export default async function BookingPage({ params }: Props) {
 
   const heldUntil = booking.hallSlot.heldUntil ? new Date(booking.hallSlot.heldUntil) : null;
   const advancePaise = booking.advancePaise ?? null;
-  const basePaise = Math.round(booking.totalPaise / (1 + GST_RATE / 100));
-  const gstPaise = booking.totalPaise - basePaise;
+  const { basePaise, gstPaise, totalRate } = splitForVenue(booking.totalPaise, venue);
 
   return (
     <div className="mx-auto max-w-xl px-4 py-6 space-y-6">
@@ -118,7 +118,14 @@ export default async function BookingPage({ params }: Props) {
               ₹{(basePaise / 100).toLocaleString("en-IN")}
             </div>
             <div className="text-xs text-zinc-500 space-y-0.5">
-              <div>+₹{(gstPaise / 100).toLocaleString("en-IN")} GST (18%)</div>
+              {booking.addons.length > 0 && (
+                <div className="pb-0.5">
+                  {booking.addons.map((a) => (
+                    <div key={a.id}>Incl. {a.name}{addonDetail(a) ? ` (${addonDetail(a)})` : ""} ₹{(a.pricePaise / 100).toLocaleString("en-IN")}</div>
+                  ))}
+                </div>
+              )}
+              {gstPaise > 0 && <div>+₹{(gstPaise / 100).toLocaleString("en-IN")} GST ({totalRate}%)</div>}
               <div className="font-semibold text-zinc-700 dark:text-zinc-300">
                 Total ₹{(booking.totalPaise / 100).toLocaleString("en-IN")}
               </div>
@@ -138,7 +145,7 @@ export default async function BookingPage({ params }: Props) {
         {booking.status === "PENDING" && (
           <div className="px-5 pb-5">
             <div className="rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 px-4 py-3 text-xs text-amber-700 dark:text-amber-400">
-              The owner will contact you directly to confirm this booking.
+              The convention center will contact you directly to confirm this booking.
             </div>
           </div>
         )}

@@ -15,7 +15,7 @@ const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; styl
     label: "Request received",
     icon: <Clock className="h-5 w-5" />,
     style: "bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/40",
-    note: "Your contact request has been sent. The owner will call you to confirm.",
+    note: "Your contact request has been sent. The convention center will call you to confirm.",
   },
   APPROVED: {
     label: "Approved — payment pending",

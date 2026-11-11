@@ -12,7 +12,7 @@ const schema = z.object({
 
 export async function GET(_req: NextRequest) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId)
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const employees = await db.employee.findMany({
@@ -25,7 +25,7 @@ export async function GET(_req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId)
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId)
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await req.json().catch(() => null);

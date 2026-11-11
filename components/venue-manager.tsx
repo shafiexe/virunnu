@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VenueProfileCard } from "@/components/venue-profile-card";
+import { VenueAddonsManager } from "@/components/venue-addons-manager";
 
 type SlotTemplate = { id: string; name: string; startTime: string; endTime: string };
 type HallPhoto = { id: string; url: string; caption: string | null };
@@ -39,6 +40,12 @@ type Venue = {
   email: string | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
+  youtubeUrl?: string | null;
+  linkedinUrl?: string | null;
+  twitterUrl?: string | null;
+  gstEnabled?: boolean;
+  gstRate?: number;
+  addons?: { id: string; name: string; pricePaise: number; unit: "FIXED" | "HOUR"; active: boolean }[];
   lat: number;
   lng: number;
   halls: Hall[];
@@ -51,8 +58,14 @@ const AMENITIES = [
 ];
 
 function TemplateTag({
-  tpl, onDelete,
-}: { tpl: SlotTemplate; onDelete: (id: string) => Promise<string | null> }) {
+  tpl, onDelete, onUpdate,
+}: {
+  tpl: SlotTemplate;
+  onDelete: (id: string) => Promise<string | null>;
+  onUpdate: (id: string, data: { name: string; startTime: string; endTime: string }) => Promise<string | null>;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState({ name: tpl.name, startTime: tpl.startTime, endTime: tpl.endTime });
   const [confirm, setConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -63,6 +76,45 @@ function TemplateTag({
     const err = await onDelete(tpl.id);
     setLoading(false);
     if (err) { setError(err); setConfirm(false); }
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    const err = await onUpdate(tpl.id, draft);
+    setLoading(false);
+    if (err) setError(err);
+    else setEditing(false);
+  }
+
+  if (editing) {
+    const input = "rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-amber-500";
+    return (
+      <form onSubmit={handleSave} className="flex flex-wrap items-end gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-amber-300 dark:border-amber-700/60">
+        <div className="space-y-1">
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Slot name</label>
+          <input className={cn(input, "w-28 block")} value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} required autoFocus />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Start</label>
+          <input type="time" className={cn(input, "w-28 block")} value={draft.startTime} onChange={(e) => setDraft((d) => ({ ...d, startTime: e.target.value }))} required />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">End</label>
+          <input type="time" className={cn(input, "w-28 block")} value={draft.endTime} onChange={(e) => setDraft((d) => ({ ...d, endTime: e.target.value }))} required />
+        </div>
+        <div className="flex gap-1.5">
+          <button type="submit" disabled={loading} className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold disabled:opacity-50">
+            {loading ? "…" : "Save"}
+          </button>
+          <button type="button" onClick={() => { setEditing(false); setError(""); setDraft({ name: tpl.name, startTime: tpl.startTime, endTime: tpl.endTime }); }} className="px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
+            Cancel
+          </button>
+        </div>
+        {error && <p className="w-full text-xs text-red-500">{error}</p>}
+      </form>
+    );
   }
 
   return (
@@ -91,9 +143,14 @@ function TemplateTag({
           </button>
         </>
       ) : (
-        <button onClick={() => { setConfirm(true); setError(""); }} className="ml-0.5 text-zinc-400 hover:text-red-500 transition-colors">
-          <X className="h-3 w-3" />
-        </button>
+        <>
+          <button onClick={() => { setDraft({ name: tpl.name, startTime: tpl.startTime, endTime: tpl.endTime }); setEditing(true); setError(""); }} title="Edit slot" className="ml-0.5 text-zinc-400 hover:text-amber-600 transition-colors">
+            <Pencil className="h-3 w-3" />
+          </button>
+          <button onClick={() => { setConfirm(true); setError(""); }} title="Delete slot" className="text-zinc-400 hover:text-red-500 transition-colors">
+            <X className="h-3 w-3" />
+          </button>
+        </>
       )}
     </span>
   );
@@ -287,6 +344,18 @@ function HallCard({
     }
   }
 
+  async function updateTemplate(templateId: string, data: { name: string; startTime: string; endTime: string }): Promise<string | null> {
+    const res = await fetch(`/api/owner/halls/${hall.id}/templates/${templateId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) return json.error ?? "Could not update slot";
+    setTemplates((prev) => prev.map((t) => (t.id === templateId ? { ...t, ...json.template } : t)));
+    return null;
+  }
+
   async function deleteTemplate(templateId: string): Promise<string | null> {
     const res = await fetch(`/api/owner/halls/${hall.id}/templates/${templateId}`, { method: "DELETE" });
     const data = await res.json();
@@ -294,6 +363,21 @@ function HallCard({
     setTemplates((prev) => prev.filter((t) => t.id !== templateId));
     return null;
   }
+
+  const slotsSection = (
+    <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-2">Slots</div>
+      <div className="flex flex-wrap gap-2">
+        {templates.map((tpl) => (
+          <TemplateTag key={tpl.id} tpl={tpl} onDelete={deleteTemplate} onUpdate={updateTemplate} />
+        ))}
+        <AddTemplateForm
+          hallId={hall.id}
+          onAdded={(tpl) => setTemplates((prev) => [...prev, tpl])}
+        />
+      </div>
+    </div>
+  );
 
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
@@ -349,6 +433,7 @@ function HallCard({
       )}
 
       {editing ? (
+        <>
         <form onSubmit={saveEdit} className="p-5 space-y-4">
           <div className="flex items-center justify-end">
             <button type="button" onClick={() => setEditing(false)} className="text-zinc-400 hover:text-zinc-600">
@@ -502,6 +587,8 @@ function HallCard({
             </button>
           </div>
         </form>
+        <div className="px-4 pb-4">{slotsSection}</div>
+        </>
       ) : (
         <div className="p-4">
           <div className="flex items-start justify-between gap-3">
@@ -626,19 +713,7 @@ function HallCard({
           )}
           {photoError && <p className="text-xs text-red-500 mt-1">{photoError}</p>}
 
-          {/* Slot templates */}
-          <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-            <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-2">Slots</div>
-            <div className="flex flex-wrap gap-2">
-              {templates.map((tpl) => (
-                <TemplateTag key={tpl.id} tpl={tpl} onDelete={deleteTemplate} />
-              ))}
-              <AddTemplateForm
-                hallId={hall.id}
-                onAdded={(tpl) => setTemplates((prev) => [...prev, tpl])}
-              />
-            </div>
-          </div>
+          {slotsSection}
         </div>
       )}
     </div>
@@ -679,12 +754,18 @@ function VenueCard({ venue: initialVenue }: { venue: Venue }) {
           lng: initialVenue.lng,
           instagramUrl: initialVenue.instagramUrl,
           facebookUrl: initialVenue.facebookUrl,
+          youtubeUrl: initialVenue.youtubeUrl,
+          linkedinUrl: initialVenue.linkedinUrl,
+          twitterUrl: initialVenue.twitterUrl,
+          gstEnabled: initialVenue.gstEnabled,
+          gstRate: initialVenue.gstRate,
         }}
       />
 
       {/* Halls & Slots section */}
       {!collapsed && (
         <>
+          <VenueAddonsManager venueId={initialVenue.id} initial={initialVenue.addons ?? []} />
           <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100 dark:border-zinc-800">
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Halls &amp; Slots</span>
           </div>

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { GST_RATE } from "@/lib/gst";
+import { splitForVenue } from "@/lib/gst";
 import { Calendar, MapPin, ArrowRight } from "lucide-react";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -34,7 +34,7 @@ export default async function MyBookingsPage() {
       hallSlot: {
         include: {
           template: true,
-          hall: { include: { venue: { select: { name: true, city: true } } } },
+          hall: { include: { venue: { select: { name: true, city: true, gstEnabled: true, gstRate: true } } } },
         },
       },
     },
@@ -92,8 +92,7 @@ export default async function MyBookingsPage() {
             };
 
             // Back-compute base from GST-inclusive total (customer bookings always go through withGST)
-            const basePaise = Math.round(b.totalPaise / (1 + GST_RATE / 100));
-            const gstPaise = b.totalPaise - basePaise;
+            const { basePaise, gstPaise } = splitForVenue(b.totalPaise, venue);
 
             return (
               <Link
@@ -121,9 +120,11 @@ export default async function MyBookingsPage() {
                     <div className="text-sm font-bold text-zinc-900 dark:text-zinc-50">
                       ₹{(basePaise / 100).toLocaleString("en-IN")}
                     </div>
-                    <div className="text-[10px] text-zinc-400">
-                      +₹{(gstPaise / 100).toLocaleString("en-IN")} GST
-                    </div>
+                    {gstPaise > 0 && (
+                      <div className="text-[10px] text-zinc-400">
+                        +₹{(gstPaise / 100).toLocaleString("en-IN")} GST
+                      </div>
+                    )}
                   </div>
                   <ArrowRight className="h-4 w-4 text-amber-400" />
                 </div>

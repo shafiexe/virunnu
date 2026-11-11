@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, UtensilsCrossed, X, Chec
   CheckCircle, ExternalLink, Settings, Phone, Mail, Link2, Globe } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { CatererForm } from "@/components/caterer-form";
 
 type Caterer = {
   id: string;
@@ -117,25 +118,6 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
     };
   }
 
-  async function handleAdd() {
-    if (formLoading) return;
-    setError("");
-    setFormLoading(true);
-    try {
-      const res = await fetch("/api/admin/caterers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formToPayload()),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error ?? "Failed"); return; }
-      closeForm();
-      window.location.reload();
-    } finally {
-      setFormLoading(false);
-    }
-  }
-
   async function handleEdit() {
     if (!editId || formLoading) return;
     setError("");
@@ -203,7 +185,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
           onClick={() => { setShowAdd(true); setEditId(null); setForm(EMPTY_FORM); setServices([]); setPhotos([]); setError(""); }}
           className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 transition-colors"
         >
-          <Plus className="h-4 w-4" /> Add caterer
+          <Plus className="h-4 w-4" /> Add catering team
         </button>
       </div>
 
@@ -214,10 +196,11 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
         className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-2.5 text-sm text-zinc-800 dark:text-zinc-200 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-300"
       />
 
-      {(showAdd || editId) && (
+      {showAdd && <CatererForm mode="admin" onClose={closeForm} />}
+      {editId && (
         <div className="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-amber-50/60 dark:bg-amber-950/20 p-5 space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">{showAdd ? "Add caterer" : "Edit caterer"}</h2>
+            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Edit caterer</h2>
             <button onClick={closeForm} className="p-1 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
           </div>
 
@@ -328,12 +311,12 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
             <button
-              onClick={showAdd ? handleAdd : handleEdit}
+              onClick={handleEdit}
               disabled={formLoading}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-60"
             >
               <Check className="h-3.5 w-3.5" />
-              {formLoading ? "Saving…" : showAdd ? "Create" : "Save changes"}
+              {formLoading ? "Saving…" : "Save changes"}
             </button>
             <button onClick={closeForm} className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-500 hover:text-zinc-700 transition-colors">
               Cancel

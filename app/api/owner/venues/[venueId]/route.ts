@@ -22,8 +22,14 @@ const patchSchema = z.object({
   email: z.string().email().nullable().optional(),
   instagramUrl: z.string().nullable().optional(),
   facebookUrl: z.string().nullable().optional(),
+  youtubeUrl: z.string().nullable().optional(),
+  linkedinUrl: z.string().nullable().optional(),
+  twitterUrl: z.string().nullable().optional(),
   lat: z.number().optional(),
   lng: z.number().optional(),
+  gstEnabled: z.boolean().optional(),
+  // rate of each of CGST and SGST — 9 means 9% + 9% = 18%
+  gstRate: z.number().min(0).max(14).optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: Params) {

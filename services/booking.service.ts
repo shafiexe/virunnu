@@ -80,6 +80,7 @@ export async function getBooking(bookingId: string) {
         },
       },
       payment: true,
+      addons: true,
     },
   });
 }

@@ -28,7 +28,7 @@ export default async function OwnerCalendarPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Schedule</h1>
+        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Calendar</h1>
         <p className="text-sm text-zinc-500 mt-0.5">
           View and manage bookings across all your halls
         </p>

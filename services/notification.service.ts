@@ -271,6 +271,10 @@ export async function sendRawWhatsApp(to: string, body: string) {
   return sendWhatsApp(to, body);
 }
 
+export async function sendRawMail(to: string, subject: string, body: string) {
+  return sendMail(to, subject, body);
+}
+
 async function sendWhatsApp(to: string, body: string) {
   const client = whatsappClient();
   if (!client) { console.warn("[WhatsApp] Not configured — skipping"); return; }
@@ -298,7 +302,7 @@ export async function sendCredentialsMail(opts: {
   to: string; name: string; phone: string; password: string; type: "owner" | "caterer";
 }) {
   const { to, name, phone, password, type } = opts;
-  const role = type === "owner" ? "Convention Center Owner" : "Caterer";
+  const role = type === "owner" ? "Convention Center" : "Caterer";
   const appUrl = getAppUrl();
   const transport = getMailTransport();
   await transport.sendMail({
@@ -326,7 +330,7 @@ export async function sendCredentialsWhatsApp(opts: {
   to: string; name: string; phone: string; password: string; type: "owner" | "caterer";
 }) {
   const { to, name, phone, password, type } = opts;
-  const role = type === "owner" ? "Convention Center Owner" : "Caterer";
+  const role = type === "owner" ? "Convention Center" : "Caterer";
   const appUrl = getAppUrl();
   const body = [
     `🎉 *Virunnu — Welcome, ${name}!*`, ``,

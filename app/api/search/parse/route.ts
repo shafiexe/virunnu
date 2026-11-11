@@ -69,12 +69,12 @@ export async function POST(req: NextRequest) {
   try {
     const response = await client.messages.create({
       model: "claude-haiku-4-5",
-      max_tokens: 256,
+      max_tokens: 2000,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: query }],
     });
 
-    const text = response.content[0]?.type === "text" ? response.content[0].text.trim() : "";
+    const text = response.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n").trim();
     const parsed = JSON.parse(text);
     return NextResponse.json(parsed);
   } catch {

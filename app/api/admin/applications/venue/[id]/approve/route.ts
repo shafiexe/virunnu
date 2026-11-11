@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { centerSchema, createCenter, CenterError, sendCenterCredentials } from "@/services/center-setup.service";
 
 function generatePassword(len = 10) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
@@ -17,6 +18,29 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   const app = await db.ownerApplication.findUnique({ where: { id } });
   if (!app) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (app.status !== "PENDING") return NextResponse.json({ error: "Already processed" }, { status: 409 });
+
+  // Full application (new form): one approval creates the account and the live listing.
+  if (app.details) {
+    const parsed = centerSchema.safeParse({
+      ...(app.details as object),
+      name: app.orgName,
+      phone: app.phone,
+      email: app.email ?? undefined,
+    });
+    if (!parsed.success) {
+      return NextResponse.json({ error: `Application details are incomplete: ${parsed.error.issues[0]?.message}` }, { status: 422 });
+    }
+    try {
+      const created = await createCenter(parsed.data);
+      await db.ownerApplication.update({ where: { id }, data: { status: "APPROVED" } });
+      sendCenterCredentials({ name: app.orgName, phone: created.phone, email: app.email ?? undefined, password: created.password });
+      return NextResponse.json({ ok: true, phone: created.phone, password: created.password, venueId: created.venueId });
+    } catch (err) {
+      if (err instanceof CenterError) return NextResponse.json({ error: err.message }, { status: err.status });
+      console.error("[approve venue application]", err);
+      return NextResponse.json({ error: "Could not create the convention center" }, { status: 500 });
+    }
+  }
 
   const plainPassword = generatePassword();
   const hashedPassword = await bcrypt.hash(plainPassword, 10);

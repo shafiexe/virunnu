@@ -2,6 +2,8 @@ import { connection } from "next/server";
 export const instant = false;
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { LogoUploader } from "@/components/logo-uploader";
+import { orgLogoUrl } from "@/lib/org-logo";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { VenueManager } from "@/components/venue-manager";
@@ -18,6 +20,7 @@ export default async function OwnerVenuesPage() {
     db.venue.findMany({
       where: { orgId: session.orgId },
       include: {
+        addons: { orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] },
         halls: {
           include: {
             slotTemplates: { orderBy: { startTime: "asc" } },
@@ -41,7 +44,7 @@ export default async function OwnerVenuesPage() {
       <div>
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">My Venue</h1>
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Venue Profile</h1>
             <p className="text-sm text-zinc-500 mt-0.5">Manage your venue profile, halls, slots and photos</p>
           </div>
           {venues.length === 0 && (
@@ -61,6 +64,8 @@ export default async function OwnerVenuesPage() {
 
         {venues.length === 0 && <VenueManager venues={[]} />}
       </div>
+
+      <LogoUploader initialUrl={await orgLogoUrl(session.orgId)} name={venues[0]?.name ?? "Your venue"} />
 
       {/* ── Amenities & Add-ons ──────────────────────────────── */}
       <div>

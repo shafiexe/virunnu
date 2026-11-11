@@ -37,7 +37,7 @@ const EVENTS: EventDef[] = [
   {
     id: "approved",
     label: "Booking Approved",
-    description: "Sent to customer when owner approves a pending booking.",
+    description: "Sent to customer when the convention center approves a pending booking.",
     channels: [
       { tab: "WhatsApp", bodyKey: "customer_booking_approved_whatsapp" },
       { tab: "Email", bodyKey: "customer_booking_approved_email", subjectKey: "customer_booking_approved_email_subject" },
@@ -46,7 +46,7 @@ const EVENTS: EventDef[] = [
   {
     id: "new_request",
     label: "New Booking Request",
-    description: "Sent to the owner when a customer submits a new booking.",
+    description: "Sent to the convention center when a customer submits a new booking.",
     channels: [
       { tab: "WhatsApp", bodyKey: "owner_new_booking_whatsapp" },
       { tab: "Email", bodyKey: "owner_new_booking_email", subjectKey: "owner_new_booking_email_subject" },

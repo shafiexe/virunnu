@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { syncStartingPrice } from "@/lib/caterer-details";
 
 const schema = z.object({
   name: z.string().min(2).max(80),
@@ -38,18 +39,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Caterer profile not found" }, { status: 404 });
   }
 
-  const item = await db.menuItem.create({
+  // The public menu is part of the price list: a dish is one item that orders and the public page both use
+  const clash = await db.catererItem.findFirst({ where: { catererId: caterer.id, name: { equals: parsed.data.name, mode: "insensitive" } } });
+  if (clash) return NextResponse.json({ error: "A dish with this name is already in the price list" }, { status: 409 });
+  const item = await db.catererItem.create({
     data: {
-      name: parsed.data.name,
-      category: parsed.data.category,
-      description: parsed.data.description,
-      priceRupees: parsed.data.priceRupees,
-      isVeg: parsed.data.isVeg,
-      isSpecial: parsed.data.isSpecial,
-      catererId: caterer.id,
+      catererId: caterer.id, name: parsed.data.name, group: "FOOD", unit: "plate", ratePaise: parsed.data.priceRupees * 100,
+      showOnPublic: true, category: parsed.data.category, description: parsed.data.description, isVeg: parsed.data.isVeg, isSpecial: parsed.data.isSpecial,
     },
   });
 
+  await syncStartingPrice(caterer.id);
   return NextResponse.json({ item }, { status: 201 });
 }
 
@@ -77,18 +77,21 @@ export async function PUT(req: NextRequest) {
 
   if (!caterer) return NextResponse.json({ error: "Caterer not found" }, { status: 404 });
 
-  const created = await db.menuItem.createMany({
+  // dishes already in the price list keep their rate; they are just shown on the public page
+  const created = await db.catererItem.createMany({
     data: items.slice(0, 50).map((i) => ({
+      catererId: caterer.id, group: "FOOD" as const, unit: "plate",
       name: String(i.name).slice(0, 80),
+      ratePaise: Math.max(0, Math.floor(Number(i.priceRupees) || 0)) * 100,
+      showOnPublic: true,
       category: String(i.category).slice(0, 50),
       description: i.description ? String(i.description).slice(0, 300) : null,
-      priceRupees: Math.max(0, Math.floor(Number(i.priceRupees) || 0)),
       isVeg: Boolean(i.isVeg),
       isSpecial: Boolean(i.isSpecial),
-      catererId: caterer.id,
     })),
     skipDuplicates: true,
   });
 
+  await syncStartingPrice(caterer.id);
   return NextResponse.json({ count: created.count }, { status: 201 });
 }

@@ -17,12 +17,14 @@ type Options = {
   url: string;
   defaultPageSize?: number;
   extraParams?: Record<string, string>;
+  initialSearch?: string;
+  initialPage?: number;
 };
 
 export function usePaginated<T>(opts: Options) {
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(opts.initialPage ?? 1);
   const [pageSize, setPageSizeState] = useState(opts.defaultPageSize ?? DEFAULT_PAGE_SIZE);
-  const [search, setSearchState] = useState("");
+  const [search, setSearchState] = useState(opts.initialSearch ?? "");
   const [extraParams, setExtraParamsState] = useState<Record<string, string>>(opts.extraParams ?? {});
 
   const [data, setData] = useState<T[]>([]);

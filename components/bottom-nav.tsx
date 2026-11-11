@@ -30,13 +30,16 @@ export function BottomNav() {
     role === "OWNER"
       ? [
           { href: "/owner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-          { href: "/owner/calendar", icon: CalendarDays, label: "Schedule" },
+          { href: "/owner/calendar", icon: CalendarDays, label: "Calendar" },
           { href: "/owner/bookings", icon: CalendarCheck, label: "Bookings" },
           { href: "/owner/customers", icon: Users2, label: "Customers" },
         ]
       : role === "CATERER"
       ? [
-          { href: "/caterer/dashboard", icon: UtensilsCrossed, label: "Dashboard" },
+          { href: "/caterer/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+          { href: "/caterer/calendar", icon: CalendarDays, label: "Calendar" },
+          { href: "/caterer/orders", icon: UtensilsCrossed, label: "Orders" },
+          { href: "/caterer/customers", icon: Users2, label: "Parties" },
         ]
       : role === "ADMIN"
       ? [

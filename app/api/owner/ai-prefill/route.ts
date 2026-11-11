@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import Anthropic from "@anthropic-ai/sdk";
+import { fetchPageText } from "@/lib/fetch-page-text";
 
 if (!process.env.ANTHROPIC_API_KEY) {
   console.error("ANTHROPIC_API_KEY is not set");
@@ -44,46 +45,6 @@ ${text}
 
 Return ONLY the JSON object, no explanation or markdown.`;
 
-async function fetchPageText(url: string): Promise<string> {
-  // Try Jina Reader first — handles JS-rendered pages (Google, Instagram, Facebook)
-  try {
-    const jinaUrl = `https://r.jina.ai/${url}`;
-    const res = await fetch(jinaUrl, {
-      headers: { "Accept": "text/plain", "X-No-Cache": "true" },
-      signal: AbortSignal.timeout(15000),
-    });
-    if (res.ok) {
-      const text = await res.text();
-      if (text && text.length > 100) return text.slice(0, 6000);
-    }
-  } catch { /* fall through */ }
-
-  // Fallback: direct fetch
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
-      "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
-    },
-    redirect: "follow",
-    signal: AbortSignal.timeout(10000),
-  });
-  const html = await response.text();
-
-  // Extract from HTML
-  const parts: string[] = [];
-  const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1];
-  if (title) parts.push(`Name: ${title.replace(/ - Google.*$/, "").trim()}`);
-  const metaDesc = html.match(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i)?.[1];
-  if (metaDesc) parts.push(`Description: ${metaDesc}`);
-  const ldMatches = html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi);
-  for (const m of ldMatches) {
-    try { parts.push(JSON.stringify(JSON.parse(m[1]), null, 1).slice(0, 2000)); } catch { /* skip */ }
-  }
-  const bodyText = html.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 2000);
-  if (bodyText) parts.push(bodyText);
-  return parts.join("\n\n");
-}
-
 export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session || (session.role !== "OWNER" && session.role !== "ADMIN")) {
@@ -115,12 +76,12 @@ export async function POST(req: NextRequest) {
   try {
     const message = await client.messages.create({
       model: "claude-haiku-5-5",
-      max_tokens: 2048,
+      max_tokens: 8000,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: USER_PROMPT(rawText.slice(0, 5000)) }],
     });
 
-    const text = message.content[0].type === "text" ? message.content[0].text : "";
+    const text = message.content.flatMap((b) => (b.type === "text" ? [b.text] : [])).join("\n");
 
     // Robust JSON extraction: find the outermost { ... } block in the response
     const jsonMatch = text.match(/\{[\s\S]*\}/);

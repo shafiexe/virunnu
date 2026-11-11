@@ -1,63 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { centerSchema, normalizePhone } from "@/services/center-setup.service";
+import { clientIp, rateLimited } from "@/lib/rate-limit";
 
 const phoneRegex = /^(\+?91)?[6-9]\d{9}$/;
-const VENUE_TYPES = ["CONVENTION_CENTER", "AUDITORIUM", "BANQUET_HALL", "RESORT", "HOTEL_RESTAURANT"] as const;
 
-const schema = z.object({
-  orgName: z.string().min(2, "Convention center name required"),
-  venueType: z.enum(VENUE_TYPES).optional(),
-  phone: z.string().regex(phoneRegex, "Enter a valid Indian mobile number"),
-  whatsappPhone: z.string().regex(phoneRegex, "Enter a valid Indian mobile number").optional().or(z.literal("")),
-  email: z.string().email("Enter a valid email address").optional().or(z.literal("")),
-  address: z.string().min(5, "Address required"),
-  city: z.string().min(2, "City required"),
-  website: z.string().url().optional().or(z.literal("")).or(z.undefined()),
+// Same details the admin enters, but city is required and phone must be an Indian mobile.
+const applySchema = centerSchema.extend({
+  phone: z.string().trim().regex(phoneRegex, "Enter a valid Indian mobile number"),
+  whatsappPhone: z.union([z.literal(""), z.string().trim().regex(phoneRegex, "Enter a valid WhatsApp number")]).optional().transform((v) => v || undefined),
+  city: z.string().trim().min(2, "City is required").max(80),
 });
 
 export async function POST(req: NextRequest) {
   try {
+    if (rateLimited(`apply:${clientIp(req)}`, 5, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Too many submissions. Please try again later." }, { status: 429 });
+    }
     const body = await req.json().catch(() => null);
-    const parsed = schema.safeParse(body);
+    const parsed = applySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
     }
+    const d = parsed.data;
+    const phone = normalizePhone(d.phone);
+    const email = d.email ?? null;
 
-    const { orgName, venueType, phone, whatsappPhone, email, address, city, website } = parsed.data;
-
-    // Normalize phone to +91XXXXXXXXXX
-    const normalizePhone = (p: string) => {
-      const d = p.replace(/\D/g, "");
-      return d.length === 12 ? `+${d}` : d.length === 11 ? `+${d}` : `+91${d}`;
-    };
-    const normalized = normalizePhone(phone);
-    const normalizedWa = whatsappPhone ? normalizePhone(whatsappPhone) : null;
-    const normalizedEmail = email || null;
-
-    const orConditions: object[] = [{ phone: normalized }];
-    if (normalizedEmail) orConditions.push({ email: normalizedEmail });
-
-    const existing = await db.ownerApplication.findFirst({
-      where: {
-        OR: orConditions,
-        status: { in: ["PENDING" as const, "APPROVED" as const] },
-      },
-    });
-    if (existing) {
-      return NextResponse.json({ error: "An application with this phone or email already exists" }, { status: 409 });
+    const conflicts: object[] = [{ phone }];
+    if (email) conflicts.push({ email });
+    const [existingApp, existingUser] = await Promise.all([
+      db.ownerApplication.findFirst({ where: { OR: conflicts, status: { in: ["PENDING", "APPROVED"] } } }),
+      db.user.findFirst({ where: { OR: [{ phone }, ...(email ? [{ email }] : [])] } }),
+    ]);
+    if (existingApp || existingUser) {
+      return NextResponse.json({ error: "An application or account with this phone or email already exists" }, { status: 409 });
     }
 
     await db.ownerApplication.create({
       data: {
-        orgName,
-        venueType: venueType ?? "CONVENTION_CENTER",
-        phone: normalized,
-        whatsappPhone: normalizedWa,
-        email: normalizedEmail,
-        address,
-        city,
-        website: website || null,
+        orgName: d.name,
+        venueType: d.venueType,
+        phone,
+        whatsappPhone: d.whatsappPhone ? normalizePhone(d.whatsappPhone) : null,
+        email,
+        address: d.address,
+        city: d.city,
+        website: d.websiteUrl ?? null,
+        details: d as unknown as object,
         status: "PENDING",
       },
     });
