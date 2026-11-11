@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "accessVersion" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "addedById" TEXT,
+ADD COLUMN     "deny" TEXT[] DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN     "disabled" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "teamMember" BOOLEAN NOT NULL DEFAULT false;
+

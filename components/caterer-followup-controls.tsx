@@ -13,7 +13,7 @@ export function RemindAfterPicker({ value }: { value: number }) {
   const [days, setDays] = useState(value);
   async function pick(n: number) {
     setDays(n);
-    await fetch("/api/caterer/message-templates", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ remindAfterDays: n }) });
+    await fetch("/api/caterer/followup-settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ remindAfterDays: n }) });
     router.refresh();
   }
   return (

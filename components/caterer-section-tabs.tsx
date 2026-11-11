@@ -1,8 +1,14 @@
 import Link from "next/link";
+import { getSession } from "@/lib/session";
+import { canOpen } from "@/lib/caterer-access";
 import { cn } from "@/lib/utils";
 
 // Small tab strip that joins pages sharing one menu item (customers | suppliers, purchases | expenses).
-export function CatererSectionTabs({ tabs, active }: { tabs: { key: string; label: string; href: string }[]; active: string }) {
+// A tab the owner hid from this person is left out, and a strip with nothing to choose between is not shown.
+export async function CatererSectionTabs({ tabs: all, active }: { tabs: { key: string; label: string; href: string }[]; active: string }) {
+  const session = await getSession();
+  const tabs = all.filter((t) => canOpen(session?.deny, t.href));
+  if (tabs.length < 2) return null;
   return (
     <div className="inline-flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1">
       {tabs.map((t) => (

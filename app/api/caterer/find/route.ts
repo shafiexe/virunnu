@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getCatererForSession } from "@/lib/caterer-session";
 import { BILL_LABEL, formatInvoiceDate, rs } from "@/lib/caterer-orders";
 import { quoteLabel } from "@/lib/caterer-quotes";
+import { canOpen } from "@/lib/caterer-access";
 
 type Hit = { kind: string; title: string; sub: string; href: string };
 
@@ -34,5 +35,6 @@ export async function GET(req: NextRequest) {
   for (const o of orders) hits.push({ kind: "Order", title: `${o.customer.name} · ${o.eventType ?? "Function"}${o.place ? `, ${o.place}` : ""}`, sub: formatInvoiceDate(o.date), href: `/caterer/orders/${o.id}` });
   for (const s of suppliers) hits.push({ kind: "Supplier", title: s.name, sub: s.category ?? "Supplier", href: `/caterer/suppliers/${s.id}` });
   for (const e of staff) hits.push({ kind: "Team", title: e.name, sub: e.role, href: `/caterer/staff/${e.id}` });
-  return NextResponse.json({ hits });
+  // only what this person is allowed to open
+  return NextResponse.json({ hits: hits.filter((h) => canOpen(ctx.session.deny, h.href)) });
 }

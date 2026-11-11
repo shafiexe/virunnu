@@ -22,5 +22,5 @@ export default async function CatererLayout({ children }: { children: React.Reac
     session.orgId ? db.caterer.findFirst({ where: { orgId: session.orgId }, select: { name: true, upiId: true } }) : null,
   ]);
 
-  return <CatererShell pendingEnquiries={pendingEnquiries} logoUrl={logoUrl} name={caterer?.name} upiId={caterer?.upiId} templates={templates}>{children}</CatererShell>;
+  return <CatererShell pendingEnquiries={pendingEnquiries} logoUrl={logoUrl} name={caterer?.name} upiId={caterer?.upiId} templates={templates} deny={session.deny} mainOwner={!session.tm}>{children}</CatererShell>;
 }

@@ -96,6 +96,7 @@ export function ExpenseManager({
   month,
   basePath = "/owner/expenses",
   hideStaff = false,
+  hideCategories = false,
 }: {
   expenses: Expense[];
   year: number;
@@ -104,6 +105,8 @@ export function ExpenseManager({
   basePath?: string;
   // catering teams record salary and wages under Parties → Staff, so wage entries are not offered here
   hideStaff?: boolean;
+  // the owner hid the Categories tab from this person
+  hideCategories?: boolean;
 }) {
   const router = useRouter();
   const { undoable } = useUndoable();
@@ -459,6 +462,7 @@ export function ExpenseManager({
           <LayoutList className="h-3.5 w-3.5" />
           Expenses
         </button>
+        {!hideCategories && (
         <button
           onClick={() => setTab("categories")}
           className={cn(
@@ -476,6 +480,7 @@ export function ExpenseManager({
             </span>
           )}
         </button>
+        )}
         {!hideStaff && (
         <button
           onClick={() => setTab("staff")}

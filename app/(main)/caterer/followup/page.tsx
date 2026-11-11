@@ -71,7 +71,7 @@ export default async function FollowUpPage() {
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden"><ul className="divide-y divide-zinc-100 dark:divide-zinc-800">{resting.map((r) => <Person key={r.id} r={r} dim />)}</ul></div>
         </section>
       )}
-      <p className="text-xs text-zinc-400">The wording of the reminder can be changed in Service Profile → Messages.</p>
+      <p className="text-xs text-zinc-400">The wording of the reminder can be changed in <Link href="/caterer/messages" className="underline hover:text-amber-600">Messages</Link>.</p>
     </div>
   );
 }

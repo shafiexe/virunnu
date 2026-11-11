@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ClipboardList, FileText, Plus, Receipt, ShoppingCart, X } from "lucide-react";
+import { canOpen } from "@/lib/caterer-access";
 import { cn } from "@/lib/utils";
 
 // Everything you create, one tap from any catering page.
@@ -17,7 +18,7 @@ const ENTRIES = [
 // Pages that already end in a Save bar, where a floating button would sit on top of it
 const hidesFab = (p: string) => /\/(new|edit|onboarding)(\/|$)/.test(p) || /\/invoice$/.test(p);
 
-export function CatererNewMenu({ variant }: { variant: "sidebar" | "fab" }) {
+export function CatererNewMenu({ variant, deny }: { variant: "sidebar" | "fab"; deny?: string[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -31,11 +32,12 @@ export function CatererNewMenu({ variant }: { variant: "sidebar" | "fab" }) {
     return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
   }, [open]);
 
-  if (variant === "fab" && hidesFab(pathname)) return null;
+  const entries = ENTRIES.filter((e) => canOpen(deny, e.href));
+  if (entries.length === 0 || (variant === "fab" && hidesFab(pathname))) return null;
 
   const list = (
     <div className={cn("rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-xl p-1.5", variant === "fab" ? "absolute bottom-16 right-0 w-64" : "absolute left-3 right-3 top-full mt-1.5 z-40")}>
-      {ENTRIES.map(({ href, icon: Icon, label, hint }) => (
+      {entries.map(({ href, icon: Icon, label, hint }) => (
         <Link key={href} href={href} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-amber-50 dark:hover:bg-amber-950/20">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"><Icon className="h-4 w-4" /></span>
           <span className="min-w-0"><span className="block truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">{label}</span><span className="block text-[11px] text-zinc-400">{hint}</span></span>

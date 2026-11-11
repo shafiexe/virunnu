@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, CalendarCheck,
-  Users2, Building2, Workflow, ChevronRight, Receipt,
+  Users2, Building2, Workflow, ChevronRight, Receipt, ShieldCheck,
 } from "lucide-react";
+import { canOpenOwner } from "@/lib/owner-access";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -18,7 +19,11 @@ const NAV = [
   { href: "/owner/workflows", icon: Workflow, label: "Templates" },
 ];
 
-export function OwnerSidebar({ logoUrl, name }: { logoUrl?: string | null; name?: string }) {
+// What this person sees: items hidden from them are left out, and only the main owner gets Team logins
+const navFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>
+  [...NAV, ...(mainOwner ? [{ href: "/owner/team", icon: ShieldCheck, label: "Team logins" }] : [])].filter((i) => canOpenOwner(deny, i.href));
+
+export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true }: { logoUrl?: string | null; name?: string; deny?: string[]; mainOwner?: boolean }) {
   const pathname = usePathname();
   return (
     <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-3 gap-0.5">
@@ -32,7 +37,7 @@ export function OwnerSidebar({ logoUrl, name }: { logoUrl?: string | null; name?
           <span className="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Convention Centre</span>
         </span>
       </div>
-      {NAV.map(({ href, icon: Icon, label }) => {
+      {navFor(deny, mainOwner).map(({ href, icon: Icon, label }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         return (
           <Link
@@ -55,12 +60,12 @@ export function OwnerSidebar({ logoUrl, name }: { logoUrl?: string | null; name?
   );
 }
 
-export function OwnerTopTabs() {
+export function OwnerTopTabs({ deny, mainOwner = true }: { deny?: string[]; mainOwner?: boolean }) {
   const pathname = usePathname();
   return (
     <nav className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-x-auto">
       <div className="flex min-w-max px-2">
-        {NAV.map(({ href, icon: Icon, label }) => {
+        {navFor(deny, mainOwner).map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link

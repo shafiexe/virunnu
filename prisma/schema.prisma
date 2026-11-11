@@ -7,18 +7,25 @@ datasource db {
 }
 
 model User {
-  id        String        @id @default(cuid())
-  phone     String        @unique
-  name      String?
-  email     String?       @unique
-  password  String?
-  role      UserRole      @default(CUSTOMER)
-  orgId     String?
-  org       Organization? @relation(fields: [orgId], references: [id])
-  bookings  Booking[]
-  otpCodes  OtpCode[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id            String        @id @default(cuid())
+  phone         String        @unique
+  name          String?
+  email         String?       @unique
+  password      String?
+  role          UserRole      @default(CUSTOMER)
+  orgId         String?
+  org           Organization? @relation(fields: [orgId], references: [id])
+  // A person the catering owner added to their team: sees every page except those listed in `deny`.
+  // Changing deny or switching someone off bumps accessVersion, which signs them out so the change applies at once.
+  teamMember    Boolean       @default(false)
+  deny          String[]      @default([])
+  accessVersion Int           @default(0)
+  disabled      Boolean       @default(false)
+  addedById     String?
+  bookings      Booking[]
+  otpCodes      OtpCode[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 enum UserRole {

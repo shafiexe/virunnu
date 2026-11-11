@@ -58,6 +58,7 @@ export default async function CatererExpensesPage({ searchParams }: Props) {
       <ExpenseManager
         basePath="/caterer/expenses"
         hideStaff
+        hideCategories={session.deny?.includes("expenses.categories")}
         key={`${year}-${month}`}
         expenses={serialized}
         year={year}

@@ -8,9 +8,6 @@ import { CatererServiceTab } from "@/components/caterer-service-tab";
 import { toDetailsValue } from "@/lib/caterer-details-value";
 import { LogoUploader } from "@/components/logo-uploader";
 import { orgLogoUrl } from "@/lib/org-logo";
-import { CatererMessageSettings } from "@/components/caterer-message-settings";
-import { loadTemplates } from "@/lib/caterer-templates-server";
-import { CatererSummarySettings } from "@/components/caterer-summary-settings";
 import { CatererInvoiceSettings } from "@/components/caterer-invoice-settings";
 
 export default async function CatererProfilePage() {
@@ -76,8 +73,6 @@ export default async function CatererProfilePage() {
         />
       )}
       <LogoUploader initialUrl={await orgLogoUrl(session.orgId)} name={caterer.name} />
-      <CatererMessageSettings initial={await loadTemplates(session.orgId)} />
-      <CatererSummarySettings initial={{ enabled: caterer.summaryEnabled, via: caterer.summaryVia, email: caterer.summaryEmail ?? caterer.email, phone: caterer.whatsappNumber ?? caterer.phone }} />
       <CatererInvoiceSettings initial={{ nextInvoiceNumber: caterer.nextInvoiceNumber, lastUsed: top._max.number ?? 0, upiId: caterer.upiId, bankDetails: caterer.bankDetails, invoiceNote: caterer.invoiceNote, gstEnabled: caterer.gstEnabled, gstin: caterer.gstin, foodGstPercent: caterer.foodGstBp / 100, serviceGstPercent: caterer.serviceGstBp / 100, gstInclusive: caterer.gstInclusive }} />
     </div>
   );

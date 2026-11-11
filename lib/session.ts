@@ -1,11 +1,16 @@
 import "server-only";
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
+import { db } from "@/lib/db";
 
 export type SessionPayload = {
   userId: string;
   role: string;
   orgId?: string;
+  // set for people the catering owner added: the pages hidden from them, and the version that must still match
+  tm?: boolean;
+  deny?: string[];
+  av?: number;
 };
 
 const key = new TextEncoder().encode(process.env.SESSION_SECRET!);
@@ -33,11 +38,25 @@ export async function getSession(): Promise<SessionPayload | null> {
   const jar = await cookies();
   const token = jar.get(COOKIE)?.value;
   if (!token) return null;
-  return decrypt(token);
+  const session = await decrypt(token);
+  // A team member is signed out the moment they are switched off or their access is changed
+  if (session?.tm) {
+    const u = await db.user.findUnique({ where: { id: session.userId }, select: { disabled: true, accessVersion: true, teamMember: true } });
+    if (!u || u.disabled || !u.teamMember || u.accessVersion !== session.av) return null;
+  }
+  return session;
 }
 
-export async function setSession(payload: SessionPayload): Promise<void> {
-  const token = await encrypt(payload);
+// The team details to carry in the cookie for a signed-in catering user
+async function withTeam(payload: SessionPayload): Promise<SessionPayload> {
+  if ((payload.role !== "CATERER" && payload.role !== "OWNER") || !payload.orgId || payload.userId === "admin") return payload;
+  const u = await db.user.findUnique({ where: { id: payload.userId }, select: { teamMember: true, deny: true, accessVersion: true } });
+  if (!u?.teamMember) return { ...payload, tm: undefined, deny: undefined, av: undefined };
+  return { ...payload, tm: true, deny: u.deny, av: u.accessVersion };
+}
+
+export async function setSession(input: SessionPayload): Promise<void> {
+  const token = await encrypt(await withTeam(input));
   const jar = await cookies();
   jar.set(COOKIE, token, {
     httpOnly: true,

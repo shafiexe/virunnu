@@ -14,7 +14,6 @@ export async function GET() {
 const schema = z.object({
   // an empty text puts the standard wording back
   templates: z.partialRecord(z.enum(TEMPLATE_KEYS), z.string().max(1500)).optional(),
-  remindAfterDays: z.number().int().min(0).max(365).optional(),
 });
 
 export async function PUT(req: NextRequest) {
@@ -28,6 +27,5 @@ export async function PUT(req: NextRequest) {
     if (!body.trim()) await db.orgMessageTemplate.deleteMany({ where: { orgId, key } });
     else await db.orgMessageTemplate.upsert({ where: { orgId_key: { orgId, key } }, create: { orgId, key, body }, update: { body } });
   }
-  if (parsed.data.remindAfterDays !== undefined) await db.caterer.update({ where: { id: ctx.caterer.id }, data: { remindAfterDays: parsed.data.remindAfterDays } });
   return NextResponse.json({ templates: await loadTemplates(orgId) });
 }

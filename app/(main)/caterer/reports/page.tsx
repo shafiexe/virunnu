@@ -1,3 +1,4 @@
+import { canOpen } from "@/lib/caterer-access";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -22,13 +23,12 @@ import { BILL_LABEL, formatInvoiceDate } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
 
 // Reports are grouped the way an owner asks questions: how is it going, what sells, what does it cost, where is the money.
-const GROUPS = [
+const ALL_GROUPS = [
   { key: "overview", label: "Overview", tabs: [{ key: "overview", label: "Scorecard" }] },
   { key: "sales", label: "Sales", tabs: [{ key: "trend", label: "Sales trend" }, { key: "customers", label: "Customers" }, { key: "items", label: "Items & analytics" }, { key: "functions", label: "Functions & profit" }] },
   { key: "costs", label: "Costs", tabs: [{ key: "costs", label: "Costs & suppliers" }, { key: "staff", label: "Staff cost" }] },
   { key: "money", label: "Money", tabs: [{ key: "pl", label: "Profit & Loss" }, { key: "balances", label: "Balances" }, { key: "aging", label: "Aging" }, { key: "balance", label: "Balance Sheet" }, { key: "cash", label: "Cash & Bank" }] },
 ] as const;
-const ALL_TABS = GROUPS.flatMap((g) => g.tabs.map((t) => t.key as string));
 // these two are "as of today", so they have no date range
 const NO_RANGE = ["balance", "aging"];
 
@@ -43,7 +43,12 @@ export default async function CatererReportsPage({ searchParams }: { searchParam
   const orgId = caterer.orgId!;
   const sp = await searchParams;
 
-  const tab = ALL_TABS.includes(sp.tab ?? "") ? (sp.tab as string) : "overview";
+  // reports the owner hid from this person are left out; with no tab chosen they land on the first one they can open
+  const open = (t: string) => canOpen(ctx.session.deny, `/caterer/reports?tab=${t}`);
+  const GROUPS = ALL_GROUPS.map((g) => ({ ...g, tabs: g.tabs.filter((t) => open(t.key)) })).filter((g) => g.tabs.length > 0);
+  const ALL_TABS = GROUPS.flatMap((g) => g.tabs.map((t) => t.key as string));
+  if (ALL_TABS.length === 0) redirect("/caterer/no-access");
+  const tab = ALL_TABS.includes(sp.tab ?? "") ? (sp.tab as string) : ALL_TABS[0];
   const group = GROUPS.find((g) => g.tabs.some((t) => t.key === tab)) ?? GROUPS[0];
   const range = parseRange(sp);
   const href = (t: string) => `/caterer/reports?tab=${t}${NO_RANGE.includes(t) ? "" : `&${range.qs}`}`;

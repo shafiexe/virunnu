@@ -1,9 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Plus, X } from "lucide-react";
 import { computeGst } from "@/lib/caterer-gst";
+import { parseEnquiry } from "@/lib/parse-enquiry";
+import { useDraft } from "@/hooks/use-draft";
 import { enterToNext } from "@/hooks/use-enter-next";
 import { cn } from "@/lib/utils";
 import { GROUP_LABEL, ITEM_GROUPS, UNITS, type ItemGroupKey } from "@/lib/caterer-items";
@@ -137,10 +139,13 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
   const grandNet = food.net + service.net;
   const grandAdvance = food.advance + service.advance;
 
+  const lookupCustomerRef = useRef<((p?: string) => void) | null>(null);
+
   // Look the customer up by phone so repeat customers are filled in and their balance is visible
-  async function lookupCustomer() {
-    if (customerPhone.replace(/\D/g, "").length < 10) { setKnown(null); setUsual(null); return; }
-    const res = await fetch(`/api/caterer/customers?phone=${encodeURIComponent(customerPhone)}`).then((r) => r.json()).catch(() => null);
+  async function lookupCustomer(phoneOverride?: string) {
+    const customerPhone_ = typeof phoneOverride === "string" ? phoneOverride : customerPhone;
+    if (customerPhone_.replace(/\D/g, "").length < 10) { setKnown(null); setUsual(null); return; }
+    const res = await fetch(`/api/caterer/customers?phone=${encodeURIComponent(customerPhone_)}`).then((r) => r.json()).catch(() => null);
     const c = res?.customers?.[0];
     if (c) {
       setKnown({ name: c.name, balancePaise: c.balancePaise, orderCount: c.orderCount });
@@ -166,6 +171,8 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
     } finally { setLoadingLast(false); }
   }
 
+  useEffect(() => { lookupCustomerRef.current = lookupCustomer; });
+
   // ── serve times ──
   const toggleServing = (label: string, time: string) => {
     setServings((list) => {
@@ -184,6 +191,39 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
   };
   const patchServing = (i: number, patch: Partial<Serving>) => setServings((list) => list.map((s, j) => (j === i ? { ...s, ...patch } : s)));
 
+  // places served before, offered as the person types
+  const [places, setPlaces] = useState<string[]>([]);
+  useEffect(() => { fetch("/api/caterer/suggest").then((r) => r.json()).then((d) => setPlaces(d.places ?? [])).catch(() => {}); }, []);
+
+  // ── paste an enquiry (a WhatsApp message) and fill what it says ──
+  const [pasteOpen, setPasteOpen] = useState(false);
+  const [pasted, setPasted] = useState("");
+  function applyPaste() {
+    const p = parseEnquiry(pasted);
+    if (p.phone && !customerPhone.trim()) { setCustomerPhone(p.phone); setTimeout(() => lookupCustomerRef.current?.(p.phone), 0); }
+    if (p.name && !customerName.trim()) setCustomerName(p.name);
+    if (p.date) setDate(p.date);
+    if (p.place && !place.trim()) setPlace(p.place);
+    if (p.eventType && !eventType) setEventType(p.eventType);
+    // how many guests is kept in the notes, since the serve times are chosen separately
+    if (p.guests && !notes.includes("guests")) setNotes((n) => [n, `${p.guests} guests`].filter(Boolean).join(" · "));
+    setPasteOpen(false); setPasted("");
+  }
+
+  // ── drafts: an unfinished new order or quotation is kept, so nothing typed is lost ──
+  const snapshot = { date, customerName, customerPhone, customerAddress, place, eventType, notes, servings, lines, adj, advanceMethod, team, validUntil };
+  const draft = useDraft(`virunnu.draft.${quote ? "quote" : "order"}`, snapshot, { enabled: !initial, meaningful: (v) => !!(v.customerName.trim() || v.customerPhone.trim() || v.lines.length || v.servings.length) });
+  function restoreDraft() {
+    const d = draft.pending?.value;
+    if (!d) return;
+    setDate(d.date); setCustomerName(d.customerName); setCustomerPhone(d.customerPhone); setCustomerAddress(d.customerAddress);
+    setPlace(d.place); setEventType(d.eventType); setNotes(d.notes); setServings(d.servings); setLines(d.lines);
+    setAdj(d.adj); setAdvanceMethod(d.advanceMethod); setTeam(d.team); setValidUntil(d.validUntil);
+    draft.dismiss();
+    // bring back what we know about this customer (their usual rates, last function)
+    if (d.customerPhone.replace(/\D/g, "").length >= 10) setTimeout(() => { lookupCustomerRef.current?.(d.customerPhone); }, 0);
+  }
+
   // ── lines ──
   const toggleItem = (item: PriceItem) => {
     setLines((ls) =>
@@ -192,6 +232,32 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
         : [...ls, { key: `i${item.id}`, itemId: item.id, name: item.name, group: item.group, unit: item.unit, quantity: "1", rate: String((usual?.rates[`i:${item.id}`] ?? item.ratePaise) / 100), servingIndex: servings.length === 1 && item.group === "FOOD" ? 0 : undefined }]
     );
   };
+  // Type to find an item across every group; "bir 20" ticks the first match with quantity 20, and Enter does it
+  const [itemQuery, setItemQuery] = useState("");
+  const parseQuery = (raw: string) => {
+    const m = raw.trim().match(/^(.*?)\s+(\d+(?:\.\d+)?)\s*(?:kg|nos|no|plates?|pcs|x)?$/i);
+    return { text: (m ? m[1] : raw).trim().toLowerCase(), qty: m ? m[2] : undefined };
+  };
+  const matches = (text: string) => {
+    if (!text) return [];
+    const words = text.split(/\s+/);
+    return activeCatalog
+      .filter((i) => words.every((w) => i.name.toLowerCase().includes(w)))
+      .sort((a, b) => Number(b.name.toLowerCase().startsWith(text)) - Number(a.name.toLowerCase().startsWith(text)) || a.name.localeCompare(b.name));
+  };
+  function quickAdd() {
+    const { text, qty } = parseQuery(itemQuery);
+    const item = matches(text)[0];
+    if (!item) return;
+    const rate = String((usual?.rates[`i:${item.id}`] ?? item.ratePaise) / 100);
+    setLines((ls) => {
+      const at = ls.findIndex((l) => l.itemId === item.id);
+      if (at >= 0) return qty ? ls.map((l, i) => (i === at ? { ...l, quantity: qty } : l)) : ls;
+      return [...ls, { key: `i${item.id}`, itemId: item.id, name: item.name, group: item.group, unit: item.unit, quantity: qty ?? "1", rate, servingIndex: servings.length === 1 && item.group === "FOOD" ? 0 : undefined }];
+    });
+    setItemQuery("");
+  }
+
   const patchLine = (key: string, patch: Partial<Line>) => setLines((ls) => ls.map((l) => (l.key === key ? { ...l, ...patch } : l)));
 
   async function addCustom(e: React.FormEvent) {
@@ -269,6 +335,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? (quote ? "Could not save the quotation" : "Could not save the order")); return; }
+      draft.clear();
       router.push(quote ? `/caterer/quotes/${data.quote.id}` : `/caterer/orders/${data.order.id}`);
       router.refresh();
     } finally {
@@ -278,16 +345,42 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
 
   return (
     <div className="space-y-5 pb-28" onKeyDown={enterToNext(() => { if (!saving) submit(); })}>
+      {draft.pending && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
+          <span>You have an unfinished {quote ? "quotation" : "order"}{draft.pending.value.customerName ? ` for ${draft.pending.value.customerName}` : ""} from {new Date(draft.pending.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}.</span>
+          <span className="flex gap-2">
+            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white">Continue it</button>
+            <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold">Start fresh</button>
+          </span>
+        </div>
+      )}
+
       {/* 1. who & when */}
       <Card title="1 · Who and when">
+        {!initial && (
+          <div>
+            {pasteOpen ? (
+              <div className="space-y-2 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 p-3">
+                <textarea autoFocus className={cn(INPUT, "resize-none")} rows={4} value={pasted} onChange={(e) => setPasted(e.target.value)} placeholder="Paste the customer's message here, for example: Hi, I'm Shafi, wedding on 14 Dec at Rozia Hall, 300 people, 98470 00000" />
+                <div className="flex gap-2">
+                  <button type="button" onClick={applyPaste} disabled={!pasted.trim()} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Fill the form from it</button>
+                  <button type="button" onClick={() => { setPasteOpen(false); setPasted(""); }} className="px-3 py-1.5 text-xs text-zinc-500">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <button type="button" onClick={() => setPasteOpen(true)} className="text-xs font-semibold text-amber-600 hover:underline">📋 Paste the customer&apos;s message to fill this in</button>
+            )}
+          </div>
+        )}
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Date" required><input type="date" className={INPUT} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
-          <Field label="Phone" required><input className={INPUT} inputMode="tel" autoFocus={!initial && !template && !prefill} value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} onBlur={lookupCustomer} placeholder="98470 00000" /></Field>
+          <Field label="Phone" required><input className={INPUT} inputMode="tel" autoFocus={!initial && !template && !prefill} value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} onBlur={() => lookupCustomer()} placeholder="98470 00000" /></Field>
           <Field label="Customer name" required><input className={INPUT} value={customerName} onChange={(e) => setCustomerName(e.target.value)} placeholder="e.g. Shafi" /></Field>
           <Field label="Customer address"><input className={INPUT} value={customerAddress} onChange={(e) => setCustomerAddress(e.target.value)} placeholder="optional" /></Field>
           {quote && <Field label="Price valid until"><input type="date" className={INPUT} value={validUntil} min={today} onChange={(e) => setValidUntil(e.target.value)} /></Field>}
-          <Field label="Place / venue"><input className={INPUT} value={place} onChange={(e) => setPlace(e.target.value)} placeholder="e.g. Rozia Convention Centre, Kondotty" /></Field>
+          <Field label="Place / venue"><input className={INPUT} list="served-places" value={place} onChange={(e) => setPlace(e.target.value)} placeholder="e.g. Rozia Convention Centre, Kondotty" /></Field>
         </div>
+        <datalist id="served-places">{places.map((p) => <option key={p} value={p} />)}</datalist>
         {known && (
           <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 px-3 py-2 text-xs text-emerald-800 dark:text-emerald-300">
             Existing customer <span className="font-semibold">{known.name}</span> · {known.orderCount} earlier function{known.orderCount === 1 ? "" : "s"}
@@ -340,7 +433,15 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
 
       {/* 3. items */}
       <Card title="3 · Items" hint="Tick what the customer needs, then set the quantity. The rate comes from your price list and can be changed here.">
-        <div className="flex gap-1 overflow-x-auto -mx-1 px-1">
+        <input value={itemQuery} onChange={(e) => setItemQuery(e.target.value)} aria-label="Find an item"
+          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); e.stopPropagation(); quickAdd(); } if (e.key === "Escape") setItemQuery(""); }}
+          placeholder="Find an item… or type a name and quantity, like “biriyani 20”, and press Enter" className={INPUT} />
+        {itemQuery.trim() && (() => {
+          const { text, qty } = parseQuery(itemQuery);
+          const first = matches(text)[0];
+          return <p className="text-xs text-zinc-500 -mt-2">{first ? <>Enter adds <b>{first.name}</b>{qty ? <> × {qty}</> : null}</> : "No item with that name. Add it below as a one-off item."}</p>;
+        })()}
+        <div className={cn("flex gap-1 overflow-x-auto -mx-1 px-1", itemQuery.trim() && "hidden")}>
           {ITEM_GROUPS.map((g) => {
             const count = lines.filter((l) => l.group === g).length;
             return (
@@ -353,7 +454,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
         </div>
 
         <div className="space-y-1.5">
-          {activeCatalog.filter((i) => i.group === tab).map((item) => {
+          {(itemQuery.trim() ? matches(parseQuery(itemQuery).text) : activeCatalog.filter((i) => i.group === tab)).map((item) => {
             const line = byItem.get(item.id);
             return (
               <div key={item.id} className={cn("rounded-xl border px-3 py-2 transition-colors", line ? "border-amber-400 bg-amber-50/60 dark:bg-amber-950/10" : "border-zinc-200 dark:border-zinc-700")}>

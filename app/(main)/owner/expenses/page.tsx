@@ -57,6 +57,8 @@ export default async function ExpensesPage({ searchParams }: Props) {
       </div>
       <ExpenseManager
         key={`${year}-${month}`}
+        hideStaff={session.deny?.includes("expenses.staff")}
+        hideCategories={session.deny?.includes("expenses.categories")}
         expenses={serialized}
         year={year}
         month={month}
