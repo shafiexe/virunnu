@@ -29,7 +29,7 @@ export default async function AdminCatererDetailPage({
   const menuItems = (await db.catererItem.findMany({ where: { catererId, showOnPublic: true }, orderBy: [{ category: "asc" }, { name: "asc" }] })).map(toMenuDish);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-8">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-8 [&>*]:max-w-3xl">
       {/* Back */}
       <Link
         href="/admin/caterers"

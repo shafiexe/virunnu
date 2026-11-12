@@ -359,7 +359,7 @@ export function AdminApplicationsClient({
   const pendingCaterers = catererApps.filter((a) => a.status === "PENDING").length;
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 space-y-6">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Pending Applications</h1>
         <p className="text-sm text-zinc-500 mt-0.5">Review and approve convention center and caterer registrations.</p>

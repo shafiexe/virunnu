@@ -85,7 +85,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
   const remaining = booking.totalPaise - advancePaid - (booking.discountPaise ?? 0);
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 space-y-6">
+    <div className="mx-auto w-full max-w-2xl px-4 py-8 space-y-6">
       {/* Back */}
       <Link href="/track" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">
         <ArrowLeft className="h-4 w-4" />

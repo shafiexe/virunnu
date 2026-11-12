@@ -60,7 +60,7 @@ export default async function BookingPage({ params }: Props) {
   const { basePaise, gstPaise, totalRate } = splitForVenue(booking.totalPaise, venue);
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-6 space-y-6">
+    <div className="mx-auto w-full max-w-2xl px-4 py-8 space-y-6">
       <Link href="/bookings" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
         <ArrowLeft className="h-4 w-4" />
         My bookings

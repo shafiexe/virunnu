@@ -52,7 +52,7 @@ export default async function AdminOwnerDetailPage({
   const owner = org.users[0];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-10">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-10 [&>*]:max-w-3xl">
       {/* Back */}
       <Link
         href="/admin/owners"

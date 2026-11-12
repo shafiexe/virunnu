@@ -24,7 +24,7 @@ export default async function AdminPage() {
   const approvedCaterers = allCaterers.filter((c) => c.approved);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 space-y-10">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-10">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Admin Panel</h1>
         <p className="text-sm text-zinc-500 mt-1">Manage convention centers, caterers and sign-up requests.</p>

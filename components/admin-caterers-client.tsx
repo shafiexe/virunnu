@@ -176,7 +176,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
   const labelCls = "text-xs font-medium text-zinc-500 flex items-center gap-1";
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 space-y-6">
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Caterers</h1>
