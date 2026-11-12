@@ -44,9 +44,9 @@ const defaultStep1: Step1 = {
 const defaultStep2: Step2 = {
   hallName: "", capacity: "", priceRupees: "",
   amenities: [],
-  morningStart: "09:00", morningEnd: "13:00",
+  morningStart: "08:00", morningEnd: "14:00",
   hasEvening: true,
-  eveningStart: "16:00", eveningEnd: "21:00",
+  eveningStart: "15:00", eveningEnd: "21:00",
   minimumAdvanceRupees: "500",
   requireFullPayment: false,
 };

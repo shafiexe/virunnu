@@ -56,7 +56,7 @@ export const centerSchema = z.object({
     .max(8)
     .default([
       { name: "Morning", startTime: "08:00", endTime: "14:00" },
-      { name: "Evening", startTime: "14:00", endTime: "22:00" },
+      { name: "Evening", startTime: "15:00", endTime: "21:00" },
     ]),
 });
 
