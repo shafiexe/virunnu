@@ -17,8 +17,8 @@ export default async function CatererItemsPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-5">
-      <div>
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-5">
+      <div className="max-w-3xl">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Menu &amp; Prices</h1>
         <p className="text-sm text-zinc-500 mt-0.5">Everything you sell, with your usual rates. Orders pick from here, and dishes you tick “Show on my public page” make up the menu customers see.</p>
       </div>

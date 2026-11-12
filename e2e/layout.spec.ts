@@ -35,7 +35,8 @@ test.describe("phone layout", () => {
   test("public pages fit the screen", async ({ page }) => {
     const a = account();
     for (const path of ["/", "/login", `/venues/${a.centre.venueId}`, `/caterers/${a.catererId}`]) {
-      const res = await page.goto(path);
+      // the test caterer's stock photos come from a slow outside site, so do not wait for them
+      const res = await page.goto(path, { waitUntil: "domcontentloaded" });
       expect(res?.status(), path).toBe(200);
       expect(await sidewaysScroll(page), `${path} scrolls sideways`).toBeLessThanOrEqual(1);
     }
@@ -118,10 +119,10 @@ test.describe("other page frames", () => {
     expect(new Set(seen).size, `admin frames differ: ${seen.join(" ")}`).toBe(1);
   });
 
-  test("home, venue page and apply pages are as wide as the site header", async ({ page }) => {
+  test("home, venue page, caterer page and apply pages are as wide as the site header", async ({ page }) => {
     const a = account();
     const seen: string[] = [];
-    for (const p of ["/", `/venues/${a.centre.venueId}`, "/apply/venue", "/apply/caterer"]) {
+    for (const p of ["/", `/venues/${a.centre.venueId}`, `/caterers/${a.catererId}`, "/apply/venue", "/apply/caterer"]) {
       await page.goto(p);
       const box = await page.locator("div.mx-auto.max-w-5xl.px-4:visible").first().boundingBox();
       seen.push(`${Math.round(box?.x ?? -1)}:${Math.round(box?.width ?? -1)}`);
@@ -129,3 +130,25 @@ test.describe("other page frames", () => {
     expect(new Set(seen).size, `public frames differ: ${seen.join(" ")}`).toBe(1);
   });
 });
+
+// Menu & Prices fills the same frame as the other lists, and the Save bar of a form lines up with the form above it
+test.describe("menu and form bars", () => {
+  test.use({ viewport: { width: 1440, height: 800 } });
+
+  test("Menu & Prices uses the frame and the order form's Save bar lines up", async ({ page }) => {
+    const a = account();
+    await signIn(page.context(), a.phone, a.password);
+    await page.request.post("/api/caterer/items/starter");
+    await page.goto("/caterer/items");
+    const frameBox = await page.locator("div.mx-auto.max-w-6xl.px-4:visible").first().boundingBox();
+    const sections = await page.locator("section").evaluateAll((ns) => ns.map((n) => Math.round(n.getBoundingClientRect().right)));
+    // the groups spread across the frame instead of one narrow column
+    expect(Math.max(...sections)).toBeGreaterThan(Math.round(frameBox!.x + frameBox!.width) - 60);
+
+    await page.goto("/caterer/orders/new");
+    const formLeft = Math.round((await page.locator("h1").first().boundingBox())!.x);
+    const barLeft = Math.round((await page.getByRole("button", { name: "Save order" }).locator("xpath=ancestor::div[contains(@class,'max-w-3xl')][1]").boundingBox())!.x);
+    expect(barLeft, "the Save bar starts where the form starts").toBe(formLeft);
+  });
+});
+

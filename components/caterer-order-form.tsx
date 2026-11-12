@@ -645,7 +645,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
 
       {/* sticky total */}
       <div className="fixed bottom-16 md:bottom-0 inset-x-0 md:left-52 z-30 border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur px-4 py-3">
-        <div className="mx-auto max-w-3xl flex items-center gap-3 flex-wrap">
+        <div className="mx-auto w-full max-w-6xl px-4"><div className="max-w-3xl flex items-center gap-3 flex-wrap">
           <div className="flex-1 min-w-[10rem]">
             <div className="text-xs text-zinc-500">
               {food.count > 0 && <>Food {rs(food.net)}</>}{food.count > 0 && service.count > 0 && " · "}{service.count > 0 && <>Service {rs(service.net)}</>}{lines.length === 0 && "No items yet"}
@@ -657,7 +657,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             {quote ? (quote.id ? "Save quotation" : "Create quotation") : initial ? "Save changes" : "Save order"}
           </button>
-        </div>
+        </div></div>
       </div>
     </div>
   );

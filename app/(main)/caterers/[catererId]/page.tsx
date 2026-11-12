@@ -85,12 +85,12 @@ export default async function CatererPublicPage({
   ].filter(Boolean) as [string, string][];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 pb-28 md:pb-8 space-y-6">
-      {/* Photos */}
-      <CatererGallery photos={caterer.photos} name={caterer.name} />
+    <div className="mx-auto w-full max-w-5xl px-4 py-8 pb-28 md:pb-8 grid gap-y-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-x-8">
+      {/* Photos: the full width of the page */}
+      <div className="lg:col-span-2"><CatererGallery photos={caterer.photos} name={caterer.name} /></div>
 
       {/* Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 lg:col-start-1">
         <div className="flex items-center gap-3">
           {logoUrl
             // eslint-disable-next-line @next/next/no-img-element
@@ -117,6 +117,8 @@ export default async function CatererPublicPage({
         {caterer.description && <ClampText text={caterer.description} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed" />}
       </div>
 
+      {/* Left column on a desktop: facts, services and cuisines */}
+      <div className="space-y-6 lg:col-start-1">
       {/* Quick facts */}
       {facts.length > 0 && (
         <div className="flex flex-wrap gap-2">
@@ -146,6 +148,10 @@ export default async function CatererPublicPage({
         </div>
       )}
 
+      </div>
+
+      {/* Right column on a desktop, sticky: how to reach them and the enquiry form. On a phone it follows the details, as before. */}
+      <div className="space-y-4 lg:col-start-2 lg:row-start-2 lg:row-span-3 lg:self-start lg:sticky lg:top-20">
       {/* Contact buttons */}
       <div className="flex flex-wrap gap-3">
         <a
@@ -209,6 +215,9 @@ export default async function CatererPublicPage({
       {/* Enquiry form */}
       <div id="enquiry" className="scroll-mt-24"><CatererEnquiryForm catererId={caterer.id} catererName={caterer.name} contactPhone={contactPhone} /></div>
 
+      </div>
+
+      <div className="space-y-6 lg:col-start-1">
       {/* Work done */}
       {pastEvents.length > 0 && (
         <div className="space-y-2">
@@ -258,6 +267,7 @@ export default async function CatererPublicPage({
           ))}
         </div>
       )}
+      </div>
       <CatererStickyCta phone={caterer.phone} whatsapp={caterer.whatsappNumber} />
     </div>
   );
