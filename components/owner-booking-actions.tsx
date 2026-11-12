@@ -3,6 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MoreHorizontal, X } from "lucide-react";
+import { BookingAddonsDialog, type BookingAddonItem } from "@/components/booking-addons-button";
+import { WriteOnly, useCanWrite } from "@/components/access-context";
 
 type DropdownPos = { top: number; right: number };
 
@@ -18,16 +20,22 @@ interface Props {
   cancelReason?: string | null;
   discountPaise?: number | null;
   discountReason?: string | null;
+  venueId?: string;
+  addons?: BookingAddonItem[];
+  // show the actions as a row of buttons (detail page) instead of a ⋯ menu
+  inline?: boolean;
   onSuccess?: () => void;
 }
 
 type Panel = "cancel" | "restore" | "cash" | "adjust" | null;
 
-export function OwnerBookingActions({ bookingId, status, totalPaise, advancePaise, cancelReason, discountPaise, discountReason, onSuccess }: Props) {
+export function OwnerBookingActions({ bookingId, status, totalPaise, advancePaise, cancelReason, discountPaise, discountReason, venueId, addons, inline, onSuccess }: Props) {
   const router = useRouter();
+  const canWrite = useCanWrite("bookings");
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<DropdownPos>({ top: 0, right: 0 });
   const [panel, setPanel] = useState<Panel>(null);
+  const [addonsOpen, setAddonsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -118,48 +126,85 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
   const canCash = status === "PENDING" || status === "APPROVED" || status === "ADVANCE_PAID";
   const canAdjust = status !== "CANCELLED" && status !== "EXPIRED";
 
+  const items = (
+    <>
+          {canCash && (
+        <button onClick={() => setPanel("cash")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+          💰 Payment received
+        </button>
+      )}
+      {venueId && status !== "CANCELLED" && status !== "EXPIRED" && (
+        <button
+          onClick={() => { setOpen(false); setAddonsOpen(true); }}
+          className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+        >
+          ➕ Add-ons{addons && addons.length > 0 ? ` (${addons.length})` : ""}
+        </button>
+      )}
+      {canAdjust && (
+        <button onClick={() => setPanel("adjust")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-amber-600 dark:text-amber-400">
+          🏷️ {discountPaise ? "Edit discount" : "Add discount"}
+        </button>
+      )}
+      {canRestore && (
+        <button onClick={() => setPanel("restore")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-emerald-600 dark:text-emerald-400">
+          ↩ Restore booking
+        </button>
+      )}
+      {canCancel && (
+        <button onClick={() => setPanel("cancel")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-red-600 dark:text-red-400">
+          ✕ Cancel booking
+        </button>
+      )}
+    </>
+  );
+
+  if (!canWrite) return null;
+
   return (
     <div className="relative" ref={containerRef}>
-      <button
-        ref={triggerRef}
-        onClick={openDropdown}
-        className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
-      >
-        <MoreHorizontal className="h-4 w-4" />
-      </button>
+      {inline ? (
+        <div className="flex flex-wrap gap-2 [&>button]:w-auto! [&>button]:rounded-xl [&>button]:border [&>button]:border-zinc-200 dark:[&>button]:border-zinc-700 [&>button]:px-3.5! [&>button]:py-2! [&>button]:font-medium [&>button]:bg-white dark:[&>button]:bg-zinc-900">
+          {items}
+        </div>
+      ) : (
+        <>
+          <button
+            ref={triggerRef}
+            onClick={openDropdown}
+            className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </button>
 
-      {open && (
-        <div
-          className="fixed z-50 w-48 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1"
-          style={{ top: pos.top, right: pos.right }}
-        >
-          {cancelReason && (
-            <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800">
-              <p className="text-[10px] text-zinc-400 uppercase font-semibold">Cancel reason</p>
-              <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-0.5">{cancelReason}</p>
+          {open && (
+            <div
+              className="fixed z-50 w-48 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1"
+              style={{ top: pos.top, right: pos.right }}
+            >
+              {cancelReason && (
+                <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800">
+                  <p className="text-[10px] text-zinc-400 uppercase font-semibold">Cancel reason</p>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-0.5">{cancelReason}</p>
+                </div>
+              )}
+              {items}
             </div>
           )}
-          {canCash && (
-            <button onClick={() => setPanel("cash")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-              💰 Record payment received
-            </button>
-          )}
-          {canAdjust && (
-            <button onClick={() => setPanel("adjust")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-amber-600 dark:text-amber-400">
-              🏷️ {discountPaise ? "Edit discount" : "Add discount"}
-            </button>
-          )}
-          {canRestore && (
-            <button onClick={() => setPanel("restore")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-emerald-600 dark:text-emerald-400">
-              ↩ Restore booking
-            </button>
-          )}
-          {canCancel && (
-            <button onClick={() => setPanel("cancel")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-red-600 dark:text-red-400">
-              ✕ Cancel booking
-            </button>
-          )}
-        </div>
+        </>
+      )}
+
+      {venueId && (
+        <BookingAddonsDialog
+          open={addonsOpen}
+          onClose={() => setAddonsOpen(false)}
+          bookingId={bookingId}
+          venueId={venueId}
+          totalPaise={totalPaise}
+          advancePaise={advancePaise ?? null}
+          addons={addons ?? []}
+          onSuccess={() => { onSuccess?.(); router.refresh(); }}
+        />
       )}
 
       {/* Panel overlay */}
@@ -210,7 +255,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
             {panel === "cash" && (
               <>
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Record payment received</h3>
+                  <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Payment received</h3>
                   <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-400" /></button>
                 </div>
 

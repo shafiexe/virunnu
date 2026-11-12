@@ -5,7 +5,7 @@ export const metadata = { title: "Admin Login — Virunnu" };
 const FEATURES = [
   { icon: "🏛", label: "Convention Centers", desc: "Approve, manage & monitor all registered convention centers" },
   { icon: "🍽", label: "Caterers", desc: "Oversee catering partners and their service listings" },
-  { icon: "📋", label: "New Requests", desc: "Review and action sign-up applications from owners" },
+  { icon: "📋", label: "New Requests", desc: "Review and action sign-up applications from convention centers" },
   { icon: "📊", label: "Platform Activity", desc: "Full visibility into bookings, customers and revenue" },
 ];
 

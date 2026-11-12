@@ -4,5 +4,5 @@ import { getSession } from "@/lib/session";
 export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json(null, { status: 401 });
-  return NextResponse.json({ role: session.role });
+  return NextResponse.json({ role: session.role, deny: session.deny ?? [], tm: !!session.tm });
 }

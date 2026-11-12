@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Check, Plus, X, Link2, Globe, Phone, Mail, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
-import { MenuManager } from "@/components/menu-manager";
 import { cn } from "@/lib/utils";
+import { CatererDetailsCard } from "@/components/caterer-details-card";
+import type { CatererDetailsValue } from "@/lib/caterer-details-value";
 
 type MenuItem = {
   id: string; name: string; category: string | null; description: string | null;
@@ -17,7 +18,7 @@ type Caterer = {
   instagramUrl: string | null; facebookUrl: string | null;
   youtubeUrl: string | null; websiteUrl: string | null;
   services: string[]; photos: string[];
-  menuItems: MenuItem[];
+  details: CatererDetailsValue;
 };
 
 const ALL_SERVICES = [
@@ -337,6 +338,8 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
         </div>
       </div>
 
+      <CatererDetailsCard initial={caterer.details} adminCatererId={adminCatererId} />
+
       {/* Services */}
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
         <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Services offered</h2>
@@ -416,11 +419,14 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
         </button>
       </div>
 
-      {/* Menu — only shown in caterer self-service mode, not in admin mode */}
+      {/* The menu lives in Menu & Prices: one list for orders and for the public page */}
       {!adminCatererId && (
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-          <h2 className="font-semibold text-zinc-900 dark:text-zinc-50 mb-4">Menu items</h2>
-          <MenuManager initialItems={caterer.menuItems} />
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Menu and prices</h2>
+            <p className="text-sm text-zinc-500 mt-0.5">Your dishes and rates are kept in one list. Tick “Show on my public page” there to put a dish on your menu here.</p>
+          </div>
+          <a href="/caterer/items" className="inline-flex items-center rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">Open Menu &amp; Prices</a>
         </div>
       )}
     </div>

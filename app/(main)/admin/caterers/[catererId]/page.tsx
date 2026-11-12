@@ -1,3 +1,4 @@
+import { toMenuDish } from "@/lib/caterer-items";
 import { connection } from "next/server";
 export const instant = false;
 import { redirect, notFound } from "next/navigation";
@@ -6,6 +7,7 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { ArrowLeft, MapPin, Phone } from "lucide-react";
 import { CatererServiceTab } from "@/components/caterer-service-tab";
+import { toDetailsValue } from "@/lib/caterer-details-value";
 import { MenuManager } from "@/components/menu-manager";
 
 export default async function AdminCatererDetailPage({
@@ -21,10 +23,10 @@ export default async function AdminCatererDetailPage({
 
   const caterer = await db.caterer.findUnique({
     where: { id: catererId },
-    include: { menuItems: { orderBy: { category: "asc" } } },
   });
 
   if (!caterer) notFound();
+  const menuItems = (await db.catererItem.findMany({ where: { catererId, showOnPublic: true }, orderBy: [{ category: "asc" }, { name: "asc" }] })).map(toMenuDish);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 space-y-8">
@@ -79,15 +81,7 @@ export default async function AdminCatererDetailPage({
             websiteUrl: caterer.websiteUrl,
             services: caterer.services,
             photos: caterer.photos,
-            menuItems: caterer.menuItems.map((m) => ({
-              id: m.id,
-              name: m.name,
-              category: m.category,
-              description: m.description,
-              priceRupees: m.priceRupees,
-              isVeg: m.isVeg,
-              isSpecial: m.isSpecial,
-            })),
+            details: toDetailsValue(caterer),
           }}
           adminCatererId={catererId}
         />
@@ -98,7 +92,7 @@ export default async function AdminCatererDetailPage({
         <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 mb-1">Menu Items</h2>
         <p className="text-sm text-zinc-500 mb-4">Add, remove or review menu items for this caterer</p>
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
-          <MenuManager initialItems={caterer.menuItems} catererId={catererId} />
+          <MenuManager initialItems={menuItems} catererId={catererId} />
         </div>
       </div>
     </div>

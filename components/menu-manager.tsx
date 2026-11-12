@@ -18,6 +18,7 @@ type MenuItem = {
 };
 
 const CATEGORIES = [
+  "Packages",
   "Kerala Sadhya",
   "Breakfast",
   "Lunch",

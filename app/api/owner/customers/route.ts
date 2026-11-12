@@ -94,5 +94,6 @@ export async function GET(req: NextRequest) {
     lastBooking: r.last_booking,
   }));
 
-  return NextResponse.json({ data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
+  const shown = session.deny?.includes("hide.phones") ? data.map((c) => ({ ...c, phone: null })) : data;
+  return NextResponse.json({ data: shown, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
 }

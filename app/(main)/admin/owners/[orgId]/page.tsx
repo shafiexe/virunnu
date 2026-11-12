@@ -8,7 +8,8 @@ import { VenueManager } from "@/components/venue-manager";
 import { FacilitiesManager } from "@/components/facilities-manager";
 import { AdminCreateVenueForm } from "@/components/admin-create-venue-form";
 import { AdminAiSetup } from "@/components/admin-ai-setup";
-import { ArrowLeft } from "lucide-react";
+import { ApproveVenueButton } from "@/components/approve-venue-button";
+import { ArrowLeft, AlertTriangle } from "lucide-react";
 
 export default async function AdminOwnerDetailPage({
   params,
@@ -58,7 +59,7 @@ export default async function AdminOwnerDetailPage({
         className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        Back to owners
+        Back to convention centers
       </Link>
 
       {/* Org header */}
@@ -66,7 +67,7 @@ export default async function AdminOwnerDetailPage({
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{org.name}</h1>
         {owner && (
           <p className="text-sm text-zinc-500 mt-1">
-            Owner: {owner.name ?? "—"} · {owner.phone}
+            Contact: {owner.phone}
             {owner.email && ` · ${owner.email}`}
           </p>
         )}
@@ -83,7 +84,18 @@ export default async function AdminOwnerDetailPage({
         </div>
         {org.venues.length > 0 ? (
           org.venues.map((v) => (
-            <VenueManager key={v.id} venues={[v]} />
+            <div key={v.id} className="space-y-3">
+              {!v.approved && (
+                <div className="flex items-center justify-between gap-4 rounded-xl border border-amber-200 dark:border-amber-800/50 bg-amber-50 dark:bg-amber-950/20 px-4 py-3">
+                  <div className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-300">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span>This venue is <strong>not visible</strong> on the homepage yet.</span>
+                  </div>
+                  <ApproveVenueButton venueId={v.id} />
+                </div>
+              )}
+              <VenueManager venues={[v]} />
+            </div>
           ))
         ) : (
           <AdminCreateVenueForm orgId={orgId} />

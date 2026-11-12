@@ -13,7 +13,7 @@ const schema = z.object({
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId) {
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const { itemId } = await params;
@@ -31,7 +31,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId) {
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const { itemId } = await params;

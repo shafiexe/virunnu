@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AddonRow, addonLine } from "@/components/addon-row";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type RazorpayConstructor = any;
@@ -32,6 +33,8 @@ type Props = {
   venueId: string;
   halls: Hall[];
   initialMonth: string; // "YYYY-MM"
+  gstIncluded?: boolean;
+  addons?: { id: string; name: string; pricePaise: number; unit: "FIXED" | "HOUR" }[];
 };
 
 type PaymentContext = {
@@ -171,7 +174,7 @@ function InputField({
   );
 }
 
-export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Props) {
+export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIncluded = true, addons = [] }: Props) {
   const router = useRouter();
   const [year, setYear] = useState(() => parseInt(initialMonth.split("-")[0]));
   const [month, setMonth] = useState(() => parseInt(initialMonth.split("-")[1]) - 1);
@@ -188,6 +191,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
   const [guestPhone, setGuestPhone] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
   const [guestAddress, setGuestAddress] = useState("");
+  const [picked, setPicked] = useState<Record<string, number>>({});
   const [payCtx, setPayCtx] = useState<PaymentContext | null>(null);
   const [payError, setPayError] = useState("");
   const [paying, setPaying] = useState(false);
@@ -250,13 +254,16 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
     resetCheckout();
   }
 
+  const pickedList = Object.entries(picked).map(([id, quantity]) => ({ id, quantity }));
+  const pickedPaise = addons.filter((a) => a.id in picked).reduce((s, a) => s + addonLine(a.unit, a.pricePaise, picked[a.id]), 0);
+
   function getPayCtxForSlot() {
     const hallEntry = [...dayMap.values()].flat().find((e) => e.slots.some((s) => s.id === selectedSlot));
     const slot = hallEntry?.slots.find((s) => s.id === selectedSlot);
     const hall = hallEntry?.hall;
     if (!hall || !slot) return null;
     // Owner price is GST-inclusive — use directly
-    const totalPaise = slot.priceOverride ?? hall.pricePerSlot;
+    const totalPaise = (slot.priceOverride ?? hall.pricePerSlot) + pickedPaise;
     return {
       hallSlotId: selectedSlot!,
       totalPaise,
@@ -285,7 +292,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
     const res = await fetch("/api/bookings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ hallSlotId: selectedSlot, guestName, guestPhone, guestEmail, guestAddress }),
+      body: JSON.stringify({ hallSlotId: selectedSlot, guestName, guestPhone, guestEmail, guestAddress, addons: pickedList.length ? pickedList : undefined }),
     });
     setRequesting(false);
     if (res.status === 409) {
@@ -364,6 +371,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
             razorpaySignature: response.razorpay_signature,
             amountPaise,
             isFullPayment,
+            addons: pickedList.length ? pickedList : undefined,
           }),
         });
         setPaying(false);
@@ -523,7 +531,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
                         onClick={() => { setBookingPath("request"); setCheckoutStep("form"); }}
                         className="rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-600 px-4 py-3 text-left transition-colors">
                         <div className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Request to Book</div>
-                        <div className="text-xs text-zinc-500 mt-0.5">No payment now — owner approves within 1 hour</div>
+                        <div className="text-xs text-zinc-500 mt-0.5">No payment now — the convention center will call you to confirm</div>
                       </button>
                     </div>
                   </div>
@@ -547,6 +555,23 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
                     </div>
                     <InputField label="Email address" value={guestEmail} onChange={setGuestEmail} placeholder="optional" type="email" />
                     <InputField label="Address" value={guestAddress} onChange={setGuestAddress} placeholder="optional" />
+                    {addons.length > 0 && (
+                      <div className="space-y-1.5">
+                        <div className="text-xs font-medium text-zinc-500">Optional add-ons <span className="font-normal text-zinc-400">— you can also ask the centre to add these later</span></div>
+                        {addons.map((a) => (
+                          <AddonRow
+                            key={a.id}
+                            name={a.name} unit={a.unit} unitPaise={a.pricePaise}
+                            qty={picked[a.id] ?? 1}
+                            on={a.id in picked}
+                            sign="+"
+                            onToggle={() => setPicked((m) => { const n = { ...m }; if (a.id in n) delete n[a.id]; else n[a.id] = 1; return n; })}
+                            onQty={(q) => setPicked((m) => ({ ...m, [a.id]: q }))}
+                          />
+                        ))}
+                        {pickedList.length > 0 && <div className="text-xs text-zinc-500">Add-ons total +{paise(pickedPaise)}, included in your booking total.</div>}
+                      </div>
+                    )}
                     {bookError && <p className="text-sm text-red-500">{bookError}</p>}
                     <button type="submit" disabled={requesting}
                       className="w-full sm:w-auto rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 px-6 py-3 text-sm font-semibold text-white transition-colors">
@@ -560,8 +585,8 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
                   <div className="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20 px-4 py-4 space-y-2">
                     <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">Contact request sent ✓</p>
                     <div className="text-xs text-emerald-700 dark:text-emerald-400 space-y-1">
-                      <p>The owner has been notified and will call you on <span className="font-semibold">{guestPhone}</span> to confirm availability.</p>
-                      <p className="text-zinc-500 dark:text-zinc-400">No payment needed right now. The owner will guide you on next steps.</p>
+                      <p>The convention center has been notified and will call you on <span className="font-semibold">{guestPhone}</span> to confirm availability.</p>
+                      <p className="text-zinc-500 dark:text-zinc-400">No payment needed right now. They will guide you on next steps.</p>
                     </div>
                   </div>
                 )}
@@ -571,7 +596,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
                   <div className="space-y-4">
                     <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 p-4 space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-zinc-500">Slot total (GST included)</span>
+                        <span className="text-zinc-500">{gstIncluded ? "Slot total (GST included)" : "Slot total"}</span>
                         <span className="font-semibold text-zinc-900 dark:text-zinc-50">{paise(payCtx.totalPaise)}</span>
                       </div>
                       {!payCtx.requireFullPayment && (
@@ -587,7 +612,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
                         </>
                       )}
                       <p className="text-xs text-zinc-400 pt-1">
-                        After payment, slot will be held 1 hour while owner confirms your booking.
+                        Your slot is booked instantly after payment — no approval needed.
                       </p>
                     </div>
 
@@ -602,7 +627,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth }: Pro
                           {paying ? "Opening payment…" : `Pay advance ${paise(payCtx.minimumAdvancePaise)}`}
                         </button>
                       )}
-                      {/* Full payment button — shown only when owner requires full payment online */}
+                      {/* Full payment button — shown only when the convention center requires full payment online */}
                       {payCtx.requireFullPayment && (
                         <button type="button" disabled={paying}
                           onClick={() => handlePay(payCtx.totalPaise, true)}

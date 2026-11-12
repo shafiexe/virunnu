@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { BookingStatus, SlotStatus } from "@prisma/client";
+import { logActivity } from "@/lib/activity";
 
 export async function POST(
   _req: NextRequest,
@@ -47,5 +48,6 @@ export async function POST(
     }),
   ]);
 
+  await logActivity(session, `Restored booking ${bookingId.slice(-6).toUpperCase()}`);
   return NextResponse.json({ ok: true });
 }

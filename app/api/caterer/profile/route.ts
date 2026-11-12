@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { catererDetailsSchema, detailsToData } from "@/lib/caterer-details";
 
 export async function PATCH(req: NextRequest) {
   const session = await getSession();
@@ -15,9 +16,13 @@ export async function PATCH(req: NextRequest) {
     services, photos, description, cuisines,
   } = body;
 
+  const details = catererDetailsSchema.safeParse(body);
+  if (!details.success) return NextResponse.json({ error: details.error.issues[0]?.message }, { status: 400 });
+
   const updated = await db.caterer.update({
     where: { id: caterer.id },
     data: {
+      ...detailsToData(details.data),
       ...(whatsappNumber !== undefined && { whatsappNumber: whatsappNumber || null }),
       ...(email !== undefined && { email: email || null }),
       ...(instagramUrl !== undefined && { instagramUrl: instagramUrl || null }),

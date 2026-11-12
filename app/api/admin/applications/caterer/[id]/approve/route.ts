@@ -3,6 +3,8 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { catererSchema, createCaterer, sendCatererCredentials } from "@/services/caterer-setup.service";
+import { CenterError } from "@/services/center-setup.service";
 
 function generatePassword(len = 10) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
@@ -17,6 +19,29 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   const app = await db.catererApplication.findUnique({ where: { id } });
   if (!app) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (app.status !== "PENDING") return NextResponse.json({ error: "Already processed" }, { status: 409 });
+
+  // Full application (new form): one approval creates the account and the live profile with its menu.
+  if (app.details) {
+    const parsed = catererSchema.safeParse({
+      ...(app.details as object),
+      name: app.name,
+      phone: app.phone,
+      email: app.email,
+    });
+    if (!parsed.success) {
+      return NextResponse.json({ error: `Application details are incomplete: ${parsed.error.issues[0]?.message}` }, { status: 422 });
+    }
+    try {
+      const created = await createCaterer(parsed.data);
+      await db.catererApplication.update({ where: { id }, data: { status: "APPROVED" } });
+      sendCatererCredentials({ name: app.name, phone: created.phone, email: app.email, password: created.password });
+      return NextResponse.json({ ok: true, phone: created.phone, password: created.password, catererId: created.catererId });
+    } catch (err) {
+      if (err instanceof CenterError) return NextResponse.json({ error: err.message }, { status: err.status });
+      console.error("[approve caterer application]", err);
+      return NextResponse.json({ error: "Could not create the catering team" }, { status: 500 });
+    }
+  }
 
   const existingUser = await db.user.findUnique({ where: { phone: app.phone } });
   if (existingUser) {

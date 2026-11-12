@@ -4,7 +4,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
-import { TrendingUp, CalendarCheck, Clock, Hash, CalendarDays } from "lucide-react";
+import { TrendingUp, CalendarCheck, Clock, Hash, Plus } from "lucide-react";
 import { AnalyticsCharts } from "@/components/analytics-charts";
 import { PendingRequests } from "@/components/pending-requests";
 
@@ -194,10 +194,9 @@ export default async function OwnerDashboard({ searchParams }: Props) {
           <div className="flex items-center gap-2">
             <Link
               href="/owner/calendar"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors"
             >
-              <CalendarDays className="h-4 w-4" />
-              <span className="hidden sm:inline">Schedule</span>
+              <Plus className="h-4 w-4" /> Add booking
             </Link>
           </div>
         </div>

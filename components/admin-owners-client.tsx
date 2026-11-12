@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Building2, X, Check, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CenterForm } from "@/components/center-form";
 
 type OwnerUser = { id: string; name: string | null; phone: string };
 type Venue = { id: string; name: string; approved: boolean };
@@ -47,25 +48,6 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
     setEditId(null);
     setForm(EMPTY_FORM);
     setError("");
-  }
-
-  async function handleAdd() {
-    if (formLoading) return;
-    setError("");
-    setFormLoading(true);
-    try {
-      const res = await fetch("/api/admin/owners", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orgName: form.ownerName, ownerName: form.ownerName, ownerPhone: form.ownerPhone }),
-      });
-      const data = await res.json();
-      if (!res.ok) { setError(data.error ?? "Failed"); return; }
-      closeForm();
-      window.location.reload();
-    } finally {
-      setFormLoading(false);
-    }
   }
 
   async function handleEdit() {
@@ -135,10 +117,11 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
       />
 
       {/* Add / Edit form */}
-      {(showAdd || editId) && (
+      {showAdd && <CenterForm mode="admin" onClose={closeForm} />}
+      {editId && (
         <div className="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-amber-50/60 dark:bg-amber-950/20 p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">{showAdd ? "Add convention center" : "Edit convention center"}</h2>
+            <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Edit contact details</h2>
             <button onClick={closeForm} className="p-1 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -164,12 +147,12 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
           {error && <p className="text-xs text-red-500">{error}</p>}
           <div className="flex gap-2">
             <button
-              onClick={showAdd ? handleAdd : handleEdit}
+              onClick={handleEdit}
               disabled={formLoading}
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-60"
             >
               <Check className="h-3.5 w-3.5" />
-              {formLoading ? "Saving…" : showAdd ? "Create" : "Save changes"}
+              {formLoading ? "Saving…" : "Save changes"}
             </button>
             <button onClick={closeForm} className="px-4 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-500 hover:text-zinc-700 transition-colors">
               Cancel
@@ -182,7 +165,7 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
       <div className="space-y-2">
         {filtered.length === 0 && (
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-10 text-center text-zinc-400">
-            {search ? "No owners match your search." : "No owners yet."}
+            {search ? "No convention centers match your search." : "No convention centers yet."}
           </div>
         )}
         {filtered.map((org) => {
@@ -209,7 +192,7 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
                   <div className="min-w-0 space-y-0.5">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-semibold text-zinc-900 dark:text-zinc-50">
-                        {venue?.name ?? owner?.name ?? "—"}
+                        {venue?.name ?? org.name}
                       </span>
                       {org.disabled && (
                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400">
@@ -219,12 +202,12 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
                     </div>
                     {owner && (
                       <div className="text-sm text-zinc-500">
-                        {owner.name ?? "—"} · {owner.phone}
+                        {owner.phone}
                       </div>
                     )}
                     {org.venues.length > 0 && (
                       <div className="text-xs text-zinc-400">
-                        {liveVenues > 0 ? `${liveVenues} live` : "pending approval"}
+                        {liveVenues > 0 ? "Live" : "Not published yet"}
                       </div>
                     )}
                   </div>
@@ -248,21 +231,21 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
                             ? "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
                             : "text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
                         )}
-                        title={org.disabled ? "Enable owner" : "Disable owner"}
+                        title={org.disabled ? "Enable convention center" : "Disable convention center"}
                       >
                         {org.disabled ? <ToggleRight className="h-5 w-5" /> : <ToggleLeft className="h-5 w-5" />}
                       </button>
                       <Link
                         href={`/admin/owners/${org.id}`}
                         className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
-                        title="Manage venue"
+                        title="Manage hall & slots"
                       >
                         <Settings className="h-4 w-4" />
                       </Link>
                       <button
                         onClick={() => openEdit(org)}
                         className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
-                        title="Edit owner"
+                        title="Edit contact details"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>

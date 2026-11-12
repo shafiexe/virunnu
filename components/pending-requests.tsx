@@ -118,7 +118,7 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                   </span>
                   <span className="flex items-center gap-1">
                     <Phone className="h-3 w-3" />
-                    {b.guestPhone ?? "—"}
+                    {b.guestPhone ? <a href={`tel:${b.guestPhone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{b.guestPhone}</a> : "—"}
                   </span>
                   <span className="flex items-center gap-1 font-medium text-zinc-700 dark:text-zinc-300">
                     <IndianRupee className="h-3 w-3" />

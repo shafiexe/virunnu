@@ -6,6 +6,7 @@ import { splitGST } from "@/lib/gst";
 import { releaseExpiredHolds } from "@/services/booking.service";
 import { notifyBookingConfirmed } from "@/services/notification.service";
 import { getSession } from "@/lib/session";
+import { resolveAddons } from "@/lib/venue-addons";
 
 const VIRTUAL_PREFIX = "virtual_";
 const BLOCKED_PREFIX = "blocked_";
@@ -21,6 +22,7 @@ const schema = z.object({
   razorpaySignature: z.string(),
   amountPaise: z.number().int().positive(),
   isFullPayment: z.boolean(),
+  addons: z.array(z.object({ id: z.string(), quantity: z.number().min(0.5).max(48).default(1) })).max(20).optional(),
 });
 
 async function resolveSlotId(id: string): Promise<string> {
@@ -61,7 +63,7 @@ export async function POST(req: NextRequest) {
     hallSlotId: rawSlotId,
     guestName, guestPhone, guestEmail, guestAddress,
     razorpayOrderId, razorpayPaymentId, razorpaySignature,
-    amountPaise, isFullPayment,
+    amountPaise, isFullPayment, addons: addonPicks,
   } = parsed.data;
 
   // Verify Razorpay signature
@@ -100,7 +102,9 @@ export async function POST(req: NextRequest) {
         data: { status: "BOOKED", heldUntil: null },
       });
 
-      const { totalPaise } = splitGST(slot.priceOverride ?? slot.hall.pricePerSlot);
+      const { totalPaise: hallPaise } = splitGST(slot.priceOverride ?? slot.hall.pricePerSlot);
+      const extras = await resolveAddons(tx, slot.hall.venue.id, addonPicks);
+      const totalPaise = hallPaise + extras.totalPaise;
       const bookingStatus = isFullPayment ? "CONFIRMED" : "ADVANCE_PAID";
 
       const booking = await tx.booking.create({
@@ -116,6 +120,7 @@ export async function POST(req: NextRequest) {
           guestAddress: guestAddress ?? null,
           razorpayOrderId,
           razorpayPaymentId,
+          addons: { create: extras.rows },
           ...(session?.userId ? { userId: session.userId } : {}),
         },
       });
@@ -166,6 +171,7 @@ export async function POST(req: NextRequest) {
     const msg = err instanceof Error ? err.message : "";
     if (msg === "SLOT_UNAVAILABLE") return NextResponse.json({ error: "Slot no longer available" }, { status: 409 });
     if (msg === "SLOT_NOT_FOUND") return NextResponse.json({ error: "Slot not found" }, { status: 404 });
+    if (msg === "ADDON_UNAVAILABLE") return NextResponse.json({ error: "An add-on you picked is no longer available. A refund will be issued automatically." }, { status: 400 });
     throw err;
   }
 }

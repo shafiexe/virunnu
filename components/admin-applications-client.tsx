@@ -14,6 +14,7 @@ type OwnerApp = {
   address: string;
   city: string;
   website: string | null;
+  details: unknown;
   status: ApplicationStatus;
   notes: string | null;
   createdAt: Date;
@@ -28,6 +29,7 @@ type CatererApp = {
   city: string;
   cuisines: string[];
   website: string | null;
+  details: unknown;
   status: ApplicationStatus;
   notes: string | null;
   createdAt: Date;
@@ -70,12 +72,151 @@ function CredentialsBanner({ creds, onDismiss }: { creds: Credentials; onDismiss
   );
 }
 
+type CenterDetails = {
+  venueType?: string; description?: string; hallName?: string; capacity?: number; priceRupees?: number;
+  amenities?: string[]; photos?: string[]; slots?: { name: string; startTime: string; endTime: string }[];
+  googleMapsUrl?: string; googleRating?: number; googleReviewCount?: number; whatsappPhone?: string;
+  instagramUrl?: string; facebookUrl?: string; youtubeUrl?: string; linkedinUrl?: string; twitterUrl?: string;
+};
+
+function DetailsPanel({ d }: { d: CenterDetails }) {
+  const [open, setOpen] = useState(false);
+  const links = [
+    ["Maps", d.googleMapsUrl], ["Instagram", d.instagramUrl], ["Facebook", d.facebookUrl],
+    ["YouTube", d.youtubeUrl], ["LinkedIn", d.linkedinUrl], ["Twitter / X", d.twitterUrl],
+  ].filter(([, u]) => u) as [string, string][];
+
+  return (
+    <div className="pt-1">
+      <button onClick={() => setOpen((v) => !v)} className="text-xs font-semibold text-amber-600 hover:underline">
+        {open ? "Hide details" : "View full details"}
+        {d.photos?.length ? ` · ${d.photos.length} photos` : ""}
+      </button>
+      {open && (
+        <div className="mt-3 space-y-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 p-3 text-xs text-zinc-600 dark:text-zinc-400">
+          {d.description && <p className="leading-relaxed">{d.description}</p>}
+          <div className="flex flex-wrap gap-x-5 gap-y-1">
+            {d.venueType && <span>Type: <b className="text-zinc-800 dark:text-zinc-200">{d.venueType.replace(/_/g, " ").toLowerCase()}</b></span>}
+            {d.hallName && <span>Hall: <b className="text-zinc-800 dark:text-zinc-200">{d.hallName}</b></span>}
+            {d.capacity ? <span>Capacity: <b className="text-zinc-800 dark:text-zinc-200">{d.capacity}</b></span> : null}
+            {d.priceRupees ? <span>Price/slot: <b className="text-zinc-800 dark:text-zinc-200">₹{d.priceRupees.toLocaleString("en-IN")}</b></span> : null}
+            {d.googleRating ? <span>Rating: <b className="text-zinc-800 dark:text-zinc-200">{d.googleRating}</b>{d.googleReviewCount ? ` (${d.googleReviewCount})` : ""}</span> : null}
+            {d.whatsappPhone && <span>WhatsApp: <b className="text-zinc-800 dark:text-zinc-200">{d.whatsappPhone}</b></span>}
+          </div>
+          {d.slots && d.slots.length > 0 && (
+            <div>Slots: {d.slots.map((x) => `${x.name} ${x.startTime}–${x.endTime}`).join(" · ")}</div>
+          )}
+          {d.amenities && d.amenities.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {d.amenities.map((a) => (
+                <span key={a} className="rounded-full border border-zinc-200 dark:border-zinc-700 px-2 py-0.5">{a}</span>
+              ))}
+            </div>
+          )}
+          {links.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {links.map(([label, url]) => (
+                <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">{label}</a>
+              ))}
+            </div>
+          )}
+          {d.photos && d.photos.length > 0 && (
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+              {d.photos.map((u) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={u} src={u} alt="" referrerPolicy="no-referrer" loading="lazy" className="aspect-[4/3] w-full rounded-md object-cover" />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+type CatererDetails = {
+  description?: string; serviceAreas?: string[]; serviceRadiusKm?: number; minGuests?: number; maxGuests?: number;
+  leadTimeHours?: number; mealTypes?: string[]; cuisines?: string[]; services?: string[];
+  packages?: { name: string; pricePerPlate: number; isVeg: boolean; dishes: string[] }[];
+  items?: { name: string; category?: string; priceRupees: number }[];
+  pastEvents?: { title: string; type?: string; guests?: number }[];
+  teamSize?: number; yearsExperience?: number; fssaiNumber?: string; googleRating?: number; googleReviewCount?: number;
+  googleMapsUrl?: string; instagramUrl?: string; facebookUrl?: string; youtubeUrl?: string; linkedinUrl?: string; twitterUrl?: string;
+  photos?: string[];
+};
+
+function CatererDetailsPanel({ d }: { d: CatererDetails }) {
+  const [open, setOpen] = useState(false);
+  const b = (v: string | number) => <b className="text-zinc-800 dark:text-zinc-200">{v}</b>;
+  const links = [
+    ["Maps", d.googleMapsUrl], ["Instagram", d.instagramUrl], ["Facebook", d.facebookUrl],
+    ["YouTube", d.youtubeUrl], ["LinkedIn", d.linkedinUrl], ["Twitter / X", d.twitterUrl],
+  ].filter(([, u]) => u) as [string, string][];
+
+  return (
+    <div className="pt-1">
+      <button onClick={() => setOpen((v) => !v)} className="text-xs font-semibold text-amber-600 hover:underline">
+        {open ? "Hide details" : "View full details"}
+        {d.packages?.length ? ` · ${d.packages.length} packages` : ""}
+        {d.photos?.length ? ` · ${d.photos.length} photos` : ""}
+      </button>
+      {open && (
+        <div className="mt-3 space-y-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-950/40 p-3 text-xs text-zinc-600 dark:text-zinc-400">
+          {d.description && <p className="leading-relaxed">{d.description}</p>}
+          <div className="flex flex-wrap gap-x-5 gap-y-1">
+            {d.serviceAreas?.length ? <span>Serves: {b(d.serviceAreas.join(", "))}</span> : null}
+            {d.serviceRadiusKm ? <span>Travels: {b(`${d.serviceRadiusKm} km`)}</span> : null}
+            {d.minGuests || d.maxGuests ? <span>Guests: {b(`${d.minGuests ?? "…"}–${d.maxGuests ?? "…"}`)}</span> : null}
+            {d.leadTimeHours ? <span>Notice: {b(`${d.leadTimeHours} h`)}</span> : null}
+            {d.mealTypes?.length ? <span>Meals: {b(d.mealTypes.join(", ").toLowerCase())}</span> : null}
+            {d.teamSize ? <span>Team: {b(d.teamSize)}</span> : null}
+            {d.yearsExperience ? <span>Experience: {b(`${d.yearsExperience} yrs`)}</span> : null}
+            {d.fssaiNumber ? <span>FSSAI: {b(d.fssaiNumber)}</span> : null}
+            {d.googleRating ? <span>Rating: {b(d.googleRating)}{d.googleReviewCount ? ` (${d.googleReviewCount})` : ""}</span> : null}
+          </div>
+          {d.cuisines?.length ? <div>Cuisines: {b(d.cuisines.join(", "))}</div> : null}
+          {d.services?.length ? <div>Services: {b(d.services.map((x) => x.replace(/_/g, " ").toLowerCase()).join(", "))}</div> : null}
+          {d.packages && d.packages.length > 0 && (
+            <div className="space-y-1">
+              {d.packages.map((p) => (
+                <div key={p.name}>
+                  {b(p.name)} — ₹{p.pricePerPlate}/plate{p.isVeg ? "" : " (non-veg)"}
+                  {p.dishes?.length ? <span className="text-zinc-400"> · {p.dishes.join(", ")}</span> : null}
+                </div>
+              ))}
+            </div>
+          )}
+          {d.items && d.items.length > 0 && <div>{d.items.length} individually priced items</div>}
+          {d.pastEvents && d.pastEvents.length > 0 && (
+            <div>Past work: {d.pastEvents.map((e) => `${e.title}${e.guests ? ` (${e.guests} guests)` : ""}`).join(" · ")}</div>
+          )}
+          {links.length > 0 && (
+            <div className="flex flex-wrap gap-3">
+              {links.map(([label, url]) => (
+                <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">{label}</a>
+              ))}
+            </div>
+          )}
+          {d.photos && d.photos.length > 0 && (
+            <div className="grid grid-cols-4 sm:grid-cols-6 gap-1.5">
+              {d.photos.map((u) => (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img key={u} src={u} alt="" referrerPolicy="no-referrer" loading="lazy" className="aspect-[4/3] w-full rounded-md object-cover" />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AppCard({
-  name, phone, email, address, city, website, cuisines, status,
+  name, phone, email, address, city, website, cuisines, status, details, kind = "center",
   onApprove, onReject,
 }: {
   name: string; phone: string; email: string | null; address: string; city: string;
-  website?: string | null; cuisines?: string[]; status: ApplicationStatus;
+  website?: string | null; cuisines?: string[]; status: ApplicationStatus; details?: unknown; kind?: "center" | "caterer";
   onApprove: () => Promise<void>; onReject: (reason?: string) => Promise<void>;
 }) {
   const [loadingApprove, setLoadingApprove] = useState(false);
@@ -109,6 +250,11 @@ function AppCard({
           {website && (
             <a href={website} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-600 hover:underline">{website}</a>
           )}
+          {details && typeof details === "object"
+            ? kind === "caterer"
+              ? <CatererDetailsPanel d={details as CatererDetails} />
+              : <DetailsPanel d={details as CenterDetails} />
+            : null}
         </div>
 
         {isPending && (
@@ -216,7 +362,7 @@ export function AdminApplicationsClient({
     <div className="mx-auto max-w-4xl px-4 py-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Pending Applications</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Review and approve venue owner and caterer registrations.</p>
+        <p className="text-sm text-zinc-500 mt-0.5">Review and approve convention center and caterer registrations.</p>
       </div>
 
       {creds && <CredentialsBanner creds={creds} onDismiss={() => setCreds(null)} />}
@@ -263,6 +409,7 @@ export function AdminApplicationsClient({
               city={a.city}
               website={a.website}
               status={a.status}
+              details={a.details}
               onApprove={() => approveOwner(a.id)}
               onReject={(reason) => rejectOwner(a.id, reason)}
             />
@@ -289,6 +436,8 @@ export function AdminApplicationsClient({
               website={a.website}
               cuisines={a.cuisines}
               status={a.status}
+              details={a.details}
+              kind="caterer"
               onApprove={() => approveCaterer(a.id)}
               onReject={(reason) => rejectCaterer(a.id, reason)}
             />

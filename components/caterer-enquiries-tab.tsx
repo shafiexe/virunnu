@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Phone, Calendar, Users, MessageSquare, CheckCircle, XCircle, Clock } from "lucide-react";
+import Link from "next/link";
+import { Phone, Calendar, Users, MessageSquare, CheckCircle, XCircle, Clock, ClipboardPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PaginationBar } from "@/components/pagination-bar";
 
 type Enquiry = {
   id: string;
@@ -19,6 +21,8 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
   const [enquiries, setEnquiries] = useState(initialEnquiries);
   const [actingId, setActingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<"ALL" | "PENDING" | "ATTENDED" | "IGNORED">("ALL");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
 
   async function updateStatus(id: string, status: "ATTENDED" | "IGNORED") {
     if (actingId) return;
@@ -38,6 +42,8 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
   }
 
   const filtered = filter === "ALL" ? enquiries : enquiries.filter((e) => e.status === filter);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const shown = filtered.slice((Math.min(page, totalPages) - 1) * pageSize, Math.min(page, totalPages) * pageSize);
   const pendingCount = enquiries.filter((e) => e.status === "PENDING").length;
 
   return (
@@ -47,7 +53,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
         {(["ALL", "PENDING", "ATTENDED", "IGNORED"] as const).map((f) => (
           <button
             key={f}
-            onClick={() => setFilter(f)}
+            onClick={() => { setFilter(f); setPage(1); }}
             className={cn(
               "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap",
               filter === f
@@ -63,14 +69,15 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
       {filtered.length === 0 && (
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-10 text-center">
           <Clock className="h-8 w-8 text-zinc-300 dark:text-zinc-600 mx-auto mb-2" />
-          <p className="text-zinc-400 text-sm">
-            {filter === "ALL" ? "No enquiries yet. They'll appear here when customers contact you." : `No ${filter.toLowerCase()} enquiries.`}
+          <p className="text-zinc-500 text-sm">
+            {filter === "ALL" ? "No enquiries yet. They appear here when customers contact you from your public page." : `No ${filter.toLowerCase()} enquiries.`}
           </p>
+          {filter === "ALL" && <a href="/caterer/profile" className="mt-3 inline-flex rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">Complete your public profile</a>}
         </div>
       )}
 
       <div className="space-y-2">
-        {filtered.map((e) => {
+        {shown.map((e) => {
           const dateStr = e.eventDate
             ? new Date(e.eventDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })
             : null;
@@ -140,6 +147,15 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
                 )}
               </div>
 
+              {e.status !== "IGNORED" && (
+                <Link
+                  href={`/caterer/orders/new?enquiry=${e.id}`}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-white transition-colors"
+                >
+                  <ClipboardPlus className="h-3.5 w-3.5" /> Create order
+                </Link>
+              )}
+
               {e.message && (
                 <div className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 rounded-xl px-3 py-2">
                   <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5 text-zinc-400" />
@@ -149,6 +165,9 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
             </div>
           );
         })}
+      </div>
+      <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden empty:hidden">
+        <PaginationBar page={Math.min(page, totalPages)} totalPages={totalPages} total={filtered.length} pageSize={pageSize} onPage={setPage} onPageSize={(n) => { setPageSize(n); setPage(1); }} />
       </div>
     </div>
   );

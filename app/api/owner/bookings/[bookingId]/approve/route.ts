@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { BookingStatus, SlotStatus } from "@prisma/client";
 import { notifyBookingApproved } from "@/services/notification.service";
+import { logActivity } from "@/lib/activity";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ bookingId: string }> }) {
   const session = await getSession();
@@ -63,5 +64,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ boo
     }).catch((e) => console.error("[notify/booking-approved]", e));
   }
 
+  await logActivity(session, `Approved booking ${bookingId.slice(-6).toUpperCase()}`);
   return NextResponse.json({ ok: true });
 }

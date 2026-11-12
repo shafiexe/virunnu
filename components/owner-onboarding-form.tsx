@@ -5,30 +5,9 @@ import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { parseGoogleMapsCoords } from "@/lib/maps";
 
 const AMENITIES = ["AC", "Projector", "Stage", "Parking", "Catering Kitchen", "Sound System", "Generator Backup", "Dressing Room", "CCTV"];
-
-// Parse lat/lng from a Google Maps URL (place or directions)
-function parseGoogleMapsCoords(url: string): { lat: number; lng: number } | null {
-  try {
-    // Place URL: !3d(lat)!4d(lng) in data section
-    const m3d = url.match(/!3d(-?\d+\.?\d*)!4d(-?\d+\.?\d*)/);
-    if (m3d) return { lat: parseFloat(m3d[1]), lng: parseFloat(m3d[2]) };
-
-    // Directions URL destination: !1d(lng)!2d(lat)
-    if (url.includes("/maps/dir/")) {
-      const m1d = url.match(/!1d(-?\d+\.?\d*)!2d(-?\d+\.?\d*)/);
-      if (m1d) return { lat: parseFloat(m1d[2]), lng: parseFloat(m1d[1]) };
-    }
-
-    // Fallback: /@lat,lng,zoom in URL path
-    const mat = url.match(/\/@(-?\d+\.?\d*),(-?\d+\.?\d*),\d+[zm]/);
-    if (mat) return { lat: parseFloat(mat[1]), lng: parseFloat(mat[2]) };
-  } catch {
-    // ignore parse errors
-  }
-  return null;
-}
 
 type Step1 = {
   venueName: string;

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { z } from "zod";
+import { catererDetailsSchema, detailsToData } from "@/lib/caterer-details";
 
 const updateSchema = z.object({
   name: z.string().min(2).optional(),
@@ -32,7 +33,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ ca
   const caterer = await db.caterer.findUnique({ where: { id: catererId } });
   if (!caterer) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  await db.caterer.update({ where: { id: catererId }, data: parsed.data });
+  const details = catererDetailsSchema.safeParse(body);
+  if (!details.success) return NextResponse.json({ error: details.error.issues[0]?.message }, { status: 400 });
+
+  await db.caterer.update({ where: { id: catererId }, data: { ...parsed.data, ...detailsToData(details.data) } });
 
   return NextResponse.json({ ok: true });
 }

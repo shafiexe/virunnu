@@ -5,14 +5,33 @@ type Caterer = {
   id: string;
   name: string;
   phone: string;
+  whatsappNumber?: string | null;
   city: string;
   state: string;
   description: string | null;
   cuisines: string[];
+  startingPriceRupees?: number | null;
+  minGuests?: number | null;
+  maxGuests?: number | null;
+  serviceAreas?: string[];
 };
 
-export function CatererCard({ caterer }: { caterer: Caterer }) {
-  const waLink = `https://wa.me/${caterer.phone.replace(/\D/g, "")}`;
+export type CatererEnquiry = { place?: string; guests?: number; date?: string; meal?: string };
+
+const MEAL_LABEL: Record<string, string> = { BREAKFAST: "breakfast", LUNCH: "lunch", DINNER: "dinner", SNACKS: "snacks & tea" };
+
+function whatsappText(name: string, q?: CatererEnquiry) {
+  const bits = [
+    q?.meal ? MEAL_LABEL[q.meal] ?? q.meal : null,
+    q?.guests ? `for ${q.guests} people` : null,
+    q?.place ? `at ${q.place}` : null,
+    q?.date ? `on ${new Date(q.date + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short" })}` : null,
+  ].filter(Boolean);
+  return `Hi ${name}, I found you on Virunnu. Can you cater${bits.length ? " " + bits.join(" ") : ""}? Please share the menu and price per plate.`;
+}
+
+export function CatererCard({ caterer, enquiry }: { caterer: Caterer; enquiry?: CatererEnquiry }) {
+  const waLink = `https://wa.me/${(caterer.whatsappNumber || caterer.phone).replace(/\D/g, "")}?text=${encodeURIComponent(whatsappText(caterer.name, enquiry))}`;
 
   return (
     <div className="relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
@@ -38,6 +57,20 @@ export function CatererCard({ caterer }: { caterer: Caterer }) {
       <div className="p-4 space-y-3 relative z-10">
         {caterer.description && (
           <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2 pointer-events-none">{caterer.description}</p>
+        )}
+
+        {(caterer.startingPriceRupees || caterer.maxGuests || (caterer.serviceAreas?.length ?? 0) > 0) && (
+          <div className="space-y-1 text-xs text-zinc-500 pointer-events-none">
+            {caterer.startingPriceRupees ? (
+              <div>From <span className="font-semibold text-amber-600 dark:text-amber-400">₹{caterer.startingPriceRupees.toLocaleString("en-IN")}</span> per plate</div>
+            ) : null}
+            {caterer.minGuests || caterer.maxGuests ? (
+              <div>Serves {caterer.minGuests ?? 1}–{caterer.maxGuests ?? "any"} guests</div>
+            ) : null}
+            {caterer.serviceAreas && caterer.serviceAreas.length > 0 && (
+              <div className="line-clamp-1">Serves {caterer.serviceAreas.join(", ")}</div>
+            )}
+          </div>
         )}
 
         <div className="flex flex-wrap gap-1.5 pointer-events-none">

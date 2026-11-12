@@ -11,5 +11,5 @@ export async function POST(_req: NextRequest, { params }: Params) {
   }
   const { venueId } = await params;
   await db.venue.update({ where: { id: venueId }, data: { approved: true } });
-  return NextResponse.redirect(new URL("/admin", _req.url), 303);
+  return NextResponse.json({ ok: true });
 }

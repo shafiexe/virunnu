@@ -7,18 +7,25 @@ datasource db {
 }
 
 model User {
-  id        String        @id @default(cuid())
-  phone     String        @unique
-  name      String?
-  email     String?       @unique
-  password  String?
-  role      UserRole      @default(CUSTOMER)
-  orgId     String?
-  org       Organization? @relation(fields: [orgId], references: [id])
-  bookings  Booking[]
-  otpCodes  OtpCode[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id            String        @id @default(cuid())
+  phone         String        @unique
+  name          String?
+  email         String?       @unique
+  password      String?
+  role          UserRole      @default(CUSTOMER)
+  orgId         String?
+  org           Organization? @relation(fields: [orgId], references: [id])
+  // A person the catering owner added to their team: sees every page except those listed in `deny`.
+  // Changing deny or switching someone off bumps accessVersion, which signs them out so the change applies at once.
+  teamMember    Boolean       @default(false)
+  deny          String[]      @default([])
+  accessVersion Int           @default(0)
+  disabled      Boolean       @default(false)
+  addedById     String?
+  bookings      Booking[]
+  otpCodes      OtpCode[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 enum UserRole {
@@ -42,20 +49,22 @@ enum VenueType {
 }
 
 model Organization {
-  id               String               @id @default(cuid())
-  name             String
-  type             OrgType              @default(CONVENTION)
-  disabled         Boolean              @default(false)
-  users            User[]
-  venues           Venue[]
-  caterers         Caterer[]
-  facilities       Facility[]
-  expenses         Expense[]
-  employees        Employee[]
+  id                String               @id @default(cuid())
+  name              String
+  type              OrgType              @default(CONVENTION)
+  disabled          Boolean              @default(false)
+  users             User[]
+  venues            Venue[]
+  caterers          Caterer[]
+  facilities        Facility[]
+  expenses          Expense[]
+  employees         Employee[]
   expenseCategories ExpenseCategory[]
-  messageTemplates OrgMessageTemplate[]
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
+  messageTemplates  OrgMessageTemplate[]
+  logoUpdatedAt     DateTime?
+  logo              OrgLogo?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
 }
 
 model OrgMessageTemplate {
@@ -106,31 +115,76 @@ model Venue {
   email             String?
   instagramUrl      String?
   facebookUrl       String?
+  youtubeUrl        String?
+  linkedinUrl       String?
+  twitterUrl        String?
+  // Invoice tax: prices are GST-inclusive; gstRate is the rate for each of CGST and SGST (9 + 9 = 18%)
+  gstEnabled        Boolean      @default(true)
+  gstRate           Float        @default(9)
+  // shown on the invoice when the centre charges GST
+  gstin             String?
   approved          Boolean      @default(false)
   orgId             String
   org               Organization @relation(fields: [orgId], references: [id])
   halls             Hall[]
+  addons            VenueAddon[]
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
 }
 
+// Optional extras an owner can charge on top of the hall (AC, cleaning & maintenance, security …)
+model VenueAddon {
+  id         String    @id @default(cuid())
+  venueId    String
+  venue      Venue     @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  name       String
+  pricePaise Int
+  // FIXED = one charge per booking, HOUR = pricePaise per hour, hours chosen on each booking
+  unit       AddonUnit @default(FIXED)
+  active     Boolean   @default(true)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@index([venueId])
+}
+
+enum AddonUnit {
+  FIXED
+  HOUR
+}
+
+// Snapshot of the extras chosen for one booking, so later price edits never change old bills
+model BookingAddon {
+  id             String    @id @default(cuid())
+  bookingId      String
+  booking        Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  name           String
+  // line total = unitPricePaise × quantity (pricePaise is the stored total, so existing sums keep working)
+  pricePaise     Int
+  unit           AddonUnit @default(FIXED)
+  quantity       Float     @default(1)
+  unitPricePaise Int?
+
+  @@index([bookingId])
+}
+
 model Hall {
-  id            String         @id @default(cuid())
-  name          String
-  capacity      Int
-  pricePerSlot  Int
-  amenities     String[]
-  description           String?
-  minimumAdvancePaise   Int            @default(50000)
-  requireFullPayment    Boolean        @default(false)
-  venueId       String
-  venue         Venue          @relation(fields: [venueId], references: [id])
-  slotTemplates SlotTemplate[]
-  hallSlots     HallSlot[]
-  photos        HallPhoto[]
-  blockedDates  BlockedDate[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  id                  String         @id @default(cuid())
+  name                String
+  capacity            Int
+  pricePerSlot        Int
+  amenities           String[]
+  description         String?
+  minimumAdvancePaise Int            @default(50000)
+  requireFullPayment  Boolean        @default(false)
+  venueId             String
+  venue               Venue          @relation(fields: [venueId], references: [id])
+  slotTemplates       SlotTemplate[]
+  hallSlots           HallSlot[]
+  photos              HallPhoto[]
+  blockedDates        BlockedDate[]
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 }
 
 model HallPhoto {
@@ -179,30 +233,31 @@ enum SlotStatus {
 }
 
 model Booking {
-  id            String         @id @default(cuid())
-  status        BookingStatus  @default(PENDING)
-  totalPaise    Int
-  advancePaise  Int?
-  cancelReason    String?
-  discountPaise   Int            @default(0)
-  discountReason  String?
-  refundPaise     Int            @default(0)
-  refundNote      String?
+  id                String         @id @default(cuid())
+  status            BookingStatus  @default(PENDING)
+  totalPaise        Int
+  advancePaise      Int?
+  cancelReason      String?
+  discountPaise     Int            @default(0)
+  discountReason    String?
+  refundPaise       Int            @default(0)
+  refundNote        String?
   guestName         String?
   guestPhone        String?
   guestEmail        String?
   guestAddress      String?
   razorpayOrderId   String?        @unique
   razorpayPaymentId String?        @unique
-  paymentMethod PaymentMethod  @default(ONLINE)
-  orgId         String
-  userId        String?
-  user          User?          @relation(fields: [userId], references: [id])
-  hallSlotId    String
-  hallSlot      HallSlot       @relation(fields: [hallSlotId], references: [id])
-  payment       Payment?
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  paymentMethod     PaymentMethod  @default(ONLINE)
+  orgId             String
+  userId            String?
+  user              User?          @relation(fields: [userId], references: [id])
+  hallSlotId        String
+  hallSlot          HallSlot       @relation(fields: [hallSlotId], references: [id])
+  payment           Payment?
+  addons            BookingAddon[]
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 }
 
 enum PaymentMethod {
@@ -239,31 +294,80 @@ enum PaymentStatus {
 }
 
 model Caterer {
-  id             String            @id @default(cuid())
-  name           String
-  phone          String
-  city           String
-  state          String            @default("Kerala")
-  description    String?
-  cuisines       String[]
-  approved       Boolean           @default(false)
-  disabled       Boolean           @default(false)
-  orgId          String?
-  org            Organization?     @relation(fields: [orgId], references: [id])
-  menuItems      MenuItem[]
-  enquiries      CateringEnquiry[]
+  id                  String                @id @default(cuid())
+  name                String
+  phone               String
+  city                String
+  state               String                @default("Kerala")
+  description         String?
+  cuisines            String[]
+  approved            Boolean               @default(false)
+  disabled            Boolean               @default(false)
+  orgId               String?
+  org                 Organization?         @relation(fields: [orgId], references: [id])
+  menuItems           MenuItem[]
+  enquiries           CateringEnquiry[]
   // contact & social
-  whatsappNumber String?
-  email          String?
-  instagramUrl   String?
-  facebookUrl    String?
-  youtubeUrl     String?
-  websiteUrl     String?
+  whatsappNumber      String?
+  email               String?
+  instagramUrl        String?
+  facebookUrl         String?
+  youtubeUrl          String?
+  websiteUrl          String?
   // service profile
-  services       String[]
-  photos         String[]
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+  services            String[]
+  photos              String[]
+  // where / how much / how soon — what a traveller searches on
+  address             String?
+  pincode             String?
+  linkedinUrl         String?
+  twitterUrl          String?
+  googleMapsUrl       String?
+  lat                 Float?
+  lng                 Float?
+  googleRating        Float?
+  googleReviewCount   Int?
+  serviceAreas        String[]
+  serviceRadiusKm     Int?
+  minGuests           Int?
+  maxGuests           Int?
+  leadTimeHours       Int?
+  mealTypes           String[]
+  startingPriceRupees Int?
+  fssaiNumber         String?
+  teamSize            Int?
+  yearsExperience     Int?
+  pastEvents          Json?
+  // order workspace
+  nextInvoiceNumber   Int                   @default(1)
+  nextQuoteNumber     Int                   @default(1)
+  // nightly summary of the day to the owner: where it goes, and the last day it was sent
+  summaryEnabled      Boolean               @default(false)
+  summaryVia          String                @default("WHATSAPP")
+  summaryEmail        String?
+  lastSummaryOn       DateTime?             @db.Date
+  // how many days after a function an unpaid balance is worth a call
+  remindAfterDays     Int                   @default(7)
+  quotes              CatererQuote[]
+  // printed on every invoice
+  gstEnabled          Boolean               @default(false)
+  gstin               String?
+  foodGstBp           Int                   @default(500)
+  serviceGstBp        Int                   @default(1800)
+  gstInclusive        Boolean               @default(true)
+  invoiceNote         String?
+  upiId               String?
+  bankDetails         String?
+  items               CatererItem[]
+  customers           CatererCustomer[]
+  purchases           CatererPurchase[]
+  suppliers           CatererSupplier[]
+  staffPayments       CatererStaffPayment[]
+  attendance          CatererAttendance[]
+  orders              CatererOrder[]
+  bills               CatererBill[]
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
 }
 
 model CateringEnquiry {
@@ -310,19 +414,25 @@ model BlockedDate {
   @@unique([hallId, date])
 }
 
-
 model Employee {
-  id          String       @id @default(cuid())
-  orgId       String
-  org         Organization @relation(fields: [orgId], references: [id])
-  name        String
-  role        String
-  phone       String?
-  salaryPaise Int?
-  isActive    Boolean      @default(true)
-  expenses    Expense[]
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id             String                @id @default(cuid())
+  orgId          String
+  org            Organization          @relation(fields: [orgId], references: [id])
+  name           String
+  role           String
+  phone          String?
+  salaryPaise    Int?
+  isActive       Boolean               @default(true)
+  // MONTHLY uses salaryPaise; DAILY uses dailyRatePaise (a day-wage or "kooli" worker)
+  payType        String                @default("MONTHLY")
+  dailyRatePaise Int?
+  staffPayments  CatererStaffPayment[]
+  attendance     CatererAttendance[]
+  orderStaff     CatererOrderStaff[]
+  expenses       Expense[]
+  purchases      CatererPurchase[]
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
 }
 
 model Expense {
@@ -338,6 +448,8 @@ model Expense {
   employee    Employee?    @relation(fields: [employeeId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy  String?
 }
 
 model ExpenseCategory {
@@ -383,10 +495,11 @@ model OwnerApplication {
   address       String
   city          String
   website       String?
-  status    ApplicationStatus @default(PENDING)
-  notes     String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  details       Json?
+  status        ApplicationStatus @default(PENDING)
+  notes         String?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
 
 model CatererApplication {
@@ -398,6 +511,7 @@ model CatererApplication {
   city      String
   cuisines  String[]
   website   String?
+  details   Json?
   status    ApplicationStatus @default(PENDING)
   notes     String?
   createdAt DateTime          @default(now())
@@ -413,4 +527,351 @@ model OtpCode {
   userId    String?
   user      User?    @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+// ── Catering team workspace ────────────────────────────────────────────────
+
+enum ItemGroup {
+  FOOD
+  EQUIPMENT
+  STAFF
+  DECOR
+  OTHER
+}
+
+enum OrderStatus {
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+// The team's own list of things they bill for, with a default rate (food, crockery, staff, counters …)
+model CatererItem {
+  id           String    @id @default(cuid())
+  catererId    String
+  caterer      Caterer   @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  name         String
+  group        ItemGroup @default(FOOD)
+  unit         String    @default("nos")
+  ratePaise    Int       @default(0)
+  active       Boolean   @default(true)
+  sortOrder    Int       @default(0)
+  // Shown on the caterer's public page as part of the menu, with what a customer would want to know about the dish
+  showOnPublic Boolean   @default(false)
+  category     String?
+  description  String?
+  isVeg        Boolean   @default(true)
+  isSpecial    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+
+  @@unique([catererId, name])
+  @@index([catererId])
+}
+
+enum BillType {
+  FOOD
+  SERVICE
+}
+
+// One person or family the team bills; many functions on different dates hang under them
+model CatererCustomer {
+  id             String         @id @default(cuid())
+  catererId      String
+  caterer        Caterer        @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  name           String
+  phone          String
+  address        String?
+  // unguessable id for the shareable statement link
+  shareToken     String         @unique @default(cuid())
+  orders         CatererOrder[]
+  quotes         CatererQuote[]
+  // when the team last sent this customer a payment reminder, so the follow-up list does not nag every day
+  lastRemindedAt DateTime?
+  createdAt      DateTime       @default(now())
+
+  @@unique([catererId, phone])
+}
+
+// One function the team is booked for: a date, a customer, serve times. Billing lives on its bills.
+model CatererOrder {
+  id         String              @id @default(cuid())
+  catererId  String
+  caterer    Caterer             @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   CatererCustomer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  date       DateTime            @db.Date
+  place      String?
+  eventType  String?
+  notes      String?
+  status     OrderStatus         @default(CONFIRMED)
+  // unguessable id for the combined (food + service) invoice link
+  shareToken String              @unique @default(cuid())
+  servings   CatererServing[]
+  bills      CatererBill[]
+  purchases  CatererPurchase[]
+  team       CatererOrderStaff[]
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
+
+  @@index([catererId, date])
+  @@index([customerId])
+}
+
+// A tax-invoice-style bill. A function has a FOOD bill and/or a SERVICE bill (equipment, staff, decoration, other).
+model CatererBill {
+  id             String             @id @default(cuid())
+  orderId        String
+  order          CatererOrder       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  catererId      String
+  caterer        Caterer            @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  type           BillType
+  number         Int
+  subtotalPaise  Int                @default(0)
+  discountPaise  Int                @default(0)
+  discountReason String?
+  receivedPaise  Int                @default(0)
+  // GST at the time the bill was made: the rate (in hundredths of a percent), whether prices already include it,
+  // the GST amount, and the part of it added on top of the total (0 when prices include GST)
+  gstRateBp      Int                @default(0)
+  gstInclusive   Boolean            @default(true)
+  gstPaise       Int                @default(0)
+  taxPaise       Int                @default(0)
+  shareToken     String             @unique @default(cuid())
+  lines          CatererOrderLine[]
+  payments       CatererPayment[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@unique([catererId, number])
+  @@unique([orderId, type])
+  @@index([catererId])
+  @@index([createdAt])
+}
+
+// "Lunch at 1:00 PM for 200 guests" or "needed by 7:00 AM"
+model CatererServing {
+  id        String             @id @default(cuid())
+  orderId   String
+  order     CatererOrder       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  label     String
+  time      String
+  guests    Int?
+  sortOrder Int                @default(0)
+  lines     CatererOrderLine[]
+}
+
+model CatererOrderLine {
+  id          String          @id @default(cuid())
+  billId      String
+  bill        CatererBill     @relation(fields: [billId], references: [id], onDelete: Cascade)
+  servingId   String?
+  serving     CatererServing? @relation(fields: [servingId], references: [id], onDelete: SetNull)
+  itemId      String?
+  name        String
+  group       ItemGroup       @default(FOOD)
+  unit        String          @default("nos")
+  quantity    Float
+  ratePaise   Int
+  amountPaise Int
+  sortOrder   Int             @default(0)
+}
+
+model CatererPayment {
+  id          String      @id @default(cuid())
+  billId      String
+  bill        CatererBill @relation(fields: [billId], references: [id], onDelete: Cascade)
+  amountPaise Int
+  method      String      @default("CASH")
+  note        String?
+  paidOn      DateTime    @db.Date
+  createdAt   DateTime    @default(now())
+
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
+
+  @@index([billId])
+  @@index([paidOn])
+}
+
+// Something the team bought for the kitchen: who bought it, from whom, what it cost and how much is paid.
+// A purchase can be tied to one function so the cost of that function is known.
+model CatererPurchase {
+  id          String                   @id @default(cuid())
+  catererId   String
+  caterer     Caterer                  @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  date        DateTime                 @db.Date
+  supplier    String
+  supplierId  String?
+  supplierRef CatererSupplier?         @relation(fields: [supplierId], references: [id], onDelete: SetNull)
+  billNo      String?
+  category    String                   @default("Raw material")
+  totalPaise  Int
+  paidPaise   Int                      @default(0)
+  employeeId  String?
+  employee    Employee?                @relation(fields: [employeeId], references: [id], onDelete: SetNull)
+  orderId     String?
+  order       CatererOrder?            @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  notes       String?
+  lines       CatererPurchaseLine[]
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+  payments    CatererPurchasePayment[]
+
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
+
+  @@index([catererId, date])
+  @@index([orderId])
+}
+
+model CatererPurchaseLine {
+  id          String          @id @default(cuid())
+  purchaseId  String
+  purchase    CatererPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  name        String
+  unit        String          @default("kg")
+  quantity    Float
+  ratePaise   Int
+  amountPaise Int
+  sortOrder   Int             @default(0)
+}
+
+// Money paid to the supplier for a purchase, each with its own date so the day book and cash book stay accurate
+model CatererPurchasePayment {
+  id          String          @id @default(cuid())
+  purchaseId  String
+  purchase    CatererPurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+  amountPaise Int
+  method      String          @default("CASH")
+  paidOn      DateTime        @db.Date
+  note        String?
+  createdAt   DateTime        @default(now())
+
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
+
+  @@index([purchaseId])
+  @@index([paidOn])
+}
+
+enum SupplierCycle {
+  PER_BILL
+  WEEKLY
+  MONTHLY
+}
+
+// Someone the team buys from (vegetable market, fish stall, stationery shop …) and how often they are paid
+model CatererSupplier {
+  id        String            @id @default(cuid())
+  catererId String
+  caterer   Caterer           @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  name      String
+  phone     String?
+  category  String            @default("Other")
+  cycle     SupplierCycle     @default(PER_BILL)
+  notes     String?
+  active    Boolean           @default(true)
+  purchases CatererPurchase[]
+  createdAt DateTime          @default(now())
+
+  @@unique([catererId, name])
+}
+
+// Salary, daily wages or an advance paid to someone on the team
+model CatererStaffPayment {
+  id          String   @id @default(cuid())
+  catererId   String
+  caterer     Caterer  @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  employeeId  String
+  employee    Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date        DateTime @db.Date
+  amountPaise Int
+  kind        String   @default("SALARY")
+  forMonth    String?
+  method      String   @default("CASH")
+  note        String?
+  createdAt   DateTime @default(now())
+
+  @@index([catererId, date])
+  @@index([employeeId, date])
+}
+
+// A day worked by a daily-wage person: 1 for a full day, 0.5 for half
+model CatererAttendance {
+  id         String   @id @default(cuid())
+  catererId  String
+  caterer    Caterer  @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  date       DateTime @db.Date
+  units      Float    @default(1)
+
+  @@unique([employeeId, date])
+  @@index([catererId, date])
+}
+
+// Who worked a function and what they are paid for it. This is how casual, one-time people are paid.
+model CatererOrderStaff {
+  id          String       @id @default(cuid())
+  orderId     String
+  order       CatererOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  employeeId  String
+  employee    Employee     @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  amountPaise Int          @default(0)
+  note        String?
+
+  @@unique([orderId, employeeId])
+  @@index([employeeId])
+}
+
+// The business's logo / emblem, kept apart from Organization so ordinary queries never load the image bytes.
+model OrgLogo {
+  orgId       String       @id
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  contentType String
+  data        Bytes
+  updatedAt   DateTime     @updatedAt
+}
+
+// An estimate sent to a customer before they confirm. It is not an order and does not touch any sales figure
+// until it is turned into one. The items, times and discounts are kept exactly as typed, in `data`.
+model CatererQuote {
+  id         String          @id @default(cuid())
+  catererId  String
+  caterer    Caterer         @relation(fields: [catererId], references: [id], onDelete: Cascade)
+  customerId String
+  customer   CatererCustomer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  number     Int
+  date       DateTime        @db.Date
+  validUntil DateTime?       @db.Date
+  // OPEN while the customer decides, ACCEPTED once it has become an order, DECLINED if they said no
+  status     String          @default("OPEN")
+  data       Json
+  // the GST the quote was priced with, so the figures on it don't move if settings change
+  gst        Json
+  totalPaise Int             @default(0)
+  shareToken String          @unique @default(cuid())
+  orderId    String?         @unique
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  @@unique([catererId, number])
+  @@index([catererId, createdAt])
+  @@index([customerId])
+}
+
+// A short trail of what people did, so the owner can see who changed what. Kept for each business.
+model ActivityLog {
+  id       String   @id @default(cuid())
+  orgId    String
+  userId   String
+  userName String
+  action   String
+  summary  String
+  at       DateTime @default(now())
+
+  @@index([orgId, at])
 }

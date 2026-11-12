@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ blockedId: string }> };
 
@@ -21,5 +22,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   }
 
   await db.blockedDate.delete({ where: { id: blockedId } });
+  await logActivity(session, `Unblocked a date`);
   return NextResponse.json({ ok: true });
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { z } from "zod";
+import { actorOf, logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ expenseId: string }> };
 
@@ -16,7 +17,7 @@ const schema = z.object({
 
 export async function PATCH(req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId) {
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -52,7 +53,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
 
 export async function DELETE(_req: NextRequest, { params }: Params) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId) {
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -63,5 +64,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   }
 
   await db.expense.delete({ where: { id: expenseId } });
+  await logActivity(session, `Deleted expense “${expense.label}”`);
   return NextResponse.json({ ok: true });
 }

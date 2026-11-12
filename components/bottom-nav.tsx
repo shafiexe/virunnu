@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2, CalendarCheck } from "lucide-react";
+import { canOpen } from "@/lib/caterer-access";
+import { canOpenOwner } from "@/lib/owner-access";
 import { cn } from "@/lib/utils";
 
-type Session = { role: string } | null;
+type Session = { role: string; deny?: string[] } | null;
 
 export function BottomNav() {
   const [session, setSession] = useState<Session | undefined>(undefined);
@@ -30,24 +32,28 @@ export function BottomNav() {
     role === "OWNER"
       ? [
           { href: "/owner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-          { href: "/owner/calendar", icon: CalendarDays, label: "Schedule" },
+          { href: "/owner/calendar", icon: CalendarDays, label: "Calendar" },
           { href: "/owner/bookings", icon: CalendarCheck, label: "Bookings" },
           { href: "/owner/customers", icon: Users2, label: "Customers" },
         ]
       : role === "CATERER"
       ? [
-          { href: "/caterer/dashboard", icon: UtensilsCrossed, label: "Dashboard" },
+          { href: "/caterer/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+          { href: "/caterer/calendar", icon: CalendarDays, label: "Calendar" },
+          { href: "/caterer/orders", icon: UtensilsCrossed, label: "Orders" },
+          { href: "/caterer/customers", icon: Users2, label: "Parties" },
         ]
       : role === "ADMIN"
       ? [
           { href: "/admin", icon: Shield, label: "Admin" },
         ]
       : [];
+  const shown = links.filter((l) => (role === "CATERER" ? canOpen(session?.deny, l.href) : role === "OWNER" ? canOpenOwner(session?.deny, l.href) : true));
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-zinc-100 dark:border-zinc-800 bg-white/98 dark:bg-zinc-900/98 backdrop-blur-md md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="flex items-stretch h-16">
-        {links.map(({ href, icon: Icon, label }) => {
+        {shown.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || (href !== "/" && pathname.startsWith(href));
           return (
             <Link

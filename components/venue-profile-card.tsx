@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Building2, Pencil, X, Loader2, CheckCircle2, Phone, Mail, MapPin, Globe, MessageCircle, ChevronDown, ChevronUp, Star, Sparkles } from "lucide-react";
+import { YoutubeIcon, LinkedinIcon, XIcon } from "@/components/social-icons";
 import { VENUE_TYPE_OPTIONS, venueTypeLabel, type VenueTypeKey } from "@/lib/venue-types";
 
 interface VenueProfile {
@@ -23,6 +24,12 @@ interface VenueProfile {
   lng?: number | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
+  youtubeUrl?: string | null;
+  linkedinUrl?: string | null;
+  twitterUrl?: string | null;
+  gstEnabled?: boolean;
+  gstRate?: number;
+  gstin?: string | null;
 }
 
 function parseMapsCoords(url: string): { lat: number; lng: number } | null {
@@ -37,6 +44,12 @@ function parseMapsCoords(url: string): { lat: number; lng: number } | null {
     if (mat) return { lat: parseFloat(mat[1]), lng: parseFloat(mat[2]) };
   } catch { /* ignore */ }
   return null;
+}
+
+// Stored numbers look like "+919876543210"; the form edits only the 10 digits after +91.
+function tenDigits(v: string | null | undefined): string {
+  const d = (v ?? "").replace(/\D/g, "");
+  return d.length > 10 ? d.slice(-10) : d;
 }
 
 const FIELD = "w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3.5 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400";
@@ -99,8 +112,8 @@ export function VenueProfileCard({
   );
   const [form, setForm] = useState({
     name: initial.name,
-    phone: initial.phone ?? "",
-    whatsappPhone: initial.whatsappPhone ?? "",
+    phone: tenDigits(initial.phone),
+    whatsappPhone: tenDigits(initial.whatsappPhone),
     email: initial.email ?? "",
     address: initial.address,
     city: initial.city ?? "",
@@ -111,7 +124,13 @@ export function VenueProfileCard({
     googleReviewUrl: initial.googleReviewUrl ?? "",
     instagramUrl: initial.instagramUrl ?? "",
     facebookUrl: initial.facebookUrl ?? "",
+    youtubeUrl: initial.youtubeUrl ?? "",
+    linkedinUrl: initial.linkedinUrl ?? "",
+    twitterUrl: initial.twitterUrl ?? "",
   });
+  const [gstEnabled, setGstEnabled] = useState(initial.gstEnabled ?? true);
+  const [gstRate, setGstRate] = useState(String(initial.gstRate ?? 9));
+  const [gstin, setGstin] = useState(initial.gstin ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -153,6 +172,9 @@ export function VenueProfileCard({
         websiteUrl: e.websiteUrl || f.websiteUrl,
         instagramUrl: e.instagramUrl || f.instagramUrl,
         facebookUrl: e.facebookUrl || f.facebookUrl,
+        youtubeUrl: e.youtubeUrl || f.youtubeUrl,
+        linkedinUrl: e.linkedinUrl || f.linkedinUrl,
+        twitterUrl: e.twitterUrl || f.twitterUrl,
         googleMapsUrl: e.googleMapsUrl || f.googleMapsUrl,
       }));
 
@@ -173,8 +195,8 @@ export function VenueProfileCard({
     setVenueType((venue.venueType as VenueTypeKey) ?? "CONVENTION_CENTER");
     setForm({
       name: venue.name,
-      phone: venue.phone ?? "",
-      whatsappPhone: venue.whatsappPhone ?? "",
+      phone: tenDigits(venue.phone),
+      whatsappPhone: tenDigits(venue.whatsappPhone),
       email: venue.email ?? "",
       address: venue.address,
       city: venue.city ?? "",
@@ -185,7 +207,13 @@ export function VenueProfileCard({
       googleReviewUrl: venue.googleReviewUrl ?? "",
       instagramUrl: venue.instagramUrl ?? "",
       facebookUrl: venue.facebookUrl ?? "",
+      youtubeUrl: venue.youtubeUrl ?? "",
+      linkedinUrl: venue.linkedinUrl ?? "",
+      twitterUrl: venue.twitterUrl ?? "",
     });
+    setGstEnabled(venue.gstEnabled ?? true);
+    setGstRate(String(venue.gstRate ?? 9));
+    setGstin(venue.gstin ?? "");
     setError("");
     setEditing(true);
   }
@@ -195,8 +223,11 @@ export function VenueProfileCard({
     setLoading(true);
     setError("");
     try {
-      const phone = form.phone.replace(/\D/g, "");
+      const phone = tenDigits(form.phone);
       if (phone.length !== 10) { setError("Phone number must be 10 digits"); setLoading(false); return; }
+
+      const rate = parseFloat(gstRate);
+      if (gstEnabled && (Number.isNaN(rate) || rate < 0 || rate > 14)) { setError("GST rate must be between 0 and 14 (applied to both CGST and SGST)"); setLoading(false); return; }
 
       const mapsUrl = form.googleMapsUrl.trim() || null;
       const coords = mapsUrl ? parseMapsCoords(mapsUrl) : null;
@@ -207,8 +238,8 @@ export function VenueProfileCard({
           name: form.name.trim(),
           venueType,
           phone: `+91${phone}`,
-          whatsappPhone: form.whatsappPhone.replace(/\D/g, "").length === 10
-            ? `+91${form.whatsappPhone.replace(/\D/g, "")}`
+          whatsappPhone: tenDigits(form.whatsappPhone).length === 10
+            ? `+91${tenDigits(form.whatsappPhone)}`
             : null,
           email: form.email.trim() || null,
           address: form.address.trim(),
@@ -221,6 +252,12 @@ export function VenueProfileCard({
           ...(coords ? { lat: coords.lat, lng: coords.lng } : {}),
           instagramUrl: form.instagramUrl.trim() || null,
           facebookUrl: form.facebookUrl.trim() || null,
+          youtubeUrl: form.youtubeUrl.trim() || null,
+          linkedinUrl: form.linkedinUrl.trim() || null,
+          twitterUrl: form.twitterUrl.trim() || null,
+          gstEnabled,
+          ...(gstEnabled ? { gstRate: rate } : {}),
+          gstin,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -323,8 +360,8 @@ export function VenueProfileCard({
           )}
           <InfoRow icon={<Mail className="h-3.5 w-3.5" />} value={venue.email} href={venue.email ? `mailto:${venue.email}` : undefined} />
           <InfoRow icon={<Globe className="h-3.5 w-3.5" />} value={venue.websiteUrl} href={venue.websiteUrl ?? undefined} />
-          {(venue.instagramUrl || venue.facebookUrl) && (
-            <div className="flex items-center gap-3 pt-1">
+          {(venue.instagramUrl || venue.facebookUrl || venue.youtubeUrl || venue.linkedinUrl || venue.twitterUrl) && (
+            <div className="flex flex-wrap items-center gap-3 pt-1">
               {venue.instagramUrl && (
                 <a href={venue.instagramUrl} target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-[#E1306C] transition-colors">
@@ -339,8 +376,35 @@ export function VenueProfileCard({
                   Facebook
                 </a>
               )}
+              {venue.youtubeUrl && (
+                <a href={venue.youtubeUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-[#FF0000] transition-colors">
+                  <YoutubeIcon className="h-4 w-4" />
+                  YouTube
+                </a>
+              )}
+              {venue.linkedinUrl && (
+                <a href={venue.linkedinUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-[#0A66C2] transition-colors">
+                  <LinkedinIcon className="h-4 w-4" />
+                  LinkedIn
+                </a>
+              )}
+              {venue.twitterUrl && (
+                <a href={venue.twitterUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
+                  <XIcon className="h-4 w-4" />
+                  Twitter / X
+                </a>
+              )}
             </div>
           )}
+          <div className="text-xs text-zinc-500">
+            <span className="text-[10px] text-zinc-400 uppercase tracking-wide font-medium mr-2">GST on invoices</span>
+            {(venue.gstEnabled ?? true)
+              ? `On · CGST ${venue.gstRate ?? 9}% + SGST ${venue.gstRate ?? 9}% = ${(venue.gstRate ?? 9) * 2}%`
+              : "Off · invoices show no tax"}
+          </div>
           {!venue.phone && (
             <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
               ⚠ No phone number — tap Edit to add one
@@ -485,6 +549,18 @@ export function VenueProfileCard({
               <label className={LABEL}>Facebook (optional)</label>
               <input type="url" value={form.facebookUrl} onChange={(e) => setForm((f) => ({ ...f, facebookUrl: e.target.value }))} placeholder="https://facebook.com/yourpage" className={FIELD} />
             </div>
+            <div>
+              <label className={LABEL}>YouTube (optional)</label>
+              <input type="url" value={form.youtubeUrl} onChange={(e) => setForm((f) => ({ ...f, youtubeUrl: e.target.value }))} placeholder="https://youtube.com/@yourchannel" className={FIELD} />
+            </div>
+            <div>
+              <label className={LABEL}>LinkedIn (optional)</label>
+              <input type="url" value={form.linkedinUrl} onChange={(e) => setForm((f) => ({ ...f, linkedinUrl: e.target.value }))} placeholder="https://linkedin.com/company/yourpage" className={FIELD} />
+            </div>
+            <div>
+              <label className={LABEL}>Twitter / X (optional)</label>
+              <input type="url" value={form.twitterUrl} onChange={(e) => setForm((f) => ({ ...f, twitterUrl: e.target.value }))} placeholder="https://x.com/yourhandle" className={FIELD} />
+            </div>
           </div>
 
           <div>
@@ -539,6 +615,44 @@ export function VenueProfileCard({
               placeholder="https://search.google.com/local/writereview?placeid=..."
               className={FIELD}
             />
+          </div>
+
+          <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 p-4 space-y-3">
+            <label className="flex items-center justify-between gap-3 cursor-pointer">
+              <span>
+                <span className="block text-sm font-medium text-zinc-800 dark:text-zinc-200">Include GST on invoices</span>
+                <span className="block text-xs text-zinc-500">Your slot prices are treated as GST-inclusive. Turn off if you aren&apos;t GST-registered.</span>
+              </span>
+              <input
+                type="checkbox"
+                checked={gstEnabled}
+                onChange={(e) => setGstEnabled(e.target.checked)}
+                className="h-5 w-5 accent-amber-500 shrink-0"
+              />
+            </label>
+            {gstEnabled && (
+              <div className="max-w-xs">
+                <label className={LABEL}>GST rate (%) — each of CGST and SGST</label>
+                <input
+                  type="number"
+                  step="any"
+                  min="0"
+                  max="14"
+                  value={gstRate}
+                  onChange={(e) => setGstRate(e.target.value)}
+                  className={FIELD}
+                />
+                <p className="mt-1 text-xs text-zinc-500">
+                  {Number.isFinite(parseFloat(gstRate)) ? `CGST ${parseFloat(gstRate)}% + SGST ${parseFloat(gstRate)}% = ${parseFloat(gstRate) * 2}% total. Default is 9%.` : "Default is 9%."}
+                </p>
+              </div>
+            )}
+            {gstEnabled && (
+              <div className="max-w-xs">
+                <label className={LABEL}>Your GSTIN (printed on invoices)</label>
+                <input value={gstin} onChange={(e) => setGstin(e.target.value.toUpperCase())} maxLength={15} placeholder="32ABCDE1234F1Z5" className={`${FIELD} uppercase`} />
+              </div>
+            )}
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}

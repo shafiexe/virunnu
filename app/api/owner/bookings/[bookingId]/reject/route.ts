@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { logActivity } from "@/lib/activity";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ bookingId: string }> }) {
   const session = await getSession();
@@ -23,5 +24,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ boo
     data: { status: "CANCELLED", cancelReason: reason ?? "Rejected by owner" },
   });
 
+  await logActivity(session, `Rejected booking ${bookingId.slice(-6).toUpperCase()}`);
   return NextResponse.json({ ok: true });
 }

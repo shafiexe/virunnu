@@ -1,53 +1,56 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
+import { catererSchema, catererBase } from "@/services/caterer-setup.service";
+import { normalizePhone } from "@/services/center-setup.service";
+import { clientIp, rateLimited } from "@/lib/rate-limit";
 
-const schema = z.object({
-  name: z.string().min(2, "Catering service name required"),
-  phone: z.string().regex(/^(\+?91)?[6-9]\d{9}$/, "Enter a valid Indian mobile number"),
-  email: z.string().email("Enter a valid email address"),
-  address: z.string().min(5, "Address required"),
-  city: z.string().min(2, "City required"),
-  cuisines: z.string().optional(),
-  website: z.string().url().optional().or(z.literal("")).or(z.undefined()),
+const phoneRegex = /^(\+?91)?[6-9]\d{9}$/;
+
+const applySchema = catererBase.extend({
+  phone: z.string().trim().regex(phoneRegex, "Enter a valid Indian mobile number"),
+  whatsappPhone: z.union([z.literal(""), z.string().trim().regex(phoneRegex, "Enter a valid WhatsApp number")]).optional().transform((v) => v || undefined),
+  address: z.string().trim().min(5, "Address is required").max(400),
 });
 
 export async function POST(req: NextRequest) {
   try {
+    if (rateLimited(`apply:${clientIp(req)}`, 5, 60 * 60 * 1000)) {
+      return NextResponse.json({ error: "Too many submissions. Please try again later." }, { status: 429 });
+    }
     const body = await req.json().catch(() => null);
-    const parsed = schema.safeParse(body);
-    if (!parsed.success) {
-      return NextResponse.json({ error: parsed.error.issues[0]?.message }, { status: 400 });
+    const full = applySchema.safeParse(body);
+    if (!full.success) {
+      return NextResponse.json({ error: full.error.issues[0]?.message }, { status: 400 });
     }
-
-    const { name, phone, email, address, city, cuisines, website } = parsed.data;
-
-    const digits = phone.replace(/\D/g, "");
-    const normalized = digits.length === 12 ? `+${digits}` : digits.length === 11 ? `+${digits}` : `+91${digits}`;
-
-    const existing = await db.catererApplication.findFirst({
-      where: {
-        OR: [{ phone: normalized }, { email }],
-        status: { in: ["PENDING" as const, "APPROVED" as const] },
-      },
-    });
-    if (existing) {
-      return NextResponse.json({ error: "An application with this phone or email already exists" }, { status: 409 });
+    // Re-run the cross-field rules (min <= max guests) on the validated data.
+    const rules = catererSchema.safeParse(full.data);
+    if (!rules.success) {
+      return NextResponse.json({ error: rules.error.issues[0]?.message }, { status: 400 });
     }
+    const d = rules.data;
+    const phone = normalizePhone(d.phone);
 
-    const cuisineList = cuisines
-      ? cuisines.split(",").map((s) => s.trim()).filter(Boolean)
-      : [];
+    const [existingApp, existingUser] = await Promise.all([
+      db.catererApplication.findFirst({
+        where: { OR: [{ phone }, { email: d.email }], status: { in: ["PENDING", "APPROVED"] } },
+      }),
+      db.user.findFirst({ where: { OR: [{ phone }, { email: d.email }] } }),
+    ]);
+    if (existingApp || existingUser) {
+      return NextResponse.json({ error: "An application or account with this phone or email already exists" }, { status: 409 });
+    }
 
     await db.catererApplication.create({
       data: {
-        name,
-        phone: normalized,
-        email,
-        address,
-        city,
-        cuisines: cuisineList,
-        website: website || null,
+        name: d.name,
+        phone,
+        email: d.email,
+        address: d.address ?? "",
+        city: d.city,
+        cuisines: d.cuisines,
+        website: d.websiteUrl ?? null,
+        details: d as unknown as object,
         status: "PENDING",
       },
     });

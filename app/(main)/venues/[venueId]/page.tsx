@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 export const instant = false;
+import { YoutubeIcon, LinkedinIcon, XIcon } from "@/components/social-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,6 +9,7 @@ import { SlotCalendar } from "@/components/slot-calendar";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { getVenue, getHallAvailability } from "@/services/venue.service";
 import { releaseExpiredHolds } from "@/services/booking.service";
+import { orgLogoUrl } from "@/lib/org-logo";
 
 type Props = { params: Promise<{ venueId: string }> };
 
@@ -123,6 +125,7 @@ export default async function VenuePage({ params }: Props) {
   const { venueId } = await params;
   const venue = await getVenue(venueId);
   if (!venue) notFound();
+  const logoUrl = await orgLogoUrl(venue.orgId);
 
   const now = new Date();
   const year = now.getFullYear();
@@ -163,7 +166,6 @@ export default async function VenuePage({ params }: Props) {
     ? `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`
     : null;
   const directionsHref = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
-  const openInMapsHref = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${venue.name}, ${venue.address}, ${venue.city}`)}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -206,6 +208,10 @@ export default async function VenuePage({ params }: Props) {
             venueName={venue.name}
             overlay={
               <div className="space-y-2 text-center">
+                {logoUrl
+                  // eslint-disable-next-line @next/next/no-img-element
+                  ? <img src={logoUrl} alt={`${venue.name} logo`} className="mx-auto h-14 w-14 rounded-xl bg-white/95 object-contain p-1 shadow" />
+                  : null}
                 {/* Venue name */}
                 <h1 className="text-2xl sm:text-3xl font-bold text-white drop-shadow-sm leading-tight">
                   {venue.name}
@@ -258,7 +264,7 @@ export default async function VenuePage({ params }: Props) {
       </div>
 
       {/* Contact strip */}
-      {(venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email || venue.instagramUrl || venue.facebookUrl) && (
+      {(venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email || venue.instagramUrl || venue.facebookUrl || venue.youtubeUrl || venue.linkedinUrl || venue.twitterUrl) && (
         <div className="mx-auto max-w-6xl px-4 pt-4">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-5 py-4">
             <div className="flex flex-wrap justify-center items-center gap-2.5">
@@ -293,7 +299,7 @@ export default async function VenuePage({ params }: Props) {
                 </a>
               )}
               {/* Divider before social */}
-              {(venue.instagramUrl || venue.facebookUrl) && (venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email) && (
+              {(venue.instagramUrl || venue.facebookUrl || venue.youtubeUrl || venue.linkedinUrl || venue.twitterUrl) && (venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email) && (
                 <span className="h-7 w-px bg-zinc-200 dark:bg-zinc-700 mx-1" />
               )}
               {venue.instagramUrl && (
@@ -314,6 +320,27 @@ export default async function VenuePage({ params }: Props) {
                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
                   </svg>
                   <span className="text-sm font-semibold">Facebook</span>
+                </a>
+              )}
+              {venue.youtubeUrl && (
+                <a href={venue.youtubeUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#FF0000] hover:border-red-300 transition-colors">
+                  <YoutubeIcon className="h-4 w-4" />
+                  <span className="text-sm font-semibold">YouTube</span>
+                </a>
+              )}
+              {venue.linkedinUrl && (
+                <a href={venue.linkedinUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#0A66C2] hover:border-blue-300 transition-colors">
+                  <LinkedinIcon className="h-4 w-4" />
+                  <span className="text-sm font-semibold">LinkedIn</span>
+                </a>
+              )}
+              {venue.twitterUrl && (
+                <a href={venue.twitterUrl} target="_blank" rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-400 transition-colors">
+                  <XIcon className="h-4 w-4" />
+                  <span className="text-sm font-semibold">Twitter / X</span>
                 </a>
               )}
             </div>
@@ -339,6 +366,8 @@ export default async function VenuePage({ params }: Props) {
                       venueId={venueId}
                       halls={[{ ...hall, slots: hall.slots }]}
                       initialMonth={initialMonth}
+                      gstIncluded={venue.gstEnabled}
+                      addons={venue.addons.map((a) => ({ id: a.id, name: a.name, pricePaise: a.pricePaise, unit: a.unit }))}
                     />
                   </div>
                 </div>
@@ -431,14 +460,6 @@ export default async function VenuePage({ params }: Props) {
                 >
                   <MapPin className="h-3 w-3" />
                   Get Directions
-                </a>
-                <a
-                  href={venue.googleMapsUrl ?? openInMapsHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 px-3 py-1.5 rounded-lg transition-colors hover:bg-amber-100 dark:hover:bg-amber-950/50"
-                >
-                  Open in Google Maps
                 </a>
               </div>
             </div>

@@ -35,16 +35,35 @@ const DEFAULTS = [
   { name: "Other",             icon: "📌",  sortOrder: 22 },
 ] as const;
 
+// Everyday costs of a catering team, seeded for caterer accounts instead of the convention-centre list
+const CATERING_DEFAULTS = [
+  { name: "Raw material",      icon: "🛒",  sortOrder: 0  },
+  { name: "Meat & fish",       icon: "🍖",  sortOrder: 1  },
+  { name: "Vegetables & groceries", icon: "🥬", sortOrder: 2 },
+  { name: "Gas & fuel",        icon: "⛽",  sortOrder: 3  },
+  { name: "Transport",         icon: "🚐",  sortOrder: 6  },
+  { name: "Equipment rent",    icon: "🍽️",  sortOrder: 7  },
+  { name: "Packing & disposables", icon: "📦", sortOrder: 8 },
+  { name: "Decoration material", icon: "🌸", sortOrder: 9 },
+  { name: "Repairs",           icon: "🔨",  sortOrder: 10 },
+  { name: "Electricity",       icon: "⚡",  sortOrder: 11 },
+  { name: "Water",             icon: "💧",  sortOrder: 12 },
+  { name: "Advertising",       icon: "📢",  sortOrder: 13 },
+  { name: "Licence & FSSAI",   icon: "📜",  sortOrder: 14 },
+  { name: "Office supplies",   icon: "📎",  sortOrder: 15 },
+  { name: "Other",             icon: "📌",  sortOrder: 16 },
+] as const;
+
 export async function GET() {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId) {
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   // Always ensure all defaults exist — skipDuplicates makes this a safe no-op
   // for categories already present, and only inserts genuinely missing ones.
   await db.expenseCategory.createMany({
-    data: DEFAULTS.map((d) => ({ ...d, orgId: session.orgId! })),
+    data: (session.role === "CATERER" ? CATERING_DEFAULTS : DEFAULTS).map((d) => ({ ...d, orgId: session.orgId! })),
     skipDuplicates: true,
   });
 
@@ -59,7 +78,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
-  if (!session || session.role !== "OWNER" || !session.orgId) {
+  if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

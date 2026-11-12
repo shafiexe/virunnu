@@ -40,6 +40,7 @@ export async function getVenue(venueId: string) {
   return db.venue.findUnique({
     where: { id: venueId },
     include: {
+      addons: { where: { active: true }, orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }] },
       halls: {
         include: {
           slotTemplates: true,

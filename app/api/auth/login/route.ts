@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid phone number or password" }, { status: 401 });
   }
 
+  if (user.disabled) return NextResponse.json({ error: "This login has been switched off. Ask the owner." }, { status: 403 });
+
   const match = await bcrypt.compare(password, user.password);
   if (!match) {
     return NextResponse.json({ error: "Invalid phone number or password" }, { status: 401 });

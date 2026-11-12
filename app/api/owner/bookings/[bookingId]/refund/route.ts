@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ bookingId: string }> };
 
@@ -38,5 +39,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     },
   });
 
+  await logActivity(session, `Recorded a refund on booking ${bookingId.slice(-6).toUpperCase()}`);
   return NextResponse.json({ booking: updated });
 }

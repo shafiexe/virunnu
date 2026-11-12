@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { z } from "zod";
+import { logActivity } from "@/lib/activity";
 
 const schema = z.object({
   hallId: z.string().cuid(),
@@ -35,5 +36,6 @@ export async function POST(req: NextRequest) {
     update: { reason: reason ?? null },
   });
 
+  await logActivity(session, `Blocked a date`);
   return NextResponse.json({ blocked }, { status: 201 });
 }

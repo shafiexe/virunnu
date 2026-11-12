@@ -1,13 +1,15 @@
 "use client";
 
+import { useUndoable } from "@/components/undo-toast";
 import { useState, useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus, X, Pencil, Trash2, ChevronLeft, ChevronRight,
-  Search, LayoutList, Tags, ChevronDown, ChevronUp, Zap, Users,
+  Search, LayoutList, Tags, ChevronDown, ChevronUp, Zap, Users, Receipt,
 } from "lucide-react";
 import { PaginationBar } from "@/components/pagination-bar";
 import { cn } from "@/lib/utils";
+import { WriteOnly, ReadOnlyShield } from "@/components/access-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -54,6 +56,7 @@ type FormState = {
   employeeId: string;
 };
 
+const WAGE_CATEGORIES = ["Staff wages", "Serving boys"];
 const STAFF_ROLES = ["Cleaning Staff", "Security", "Supervisor", "Manager", "Driver", "Cook", "Helper", "Other"];
 
 const DEFAULT_PAGE_SIZE = 50;
@@ -92,12 +95,22 @@ export function ExpenseManager({
   expenses: initial,
   year,
   month,
+  basePath = "/owner/expenses",
+  hideStaff = false,
+  hideCategories = false,
 }: {
   expenses: Expense[];
   year: number;
   month: number;
+  // where this screen lives, so month navigation stays on the right page for owners and caterers
+  basePath?: string;
+  // catering teams record salary and wages under Parties → Staff, so wage entries are not offered here
+  hideStaff?: boolean;
+  // the owner hid the Categories tab from this person
+  hideCategories?: boolean;
 }) {
   const router = useRouter();
+  const { undoable } = useUndoable();
 
   // ── Current month/year (owned locally so navigation is instant) ───────────────
   const [curYear, setCurYear] = useState(year);
@@ -164,10 +177,11 @@ export function ExpenseManager({
     const res = await fetch("/api/owner/expense-categories");
     if (res.ok) {
       const d = await res.json();
-      setCategories(d.categories ?? []);
+      const all: ExpenseCategory[] = d.categories ?? [];
+      setCategories(hideStaff ? all.filter((c) => !WAGE_CATEGORIES.includes(c.name)) : all);
     }
     setCatLoading(false);
-  }, []);
+  }, [hideStaff]);
 
   useEffect(() => { loadCategories(); }, [loadCategories]);
 
@@ -218,11 +232,18 @@ export function ExpenseManager({
     setSearch("");
     setFilterCategory("ALL");
     setPage(1);
-    router.push(`/owner/expenses?year=${newYear}&month=${newMonth}`, { scroll: false });
+    router.push(`${basePath}?year=${newYear}&month=${newMonth}`, { scroll: false });
     refreshExpenses(newYear, newMonth);
   }
 
   // ── Expense form ──────────────────────────────────────────────────────────────
+  // "+ New → Add expense" from the menu arrives as ?add=1: open the form straight away
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("add") === "1") { url.searchParams.delete("add"); window.history.replaceState(null, "", url.pathname + url.search); openAdd(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   function openAdd(prefill?: Partial<FormState>) {
     setEditId(null);
     setCustomCat(false);
@@ -265,10 +286,14 @@ export function ExpenseManager({
     }
   }
 
-  async function handleDelete(id: string) {
-    await fetch(`/api/owner/expenses/${id}`, { method: "DELETE" });
-    setConfirmDeleteId(null);
-    await refreshExpenses();
+  // removed at once; Undo records the same expense again
+  function handleDelete(e: Expense) {
+    undoable(`“${e.label}” deleted`, {
+      request: { url: `/api/owner/expenses/${e.id}`, method: "DELETE" },
+      restore: { url: "/api/owner/expenses", method: "POST", body: { category: e.category, label: e.label, amountRupees: e.amountPaise / 100, date: String(e.date).slice(0, 10), notes: e.notes ?? undefined, employeeId: e.employeeId ?? null } },
+      onStart: () => setExpenses((l) => l.filter((x) => x.id !== e.id)),
+      onDone: () => { refreshExpenses(); }, onUndo: () => { refreshExpenses(); },
+    });
   }
 
   // ── Category CRUD ─────────────────────────────────────────────────────────────
@@ -438,6 +463,7 @@ export function ExpenseManager({
           <LayoutList className="h-3.5 w-3.5" />
           Expenses
         </button>
+        {!hideCategories && (
         <button
           onClick={() => setTab("categories")}
           className={cn(
@@ -455,6 +481,8 @@ export function ExpenseManager({
             </span>
           )}
         </button>
+        )}
+        {!hideStaff && (
         <button
           onClick={() => setTab("staff")}
           className={cn(
@@ -472,7 +500,11 @@ export function ExpenseManager({
             </span>
           )}
         </button>
+        )}
       </div>
+      {hideStaff && (
+        <p className="text-xs text-zinc-500">Salaries, daily wages and advances are recorded under <a href="/caterer/staff" className="font-semibold text-amber-600 hover:underline">Parties → Staff</a>, so they are never counted twice.</p>
+      )}
 
       {/* ── EXPENSES TAB ───────────────────────────────────────────────────────── */}
       {tab === "expenses" && (
@@ -491,13 +523,13 @@ export function ExpenseManager({
               </button>
             </div>
             <div className="flex-1" />
-            <button
+            <WriteOnly page="expenses"><button
               onClick={() => openAdd()}
               className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl transition-colors"
             >
               <Plus className="h-4 w-4" />
               Add expense
-            </button>
+            </button></WriteOnly>
           </div>
 
           {/* Search + Filter */}
@@ -553,14 +585,12 @@ export function ExpenseManager({
           {/* Table */}
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             {paginated.length === 0 ? (
-              <div className="py-16 text-center">
-                <p className="text-zinc-400 text-sm">
-                  {search || filterCategory !== "ALL" ? "No matching expenses." : "No expenses recorded this month."}
-                </p>
+              <div className="py-14 text-center px-6">
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400"><Receipt className="h-6 w-6" /></span>
+                <h3 className="mt-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">{search || filterCategory !== "ALL" ? "No matching expenses" : "No expenses this month"}</h3>
+                <p className="mx-auto mt-1 max-w-sm text-sm text-zinc-500">{search || filterCategory !== "ALL" ? "Try a different word, or show all categories." : "Add what you spend on gas, rent, transport and repairs so your profit is right."}</p>
                 {!search && filterCategory === "ALL" && (
-                  <button onClick={() => openAdd()} className="mt-3 text-amber-600 text-sm font-medium hover:underline">
-                    + Add first expense
-                  </button>
+                  <WriteOnly page="expenses"><button onClick={() => openAdd()} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add expense</button></WriteOnly>
                 )}
               </div>
             ) : (
@@ -598,20 +628,14 @@ export function ExpenseManager({
                               ₹{(e.amountPaise / 100).toLocaleString("en-IN")}
                             </td>
                             <td className="px-4 py-3">
-                              {confirmDeleteId === e.id ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-xs text-red-600">Delete?</span>
-                                  <button onClick={() => handleDelete(e.id)} className="text-xs font-bold text-red-600 hover:underline">Yes</button>
-                                  <button onClick={() => setConfirmDeleteId(null)} className="text-xs text-zinc-400">No</button>
-                                </div>
-                              ) : (
+                              {(
                                 <div className="flex items-center gap-1">
-                                  <button onClick={() => openEdit(e)} className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">
+                                  <WriteOnly page="expenses"><button onClick={() => openEdit(e)} aria-label="Edit expense" className="p-2 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">
                                     <Pencil className="h-3.5 w-3.5" />
-                                  </button>
-                                  <button onClick={() => setConfirmDeleteId(e.id)} className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
+                                  </button></WriteOnly>
+                                  <WriteOnly page="expenses"><button onClick={() => handleDelete(e)} aria-label="Delete expense" className="p-2 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
                                     <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
+                                  </button></WriteOnly>
                                 </div>
                               )}
                             </td>
@@ -1012,7 +1036,7 @@ export function ExpenseManager({
       {/* ── ADD / EDIT EXPENSE MODAL ────────────────────────────────────────────── */}
       {showForm && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg border-t sm:border border-zinc-200 dark:border-zinc-800 flex flex-col" style={{ maxHeight: "calc(92vh - env(safe-area-inset-bottom, 0px))" }}>
+          <div className="bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg border-t sm:border border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden" style={{ maxHeight: "calc(92vh - env(safe-area-inset-bottom, 0px))" }}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900 z-10">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">
                 {editId ? "Edit expense" : "Add expense"}

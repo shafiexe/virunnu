@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { withGST } from "@/lib/gst";
 import { releaseExpiredHolds } from "@/services/booking.service";
 import { notifyOwnerNewBooking } from "@/services/notification.service";
+import { resolveAddons } from "@/lib/venue-addons";
 
 const HOLD_MINUTES = 15;
 const VIRTUAL_PREFIX = "virtual_";
@@ -15,6 +16,7 @@ const schema = z.object({
   guestPhone: z.string().min(10, "Valid phone number required"),
   guestEmail: z.string().email().optional().or(z.literal("")),
   guestAddress: z.string().optional(),
+  addons: z.array(z.object({ id: z.string(), quantity: z.number().min(0.5).max(48).default(1) })).max(20).optional(),
 });
 
 async function materializeVirtualSlot(virtualId: string): Promise<string> {
@@ -43,7 +45,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
 
-  let { hallSlotId, guestName, guestPhone, guestEmail, guestAddress } = parsed.data;
+  let { hallSlotId, guestName, guestPhone, guestEmail, guestAddress, addons: addonPicks } = parsed.data;
 
   if (hallSlotId.startsWith(VIRTUAL_PREFIX) || hallSlotId.startsWith(BLOCKED_PREFIX)) {
     try {
@@ -74,7 +76,9 @@ export async function POST(req: NextRequest) {
       // The slot stays AVAILABLE so other customers can still pay & book.
       // Owner will call the customer and approve/reject manually.
 
-      const { totalPaise } = withGST(slot.priceOverride ?? slot.hall.pricePerSlot);
+      const { totalPaise: hallPaise } = withGST(slot.priceOverride ?? slot.hall.pricePerSlot);
+      const extras = await resolveAddons(tx, slot.hall.venue.id, addonPicks);
+      const totalPaise = hallPaise + extras.totalPaise;
 
       const booking = await tx.booking.create({
         data: {
@@ -86,6 +90,7 @@ export async function POST(req: NextRequest) {
           guestPhone,
           guestEmail: guestEmail || null,
           guestAddress: guestAddress || null,
+          addons: { create: extras.rows },
         },
       });
 
@@ -137,6 +142,7 @@ export async function POST(req: NextRequest) {
     const msg = err instanceof Error ? err.message : "";
     if (msg === "SLOT_UNAVAILABLE") return NextResponse.json({ error: "Slot is no longer available" }, { status: 409 });
     if (msg === "SLOT_NOT_FOUND") return NextResponse.json({ error: "Slot not found" }, { status: 404 });
+    if (msg === "ADDON_UNAVAILABLE") return NextResponse.json({ error: "An add-on you picked is no longer available" }, { status: 400 });
     throw err;
   }
 }
