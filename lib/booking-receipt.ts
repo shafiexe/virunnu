@@ -5,7 +5,16 @@ import { orgLogoUrl } from "@/lib/org-logo";
 import { getAppUrl } from "@/lib/app-url";
 import { METHOD_LABEL, netOf, receiptNo } from "@/lib/booking-ledger";
 
-const long = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+export const long = (d: Date) => d.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+
+// The WhatsApp text that goes with a receipt link: what came in, what is left, and where to read it
+export function receiptMessage(o: { customerName: string; amountPaise: number; method: string; paidOn: Date; venueName: string; eventDay: string; net: number; paidUpToNow: number; balanceAfter: number; no: string; link: string }) {
+  return [
+    `Hello ${o.customerName}, we have received ₹${formatRupees(o.amountPaise)} (${o.method}) on ${long(o.paidOn)} for your booking at ${o.venueName} on ${o.eventDay}.`,
+    `Total ₹${formatRupees(o.net)}, received so far ₹${formatRupees(o.paidUpToNow)}, ${o.balanceAfter > 0 ? `balance ₹${formatRupees(o.balanceAfter)}` : "fully paid"}.`,
+    `Your receipt (${o.no}): ${o.link}`,
+  ].join("\n");
+}
 
 export type ReceiptData = Awaited<ReturnType<typeof loadReceipt>>;
 
@@ -48,10 +57,6 @@ export async function loadReceipt(where: Prisma.BookingPaymentWhereInput) {
     netPaise: net, paidPaise: paidUpToNow, balancePaise: balanceAfter,
     logoUrl: await orgLogoUrl(venue.orgId),
     // the message the owner sends with the link
-    message: [
-      `Hello ${customerName}, we have received ₹${formatRupees(payment.amountPaise)} (${method}) on ${long(payment.paidOn)} for your booking at ${venue.name} on ${eventDay}.`,
-      `Total ₹${formatRupees(net)}, received so far ₹${formatRupees(paidUpToNow)}, ${balanceAfter > 0 ? `balance ₹${formatRupees(balanceAfter)}` : "fully paid"}.`,
-      `Your receipt (${no}): ${link}`,
-    ].join("\n"),
+    message: receiptMessage({ customerName, amountPaise: payment.amountPaise, method, paidOn: payment.paidOn, venueName: venue.name, eventDay, net, paidUpToNow, balanceAfter, no, link }),
   };
 }

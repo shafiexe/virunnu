@@ -14,7 +14,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ booking
   const booking = await db.booking.findUnique({
     where: { id: bookingId },
     include: {
-      addons: true, user: { select: { name: true, phone: true } },
+      addons: true, payments: { select: { amountPaise: true } }, user: { select: { name: true, phone: true } },
       hallSlot: { include: { template: true, hall: { include: { venue: { include: { org: { select: { name: true } } } } } } } },
     },
   });
@@ -35,6 +35,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ booking
   const on = lines[0].split.enabled;
   const sum = (f: (s: (typeof lines)[number]["split"]) => number) => lines.reduce((s, l) => s + f(l.split), 0);
 
+  const receivedPaise = booking.payments.reduce((s, p) => s + p.amountPaise, 0);
   const data: VenueInvoiceData = {
     invoiceNo: `VIR-${booking.id.slice(-8).toUpperCase()}`, invoiceDate: day(booking.createdAt), status: booking.status,
     business: venue.org?.name ?? "Virunnu Technologies", venueName: venue.name, address: `${venue.address}, ${venue.city}`, gstin: venue.gstin,
@@ -42,6 +43,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ booking
     lines: lines.map((l) => ({ label: l.label, sub: l.sub, basePaise: l.split.basePaise })),
     gst: { on, rate: lines[0].split.rate, basePaise: sum((s) => s.basePaise), cgstPaise: sum((s) => s.cgstPaise), sgstPaise: sum((s) => s.sgstPaise) },
     totalPaise: booking.totalPaise,
+    receivedPaise, dueAfterPaise: Math.max(0, booking.totalPaise - (booking.discountPaise ?? 0) - receivedPaise),
   };
 
   // the logo, when it is a picture a PDF can hold (WebP is converted)

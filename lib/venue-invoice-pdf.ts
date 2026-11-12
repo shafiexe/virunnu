@@ -9,6 +9,8 @@ export type VenueInvoiceData = {
   lines: { label: string; sub: string; basePaise: number }[];
   gst: { on: boolean; rate: number; basePaise: number; cgstPaise: number; sgstPaise: number };
   totalPaise: number;
+  // what has been received so far and what is still due, from the booking's payments (0 and the whole total when none)
+  receivedPaise: number; dueAfterPaise: number;
 };
 
 const money = (p: number) => `₹${(p / 100).toLocaleString("en-IN", { minimumFractionDigits: p % 100 ? 2 : 0, maximumFractionDigits: 2 })}`;
@@ -86,6 +88,11 @@ export async function renderVenueInvoicePdf(d: VenueInvoiceData, logo?: Buffer |
   }
   rule(y, "#d4d4d8", 1.2); y += 8;
   row("Total", money(d.totalPaise), { strong: true });
+  if (d.receivedPaise > 0) {
+    y += 2;
+    row("Received", money(d.receivedPaise));
+    row("Balance due", d.dueAfterPaise > 0 ? money(d.dueAfterPaise) : "Nil", { strong: true });
+  }
   text("All amounts in Indian Rupees (INR)", lx, y, { w: 230, size: 8, color: "#a1a1aa", align: "right" });
 
   // footer

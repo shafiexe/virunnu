@@ -1,5 +1,7 @@
 import { BookingPayments } from "@/components/booking-payments";
-import { receiptNo } from "@/lib/booking-ledger";
+import { METHOD_LABEL, receiptNo } from "@/lib/booking-ledger";
+import { long, receiptMessage } from "@/lib/booking-receipt";
+import { getAppUrl } from "@/lib/app-url";
 import { ShowS as Show } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
@@ -79,6 +81,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
   const hallPaise = booking.totalPaise - addonsPaise;
   const discountPaise = booking.discountPaise ?? 0;
   const netPaise = booking.totalPaise - discountPaise;
+  const phoneDigits = session.deny?.includes("hide.phones") ? "" : customer.phone.replace(/\D/g, "").slice(-10);
   const closed = booking.status === "CANCELLED" || booking.status === "EXPIRED" || booking.status === "REJECTED";
   const tax = splitForVenue(netPaise, venue);
 
@@ -209,7 +212,12 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
           netPaise={netPaise}
           closed={closed}
           canRemove={!session.tm}
-          payments={booking.payments.map((p, i) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, paidOn: p.paidOn.toISOString().slice(0, 10), note: p.note, recordedBy: p.recordedBy, receiptNo: receiptNo(booking.id, i) }))}
+          payments={booking.payments.map((p, i) => {
+            const upTo = booking.payments.slice(0, i + 1).reduce((sum, x) => sum + x.amountPaise, 0);
+            const no = receiptNo(booking.id, i);
+            const text = receiptMessage({ customerName: customer.name, amountPaise: p.amountPaise, method: METHOD_LABEL[p.method] ?? p.method, paidOn: p.paidOn, venueName: venue.name, eventDay: long(hallSlot.date), net: netPaise, paidUpToNow: upTo, balanceAfter: Math.max(0, netPaise - upTo), no, link: `${getAppUrl()}/r/${p.shareToken}` });
+            return { id: p.id, amountPaise: p.amountPaise, method: p.method, paidOn: p.paidOn.toISOString().slice(0, 10), note: p.note, recordedBy: p.recordedBy, receiptNo: no, whatsappHref: phoneDigits.length === 10 ? `https://wa.me/91${phoneDigits}?text=${encodeURIComponent(text)}` : null };
+          })}
         />
       </Card>
 

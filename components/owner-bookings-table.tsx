@@ -8,7 +8,6 @@ import { PaginationBar } from "@/components/pagination-bar";
 import { SendReminderButton } from "@/components/send-reminder";
 import { OwnerBookingActions } from "@/components/owner-booking-actions";
 import { QuickPayButton } from "@/components/quick-pay-button";
-import { PendingRequests } from "@/components/pending-requests";
 import { addonSummary, type BookingAddonItem } from "@/components/booking-addons-button";
 import { cn } from "@/lib/utils";
 import { WriteOnly, useCanWrite, Show } from "@/components/access-context";
@@ -56,11 +55,6 @@ type Booking = {
   addons?: BookingAddonItem[];
 };
 
-type PendingBooking = {
-  id: string; guestName: string | null; guestPhone: string | null; guestEmail: string | null;
-  totalPaise: number; createdAt: string;
-  hallSlot: { date: string; template: { name: string; startTime: string; endTime: string }; hall: { name: string; venue: { name: string } } };
-};
 
 function getAmounts(b: Booking) {
   const disc = b.discountPaise ?? 0;
@@ -178,7 +172,6 @@ export type BookingsUrlState = { status: string; search: string; page: number; p
 export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
   const [status, setStatus] = useState(initial.status);
   const [searchInput, setSearchInput] = useState(initial.search);
-  const [pending, setPending] = useState<PendingBooking[]>([]);
   const [view, setView] = useState<"list" | "card">("list");
   useEffect(() => {
     try {
@@ -206,13 +199,6 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
     const qs = p.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }, [status, searchInput, page, pageSize]);
-
-  useEffect(() => {
-    fetch("/api/owner/bookings?page=1&pageSize=200&status=PENDING")
-      .then(r => r.ok ? r.json() : null)
-      .then(j => { if (j) setPending(j.data ?? []); })
-      .catch(() => {});
-  }, []);
 
   const handleStatus = useCallback((s: string) => {
     setStatus(s);
@@ -280,19 +266,6 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
           ))}
         </div>
       </div>
-
-      {/* Pending requests */}
-      {status === "ALL" && pending.length > 0 && (
-        <div className="mb-6">
-          <PendingRequests
-            bookings={pending.map((b) => ({
-              id: b.id, guestName: b.guestName, guestPhone: b.guestPhone, guestEmail: b.guestEmail,
-              totalPaise: b.totalPaise, createdAt: b.createdAt,
-              hallSlot: { date: b.hallSlot.date, template: b.hallSlot.template, hall: b.hallSlot.hall },
-            }))}
-          />
-        </div>
-      )}
 
       {/* ── Card view ── */}
       {view === "card" && (
