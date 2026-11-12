@@ -5,6 +5,7 @@ import { getCatererForSession } from "@/lib/caterer-session";
 import { createOrder } from "@/lib/caterer-order-create";
 import { orderSchema } from "@/lib/caterer-orders";
 import { parseQuoteData } from "@/lib/caterer-quotes";
+import { actorOf, logActivity } from "@/lib/activity";
 
 const body = z.object({ date: z.string().date().optional(), advance: z.number().min(0).optional(), advanceMethod: z.enum(["CASH", "UPI", "CARD", "BANK"]).optional() });
 
@@ -30,8 +31,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ quo
   });
   if (!order.success) return NextResponse.json({ error: order.error.issues[0]?.message ?? "Invalid quotation" }, { status: 400 });
 
-  const result = await createOrder(ctx.caterer, order.data);
+  const actor = await actorOf(ctx.session);
+  const result = await createOrder(ctx.caterer, order.data, actor.label);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+  await logActivity(ctx.session, `Turned quotation into an order for ${data.customerName}`);
   await db.catererQuote.update({ where: { id: q.id }, data: { status: "ACCEPTED", orderId: result.order.id } });
   return NextResponse.json({ orderId: result.order.id }, { status: 201 });
 }

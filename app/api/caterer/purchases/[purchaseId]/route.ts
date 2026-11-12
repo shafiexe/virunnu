@@ -4,6 +4,7 @@ import { getCatererForSession } from "@/lib/caterer-session";
 import { purchaseSchema, purchaseTotals } from "@/lib/caterer-purchases";
 import { checkLinks } from "@/lib/caterer-purchases-server";
 import { resolveSupplier } from "@/lib/caterer-suppliers-server";
+import { actorOf, logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ purchaseId: string }> };
 
@@ -54,5 +55,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   const existing = await db.catererPurchase.findFirst({ where: { id: purchaseId, catererId: ctx.caterer.id }, select: { id: true } });
   if (!existing) return NextResponse.json({ error: "Not found" }, { status: 404 });
   await db.catererPurchase.delete({ where: { id: purchaseId } });
+  await logActivity(ctx.session, "Deleted a purchase");
   return NextResponse.json({ ok: true });
 }

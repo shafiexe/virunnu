@@ -9,6 +9,7 @@ import { db } from "@/lib/db";
 import { VenueManager } from "@/components/venue-manager";
 import { FacilitiesManager } from "@/components/facilities-manager";
 import { Plus } from "lucide-react";
+import { ReadOnlyShield } from "@/components/access-context";
 
 export default async function OwnerVenuesPage() {
   await connection();
@@ -40,6 +41,7 @@ export default async function OwnerVenuesPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 space-y-10">
+      <ReadOnlyShield page="venues">
       {/* ── My Venue (profile + halls + slots) ───────────────── */}
       <div>
         <div className="mb-4 flex items-center justify-between">
@@ -75,6 +77,7 @@ export default async function OwnerVenuesPage() {
         </div>
         <FacilitiesManager initial={facilities} isEmpty={facilities.length === 0} />
       </div>
+      </ReadOnlyShield>
     </div>
   );
 }

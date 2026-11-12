@@ -15,6 +15,9 @@ export const OWNER_ACCESS_TREE: AccessGroup[] = [
   { title: "Money", items: [
     { key: "expenses", label: "Expenses", tabs: [{ key: "expenses.categories", label: "Categories" }, { key: "expenses.staff", label: "Staff" }] },
   ] },
+  { title: "Private details", items: [
+    { key: "hide.phones", label: "Customer phone numbers", hint: "Untick to hide numbers and the Call and WhatsApp buttons" },
+  ] },
   { title: "Messages", items: [
     { key: "templates", label: "Templates", hint: "Booking messages sent to customers" },
   ] },
@@ -24,7 +27,7 @@ type Rule = [RegExp, string[]];
 const RULES: Rule[] = [
   [/^\/owner\/(onboarding)/, []],
   [/^\/owner\/no-access/, []],
-  [/^\/owner\/team/, ["__owner"]], [/^\/api\/owner\/team/, ["__owner"]],
+  [/^\/owner\/(team|activity)/, ["__owner"]], [/^\/api\/owner\/team/, ["__owner"]],
   [/^\/owner\/dashboard/, ["dashboard"]],
   [/^\/owner\/calendar/, ["calendar"]], [/^\/api\/owner\/(calendar|blocked-dates)/, ["calendar"]], [/^\/api\/owner\/hall-slots\/toggle-block/, ["calendar"]],
   [/^\/owner\/bookings/, ["bookings"]], [/^\/api\/owner\/bookings/, ["bookings"]],

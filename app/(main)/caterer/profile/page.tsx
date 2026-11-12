@@ -9,6 +9,7 @@ import { toDetailsValue } from "@/lib/caterer-details-value";
 import { LogoUploader } from "@/components/logo-uploader";
 import { orgLogoUrl } from "@/lib/org-logo";
 import { CatererInvoiceSettings } from "@/components/caterer-invoice-settings";
+import { ReadOnlyShield } from "@/components/access-context";
 
 export default async function CatererProfilePage() {
   await connection();
@@ -23,6 +24,7 @@ export default async function CatererProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
+      <ReadOnlyShield page="profile">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -74,6 +76,7 @@ export default async function CatererProfilePage() {
       )}
       <LogoUploader initialUrl={await orgLogoUrl(session.orgId)} name={caterer.name} />
       <CatererInvoiceSettings initial={{ nextInvoiceNumber: caterer.nextInvoiceNumber, lastUsed: top._max.number ?? 0, upiId: caterer.upiId, bankDetails: caterer.bankDetails, invoiceNote: caterer.invoiceNote, gstEnabled: caterer.gstEnabled, gstin: caterer.gstin, foodGstPercent: caterer.foodGstBp / 100, serviceGstPercent: caterer.serviceGstBp / 100, gstInclusive: caterer.gstInclusive }} />
+      </ReadOnlyShield>
     </div>
   );
 }

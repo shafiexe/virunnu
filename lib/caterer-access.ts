@@ -25,6 +25,11 @@ export const ACCESS_TREE: AccessGroup[] = [
     { key: "expenses", label: "Expenses", tabs: [{ key: "expenses.categories", label: "Categories" }] },
     { key: "reports", label: "Reports", hint: "Profit, balances and analysis", tabs: REPORT_TABS },
   ] },
+  { title: "Private details", items: [
+    { key: "hide.phones", label: "Customer phone numbers", hint: "Untick to hide numbers and the Call and WhatsApp buttons" },
+    { key: "hide.profit", label: "Profit and margins", hint: "Untick to hide profit on the dashboard and on each order" },
+    { key: "hide.salaries", label: "Staff pay", hint: "Untick to hide salaries, wages and what each person is paid" },
+  ] },
   { title: "Lists", items: [
     { key: "parties", label: "Parties", tabs: [{ key: "parties.customers", label: "Customers" }, { key: "parties.followup", label: "Follow-up" }, { key: "parties.suppliers", label: "Suppliers" }, { key: "parties.staff", label: "Staff & pay" }] },
     { key: "menu", label: "Menu & Prices" },
@@ -39,7 +44,7 @@ const RULES: Rule[] = [
   [/^\/caterer\/(no-access|onboarding)/, []],
   [/^\/api\/caterer\/find/, []],
   [/^\/api\/caterer\/customers\/[^/]+\/reminded/, []],
-  [/^\/caterer\/team/, ["__owner"]], [/^\/api\/caterer\/team/, ["__owner"]],
+  [/^\/caterer\/(team|activity)/, ["__owner"]], [/^\/api\/caterer\/team/, ["__owner"]],
   [/^\/caterer\/dashboard/, ["dashboard"]],
   [/^\/caterer\/calendar/, ["calendar"]],
   [/^\/caterer\/enquiries/, ["orders", "orders.enquiries"]], [/^\/api\/caterer\/enquiries/, ["orders", "orders.enquiries"]],

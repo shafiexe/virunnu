@@ -4,12 +4,16 @@ import { getCatererForSession } from "@/lib/caterer-session";
 import { billMoney, orderSchema } from "@/lib/caterer-orders";
 import { createOrder } from "@/lib/caterer-order-create";
 import type { OrderStatus, Prisma } from "@prisma/client";
+import { actorOf, logActivity } from "@/lib/activity";
 
 const STATUSES = ["CONFIRMED", "COMPLETED", "CANCELLED"];
 
 export async function GET(req: NextRequest) {
   const ctx = await getCatererForSession();
   if (!ctx) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+  // people who may not see phone numbers get them blanked
+  const noPhone = <T extends { customer: { phone: string } }>(o: T): T => (ctx.session.deny?.includes("hide.phones") ? { ...o, customer: { ...o.customer, phone: "" } } : o);
 
   const sp = req.nextUrl.searchParams;
   const page = Math.max(1, parseInt(sp.get("page") ?? "1") || 1);
@@ -47,14 +51,14 @@ export async function GET(req: NextRequest) {
     // "balance > 0" depends on three columns, so filter after loading
     const all = await db.catererOrder.findMany({ where: { ...where, status: { not: "CANCELLED" } }, include, orderBy: { date: "desc" } });
     const owing = all.filter((o) => o.bills.some((b) => billMoney(b).balancePaise > 0));
-    return NextResponse.json({ data: owing.slice((page - 1) * pageSize, page * pageSize), total: owing.length, page, pageSize, totalPages: Math.ceil(owing.length / pageSize) });
+    return NextResponse.json({ data: owing.slice((page - 1) * pageSize, page * pageSize).map(noPhone), total: owing.length, page, pageSize, totalPages: Math.ceil(owing.length / pageSize) });
   }
 
   const [total, data] = await Promise.all([
     db.catererOrder.count({ where }),
     db.catererOrder.findMany({ where, include, orderBy: [{ date: "desc" }, { createdAt: "desc" }], skip: (page - 1) * pageSize, take: pageSize }),
   ]);
-  return NextResponse.json({ data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
+  return NextResponse.json({ data: data.map(noPhone), total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
 }
 
 export async function POST(req: NextRequest) {
@@ -64,7 +68,9 @@ export async function POST(req: NextRequest) {
   const parsed = orderSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
 
-  const result = await createOrder(ctx.caterer, parsed.data);
+  const actor = await actorOf(ctx.session);
+  const result = await createOrder(ctx.caterer, parsed.data, actor.label);
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 400 });
+  await logActivity(ctx.session, `Created an order for ${parsed.data.customerName} on ${parsed.data.date}`);
   return NextResponse.json({ order: result.order }, { status: 201 });
 }

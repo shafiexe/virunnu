@@ -7,6 +7,8 @@ import {
 import { cn } from "@/lib/utils";
 import { AddonRow, addonLine } from "@/components/addon-row";
 import { SendReminderButton } from "@/components/send-reminder";
+import { BulkBlockButton } from "@/components/bulk-block-button";
+import { WriteOnly, useCanWrite, Show } from "@/components/access-context";
 
 type SlotTemplate = { id: string; name: string; startTime: string; endTime: string };
 type Hall = { id: string; name: string; pricePerSlot: number; slotTemplates: SlotTemplate[] };
@@ -499,6 +501,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               {(() => {
                 const isDateBlocked = blockedDates.some((b) => b.date === selectedDay);
                 return (
+                  <WriteOnly page="calendar">
                   <button
                     onClick={() => selectedDay && toggleBlock(selectedDay)}
                     className={cn(
@@ -511,8 +514,11 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                     <Ban className="h-3.5 w-3.5" />
                     {isDateBlocked ? "Unblock date" : "Block date"}
                   </button>
+                  </WriteOnly>
                 );
               })()}
+              <WriteOnly page="calendar"><BulkBlockButton hallId={venue?.halls[0]?.id} from={selectedDay} /></WriteOnly>
+              <WriteOnly page="bookings">
               <button
                 onClick={() => openAdd()}
                 disabled={selectedDateBlocked}
@@ -522,6 +528,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                 <Plus className="h-3.5 w-3.5" />
                 Add booking
               </button>
+              </WriteOnly>
             </div>
           </div>
 
@@ -587,7 +594,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                     </span>
                                     <span className="flex items-center gap-1">
                                       <Phone className="h-3 w-3" />
-                                      {(booking.user?.phone ?? booking.guestPhone) ? <a href={`tel:${booking.user?.phone ?? booking.guestPhone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{booking.user?.phone ?? booking.guestPhone}</a> : ""}
+                                      {(booking.user?.phone ?? booking.guestPhone) ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${booking.user?.phone ?? booking.guestPhone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{booking.user?.phone ?? booking.guestPhone}</a></Show> : ""}
                                     </span>
                                     <span className="flex items-center gap-1 font-medium text-zinc-700 dark:text-zinc-300">
                                       <IndianRupee className="h-3 w-3" />

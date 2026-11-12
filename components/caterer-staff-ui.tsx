@@ -7,6 +7,7 @@ import { Check, Loader2, Pencil, Plus, Trash2, Wallet, X } from "lucide-react";
 import { KIND_NAME, PAY_KINDS, PAY_LABEL, ROLES, type PayKind, type PayTypeKey } from "@/lib/caterer-staff";
 import { rs } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
+import { useAllowed, useCanWrite } from "@/components/access-context";
 
 const INPUT =
   "w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400";
@@ -101,7 +102,9 @@ function StaffForm({ initial, onDone, roles }: { initial?: StaffFormValue; onDon
 }
 
 export function AddStaffButton({ roles = [] }: { roles?: string[] }) {
+  const canWrite = useCanWrite("parties");
   const [open, setOpen] = useState(false);
+  if (!canWrite) return null;
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add staff</button>
@@ -111,7 +114,9 @@ export function AddStaffButton({ roles = [] }: { roles?: string[] }) {
 }
 
 export function EditStaffButton({ staff, roles = [] }: { staff: StaffFormValue; roles?: string[] }) {
+  const canWrite = useCanWrite("parties");
   const [open, setOpen] = useState(false);
+  if (!canWrite) return null;
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"><Pencil className="h-4 w-4" /> Edit</button>
@@ -122,6 +127,7 @@ export function EditStaffButton({ staff, roles = [] }: { staff: StaffFormValue; 
 
 // Salary, daily wages, an advance or a bonus: one small form, recorded with its date.
 export function PayStaffButton({ id, name, payType, toPayPaise, compact }: { id: string; name: string; payType: PayTypeKey; toPayPaise: number; compact?: boolean }) {
+  const canWrite = useCanWrite("parties") && useAllowed("salaries");
   const router = useRouter();
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
   const [open, setOpen] = useState(false);
@@ -143,6 +149,7 @@ export function PayStaffButton({ id, name, payType, toPayPaise, compact }: { id:
     } finally { setBusy(false); }
   }
 
+  if (!canWrite) return null;
   return (
     <>
       <button type="button" onClick={() => { setAmount(toPayPaise > 0 ? String(toPayPaise / 100) : ""); setKind(payType === "DAILY" ? "WAGE" : "SALARY"); setError(""); setOpen(true); }}
@@ -181,6 +188,7 @@ async function mark(id: string, date: string, units: number) {
 
 // One tap for today: Present, Half day or Absent.
 export function QuickAttendance({ id, date, units: initial }: { id: string; date: string; units: number | null }) {
+  const canWrite = useCanWrite("parties");
   const router = useRouter();
   const [units, setUnits] = useState<number | null>(initial);
   const [busy, setBusy] = useState(false);
@@ -192,6 +200,7 @@ export function QuickAttendance({ id, date, units: initial }: { id: string; date
     setBusy(false);
     if (res.ok) { setUnits(v === 0 ? null : v); router.refresh(); }
   }
+  if (!canWrite) return null;
   return (
     <div className="inline-flex rounded-lg bg-zinc-100 dark:bg-zinc-800 p-0.5">
       {opts.map((o) => {
@@ -246,6 +255,7 @@ export type StaffPaymentRow = { id: string; amountPaise: number; kind: string; m
 
 // Fix or take back a payment that was recorded by mistake.
 export function PaymentActions({ payment, employeeId }: { payment: StaffPaymentRow; employeeId: string }) {
+  const canWrite = useCanWrite("parties");
   const router = useRouter();
   const { undoable } = useUndoable();
   const [editing, setEditing] = useState(false);
@@ -275,6 +285,7 @@ export function PaymentActions({ payment, employeeId }: { payment: StaffPaymentR
     });
   }
 
+  if (!canWrite) return null;
   return (
     <>
       {(

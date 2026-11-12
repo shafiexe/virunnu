@@ -1,3 +1,4 @@
+import { WriteOnly } from "@/components/access-context";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -61,7 +62,7 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <CatererMonthNav basePath="/caterer/calendar" value={month} label={label} />
-          <Link href={`/caterer/orders/new${day ? `?date=${day}` : ""}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New order</Link>
+          <WriteOnly page="orders"><Link href={`/caterer/orders/new${day ? `?date=${day}` : ""}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New order</Link></WriteOnly>
         </div>
       </div>
 
@@ -78,7 +79,7 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">{new Date(day + "T00:00:00Z").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}</h2>
               <p className="text-xs text-zinc-400">{dayOrders.length} order{dayOrders.length === 1 ? "" : "s"}</p>
             </div>
-            <Link href={`/caterer/orders/new?date=${day}`} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white"><Plus className="h-3.5 w-3.5" /> New order</Link>
+            <WriteOnly page="orders"><Link href={`/caterer/orders/new?date=${day}`} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white"><Plus className="h-3.5 w-3.5" /> New order</Link></WriteOnly>
           </div>
           {dayOrders.length === 0 ? <p className="p-6 text-center text-sm text-zinc-400">Nothing booked on this day.</p> : (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">

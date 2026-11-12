@@ -6,6 +6,7 @@ import { Loader2, Pencil, Plus, Wallet, X } from "lucide-react";
 import { CYCLES, CYCLE_LABEL, SUPPLIER_CATEGORIES, type SupplierCycleKey } from "@/lib/caterer-suppliers";
 import { rs } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
+import { useCanWrite } from "@/components/access-context";
 
 const INPUT =
   "w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400";
@@ -76,7 +77,9 @@ function SupplierForm({ initial, onDone }: { initial?: SupplierFormValue; onDone
 }
 
 export function AddSupplierButton() {
+  const canWrite = useCanWrite("parties");
   const [open, setOpen] = useState(false);
+  if (!canWrite) return null;
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add supplier</button>
@@ -86,7 +89,9 @@ export function AddSupplierButton() {
 }
 
 export function EditSupplierButton({ supplier }: { supplier: SupplierFormValue }) {
+  const canWrite = useCanWrite("parties");
   const [open, setOpen] = useState(false);
+  if (!canWrite) return null;
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"><Pencil className="h-4 w-4" /> Edit</button>
@@ -97,6 +102,7 @@ export function EditSupplierButton({ supplier }: { supplier: SupplierFormValue }
 
 // "Settle account": pay what is owed, all or part. It goes against the oldest bills first.
 export function SettleButton({ supplierId, name, duePaise, compact }: { supplierId: string; name: string; duePaise: number; compact?: boolean }) {
+  const canWrite = useCanWrite("parties");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState(String(duePaise / 100));
@@ -114,6 +120,7 @@ export function SettleButton({ supplierId, name, duePaise, compact }: { supplier
     } finally { setBusy(false); }
   }
 
+  if (!canWrite) return null;
   return (
     <>
       <button type="button" onClick={() => { setAmount(String(duePaise / 100)); setError(""); setOpen(true); }}

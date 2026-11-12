@@ -1,3 +1,4 @@
+import { ShowS as Show } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -13,6 +14,7 @@ import { paginate, parsePaging } from "@/lib/paging";
 import { QuickPay } from "@/components/caterer-quick-pay";
 import { SendReminder } from "@/components/caterer-send-reminder";
 import { cn } from "@/lib/utils";
+import { WriteOnly, ReadOnlyShield } from "@/components/access-context";
 
 const STATE_STYLE = {
   PAID: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400",
@@ -66,7 +68,7 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
                     <td className="px-4 py-2.5 text-right">{rs(m.netPaise)}</td>
                     <td className="px-4 py-2.5 text-right text-emerald-600 dark:text-emerald-400">{rs(r.receivedPaise)}</td>
                     <td className={cn("px-4 py-2.5 text-right font-semibold", m.balancePaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-400")}>{m.balancePaise > 0 ? rs(m.balancePaise) : "—"}</td>
-                    <td className="px-4 py-2.5"><div className="flex items-center gap-2"><span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", STATE_STYLE[m.state])}>{STATE_LABEL[m.state]}</span>{m.balancePaise > 0 && <><QuickPay compact customer={customer.name} bills={[{ id: r.id, number: r.number, type: r.type, balancePaise: m.balancePaise }]} /><SendReminder compact customerId={customer.id} customerName={customer.name} phone={customer.phone} balancePaise={m.balancePaise} invoices={`Invoice ${r.number}`} date={r.functionDate.toISOString()} path={`/b/${r.shareToken}`} /></>}</div></td>
+                    <td className="px-4 py-2.5"><div className="flex items-center gap-2"><span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", STATE_STYLE[m.state])}>{STATE_LABEL[m.state]}</span>{m.balancePaise > 0 && <><QuickPay compact customer={customer.name} bills={[{ id: r.id, number: r.number, type: r.type, balancePaise: m.balancePaise }]} /><Show what="phones"><SendReminder compact customerId={customer.id} customerName={customer.name} phone={customer.phone} balancePaise={m.balancePaise} invoices={`Invoice ${r.number}`} date={r.functionDate.toISOString()} path={`/b/${r.shareToken}`} /></Show></>}</div></td>
                   </tr>
                 );
               })}
@@ -84,15 +86,15 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{customer.name}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-x-4 text-sm text-zinc-500">
-            <a href={`tel:${customer.phone}`} className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{customer.phone}</a>
+            <Show what="phones"><a href={`tel:${customer.phone}`} className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{customer.phone}</a></Show>
             {customer.address && <span>{customer.address}</span>}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <Link href={`/caterer/orders/new?customer=${customer.id}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">
+          <WriteOnly page="orders"><Link href={`/caterer/orders/new?customer=${customer.id}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">
           <Plus className="h-4 w-4" /> New order
-        </Link>
-          <Link href={`/caterer/quotes/new?customer=${customer.id}`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800" >New quotation</Link>
+        </Link></WriteOnly>
+          <WriteOnly page="orders"><Link href={`/caterer/quotes/new?customer=${customer.id}`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800" >New quotation</Link></WriteOnly>
         </div>
       </div>
 
@@ -106,11 +108,11 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <CatererStatementShare
+        <Show what="phones"><CatererStatementShare
           token={customer.shareToken} phone={customer.phone} catererName={ctx.caterer.name} customerName={customer.name}
           billedPaise={totals.billed} receivedPaise={totals.received} balancePaise={totals.due}
         />
-        <Link href={`/s/${customer.shareToken}`} target="_blank" className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800">
+</Show>        <Link href={`/s/${customer.shareToken}`} target="_blank" className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800">
           <ExternalLink className="h-4 w-4" /> View statement
         </Link>
         <span className="text-xs text-zinc-400">{live.length} invoice{live.length === 1 ? "" : "s"} · {closedCount} closed · {open.length} with balance</span>

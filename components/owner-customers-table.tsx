@@ -6,6 +6,7 @@ import { AlertCircle, Search, Download, Phone, LayoutList, LayoutGrid, CalendarD
 import { usePaginated } from "@/hooks/use-paginated";
 import { PaginationBar } from "@/components/pagination-bar";
 import { cn } from "@/lib/utils";
+import { Show } from "@/components/access-context";
 
 type Customer = {
   id: string;
@@ -38,11 +39,11 @@ function CustomerCard({ c }: { c: Customer }) {
           <Link href={href} className="block font-semibold text-sm text-zinc-900 dark:text-zinc-50 hover:text-amber-600 dark:hover:text-amber-400 transition-colors truncate">
             {c.name ?? "No name"}
           </Link>
-          <a href={`tel:${c.phone}`}
+          <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${c.phone}`}
             className="inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-amber-600 transition-colors mt-0.5">
             <Phone className="h-3 w-3 shrink-0" />
             <span className="truncate">{c.phone ?? "—"}</span>
-          </a>
+          </a></Show>
         </div>
         {/* Booking count badge */}
         <div className="shrink-0 text-right">
@@ -231,9 +232,9 @@ export function OwnerCustomersTable() {
                             </Link>
                           </td>
                           <td className="px-4 py-3">
-                            <a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-600 hover:underline">
+                            <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-600 hover:underline">
                               <Phone className="h-3 w-3" />{c.phone ?? "—"}
-                            </a>
+                            </a></Show>
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex flex-col gap-0.5">

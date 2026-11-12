@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { logActivity } from "@/lib/activity";
 
 const schema = z.object({
   hallId: z.string(),
@@ -42,10 +43,12 @@ export async function POST(req: NextRequest) {
     if (existing.status === "HELD") {
       // Unblock — delete the slot (back to virtual available)
       await db.hallSlot.delete({ where: { id: existing.id } });
+      await logActivity(session, "Unblocked a slot");
       return NextResponse.json({ action: "unblocked" });
     } else {
       // Block an existing AVAILABLE slot
       await db.hallSlot.update({ where: { id: existing.id }, data: { status: "HELD", heldUntil: null } });
+      await logActivity(session, "Blocked a slot");
       return NextResponse.json({ action: "blocked" });
     }
   } else {

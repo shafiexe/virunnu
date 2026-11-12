@@ -14,6 +14,7 @@ import { PayButton } from "@/components/caterer-purchase-actions";
 import { UrlPagination } from "@/components/url-pagination";
 import { parsePaging, queryOf } from "@/lib/paging";
 import { cn } from "@/lib/utils";
+import { WriteOnly } from "@/components/access-context";
 
 export default async function CatererPurchasesPage({ searchParams }: { searchParams: Promise<{ month?: string; person?: string; page?: string; pageSize?: string }> }) {
   await connection();
@@ -53,7 +54,7 @@ export default async function CatererPurchasesPage({ searchParams }: { searchPar
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <CatererMonthNav basePath="/caterer/purchases" value={month} label={label} extra={person ? `&person=${person}` : ""} />
-          <Link href="/caterer/purchases/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New purchase</Link>
+          <WriteOnly page="purchases"><Link href="/caterer/purchases/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New purchase</Link></WriteOnly>
         </div>
       </div>
 

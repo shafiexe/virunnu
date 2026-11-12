@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 import { BookingStatus, SlotStatus } from "@prisma/client";
 import { priceAddon } from "@/lib/addons";
+import { actorOf, logActivity } from "@/lib/activity";
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -44,7 +45,10 @@ export async function GET(req: NextRequest) {
     }),
   ]);
 
-  return NextResponse.json({ data, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
+  // people who may not see phone numbers get them blanked
+  const hide = session.deny?.includes("hide.phones");
+  const shown = hide ? data.map((b) => ({ ...b, guestPhone: null, user: b.user ? { ...b.user, phone: "" } : b.user })) : data;
+  return NextResponse.json({ data: shown, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
 }
 
 const schema = z.object({
@@ -159,5 +163,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "That slot is booked, held or blocked — unblock it first" }, { status: 409 });
   }
 
+  await logActivity(session, `Added a booking for ${customerName ?? customerPhone} on ${date}`);
   return NextResponse.json({ booking: result, user }, { status: 201 });
 }

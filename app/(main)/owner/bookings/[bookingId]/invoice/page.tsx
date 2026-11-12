@@ -7,6 +7,7 @@ import { db } from "@/lib/db";
 import { formatRupees, splitForVenue } from "@/lib/gst";
 import { addonDetail } from "@/lib/addons";
 import { PrintButton } from "@/components/print-button";
+import { PdfButton } from "@/components/pdf-button";
 import { orgLogoUrl } from "@/lib/org-logo";
 import { VirunnuLogo } from "@/components/virunnu-logo";
 
@@ -85,6 +86,7 @@ export default async function InvoicePage({ params }: Params) {
       <div className="print:hidden bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 py-3 flex items-center justify-between gap-3">
         <span className="text-sm text-zinc-600 dark:text-zinc-400">Invoice {invoiceNo}</span>
         <div className="flex gap-2">
+          <PdfButton href={`/api/owner/bookings/${booking.id}/pdf`} />
           <PrintButton />
         </div>
       </div>
@@ -101,9 +103,10 @@ export default async function InvoicePage({ params }: Params) {
             <div className="text-sm font-semibold text-zinc-700">{venue.org?.name ?? "Virunnu Technologies"}</div>
             <div className="text-xs text-zinc-500 mt-0.5">{venue.name}</div>
             <div className="text-xs text-zinc-500">{venue.address}, {venue.city}</div>
+            {gstOn && venue.gstin && <div className="text-xs font-semibold text-zinc-700 mt-0.5">GSTIN: {venue.gstin}</div>}
           </div>
           <div className="text-right">
-            <div className="text-lg font-bold text-zinc-900 uppercase tracking-wide">Invoice</div>
+            <div className="text-lg font-bold text-zinc-900 uppercase tracking-wide">{gstOn ? "Tax Invoice" : "Invoice"}</div>
             <div className="text-xs text-zinc-500 mt-1">No: <span className="font-semibold text-zinc-700">{invoiceNo}</span></div>
             <div className="text-xs text-zinc-500">Date: {invoiceDate}</div>
             <div className={`mt-2 inline-block text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide ${

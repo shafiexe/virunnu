@@ -12,6 +12,7 @@ import { usePaginated } from "@/hooks/use-paginated";
 import { PaginationBar } from "@/components/pagination-bar";
 import { BILL_LABEL, billMoney, formatTime, rs, type BillTypeKey } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
+import { WriteOnly, Show } from "@/components/access-context";
 
 type OrderRow = {
   id: string; date: string; shareToken: string; status: "CONFIRMED" | "COMPLETED" | "CANCELLED"; place: string | null; eventType: string | null;
@@ -68,9 +69,9 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Orders</h1>
           <p className="text-sm text-zinc-500 mt-0.5">{loading ? "Loading…" : `${total.toLocaleString("en-IN")} order${total !== 1 ? "s" : ""}`}</p>
         </div>
-        <Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors">
+        <WriteOnly page="orders"><Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors">
           <Plus className="h-4 w-4" /> New order
-        </Link>
+        </Link></WriteOnly>
       </div>
 
       <div className="mb-4 flex flex-col sm:flex-row gap-3">
@@ -131,7 +132,7 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
                     </td>
                     <td className="px-4 py-3">
                       <Link href={`/caterer/customers/${o.customer.id}`} className="text-zinc-900 dark:text-zinc-50 hover:text-amber-600">{o.customer.name}</Link>
-                      <div className="text-xs"><a href={`tel:${o.customer.phone}`} className="text-zinc-500 hover:text-amber-600 hover:underline">{o.customer.phone}</a></div>
+                      <Show what="phones"><div className="text-xs"><a href={`tel:${o.customer.phone}`} className="text-zinc-500 hover:text-amber-600 hover:underline">{o.customer.phone}</a></div></Show>
                     </td>
                     <td className="px-4 py-3 text-xs text-zinc-600 dark:text-zinc-400">
                       {o.servings.length === 0 ? "—" : o.servings.map((s, i) => (
@@ -153,8 +154,8 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
                             <div className="flex flex-wrap gap-1">
                               <QuickPay compact customer={o.customer.name} onDone={refresh}
                                 bills={o.bills.map((b) => ({ id: b.id, number: b.number, type: b.type, balancePaise: billMoney(b).balancePaise })).filter((b) => b.balancePaise > 0)} />
-                              <SendReminder compact customerId={o.customer.id} customerName={o.customer.name} phone={o.customer.phone} balancePaise={balance} date={o.date} path={`/o/${o.shareToken}`}
-                                invoices={(() => { const n = o.bills.filter((b) => billMoney(b).balancePaise > 0).map((b) => b.number); return n.length === 1 ? `Invoice ${n[0]}` : `Invoices ${n.join(", ")}`; })()} />
+                              <Show what="phones"><SendReminder compact customerId={o.customer.id} customerName={o.customer.name} phone={o.customer.phone} balancePaise={balance} date={o.date} path={`/o/${o.shareToken}`}
+                                invoices={(() => { const n = o.bills.filter((b) => billMoney(b).balancePaise > 0).map((b) => b.number); return n.length === 1 ? `Invoice ${n[0]}` : `Invoices ${n.join(", ")}`; })()} /></Show>
                             </div>
                           </div>
                         )
@@ -173,11 +174,11 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
                                 className="inline-flex h-9 w-9 md:h-7 md:w-7 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:border-amber-400 hover:text-amber-600 transition-colors">
                                 <Eye className="h-3.5 w-3.5" />
                               </Link>
-                              <button type="button" title="Send invoice on WhatsApp" aria-label={`Send invoice ${b.number} on WhatsApp`}
+                              <Show what="phones"><button type="button" title="Send invoice on WhatsApp" aria-label={`Send invoice ${b.number} on WhatsApp`}
                                 onClick={() => window.open(whatsappLink(o.customer.phone, billMessage({ catererName: getActiveBusiness().name, customerName: o.customer.name, number: b.number, type: b.type, date: o.date, bill: { ...b, taxPaise: b.taxPaise ?? 0 }, url: `${window.location.origin}/b/${b.shareToken}` })), "_blank", "noopener")}
                                 className="inline-flex h-9 w-9 md:h-7 md:w-7 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-emerald-600 hover:border-emerald-400 transition-colors">
                                 <MessageCircle className="h-3.5 w-3.5" />
-                              </button>
+                              </button></Show>
                               <a href={`/api/caterer/orders/${o.id}/pdf?bill=${b.type}`} download title="Download PDF" aria-label={`Download invoice ${b.number}`}
                                 className="inline-flex h-9 w-9 md:h-7 md:w-7 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300 hover:border-amber-400 hover:text-amber-600 transition-colors">
                                 <Download className="h-3.5 w-3.5" />

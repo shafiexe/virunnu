@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MoreHorizontal, X } from "lucide-react";
 import { BookingAddonsDialog, type BookingAddonItem } from "@/components/booking-addons-button";
+import { WriteOnly, useCanWrite } from "@/components/access-context";
 
 type DropdownPos = { top: number; right: number };
 
@@ -30,6 +31,7 @@ type Panel = "cancel" | "restore" | "cash" | "adjust" | null;
 
 export function OwnerBookingActions({ bookingId, status, totalPaise, advancePaise, cancelReason, discountPaise, discountReason, venueId, addons, inline, onSuccess }: Props) {
   const router = useRouter();
+  const canWrite = useCanWrite("bookings");
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<DropdownPos>({ top: 0, right: 0 });
   const [panel, setPanel] = useState<Panel>(null);
@@ -156,6 +158,8 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
       )}
     </>
   );
+
+  if (!canWrite) return null;
 
   return (
     <div className="relative" ref={containerRef}>

@@ -11,6 +11,7 @@ import { QuickPayButton } from "@/components/quick-pay-button";
 import { PendingRequests } from "@/components/pending-requests";
 import { addonSummary, type BookingAddonItem } from "@/components/booking-addons-button";
 import { cn } from "@/lib/utils";
+import { WriteOnly, useCanWrite, Show } from "@/components/access-context";
 
 type BookingStatus = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
 
@@ -106,7 +107,7 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
           </div>
           <div className="min-w-0">
             <div className="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate">{name}</div>
-            <div className="text-xs text-zinc-500 truncate">{phone !== "—" ? <a href={`tel:${phone}`} className="hover:text-amber-600 hover:underline">{phone}</a> : phone}</div>
+            <div className="text-xs text-zinc-500 truncate">{phone !== "—" ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${phone}`} className="hover:text-amber-600 hover:underline">{phone}</a></Show> : phone}</div>
           </div>
         </div>
 
@@ -238,9 +239,9 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/owner/calendar" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors">
+          <WriteOnly page="bookings"><Link href="/owner/calendar" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors">
             <Plus className="h-4 w-4" /> Add booking
-          </Link>
+          </Link></WriteOnly>
           {/* View toggle */}
           <div className="flex items-center rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
             <button onClick={() => toggleView("list")} title="List view"
@@ -380,7 +381,7 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
                       </td>
                       <td className="px-4 py-3">
                         <div className="text-zinc-900 dark:text-zinc-50">{b.user?.name ?? b.guestName ?? "—"}</div>
-                        <div className="text-zinc-500 text-xs">{(b.user?.phone ?? b.guestPhone) ? <a href={`tel:${b.user?.phone ?? b.guestPhone}`} className="hover:text-amber-600 hover:underline">{b.user?.phone ?? b.guestPhone}</a> : "—"}</div>
+                        <div className="text-zinc-500 text-xs">{(b.user?.phone ?? b.guestPhone) ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${b.user?.phone ?? b.guestPhone}`} className="hover:text-amber-600 hover:underline">{b.user?.phone ?? b.guestPhone}</a></Show> : "—"}</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="space-y-0.5 text-xs">

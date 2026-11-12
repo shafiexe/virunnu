@@ -1,3 +1,5 @@
+import { hidesFor } from "@/components/show-server";
+import { ShowS as Show } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -45,7 +47,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
     id: b.id, type: b.type, number: b.number, shareToken: b.shareToken, createdAt: b.createdAt.toISOString(),
     subtotalPaise: b.subtotalPaise, discountPaise: b.discountPaise, taxPaise: b.taxPaise, gstRateBp: b.gstRateBp, gstInclusive: b.gstInclusive, gstPaise: b.gstPaise, discountReason: b.discountReason, receivedPaise: b.receivedPaise,
     lines: b.lines.map((l) => ({ id: l.id, name: l.name, unit: l.unit, quantity: l.quantity, ratePaise: l.ratePaise, amountPaise: l.amountPaise })),
-    payments: b.payments.map((p) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, note: p.note, paidOn: p.paidOn.toISOString() })),
+    payments: b.payments.map((p) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, note: p.note, paidOn: p.paidOn.toISOString(), recordedBy: p.recordedBy })),
   }));
 
   // Kitchen view: what goes out at each serve time
@@ -63,7 +65,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
           </h1>
           <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-zinc-500">
             <span>{dateLong}</span>
-            <a href={`tel:${order.customer.phone}`} className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{order.customer.phone}</a>
+            <Show what="phones"><a href={`tel:${order.customer.phone}`} className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{order.customer.phone}</a></Show>
             {order.place && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{order.place}</span>}
             {order.eventType && <span>{order.eventType}</span>}
           </div>
@@ -73,7 +75,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
 
       <CatererOrderActions
         orderId={order.id} status={order.status} shareToken={order.shareToken} date={dateIso}
-        customer={{ name: order.customer.name, phone: order.customer.phone }} catererName={ctx.caterer.name}
+        customer={{ name: order.customer.name, phone: hidesFor(ctx.session.deny, "phones") ? "" : order.customer.phone }} catererName={ctx.caterer.name}
         bills={order.bills.map((b) => ({ number: b.number, type: b.type, subtotalPaise: b.subtotalPaise, discountPaise: b.discountPaise, taxPaise: b.taxPaise, receivedPaise: b.receivedPaise }))}
       />
 
@@ -128,13 +130,13 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
               <li key={t.id} className="flex items-center justify-between gap-3 py-2 text-sm">
                 <Link href={`/caterer/staff/${t.employeeId}?month=${dateIso.slice(0, 7)}`} className="min-w-0 hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{t.employee.name}</span><span className="ml-2 text-xs text-zinc-400">{t.employee.role}</span></Link>
                 <span className="flex items-center gap-3 shrink-0">
-                  <span className="font-medium">{t.amountPaise > 0 ? rs(t.amountPaise) : <span className="text-xs text-zinc-400">pay not set</span>}</span>
+                  <Show what="salaries"><span className="font-medium">{t.amountPaise > 0 ? rs(t.amountPaise) : <span className="text-xs text-zinc-400">pay not set</span>}</span></Show>
                   <PayStaffButton id={t.employeeId} name={t.employee.name} payType={t.employee.payType as PayTypeKey} toPayPaise={t.amountPaise} compact />
                 </span>
               </li>
             ))}
           </ul>
-          {teamPaise > 0 && <div className="flex justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2 text-sm"><span className="text-zinc-500">Team pay for this function</span><span className="font-semibold">{rs(teamPaise)}</span></div>}
+          <Show what="salaries">{teamPaise > 0 && <div className="flex justify-between border-t border-zinc-100 dark:border-zinc-800 pt-2 text-sm"><span className="text-zinc-500">Team pay for this function</span><span className="font-semibold">{rs(teamPaise)}</span></div>}</Show>
         </section>
       )}
 
@@ -145,7 +147,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
           {billCards.map((b) => (
-            <CatererBillCard key={b.id} bill={b} orderId={order.id} orderDate={dateIso} customer={{ name: order.customer.name, phone: order.customer.phone }} catererName={ctx.caterer.name} cancelled={cancelled} />
+            <CatererBillCard key={b.id} bill={b} orderId={order.id} orderDate={dateIso} customer={{ name: order.customer.name, phone: hidesFor(ctx.session.deny, "phones") ? "" : order.customer.phone }} catererName={ctx.caterer.name} cancelled={cancelled} />
           ))}
         </div>
       )}
@@ -173,7 +175,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
             <div className="grid grid-cols-3 gap-3 border-t border-zinc-100 dark:border-zinc-800 pt-3 text-sm">
               <div><div className="text-[11px] text-zinc-500">Billed</div><div className="font-semibold">{rs(totals.net)}</div></div>
               <div><div className="text-[11px] text-zinc-500">Purchases & team pay</div><div className="font-semibold">{rs(costPaise)}</div></div>
-              <div><div className="text-[11px] text-zinc-500">Profit</div><div className={totals.net - costPaise < 0 ? "font-bold text-red-600" : "font-bold text-emerald-600"}>{rs(totals.net - costPaise)}</div></div>
+              <Show what="profit"><div><div className="text-[11px] text-zinc-500">Profit</div><div className={totals.net - costPaise < 0 ? "font-bold text-red-600" : "font-bold text-emerald-600"}>{rs(totals.net - costPaise)}</div></div></Show>
             </div>
           )}
         </section>

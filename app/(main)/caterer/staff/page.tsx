@@ -1,3 +1,4 @@
+import { ShowS as Show } from "@/components/show-server";
 import { EmptyState } from "@/components/empty-state";
 import { connection } from "next/server";
 export const instant = false;
@@ -45,12 +46,14 @@ export default async function CatererStaffPage({ searchParams }: { searchParams:
         </div>
       </div>
 
+      <Show what="salaries">
       {staff.length > 0 && (
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/20 p-4"><div className="text-xs text-emerald-700 dark:text-emerald-400">Paid in {label}</div><div className="text-xl font-bold text-emerald-800 dark:text-emerald-300">{rs(paid)}</div></div>
           <div className={cn("rounded-2xl border p-4", toPay > 0 ? "border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900")}><div className="text-xs text-zinc-500">Still to pay</div><div className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{toPay > 0 ? rs(toPay) : "Nil"}</div></div>
         </div>
       )}
+      </Show>
 
       {staff.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700">
@@ -66,17 +69,17 @@ export default async function CatererStaffPage({ searchParams }: { searchParams:
                     <span className="font-semibold text-zinc-900 dark:text-zinc-50 truncate">{p.name}</span>
                     <span className="rounded-full bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 text-[11px] font-medium text-amber-700 dark:text-amber-400">{p.role}</span>
                   </div>
-                  <div className="mt-0.5 text-xs text-zinc-500">{PAY_LABEL[p.payType]} · {rs(p.ratePaise)}{p.payType === "DAILY" ? " a day" : " a month"}</div>
+                  <Show what="salaries"><div className="mt-0.5 text-xs text-zinc-500">{PAY_LABEL[p.payType]} · {rs(p.ratePaise)}{p.payType === "DAILY" ? " a day" : " a month"}</div></Show>
                 </Link>
                 {p.phone && <a href={`tel:${p.phone}`} aria-label={`Call ${p.name}`} className="text-zinc-400 hover:text-amber-600"><Phone className="h-4 w-4" /></a>}
               </div>
               <div className="flex items-center justify-between gap-3 flex-wrap">
-                <div className="text-xs text-zinc-500 space-x-3">
+                <Show what="salaries"><div className="text-xs text-zinc-500 space-x-3">
                   {p.payType === "DAILY" && <span>{p.days} day{p.days === 1 ? "" : "s"} worked</span>}
                   <span>Earned <span className="font-semibold text-zinc-800 dark:text-zinc-200">{rs(p.earnedPaise)}</span></span>
                   <span>Paid <span className="font-semibold text-emerald-600">{rs(p.paidPaise)}</span></span>
                   <span>To pay <span className={cn("font-semibold", p.toPayPaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-400")}>{p.toPayPaise > 0 ? rs(p.toPayPaise) : "Nil"}</span></span>
-                </div>
+                </div></Show>
                 <div className="flex items-center gap-2">
                   {p.payType === "DAILY" && isThisMonth && <QuickAttendance id={p.id} date={today} units={p.todayUnits} />}
                   <PayStaffButton id={p.id} name={p.name} payType={p.payType} toPayPaise={p.toPayPaise} compact />

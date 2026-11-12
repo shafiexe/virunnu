@@ -8,12 +8,13 @@ import { BILL_LABEL, billMoney, rs as rsPaise, STATE_LABEL, type BillTypeKey } f
 import { billMessage, whatsappLink } from "@/lib/caterer-share";
 import { useUndoable } from "@/components/undo-toast";
 import { cn } from "@/lib/utils";
+import { WriteOnly, Show } from "@/components/access-context";
 
 export type BillCardData = {
   id: string; type: BillTypeKey; number: number; shareToken: string; createdAt: string;
   subtotalPaise: number; discountPaise: number; taxPaise: number; gstRateBp: number; gstInclusive: boolean; gstPaise: number; discountReason: string | null; receivedPaise: number;
   lines: { id: string; name: string; unit: string; quantity: number; ratePaise: number; amountPaise: number }[];
-  payments: { id: string; amountPaise: number; method: string; note: string | null; paidOn: string }[];
+  payments: { id: string; amountPaise: number; method: string; note: string | null; paidOn: string; recordedBy?: string | null }[];
 };
 
 const INPUT =
@@ -105,13 +106,13 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
           <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Payments received</div>
           {bill.payments.map((p) => (
             <div key={p.id} className="flex items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-              <span>{new Date(p.paidOn).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" })} · {METHOD[p.method] ?? p.method}{p.note ? ` · ${p.note}` : ""}</span>
+              <span>{new Date(p.paidOn).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" })} · {METHOD[p.method] ?? p.method}{p.note ? ` · ${p.note}` : ""}{p.recordedBy ? ` · by ${p.recordedBy}` : ""}</span>
               <span className="flex items-center gap-2">
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">{rsPaise(p.amountPaise)}</span>
-                <button type="button" title="Undo this payment" aria-label="Undo this payment" disabled={busy} onClick={() => undoable(`Payment of ${rsPaise(p.amountPaise)} taken back`, {
+                <WriteOnly page="orders"><button type="button" title="Undo this payment" aria-label="Undo this payment" disabled={busy} onClick={() => undoable(`Payment of ${rsPaise(p.amountPaise)} taken back`, {
                   request: { url: `/api/caterer/bills/${bill.id}/payments/${p.id}`, method: "DELETE" },
                   restore: { url: `/api/caterer/bills/${bill.id}/payments`, method: "POST", body: { amount: p.amountPaise / 100, method: p.method, note: p.note ?? undefined, paidOn: p.paidOn.slice(0, 10) } },
-                })} className="p-1.5 -m-1.5 text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>
+                })} className="p-1.5 -m-1.5 text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button></WriteOnly>
               </span>
             </div>
           ))}
@@ -120,20 +121,24 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
 
       {!cancelled && (
         <div className="flex flex-wrap gap-2">
+          <WriteOnly page="orders">
           {m.balancePaise > 0 && (
             <button type="button" onClick={() => { setAmount(String(m.balancePaise / 100)); setError(""); setPanel("pay"); }} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white">
               <Wallet className="h-4 w-4" /> Payment received
             </button>
           )}
+          </WriteOnly>
+          <WriteOnly page="orders">
           <button type="button" onClick={() => { setError(""); setPanel("discount"); }} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800">
             <Percent className="h-4 w-4" /> {bill.discountPaise > 0 ? "Edit discount" : "Discount"}
           </button>
+          </WriteOnly>
           <Link href={`/caterer/orders/${orderId}/invoice?bill=${bill.type}`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20">
             <FileText className="h-4 w-4" /> Invoice
           </Link>
-          <button type="button" onClick={share} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20">
+          <Show what="phones"><button type="button" onClick={share} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20">
             <MessageCircle className="h-4 w-4" /> WhatsApp
-          </button>
+          </button></Show>
         </div>
       )}
 

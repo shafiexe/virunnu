@@ -9,6 +9,7 @@ import { Phone, Search, SearchX, Users2 } from "lucide-react";
 import { rs } from "@/lib/caterer-orders";
 import { SendReminder } from "@/components/caterer-send-reminder";
 import { cn } from "@/lib/utils";
+import { Show } from "@/components/access-context";
 
 export type CustomerRow = {
   id: string; name: string; phone: string; shareToken: string; orderCount: number; billCount: number;
@@ -94,11 +95,11 @@ export function CatererCustomersTable({ customers, totalCustomers, totalDuePaise
                       <span className="font-medium text-zinc-900 dark:text-zinc-50">{c.name}</span>
                     </Link>
                   </td>
-                  <td className="px-4 py-3"><a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-600 hover:underline"><Phone className="h-3 w-3" />{c.phone}</a></td>
+                  <td className="px-4 py-3"><Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-600 hover:underline"><Phone className="h-3 w-3" />{c.phone}</a></Show></td>
                   <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400 whitespace-nowrap">{c.orderCount}<span className="text-xs text-zinc-400"> · {c.billCount} invoice{c.billCount === 1 ? "" : "s"}</span></td>
                   <td className="px-4 py-3 font-semibold whitespace-nowrap">{c.billedPaise > 0 ? rs(c.billedPaise) : "—"}</td>
                   <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 whitespace-nowrap">{c.receivedPaise > 0 ? rs(c.receivedPaise) : "—"}</td>
-                  <td className="px-4 py-3 font-semibold whitespace-nowrap">{c.balancePaise > 0 ? <div className="space-y-1"><div className="text-red-600 dark:text-red-400">{rs(c.balancePaise)}</div><SendReminder compact customerId={c.id} customerName={c.name} phone={c.phone} balancePaise={c.balancePaise} invoices="your account" date={c.lastDate ?? new Date().toISOString()} path={`/s/${c.shareToken}`} /></div> : <span className="text-zinc-400 text-xs">{c.billedPaise > 0 ? "Closed" : "—"}</span>}</td>
+                  <td className="px-4 py-3 font-semibold whitespace-nowrap">{c.balancePaise > 0 ? <div className="space-y-1"><div className="text-red-600 dark:text-red-400">{rs(c.balancePaise)}</div><Show what="phones"><SendReminder compact customerId={c.id} customerName={c.name} phone={c.phone} balancePaise={c.balancePaise} invoices="your account" date={c.lastDate ?? new Date().toISOString()} path={`/s/${c.shareToken}`} /></Show></div> : <span className="text-zinc-400 text-xs">{c.billedPaise > 0 ? "Closed" : "—"}</span>}</td>
                   <td className="px-4 py-3 text-zinc-500 whitespace-nowrap">{c.lastDate ? new Date(c.lastDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "—"}</td>
                 </tr>
               ))}

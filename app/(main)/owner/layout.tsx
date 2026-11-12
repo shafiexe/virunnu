@@ -5,6 +5,7 @@ import { getSession } from "@/lib/session";
 import { OwnerSidebar, OwnerTopTabs } from "@/components/owner-sidebar";
 import { db } from "@/lib/db";
 import { orgLogoUrl } from "@/lib/org-logo";
+import { AccessProvider } from "@/components/access-context";
 import { ToastProvider } from "@/components/undo-toast";
 
 export default async function OwnerLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
 
   return (
     <ToastProvider>
+      <AccessProvider deny={session.deny}>
       <div className="flex min-h-[calc(100vh-56px)]">
         <OwnerSidebar logoUrl={logoUrl} name={org?.name} deny={session.deny} mainOwner={!session.tm} />
         <div className="flex-1 flex flex-col min-w-0">
@@ -23,6 +25,7 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
           <div className="flex-1">{children}</div>
         </div>
       </div>
+      </AccessProvider>
     </ToastProvider>
   );
 }

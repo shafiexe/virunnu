@@ -1,3 +1,4 @@
+import { hidesFor } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
 import { redirect } from "next/navigation";
@@ -21,7 +22,7 @@ export default async function CatererCustomersPage({ searchParams }: { searchPar
     <div className="mx-auto max-w-6xl px-4 py-6 space-y-4">
       <CatererSectionTabs tabs={partyTabs()} active="customers" />
       <CatererCustomersTable
-        customers={paged.rows} totalCustomers={paged.totalCustomers} totalDuePaise={paged.totalDuePaise}
+        customers={hidesFor(ctx.session.deny, "phones") ? paged.rows.map((r) => ({ ...r, phone: "" })) : paged.rows} totalCustomers={paged.totalCustomers} totalDuePaise={paged.totalDuePaise}
         search={search} dueOnly={dueOnly} paging={{ page: paged.page, totalPages: paged.totalPages, total: paged.total, pageSize: paged.pageSize }}
         query={queryOf({ search, due: dueOnly ? "1" : undefined })}
       />

@@ -1,3 +1,5 @@
+import { WriteOnly } from "@/components/access-context";
+import { ShowS as Show } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -82,7 +84,7 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <CatererMonthNav basePath="/caterer/dashboard" value={month} label={label} />
-          <Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New order</Link>
+          <WriteOnly page="orders"><Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New order</Link></WriteOnly>
         </div>
       </div>
 
@@ -97,7 +99,7 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
         <Kpi href="/caterer/orders" label="Billed" value={rs(billed.total)} hint={`Food ${rs(billed.food)} · Service ${rs(billed.service)}`} />
         <Kpi href={`/caterer/daybook?kind=RECEIPT&month=${month}`} label="Received" value={rs(receivedMonth)} hint={`${payments.length} payment${payments.length === 1 ? "" : "s"} this month`} tone="good" />
         <Kpi href={`/caterer/expenses?year=${month.slice(0, 4)}&month=${Number(month.slice(5))}`} label="Expenses" value={rs(expenses.total)} hint={expenses.byCategory[0] ? `Most on ${expenses.byCategory[0].category}` : "Nothing recorded"} />
-        <Kpi href={`/caterer/reports?tab=pl&month=${month}`} label="Profit" value={rs(profit)} hint={`Billed − expenses · cash in hand ${rs(cashProfit)}`} tone={profit < 0 ? "bad" : "plain"} />
+        <Show what="profit"><Kpi href={`/caterer/reports?tab=pl&month=${month}`} label="Profit" value={rs(profit)} hint={`Billed − expenses · cash in hand ${rs(cashProfit)}`} tone={profit < 0 ? "bad" : "plain"} /></Show>
         <Kpi href="/caterer/orders?status=DUES" label="Balance due" value={rs(sheet.receivables)} hint={`${sheet.dues.length} customer${sheet.dues.length === 1 ? "" : "s"} owe you`} tone={sheet.receivables > 0 ? "warn" : "plain"} />
       </div>
 

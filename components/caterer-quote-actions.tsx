@@ -7,6 +7,7 @@ import { CheckCircle2, FileDown, Loader2, MessageCircle, Pencil, RotateCcw, Tras
 import { useUndoable } from "@/components/undo-toast";
 import { quoteMessage, whatsappLink } from "@/lib/caterer-share";
 import { cn } from "@/lib/utils";
+import { WriteOnly, Show } from "@/components/access-context";
 
 const INPUT =
   "w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-400";
@@ -57,13 +58,14 @@ export function CatererQuoteActions(p: Props) {
         {p.state === "ACCEPTED" && p.orderId ? (
           <Link href={`/caterer/orders/${p.orderId}`} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"><CheckCircle2 className="h-4 w-4" /> Accepted · open the order</Link>
         ) : (
-          <button type="button" onClick={() => { setError(""); setConfirming(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"><CheckCircle2 className="h-4 w-4" /> Customer accepted · make order</button>
+          <WriteOnly page="orders"><button type="button" onClick={() => { setError(""); setConfirming(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"><CheckCircle2 className="h-4 w-4" /> Customer accepted · make order</button></WriteOnly>
         )}
-        <button type="button" onClick={send} className={cn(btn, "text-emerald-700 dark:text-emerald-400")}><MessageCircle className="h-4 w-4" /> WhatsApp</button>
+        <Show what="phones"><button type="button" onClick={send} className={cn(btn, "text-emerald-700 dark:text-emerald-400")}><MessageCircle className="h-4 w-4" /> WhatsApp</button></Show>
         <a href={`/api/caterer/quotes/${p.id}/pdf`} download className={cn(btn, "text-amber-600 dark:text-amber-400")}><FileDown className="h-4 w-4" /> PDF</a>
-        {p.state !== "ACCEPTED" && <Link href={`/caterer/quotes/${p.id}/edit`} className={btn}><Pencil className="h-4 w-4" /> Edit</Link>}
-        {p.state === "DECLINED" && <button type="button" disabled={!!busy} onClick={async () => { if (await call("reopen", `/api/caterer/quotes/${p.id}`, "PATCH", { status: "OPEN" })) router.refresh(); }} className={btn}><RotateCcw className="h-4 w-4" /> Reopen</button>}
-        {(p.state === "OPEN" || p.state === "EXPIRED") && <button type="button" disabled={!!busy} onClick={async () => { if (await call("decline", `/api/caterer/quotes/${p.id}`, "PATCH", { status: "DECLINED" })) router.refresh(); }} className={btn}><XCircle className="h-4 w-4" /> Declined</button>}
+        <WriteOnly page="orders">{p.state !== "ACCEPTED" && <Link href={`/caterer/quotes/${p.id}/edit`} className={btn}><Pencil className="h-4 w-4" /> Edit</Link>}</WriteOnly>
+        <WriteOnly page="orders">{p.state === "DECLINED" && <button type="button" disabled={!!busy} onClick={async () => { if (await call("reopen", `/api/caterer/quotes/${p.id}`, "PATCH", { status: "OPEN" })) router.refresh(); }} className={btn}><RotateCcw className="h-4 w-4" /> Reopen</button>}</WriteOnly>
+        <WriteOnly page="orders">{(p.state === "OPEN" || p.state === "EXPIRED") && <button type="button" disabled={!!busy} onClick={async () => { if (await call("decline", `/api/caterer/quotes/${p.id}`, "PATCH", { status: "DECLINED" })) router.refresh(); }} className={btn}><XCircle className="h-4 w-4" /> Declined</button>}</WriteOnly>
+        <WriteOnly page="orders">
         {p.state !== "ACCEPTED" && (
           <button type="button" disabled={deleting} onClick={() => {
             const here = window.location.pathname;
@@ -74,6 +76,7 @@ export function CatererQuoteActions(p: Props) {
             });
           }} className={cn(btn, "text-red-600")}><Trash2 className="h-4 w-4" /> {deleting ? "Deleting…" : "Delete"}</button>
         )}
+        </WriteOnly>
       </div>
       {error && !confirming && <p className="text-sm text-red-500">{error}</p>}
 

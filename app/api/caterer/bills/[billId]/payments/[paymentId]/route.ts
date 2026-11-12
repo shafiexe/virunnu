@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getCatererForSession } from "@/lib/caterer-session";
+import { actorOf, logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ billId: string; paymentId: string }> };
 
@@ -17,5 +18,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
     db.catererPayment.delete({ where: { id: paymentId } }),
     db.catererBill.update({ where: { id: billId }, data: { receivedPaise: { decrement: payment.amountPaise } } }),
   ]);
+  await logActivity(ctx.session, `Took back a payment of ₹${(payment.amountPaise / 100).toLocaleString("en-IN")}`);
   return NextResponse.json({ ok: true });
 }

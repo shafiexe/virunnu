@@ -5,6 +5,7 @@ import { getCatererForSession } from "@/lib/caterer-session";
 import { BILL_TYPES, orderSchema, type BillTypeKey } from "@/lib/caterer-orders";
 import { groupLines, loadOrder, markTeamAttendance, nextInvoiceNumber, retax, upsertCustomer, validTeam } from "@/lib/caterer-bills";
 import { gstFor } from "@/lib/caterer-gst";
+import { actorOf, logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ orderId: string }> };
 
@@ -163,8 +164,9 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   const ctx = await getCatererForSession();
   if (!ctx) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const { orderId } = await params;
-  const order = await db.catererOrder.findFirst({ where: { id: orderId, catererId: ctx.caterer.id }, select: { id: true } });
+  const order = await db.catererOrder.findFirst({ where: { id: orderId, catererId: ctx.caterer.id }, select: { id: true, date: true, customer: { select: { name: true } } } });
   if (!order) return NextResponse.json({ error: "Not found" }, { status: 404 });
   await db.catererOrder.delete({ where: { id: orderId } });
+  await logActivity(ctx.session, `Deleted the order for ${order.customer.name} on ${order.date.toISOString().slice(0, 10)}`);
   return NextResponse.json({ ok: true });
 }

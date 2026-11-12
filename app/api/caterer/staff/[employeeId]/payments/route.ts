@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { getCatererForSession } from "@/lib/caterer-session";
 import { staffPaymentSchema } from "@/lib/caterer-staff";
 import { todayIST } from "@/lib/caterer-finance";
+import { actorOf, logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ employeeId: string }> };
 
@@ -22,5 +23,6 @@ export async function POST(req: NextRequest, { params }: Params) {
       forMonth: date.toISOString().slice(0, 7),
     },
   });
+  await logActivity(ctx.session, `Paid ${person.name} ₹${d.amount.toLocaleString("en-IN")}`);
   return NextResponse.json({ payment }, { status: 201 });
 }

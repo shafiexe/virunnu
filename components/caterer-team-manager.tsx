@@ -95,7 +95,7 @@ function AccessEditor({ member, tree, apiBase, onClose, onSaved }: { member: Mem
                         <input type="checkbox" className="h-4 w-4 accent-amber-500" checked={visible} onChange={(e) => toggle(i.key, !e.target.checked)} />
                         <span className="min-w-0"><span className="block text-sm font-medium text-zinc-900 dark:text-zinc-50">{i.label}</span>{i.hint && <span className="block text-[11px] text-zinc-400">{i.hint}</span>}</span>
                       </label>
-                      {visible && i.key !== "dashboard" && (
+                      {visible && i.key !== "dashboard" && !i.key.startsWith("hide.") && (
                         <label className="flex items-center gap-1.5 text-xs text-zinc-500 cursor-pointer whitespace-nowrap" title="They can look but not add, change or delete">
                           <input type="checkbox" className="h-3.5 w-3.5 accent-amber-500" checked={has(`ro.${i.key}`)} onChange={(e) => toggle(`ro.${i.key}`, e.target.checked)} /> View only
                         </label>

@@ -29,6 +29,7 @@ interface VenueProfile {
   twitterUrl?: string | null;
   gstEnabled?: boolean;
   gstRate?: number;
+  gstin?: string | null;
 }
 
 function parseMapsCoords(url: string): { lat: number; lng: number } | null {
@@ -129,6 +130,7 @@ export function VenueProfileCard({
   });
   const [gstEnabled, setGstEnabled] = useState(initial.gstEnabled ?? true);
   const [gstRate, setGstRate] = useState(String(initial.gstRate ?? 9));
+  const [gstin, setGstin] = useState(initial.gstin ?? "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -211,6 +213,7 @@ export function VenueProfileCard({
     });
     setGstEnabled(venue.gstEnabled ?? true);
     setGstRate(String(venue.gstRate ?? 9));
+    setGstin(venue.gstin ?? "");
     setError("");
     setEditing(true);
   }
@@ -254,6 +257,7 @@ export function VenueProfileCard({
           twitterUrl: form.twitterUrl.trim() || null,
           gstEnabled,
           ...(gstEnabled ? { gstRate: rate } : {}),
+          gstin,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -641,6 +645,12 @@ export function VenueProfileCard({
                 <p className="mt-1 text-xs text-zinc-500">
                   {Number.isFinite(parseFloat(gstRate)) ? `CGST ${parseFloat(gstRate)}% + SGST ${parseFloat(gstRate)}% = ${parseFloat(gstRate) * 2}% total. Default is 9%.` : "Default is 9%."}
                 </p>
+              </div>
+            )}
+            {gstEnabled && (
+              <div className="max-w-xs">
+                <label className={LABEL}>Your GSTIN (printed on invoices)</label>
+                <input value={gstin} onChange={(e) => setGstin(e.target.value.toUpperCase())} maxLength={15} placeholder="32ABCDE1234F1Z5" className={`${FIELD} uppercase`} />
               </div>
             )}
           </div>

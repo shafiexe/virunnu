@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { getCatererForSession } from "@/lib/caterer-session";
 import { quoteSchema, saveQuote, type QuoteGst } from "@/lib/caterer-quotes";
+import { actorOf, logActivity } from "@/lib/activity";
 
 type Params = { params: Promise<{ quoteId: string }> };
 
@@ -40,5 +41,6 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   if (!q) return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (q.status === "ACCEPTED") return NextResponse.json({ error: "This quotation became an order, so it is kept as a record" }, { status: 400 });
   await db.catererQuote.delete({ where: { id: q.id } });
+  await logActivity(ctx.session, "Deleted a quotation");
   return NextResponse.json({ ok: true });
 }

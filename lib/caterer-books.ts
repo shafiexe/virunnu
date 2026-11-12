@@ -37,12 +37,12 @@ export async function dayBook(catererId: string, orgId: string, from: Date, to: 
     }),
     db.catererPayment.findMany({
       where: { bill: { catererId }, paidOn: { gte: from, lte: to } },
-      select: { id: true, amountPaise: true, method: true, paidOn: true, bill: { select: { number: true, type: true, orderId: true, order: { select: { customer: { select: { name: true } } } } } } },
+      select: { id: true, amountPaise: true, method: true, paidOn: true, recordedBy: true, bill: { select: { number: true, type: true, orderId: true, order: { select: { customer: { select: { name: true } } } } } } },
     }),
     db.catererPurchase.findMany({ where: { catererId, date: { gte: from, lte: to } }, select: { id: true, date: true, supplier: true, billNo: true, totalPaise: true, category: true } }),
     db.catererPurchasePayment.findMany({
       where: { purchase: { catererId }, paidOn: { gte: from, lte: to } },
-      select: { id: true, amountPaise: true, method: true, paidOn: true, purchase: { select: { id: true, supplier: true, billNo: true } } },
+      select: { id: true, amountPaise: true, method: true, paidOn: true, recordedBy: true, purchase: { select: { id: true, supplier: true, billNo: true } } },
     }),
     db.catererStaffPayment.findMany({ where: { catererId, date: { gte: from, lte: to } }, select: { id: true, date: true, amountPaise: true, kind: true, method: true, employeeId: true, employee: { select: { name: true } } } }),
     db.expense.findMany({ where: { orgId, date: { gte: from, lte: to } }, select: { id: true, date: true, category: true, label: true, amountPaise: true } }),
@@ -55,9 +55,9 @@ export async function dayBook(catererId: string, orgId: string, from: Date, to: 
     if (date < fromKey || date > toKey) continue;
     entries.push({ date, kind: "SALE", party: b.order.customer.name, ref: `Invoice #${b.number} · ${BILL_LABEL[b.type]}`, method: null, amountPaise: billMoney(b).netPaise, inPaise: 0, outPaise: 0, href: `/caterer/orders/${b.orderId}` });
   }
-  for (const r of receipts) entries.push({ date: day(r.paidOn), kind: "RECEIPT", party: r.bill.order.customer.name, ref: `Invoice #${r.bill.number}`, method: r.method, amountPaise: r.amountPaise, inPaise: r.amountPaise, outPaise: 0, href: `/caterer/orders/${r.bill.orderId}` });
+  for (const r of receipts) entries.push({ date: day(r.paidOn), kind: "RECEIPT", party: r.bill.order.customer.name, ref: `Invoice #${r.bill.number}${r.recordedBy ? ` · by ${r.recordedBy}` : ""}`, method: r.method, amountPaise: r.amountPaise, inPaise: r.amountPaise, outPaise: 0, href: `/caterer/orders/${r.bill.orderId}` });
   for (const p of purchases) entries.push({ date: day(p.date), kind: "PURCHASE", party: p.supplier, ref: `${p.billNo ? `Bill ${p.billNo} · ` : ""}${p.category}`, method: null, amountPaise: p.totalPaise, inPaise: 0, outPaise: 0, href: `/caterer/purchases/${p.id}` });
-  for (const p of payments) entries.push({ date: day(p.paidOn), kind: "PAYMENT", party: p.purchase.supplier, ref: p.purchase.billNo ? `Bill ${p.purchase.billNo}` : "Supplier payment", method: p.method, amountPaise: p.amountPaise, inPaise: 0, outPaise: p.amountPaise, href: `/caterer/purchases/${p.purchase.id}` });
+  for (const p of payments) entries.push({ date: day(p.paidOn), kind: "PAYMENT", party: p.purchase.supplier, ref: `${p.purchase.billNo ? `Bill ${p.purchase.billNo}` : "Supplier payment"}${p.recordedBy ? ` · by ${p.recordedBy}` : ""}`, method: p.method, amountPaise: p.amountPaise, inPaise: 0, outPaise: p.amountPaise, href: `/caterer/purchases/${p.purchase.id}` });
   const KIND_WORDS: Record<string, string> = { SALARY: "Salary", WAGE: "Daily wages", ADVANCE: "Advance", OTHER: "Bonus / other" };
   for (const s of staffPay) entries.push({ date: day(s.date), kind: "SALARY", party: s.employee.name, ref: KIND_WORDS[s.kind] ?? s.kind, method: s.method, amountPaise: s.amountPaise, inPaise: 0, outPaise: s.amountPaise, href: `/caterer/staff/${s.employeeId}?month=${day(s.date).slice(0, 7)}` });
   for (const e of expenses) entries.push({ date: day(e.date), kind: "EXPENSE", party: e.category, ref: e.label, method: "CASH", amountPaise: e.amountPaise, inPaise: 0, outPaise: e.amountPaise, href: "/caterer/expenses" });

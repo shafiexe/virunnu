@@ -1,3 +1,4 @@
+import { ShowS as Show } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -161,7 +162,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
 
         <Card title="Customer">
           <Row label="Name">{customer.name}</Row>
-          <Row label="Phone">{customer.phone !== "—" ? <a href={`tel:${customer.phone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{customer.phone}</a> : "—"}</Row>
+          <Row label="Phone">{customer.phone !== "—" ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${customer.phone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{customer.phone}</a></Show> : "—"}</Row>
           {customer.email && <Row label="Email">{customer.email}</Row>}
           {booking.guestAddress && <Row label="Address">{booking.guestAddress}</Row>}
         </Card>

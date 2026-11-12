@@ -1,3 +1,4 @@
+import { ShowS as Show } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -20,16 +21,16 @@ function Person({ r, dim }: { r: Row; dim?: boolean }) {
     <li className={cn("flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3", dim && "opacity-70")}>
       <div className="min-w-0 flex-1 basis-48">
         <Link href={`/caterer/customers/${r.id}`} className="font-semibold text-zinc-900 dark:text-zinc-50 hover:text-amber-600">{r.name}</Link>
-        <div className="text-xs text-zinc-500">{r.phone} · function on {formatInvoiceDate(r.oldest)} · <span className="font-medium text-red-600 dark:text-red-400">{r.days} days ago</span>{r.lastRemindedAt && <> · reminded {formatInvoiceDate(r.lastRemindedAt)}</>}</div>
+        <div className="text-xs text-zinc-500"><Show what="phones">{r.phone} · </Show>function on {formatInvoiceDate(r.oldest)} · <span className="font-medium text-red-600 dark:text-red-400">{r.days} days ago</span>{r.lastRemindedAt && <> · reminded {formatInvoiceDate(r.lastRemindedAt)}</>}</div>
       </div>
       <div className="text-right">
         <div className="font-bold text-red-600 dark:text-red-400">{rs(r.balancePaise)}</div>
         <div className="text-[11px] text-zinc-400">{r.bills.length} invoice{r.bills.length === 1 ? "" : "s"}</div>
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
-        <CallLink phone={r.phone} />
-        <SendReminder compact customerId={r.id} customerName={r.name} phone={r.phone} balancePaise={r.balancePaise} date={r.oldest.toISOString()} path={`/s/${r.shareToken}`}
-          invoices={r.bills.length === 1 ? `Invoice ${r.bills[0].number}` : "your account"} label="WhatsApp" />
+        <Show what="phones"><CallLink phone={r.phone} /></Show>
+        <Show what="phones"><SendReminder compact customerId={r.id} customerName={r.name} phone={r.phone} balancePaise={r.balancePaise} date={r.oldest.toISOString()} path={`/s/${r.shareToken}`}
+          invoices={r.bills.length === 1 ? `Invoice ${r.bills[0].number}` : "your account"} label="WhatsApp" /></Show>
         <QuickPay compact customer={r.name} bills={r.bills} />
         {!dim && <SnoozeButton customerId={r.id} name={r.name} />}
       </div>

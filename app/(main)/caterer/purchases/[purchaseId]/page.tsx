@@ -26,7 +26,7 @@ export default async function EditPurchasePage({ params }: { params: Promise<{ p
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Purchase from {purchase.supplier}</h1>
       <PurchasePayments
         purchaseId={purchase.id} totalPaise={purchase.totalPaise} paidPaise={purchase.paidPaise}
-        payments={purchase.payments.map((p) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, note: p.note, paidOn: p.paidOn.toISOString() }))}
+        payments={purchase.payments.map((p) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, note: p.note, paidOn: p.paidOn.toISOString(), recordedBy: p.recordedBy }))}
       />
       <CatererPurchaseForm
         {...opts}

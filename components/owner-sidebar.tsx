@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, CalendarCheck,
-  Users2, Building2, Workflow, ChevronRight, Receipt, ShieldCheck,
+  Users2, Building2, Workflow, ChevronRight, Receipt, ShieldCheck, History,
 } from "lucide-react";
 import { canOpenOwner } from "@/lib/owner-access";
 import { cn } from "@/lib/utils";
@@ -21,7 +21,7 @@ const NAV = [
 
 // What this person sees: items hidden from them are left out, and only the main owner gets Team logins
 const navFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>
-  [...NAV, ...(mainOwner ? [{ href: "/owner/team", icon: ShieldCheck, label: "Team logins" }] : [])].filter((i) => canOpenOwner(deny, i.href));
+  [...NAV, ...(mainOwner ? [{ href: "/owner/team", icon: ShieldCheck, label: "Team logins" }, { href: "/owner/activity", icon: History, label: "Activity" }] : [])].filter((i) => canOpenOwner(deny, i.href));
 
 export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true }: { logoUrl?: string | null; name?: string; deny?: string[]; mainOwner?: boolean }) {
   const pathname = usePathname();

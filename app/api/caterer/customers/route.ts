@@ -15,5 +15,6 @@ export async function GET(req: NextRequest) {
   });
   // looking one customer up by phone (the order form does this): also say what they were charged last time
   const usual = phone && customers.length === 1 ? await usualFor(ctx.caterer.id, customers[0].id) : null;
-  return NextResponse.json({ customers, usual });
+  const hide = ctx.session.deny?.includes("hide.phones");
+  return NextResponse.json({ customers: hide ? customers.map((c) => ({ ...c, phone: "" })) : customers, usual });
 }

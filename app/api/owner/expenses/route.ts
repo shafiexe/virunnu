@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { z } from "zod";
+import { actorOf, logActivity } from "@/lib/activity";
 
 const schema = z.object({
   category: z.string().min(1).max(80),
@@ -83,8 +84,10 @@ export async function POST(req: NextRequest) {
 
   const { category, label, amountRupees, date, notes, employeeId } = parsed.data;
 
+  const actor = await actorOf(session);
   const expense = await db.expense.create({
     data: {
+      recordedBy: actor.label,
       orgId: session.orgId,
       category,
       label,
@@ -96,5 +99,6 @@ export async function POST(req: NextRequest) {
     include: { employee: { select: { id: true, name: true, role: true } } },
   });
 
+  await logActivity(session, `Added expense “${label}” of ₹${amountRupees.toLocaleString("en-IN")}`);
   return NextResponse.json({ expense }, { status: 201 });
 }

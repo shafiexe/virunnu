@@ -5,6 +5,7 @@ import { MessageCircle } from "lucide-react";
 import { billMessage, orderMessage, whatsappLink } from "@/lib/caterer-share";
 import type { BillTypeKey } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
+import { Show } from "@/components/access-context";
 
 type BillInfo = { number: number; type: BillTypeKey; shareToken: string; subtotalPaise: number; discountPaise: number; taxPaise: number; receivedPaise: number };
 
@@ -39,9 +40,9 @@ export function CatererInvoiceShare({ orderId, orderToken, orderDate, customer, 
           ))}
         </div>
       )}
-      <button type="button" onClick={send} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">
+      <Show what="phones"><button type="button" onClick={send} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">
         <MessageCircle className="h-4 w-4" /> Send on WhatsApp
-      </button>
+      </button></Show>
     </div>
   );
 }

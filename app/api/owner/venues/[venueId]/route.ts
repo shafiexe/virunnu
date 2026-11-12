@@ -30,6 +30,8 @@ const patchSchema = z.object({
   gstEnabled: z.boolean().optional(),
   // rate of each of CGST and SGST — 9 means 9% + 9% = 18%
   gstRate: z.number().min(0).max(14).optional(),
+  // printed on invoices; an empty text clears it
+  gstin: z.string().trim().toUpperCase().max(15).refine((v) => !v || /^\d{2}[A-Z]{5}\d{4}[A-Z][A-Z\d]Z[A-Z\d]$/.test(v), "That GSTIN does not look right (15 characters, like 32ABCDE1234F1Z5)").transform((v) => v || null).nullable().optional(),
 });
 
 export async function PATCH(req: NextRequest, { params }: Params) {

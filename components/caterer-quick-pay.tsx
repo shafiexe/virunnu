@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Check, Loader2, Wallet, X } from "lucide-react";
 import { BILL_LABEL, rs, type BillTypeKey } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
+import { useCanWrite } from "@/components/access-context";
 
 export type PayableBill = { id: string; number: number; type: BillTypeKey; balancePaise: number };
 
@@ -14,6 +15,7 @@ const MODE_KEY = "virunnu.payMode";
 // "Payment received" from any list: pick the invoice (if there are two), the amount defaults to the full balance,
 // and the way of paying is remembered from last time. One tap on Save for the usual case.
 export function QuickPay({ bills, customer, onDone, compact = false }: { bills: PayableBill[]; customer: string; onDone?: () => void; compact?: boolean }) {
+  const canWrite = useCanWrite("orders");
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [billId, setBillId] = useState(bills[0]?.id ?? "");
@@ -46,6 +48,7 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
   }
 
   const total = bills.reduce((s, b) => s + b.balancePaise, 0);
+  if (!canWrite) return null;
   return (
     <>
       <button type="button" onClick={show} title={`Payment received from ${customer}`}

@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { PaginationBar } from "@/components/pagination-bar";
 import { cn } from "@/lib/utils";
+import { WriteOnly, ReadOnlyShield } from "@/components/access-context";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -522,13 +523,13 @@ export function ExpenseManager({
               </button>
             </div>
             <div className="flex-1" />
-            <button
+            <WriteOnly page="expenses"><button
               onClick={() => openAdd()}
               className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl transition-colors"
             >
               <Plus className="h-4 w-4" />
               Add expense
-            </button>
+            </button></WriteOnly>
           </div>
 
           {/* Search + Filter */}
@@ -589,7 +590,7 @@ export function ExpenseManager({
                 <h3 className="mt-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">{search || filterCategory !== "ALL" ? "No matching expenses" : "No expenses this month"}</h3>
                 <p className="mx-auto mt-1 max-w-sm text-sm text-zinc-500">{search || filterCategory !== "ALL" ? "Try a different word, or show all categories." : "Add what you spend on gas, rent, transport and repairs so your profit is right."}</p>
                 {!search && filterCategory === "ALL" && (
-                  <button onClick={() => openAdd()} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add expense</button>
+                  <WriteOnly page="expenses"><button onClick={() => openAdd()} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add expense</button></WriteOnly>
                 )}
               </div>
             ) : (
@@ -629,12 +630,12 @@ export function ExpenseManager({
                             <td className="px-4 py-3">
                               {(
                                 <div className="flex items-center gap-1">
-                                  <button onClick={() => openEdit(e)} aria-label="Edit expense" className="p-2 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">
+                                  <WriteOnly page="expenses"><button onClick={() => openEdit(e)} aria-label="Edit expense" className="p-2 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">
                                     <Pencil className="h-3.5 w-3.5" />
-                                  </button>
-                                  <button onClick={() => handleDelete(e)} aria-label="Delete expense" className="p-2 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
+                                  </button></WriteOnly>
+                                  <WriteOnly page="expenses"><button onClick={() => handleDelete(e)} aria-label="Delete expense" className="p-2 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
                                     <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
+                                  </button></WriteOnly>
                                 </div>
                               )}
                             </td>

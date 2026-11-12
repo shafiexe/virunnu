@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { BookingStatus, SlotStatus, PaymentMethod } from "@prisma/client";
 import { z } from "zod";
 import { notifyBookingConfirmed } from "@/services/notification.service";
+import { logActivity } from "@/lib/activity";
 
 const schema = z.object({
   advancePaise: z.number().int().min(0).optional(),
@@ -86,5 +87,6 @@ export async function POST(
     }).catch((e) => console.error("[notify/cash-payment]", e));
   }
 
+  await logActivity(session, `Recorded a cash advance on booking ${bookingId.slice(-6).toUpperCase()}`);
   return NextResponse.json({ ok: true });
 }

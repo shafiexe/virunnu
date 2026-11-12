@@ -121,6 +121,8 @@ model Venue {
   // Invoice tax: prices are GST-inclusive; gstRate is the rate for each of CGST and SGST (9 + 9 = 18%)
   gstEnabled        Boolean      @default(true)
   gstRate           Float        @default(9)
+  // shown on the invoice when the centre charges GST
+  gstin             String?
   approved          Boolean      @default(false)
   orgId             String
   org               Organization @relation(fields: [orgId], references: [id])
@@ -446,6 +448,8 @@ model Expense {
   employee    Employee?    @relation(fields: [employeeId], references: [id])
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy  String?
 }
 
 model ExpenseCategory {
@@ -609,6 +613,9 @@ model CatererOrder {
   createdAt  DateTime            @default(now())
   updatedAt  DateTime            @updatedAt
 
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
+
   @@index([catererId, date])
   @@index([customerId])
 }
@@ -682,6 +689,9 @@ model CatererPayment {
   paidOn      DateTime    @db.Date
   createdAt   DateTime    @default(now())
 
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
+
   @@index([billId])
   @@index([paidOn])
 }
@@ -710,6 +720,9 @@ model CatererPurchase {
   updatedAt   DateTime                 @updatedAt
   payments    CatererPurchasePayment[]
 
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
+
   @@index([catererId, date])
   @@index([orderId])
 }
@@ -736,6 +749,9 @@ model CatererPurchasePayment {
   paidOn      DateTime        @db.Date
   note        String?
   createdAt   DateTime        @default(now())
+
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy String?
 
   @@index([purchaseId])
   @@index([paidOn])
@@ -845,4 +861,17 @@ model CatererQuote {
   @@unique([catererId, number])
   @@index([catererId, createdAt])
   @@index([customerId])
+}
+
+// A short trail of what people did, so the owner can see who changed what. Kept for each business.
+model ActivityLog {
+  id       String   @id @default(cuid())
+  orgId    String
+  userId   String
+  userName String
+  action   String
+  summary  String
+  at       DateTime @default(now())
+
+  @@index([orgId, at])
 }

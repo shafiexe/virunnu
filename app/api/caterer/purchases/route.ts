@@ -5,6 +5,7 @@ import { purchaseSchema, purchaseTotals } from "@/lib/caterer-purchases";
 import { checkLinks } from "@/lib/caterer-purchases-server";
 import { resolveSupplier } from "@/lib/caterer-suppliers-server";
 import type { Prisma } from "@prisma/client";
+import { actorOf, logActivity } from "@/lib/activity";
 
 export async function GET(req: NextRequest) {
   const ctx = await getCatererForSession();
@@ -38,16 +39,18 @@ export async function POST(req: NextRequest) {
   const bad = await checkLinks(ctx.caterer.id, ctx.caterer.orgId!, d.employeeId, d.orderId);
   if (bad) return NextResponse.json({ error: bad }, { status: 400 });
 
+  const actor = await actorOf(ctx.session);
   const purchase = await db.$transaction(async (tx) => {
     const sup = await resolveSupplier(tx, ctx.caterer.id, d);
     return tx.catererPurchase.create({
     data: {
       catererId: ctx.caterer.id, date: new Date(d.date), supplier: sup.name, supplierId: sup.id, billNo: d.billNo, category: d.category,
-      totalPaise, paidPaise, employeeId: d.employeeId, orderId: d.orderId, notes: d.notes,
+      totalPaise, paidPaise, employeeId: d.employeeId, orderId: d.orderId, notes: d.notes, recordedBy: actor.label,
       lines: { create: lines },
-      ...(paidPaise > 0 ? { payments: { create: { amountPaise: paidPaise, method: d.method, paidOn: new Date(d.date), note: "Paid at purchase" } } } : {}),
+      ...(paidPaise > 0 ? { payments: { create: { amountPaise: paidPaise, method: d.method, paidOn: new Date(d.date), note: "Paid at purchase", recordedBy: actor.label } } } : {}),
     },
     });
   });
+  await logActivity(ctx.session, `Recorded a purchase of ₹${(totalPaise / 100).toLocaleString("en-IN")} from ${purchase.supplier}`);
   return NextResponse.json({ purchase }, { status: 201 });
 }

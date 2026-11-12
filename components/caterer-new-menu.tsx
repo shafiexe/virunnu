@@ -9,10 +9,10 @@ import { cn } from "@/lib/utils";
 
 // Everything you create, one tap from any catering page.
 const ENTRIES = [
-  { href: "/caterer/orders/new", icon: ClipboardList, label: "New order", hint: "A confirmed function" },
-  { href: "/caterer/quotes/new", icon: FileText, label: "New quotation", hint: "A price to send first" },
-  { href: "/caterer/purchases/new", icon: ShoppingCart, label: "Record purchase", hint: "Bought for the kitchen" },
-  { href: "/caterer/expenses?add=1", icon: Receipt, label: "Add expense", hint: "Gas, rent, transport…" },
+  { href: "/caterer/orders/new", page: "orders", icon: ClipboardList, label: "New order", hint: "A confirmed function" },
+  { href: "/caterer/quotes/new", page: "orders", icon: FileText, label: "New quotation", hint: "A price to send first" },
+  { href: "/caterer/purchases/new", page: "purchases", icon: ShoppingCart, label: "Record purchase", hint: "Bought for the kitchen" },
+  { href: "/caterer/expenses?add=1", page: "expenses", icon: Receipt, label: "Add expense", hint: "Gas, rent, transport…" },
 ];
 
 // Pages that already end in a Save bar, where a floating button would sit on top of it
@@ -32,7 +32,7 @@ export function CatererNewMenu({ variant, deny }: { variant: "sidebar" | "fab"; 
     return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
   }, [open]);
 
-  const entries = ENTRIES.filter((e) => canOpen(deny, e.href));
+  const entries = ENTRIES.filter((e) => canOpen(deny, e.href) && !deny?.includes(`ro.${e.page}`));
   if (entries.length === 0 || (variant === "fab" && hidesFab(pathname))) return null;
 
   const list = (

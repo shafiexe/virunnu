@@ -8,7 +8,7 @@ type CatererForOrder = { id: string; orgId: string | null; gstEnabled: boolean; 
 const fail = (error: string) => ({ ok: false as const, error });
 
 // Validates and files a new order with its bills, team and any advance. Shared by the order form and by turning a quotation into an order.
-export async function createOrder(caterer: CatererForOrder, d: OrderInput) {
+export async function createOrder(caterer: CatererForOrder, d: OrderInput, by?: string | null) {
 
   if (d.lines.some((l) => l.servingIndex !== undefined && l.servingIndex >= d.servings.length)) {
     return fail("A line points at a serve time that doesn't exist");
@@ -42,6 +42,7 @@ export async function createOrder(caterer: CatererForOrder, d: OrderInput) {
         place: d.place,
         eventType: d.eventType,
         notes: d.notes,
+        recordedBy: by ?? null,
         servings: { create: d.servings.map((s, i) => ({ label: s.label, time: s.time, guests: s.guests, sortOrder: i })) },
         ...(team.rows.length ? { team: { create: team.rows } } : {}),
       },
@@ -66,7 +67,7 @@ export async function createOrder(caterer: CatererForOrder, d: OrderInput) {
               ratePaise: l.ratePaise, amountPaise: l.amountPaise, sortOrder: i,
             })),
           },
-          ...(advancePaise > 0 ? { payments: { create: { amountPaise: advancePaise, method: d.advanceMethod ?? "CASH", paidOn: todayIST(), note: "Advance" } } } : {}),
+          ...(advancePaise > 0 ? { payments: { create: { amountPaise: advancePaise, method: d.advanceMethod ?? "CASH", paidOn: todayIST(), note: "Advance", recordedBy: by ?? null } } } : {}),
         },
       });
       await retax(tx, bill.id);

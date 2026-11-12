@@ -5,9 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, ClipboardList, Users2, Package, Receipt,
-  UtensilsCrossed, ChevronRight, Wallet, BarChart3, BookOpen, ShoppingCart, Truck, ShieldCheck, MessageSquare,
+  UtensilsCrossed, ChevronRight, Wallet, BarChart3, BookOpen, ShoppingCart, Truck, ShieldCheck, MessageSquare, History,
 } from "lucide-react";
 import { canOpen } from "@/lib/caterer-access";
+import { AccessProvider } from "@/components/access-context";
 import { CatererNewMenu } from "@/components/caterer-new-menu";
 import { CatererQuickFind } from "@/components/caterer-quick-find";
 import { ToastProvider } from "@/components/undo-toast";
@@ -48,7 +49,7 @@ export const CATERER_NAV_GROUPS = [
 export function navFor(deny: readonly string[] | undefined, mainOwner: boolean) {
   return CATERER_NAV_GROUPS.map((g) => ({
     ...g,
-    items: [...g.items, ...(g.title === "Lists" && mainOwner ? [{ href: "/caterer/team", icon: ShieldCheck, label: "Team logins", also: [] as string[] }] : [])]
+    items: [...g.items, ...(g.title === "Lists" && mainOwner ? [{ href: "/caterer/team", icon: ShieldCheck, label: "Team logins", also: [] as string[] }, { href: "/caterer/activity", icon: History, label: "Activity", also: [] as string[] }] : [])]
       .map((i) => ({ ...i, href: [i.href, ...i.also].find((h) => canOpen(deny, h)) ?? "" }))
       .filter((i) => i.href),
   })).filter((g) => g.items.length > 0);
@@ -146,6 +147,7 @@ export function CatererShell({ children, pendingEnquiries, logoUrl, name, upiId,
   if (pathname.startsWith("/caterer/onboarding")) return <>{children}</>;
   return (
     <ToastProvider>
+      <AccessProvider deny={deny}>
       <div className="caterer-app flex min-h-[calc(100vh-56px)]">
         <CatererSidebar pendingEnquiries={pendingEnquiries} logoUrl={logoUrl} name={name} deny={deny} mainOwner={mainOwner} />
         <div className="flex-1 flex flex-col min-w-0">
@@ -154,6 +156,7 @@ export function CatererShell({ children, pendingEnquiries, logoUrl, name, upiId,
         </div>
       </div>
       <CatererNewMenu variant="fab" deny={deny} />
+      </AccessProvider>
     </ToastProvider>
   );
 }

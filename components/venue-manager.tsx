@@ -45,6 +45,7 @@ type Venue = {
   twitterUrl?: string | null;
   gstEnabled?: boolean;
   gstRate?: number;
+  gstin?: string | null;
   addons?: { id: string; name: string; pricePaise: number; unit: "FIXED" | "HOUR"; active: boolean }[];
   lat: number;
   lng: number;
@@ -239,6 +240,36 @@ function AddTemplateForm({ hallId, onAdded }: { hallId: string; onAdded: (tpl: S
       </div>
       {error && <p className="w-full text-xs text-red-500">{error}</p>}
     </form>
+  );
+}
+
+// Set up a second hall by copying the first one's slot times, price and payment rules
+function CopyHallSetup({ halls }: { halls: { id: string; name: string }[] }) {
+  const [from, setFrom] = useState(halls[0]?.id ?? "");
+  const [to, setTo] = useState(halls[1]?.id ?? "");
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState("");
+  if (halls.length < 2) return null;
+  async function copy() {
+    setBusy(true); setMsg("");
+    try {
+      const res = await fetch(`/api/owner/halls/${from}/copy-to`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ toHallId: to }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { setMsg(data.error ?? "Could not copy"); return; }
+      setMsg(`Copied ${data.copied} slot time${data.copied === 1 ? "" : "s"} and the price.${data.skipped ? ` ${data.skipped} already existed.` : ""}`);
+      setTimeout(() => window.location.reload(), 1200);
+    } finally { setBusy(false); }
+  }
+  const sel = "rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1.5 text-xs";
+  return (
+    <div className="flex flex-wrap items-center gap-2 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 px-3 py-2 text-xs text-zinc-600 dark:text-zinc-400">
+      <span className="font-medium">Copy slots and price from</span>
+      <select className={sel} value={from} onChange={(e) => setFrom(e.target.value)}>{halls.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}</select>
+      <span>to</span>
+      <select className={sel} value={to} onChange={(e) => setTo(e.target.value)}>{halls.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}</select>
+      <button type="button" onClick={copy} disabled={busy || from === to} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 font-semibold text-white disabled:opacity-50">{busy ? "Copying…" : "Copy"}</button>
+      {msg && <span className="text-emerald-600">{msg}</span>}
+    </div>
   );
 }
 
@@ -759,6 +790,7 @@ function VenueCard({ venue: initialVenue }: { venue: Venue }) {
           twitterUrl: initialVenue.twitterUrl,
           gstEnabled: initialVenue.gstEnabled,
           gstRate: initialVenue.gstRate,
+          gstin: initialVenue.gstin,
         }}
       />
 
@@ -770,6 +802,7 @@ function VenueCard({ venue: initialVenue }: { venue: Venue }) {
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Halls &amp; Slots</span>
           </div>
           <div className="px-5 pb-5 space-y-3">
+            <CopyHallSetup halls={halls} />
             {halls.map((hall) => (
               <HallCard
                 key={hall.id}

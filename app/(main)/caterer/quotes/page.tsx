@@ -1,3 +1,5 @@
+import { ShowS as Show } from "@/components/show-server";
+import { WriteOnly } from "@/components/access-context";
 import { EmptyState } from "@/components/empty-state";
 import { connection } from "next/server";
 export const instant = false;
@@ -46,9 +48,9 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Quotations</h1>
           <p className="text-sm text-zinc-500 mt-0.5">{total === 0 ? "Send a price before the customer confirms" : `${total} quotation${total === 1 ? "" : "s"}${openValue > 0 ? ` · ${rs(openValue)} waiting for a reply` : ""}`}</p>
         </div>
-        <Link href="/caterer/quotes/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors">
+        <WriteOnly page="orders"><Link href="/caterer/quotes/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors">
           <Plus className="h-4 w-4" /> New quotation
-        </Link>
+        </Link></WriteOnly>
       </div>
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden bg-white dark:bg-zinc-900">
@@ -66,7 +68,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
                   return (
                     <tr key={q.id} className="hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
                       <td className="p-0 whitespace-nowrap"><Link href={`/caterer/quotes/${q.id}`} className="block px-4 py-3 font-semibold text-zinc-900 dark:text-zinc-50 hover:bg-amber-50/60 dark:hover:bg-amber-950/10">{quoteLabel(q.number)}<span className="block text-xs font-normal text-zinc-400">{formatInvoiceDate(q.createdAt)}</span></Link></td>
-                      <td className="px-4 py-3">{q.customer.name}<a href={`tel:${q.customer.phone}`} className="block text-xs text-zinc-500 hover:text-amber-600">{q.customer.phone}</a></td>
+                      <td className="px-4 py-3">{q.customer.name}<Show what="phones"><a href={`tel:${q.customer.phone}`} className="block text-xs text-zinc-500 hover:text-amber-600">{q.customer.phone}</a></Show></td>
                       <td className="px-4 py-3 whitespace-nowrap text-zinc-600 dark:text-zinc-400">{formatInvoiceDate(q.date)}</td>
                       <td className="px-4 py-3 text-right font-semibold whitespace-nowrap">{rs(q.totalPaise)}</td>
                       <td className="px-4 py-3 whitespace-nowrap text-zinc-600 dark:text-zinc-400">{q.validUntil ? formatInvoiceDate(q.validUntil) : "—"}</td>
