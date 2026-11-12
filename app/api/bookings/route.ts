@@ -1,3 +1,4 @@
+import { clientIp, rateLimited, TOO_MANY } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -37,6 +38,8 @@ async function materializeVirtualSlot(virtualId: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
+  // a request to book holds a date and messages the owner, so one visitor cannot make them without end
+  if (rateLimited(`book:${clientIp(req)}`, 15, 60 * 60_000)) return NextResponse.json(TOO_MANY, { status: 429 });
   await releaseExpiredHolds();
 
   const body = await req.json().catch(() => null);
@@ -45,7 +48,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
 
-  let { hallSlotId, guestName, guestPhone, guestEmail, guestAddress, addons: addonPicks } = parsed.data;
+  const { guestName, guestPhone, guestEmail, guestAddress, addons: addonPicks } = parsed.data;
+  let { hallSlotId } = parsed.data;
 
   if (hallSlotId.startsWith(VIRTUAL_PREFIX) || hallSlotId.startsWith(BLOCKED_PREFIX)) {
     try {

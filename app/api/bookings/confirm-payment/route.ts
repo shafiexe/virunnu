@@ -1,13 +1,13 @@
 import { todayISO } from "@/lib/booking-ledger";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import crypto from "crypto";
 import { db } from "@/lib/db";
 import { splitGST } from "@/lib/gst";
 import { releaseExpiredHolds } from "@/services/booking.service";
 import { notifyBookingConfirmed } from "@/services/notification.service";
 import { getSession } from "@/lib/session";
 import { resolveAddons } from "@/lib/venue-addons";
+import { checkOnlineAmount, confirmWithRazorpay, PaymentRefused, refundPayment, signatureMatches } from "@/lib/online-payment";
 
 const VIRTUAL_PREFIX = "virtual_";
 const BLOCKED_PREFIX = "blocked_";
@@ -67,24 +67,30 @@ export async function POST(req: NextRequest) {
     amountPaise, isFullPayment, addons: addonPicks,
   } = parsed.data;
 
-  // Verify Razorpay signature
-  const secret = process.env.RAZORPAY_KEY_SECRET ?? "placeholder";
-  const expectedSig = crypto
-    .createHmac("sha256", secret)
-    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-    .digest("hex");
-
-  if (process.env.RAZORPAY_KEY_SECRET && expectedSig !== razorpaySignature) {
-    return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
+  // The payment must be proved, and on a live site a missing secret means "refuse", never "skip the check"
+  const secret = process.env.RAZORPAY_KEY_SECRET;
+  let proven = false; // set once Razorpay itself has said the money arrived
+  if (!secret && process.env.NODE_ENV === "production") return NextResponse.json({ error: "Online payments are not set up" }, { status: 503 });
+  if (secret) {
+    if (!signatureMatches(secret, razorpayOrderId, razorpayPaymentId, razorpaySignature)) return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
+    // and Razorpay itself says this money arrived, for this order, for exactly this amount
+    try { await confirmWithRazorpay({ orderId: razorpayOrderId, paymentId: razorpayPaymentId, amountPaise, slotId: rawSlotId }); }
+    catch (e) { if (e instanceof PaymentRefused) return NextResponse.json({ error: e.message }, { status: e.status }); console.error("[confirm-payment] razorpay lookup failed", e); return NextResponse.json({ error: "Could not confirm the payment right now" }, { status: 502 }); }
+    proven = true;
   }
+  // the customer is told the truth: money taken for a booking we could not make is refunded, and they are told so
+  const refundAndSay = async (why: string, status: number, message: string) => {
+    const refunded = proven ? await refundPayment(razorpayPaymentId, amountPaise, why) : false;
+    return NextResponse.json({ error: refunded ? `${message} Your payment has been refunded and should reach you in 5 to 7 working days.` : `${message} If money was taken from you, it will be refunded; call the venue if you do not hear back.` }, { status });
+  };
 
   let hallSlotId: string;
   try {
     hallSlotId = await resolveSlotId(rawSlotId);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "";
-    if (msg === "SLOT_NOT_FOUND") return NextResponse.json({ error: "Slot not found" }, { status: 404 });
-    return NextResponse.json({ error: "Slot unavailable" }, { status: 409 });
+    if (msg === "SLOT_NOT_FOUND") return refundAndSay("slot missing", 404, "That slot could not be found.");
+    return refundAndSay("slot taken", 409, "Sorry, that date is no longer available.");
   }
 
   try {
@@ -106,6 +112,9 @@ export async function POST(req: NextRequest) {
       const { totalPaise: hallPaise } = splitGST(slot.priceOverride ?? slot.hall.pricePerSlot);
       const extras = await resolveAddons(tx, slot.hall.venue.id, addonPicks);
       const totalPaise = hallPaise + extras.totalPaise;
+      // what was paid must be what the venue's own rules allow for this total: no paying ₹1 for a hall, no "full payment" of a part
+      const problem = checkOnlineAmount({ isFullPayment, amountPaise, totalPaise, minimumAdvancePaise: slot.hall.minimumAdvancePaise, requireFullPayment: slot.hall.requireFullPayment });
+      if (problem) throw new PaymentRefused(problem);
       const bookingStatus = isFullPayment ? "CONFIRMED" : "ADVANCE_PAID";
 
       const booking = await tx.booking.create({
@@ -170,10 +179,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ bookingId: result.bookingId }, { status: 201 });
   } catch (err) {
+    if (err instanceof PaymentRefused) return refundAndSay("amount not allowed", err.status, err.message + ".");
     const msg = err instanceof Error ? err.message : "";
-    if (msg === "SLOT_UNAVAILABLE") return NextResponse.json({ error: "Slot no longer available" }, { status: 409 });
-    if (msg === "SLOT_NOT_FOUND") return NextResponse.json({ error: "Slot not found" }, { status: 404 });
-    if (msg === "ADDON_UNAVAILABLE") return NextResponse.json({ error: "An add-on you picked is no longer available. A refund will be issued automatically." }, { status: 400 });
+    if (msg === "SLOT_UNAVAILABLE") return refundAndSay("slot taken", 409, "Sorry, that slot was just taken by someone else.");
+    if (msg === "SLOT_NOT_FOUND") return refundAndSay("slot missing", 404, "That slot could not be found.");
+    if (msg === "ADDON_UNAVAILABLE") return refundAndSay("add-on gone", 400, "An add-on you picked is no longer available.");
     throw err;
   }
 }

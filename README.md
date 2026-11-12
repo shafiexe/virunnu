@@ -103,3 +103,11 @@ Hall and caterer photos are uploaded from the phone or computer, or added as a l
 - **Where they live.** If a Vercel Blob store is connected to the project, photos go there and are served from its CDN. Connect it in Vercel → Storage → Create → Blob → Connect Project; Vercel adds `BLOB_READ_WRITE_TOKEN` itself. Without a store, photos are kept in the database (table `StoredImage`, served at `/api/img/<id>`), which needs no set-up.
 - **Photos already saved as links.** Run `npx tsx --env-file=.env scripts/import-photo-links.ts` once, against the database you want to fix. It is safe to repeat.
 - **Links we cannot copy** (the other site blocks us, or it is not a photo) are still kept as links, and the person is told, as before.
+
+## Before going live: security checklist
+
+- **Payments fail closed.** On a live site, `RAZORPAY_KEY_SECRET` and `RAZORPAY_WEBHOOK_SECRET` must be set (in Razorpay's live mode), and `CRON_SECRET` too. If one is missing the matching feature refuses to work, rather than trusting everyone.
+- **The server decides what is paid.** The browser only says which slot and which add-ons; the total, the allowed advance and whether the money really arrived are worked out on the server and checked with Razorpay. Money taken for a booking that cannot be made is refunded automatically (a failed refund is logged as `[refund-failed]` and needs doing by hand in Razorpay).
+- **Rate limits** on sign-in (wrong attempts only), password reset, OTP, public enquiries and booking requests, AI search and map look-ups. They are per server instance, so on serverless they slow casual abuse but are not a hard guarantee. For one, put a shared limiter (for example Upstash) or Vercel's firewall in front.
+- **Links people paste** (photo links, websites for AI fill) are fetched only after the address is checked to be public, and every redirect is checked again.
+- **Run the sweeps** after changes: `pnpm e2e` includes an API access sweep (every endpoint as a visitor and as the other kind of account), a two-account isolation check, a page crawl for errors, and an accessibility scan.

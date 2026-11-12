@@ -32,7 +32,7 @@ export async function renderVenueInvoicePdf(d: VenueInvoiceData, logo?: Buffer |
 
   // header
   let y = 48;
-  let tx = L;
+  const tx = L;
   if (logo) { try { doc.image(logo, L, y, { fit: [150, 56] }); y += 62; } catch { /* unreadable picture: skip it */ } }
   text(d.business, tx, y, { w: 300, size: 13, bold: true, color: "#3f3f46" });
   text(d.venueName, tx, y + 17, { w: 300, size: 9, color: GREY });

@@ -201,6 +201,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
       {/* Year selector */}
       <div className="flex justify-end">
         <select
+          aria-label="Year"
           value={year}
           onChange={(e) => router.push(`${pathname}?year=${e.target.value}`)}
           className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-400"

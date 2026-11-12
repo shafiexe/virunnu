@@ -1,3 +1,4 @@
+import { fetchGuarded } from "@/lib/safe-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import Anthropic from "@anthropic-ai/sdk";
@@ -63,14 +64,13 @@ async function fetchPageText(url: string): Promise<string> {
   } catch { /* fall through to direct fetch */ }
 
   // Fallback: direct fetch + HTML extraction
-  const response = await fetch(url, {
+  const response = await fetchGuarded(url, {
     headers: {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
       "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
       "Accept-Language": "en-US,en;q=0.9",
     },
-    redirect: "follow",
-    signal: AbortSignal.timeout(10000),
+    timeoutMs: 10000,
   });
   const html = await response.text();
   return extractFromHtml(html);

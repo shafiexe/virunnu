@@ -242,7 +242,7 @@ export function ExpenseManager({
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.get("add") === "1") { url.searchParams.delete("add"); window.history.replaceState(null, "", url.pathname + url.search); openAdd(); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   // A photo of a bill fills in the form for the person to check. The photo itself is not kept.

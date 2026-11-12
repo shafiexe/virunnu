@@ -4,6 +4,8 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
 import { isTestEmail } from "@/lib/test-address";
+import { randomInt } from "crypto";
+import { clearFailures, clientIp, rateLimited, recordFailure, TOO_MANY, tooManyFailures } from "@/lib/rate-limit";
 
 const schema = z.object({
   phone: z.string().min(1),
@@ -11,7 +13,7 @@ const schema = z.object({
 
 function generatePassword(len = 10) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
-  return Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  return Array.from({ length: len }, () => chars[randomInt(chars.length)]).join("");
 }
 
 export async function POST(req: NextRequest) {
@@ -20,6 +22,9 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
 
   const normalized = parsed.data.phone.startsWith("+") ? parsed.data.phone : `+91${parsed.data.phone}`;
+
+  // anyone can ask for this, and it replaces a password and sends a message, so it is limited per number and per address
+  if (rateLimited(`reset:${normalized}`, 3, 60 * 60_000) || rateLimited(`reset-ip:${clientIp(req)}`, 15, 60 * 60_000)) return NextResponse.json({ ok: true });
 
   const user = await db.user.findUnique({
     where: { phone: normalized },

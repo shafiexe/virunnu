@@ -1,3 +1,4 @@
+import { clientIp, rateLimited } from "@/lib/rate-limit";
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
@@ -56,6 +57,8 @@ Rules:
 - Respond ONLY with valid JSON, no markdown, no explanation`;
 
 export async function POST(req: NextRequest) {
+  // each search is a paid AI call
+  if (rateLimited(`search:${clientIp(req)}`, 40, 60 * 60_000)) return NextResponse.json({ valid: false, message: "Too many searches. Please try again in a little while." }, { status: 429 });
   const body = await req.json().catch(() => null);
   const query: string = typeof body?.query === "string" ? body.query.trim() : "";
 

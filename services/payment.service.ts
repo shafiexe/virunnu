@@ -54,12 +54,13 @@ async function resolveSlotId(id: string): Promise<string> {
 }
 
 export async function handleWebhook(body: string, signature: string): Promise<void> {
-  if (process.env.RAZORPAY_WEBHOOK_SECRET) {
-    const expected = crypto
-      .createHmac("sha256", process.env.RAZORPAY_WEBHOOK_SECRET)
-      .update(body)
-      .digest("hex");
-    if (expected !== signature) throw new Error("INVALID_SIGNATURE");
+  // On a live site a webhook that cannot be proved genuine is refused, never trusted
+  const whSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+  if (!whSecret && process.env.NODE_ENV === "production") throw new Error("WEBHOOK_NOT_CONFIGURED");
+  if (whSecret) {
+    const expected = Buffer.from(crypto.createHmac("sha256", whSecret).update(body).digest("hex"));
+    const got = Buffer.from(signature);
+    if (expected.length !== got.length || !crypto.timingSafeEqual(expected, got)) throw new Error("INVALID_SIGNATURE");
   }
 
   const event = JSON.parse(body);
@@ -78,7 +79,8 @@ export async function handleWebhook(body: string, signature: string): Promise<vo
   const guestPhone: string = notes?.guestPhone ?? "";
   const guestEmail: string | null = notes?.guestEmail || null;
   const guestAddress: string | null = notes?.guestAddress || null;
-  const isFullPayment: boolean = notes?.isFullPayment === "1";
+  // "full payment" is decided below from what was actually paid against the real total, not from notes the browser wrote
+  let isFullPayment = false;
 
   if (!rawSlotId || !guestPhone) {
     console.error("[webhook] Missing booking notes on order", razorpayOrderId);
@@ -106,6 +108,7 @@ export async function handleWebhook(body: string, signature: string): Promise<vo
     });
 
     const { totalPaise } = splitGST(slot.priceOverride ?? slot.hall.pricePerSlot);
+    isFullPayment = amountPaise >= totalPaise;
     const bookingStatus = isFullPayment ? BookingStatus.CONFIRMED : BookingStatus.ADVANCE_PAID;
 
     const booking = await tx.booking.create({

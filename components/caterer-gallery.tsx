@@ -21,7 +21,7 @@ export function CatererGallery({ photos, name }: { photos: string[]; name: strin
 
   return (
     <div className="relative">
-      <div ref={row} onScroll={(e) => { const el = e.currentTarget; setAt(Math.round(el.scrollLeft / el.clientWidth)); }}
+      <div ref={row} role="region" aria-label="Photos" tabIndex={0} onScroll={(e) => { const el = e.currentTarget; setAt(Math.round(el.scrollLeft / el.clientWidth)); }}
         className="flex overflow-x-auto snap-x snap-mandatory rounded-2xl bg-zinc-100 dark:bg-zinc-800 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {shown.map((url, i) => (
           <div key={url} className="relative w-full shrink-0 snap-center aspect-[16/10] sm:aspect-[16/9] lg:aspect-[5/2]">

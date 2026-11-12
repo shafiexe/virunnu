@@ -1,3 +1,4 @@
+import { deleteOrgImages } from "@/lib/image-store";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
@@ -106,5 +107,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 
+  // the activity list and the photos had no link to the organisation to follow, so they are cleared here
+  await db.activityLog.deleteMany({ where: { orgId } });
+  await deleteOrgImages(orgId);
   return NextResponse.json({ ok: true });
 }

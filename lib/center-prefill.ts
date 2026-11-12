@@ -1,3 +1,4 @@
+import { fetchGuarded } from "@/lib/safe-fetch";
 import Anthropic from "@anthropic-ai/sdk";
 import { fetchPageText, fetchSiteDetails, type SiteDetails } from "@/lib/fetch-page-text";
 import { parseGoogleMapsCoords } from "@/lib/maps";
@@ -81,7 +82,7 @@ export async function resolveMapsCoords(url: string): Promise<{ lat: number; lng
   if (direct) return direct;
   if (!/goo\.gl|maps\.app|google\.[a-z.]+\/maps/i.test(url)) return null;
   try {
-    const res = await fetch(url, { redirect: "follow", signal: AbortSignal.timeout(8000) });
+    const res = await fetchGuarded(url, { timeoutMs: 8000 });
     return parseGoogleMapsCoords(res.url) ?? null;
   } catch {
     return null;

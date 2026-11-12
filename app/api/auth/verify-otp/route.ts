@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { verifyOtp } from "@/services/auth.service";
 import { setSession } from "@/lib/session";
+import { clearFailures, clientIp, rateLimited, recordFailure, TOO_MANY, tooManyFailures } from "@/lib/rate-limit";
 
 const schema = z.object({
   phone: z.string(),
@@ -16,9 +17,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
+  const otpKey = `otp:${parsed.data.phone}`;
+  if (tooManyFailures(otpKey, 6, 15 * 60_000)) return NextResponse.json(TOO_MANY, { status: 429 });
   const result = await verifyOtp(parsed.data.phone, parsed.data.code);
 
   if (!result) {
+    recordFailure(otpKey, 15 * 60_000);
     return NextResponse.json({ error: "Invalid or expired OTP" }, { status: 401 });
   }
 
