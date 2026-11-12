@@ -115,8 +115,8 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
               {!loading && orders.length === 0 && (
                 <tr><td colSpan={7}>
                   {searchInput || status !== "ALL"
-                    ? <EmptyState icon={SearchX} title="No orders match" hint="Try a different word, or look at all orders." actions={[{ href: "/caterer/orders", label: "Show all orders", primary: false }]} />
-                    : <EmptyState icon={ClipboardList} title="No orders yet" hint="Add your first function. Customers, invoices and balances are filed for you as you go." actions={[{ href: "/caterer/orders/new", label: "New order" }, { href: "/caterer/quotes/new", label: "Send a quotation first", primary: false }]} />}
+                    ? <EmptyState inTable icon={SearchX} title="No orders match" hint="Try a different word, or look at all orders." actions={[{ href: "/caterer/orders", label: "Show all orders", primary: false }]} />
+                    : <EmptyState inTable icon={ClipboardList} title="No orders yet" hint="Add your first function. Customers, invoices and balances are filed for you as you go." actions={[{ href: "/caterer/orders/new", label: "New order" }, { href: "/caterer/quotes/new", label: "Send a quotation first", primary: false }]} />}
                 </td></tr>
               )}
               {!loading && orders.map((o) => {

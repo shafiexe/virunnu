@@ -85,7 +85,7 @@ export default async function CatererPurchasesPage({ searchParams }: { searchPar
               <tr><th className="px-4 py-3 text-left">Date</th><th className="px-4 py-3 text-left">Supplier</th><th className="px-4 py-3 text-left">Bought by</th><th className="px-4 py-3 text-left">For function</th><th className="px-4 py-3 text-right">Total</th><th className="px-4 py-3 text-right">Due</th></tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-              {count === 0 && <tr><td colSpan={6}><EmptyState icon={ShoppingCart} title={`No purchases in ${label}`} hint="Record what the team buys for the kitchen: who bought it, from which supplier, and whether it is paid. Tie it to a function to see that function's profit." actions={[{ href: "/caterer/purchases/new", label: "Record purchase" }]} /></td></tr>}
+              {count === 0 && <tr><td colSpan={6}><EmptyState inTable icon={ShoppingCart} title={`No purchases in ${label}`} hint="Record what the team buys for the kitchen: who bought it, from which supplier, and whether it is paid. Tie it to a function to see that function's profit." actions={[{ href: "/caterer/purchases/new", label: "Record purchase" }]} /></td></tr>}
               {purchases.map((p) => {
                 const due = p.totalPaise - p.paidPaise;
                 return (

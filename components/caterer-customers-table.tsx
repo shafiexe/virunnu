@@ -83,8 +83,8 @@ export function CatererCustomersTable({ customers, totalCustomers, totalDuePaise
               {list.length === 0 && (
                 <tr><td colSpan={7}>
                   {totalCustomers === 0
-                    ? <EmptyState icon={Users2} title="No customers yet" hint="Customers are filed automatically when you save an order or a quotation, so you never type them twice." actions={[{ href: "/caterer/orders/new", label: "New order" }]} />
-                    : <EmptyState icon={SearchX} title="No customers match" hint="Check the spelling, or clear the search and the balance filter." />}
+                    ? <EmptyState inTable icon={Users2} title="No customers yet" hint="Customers are filed automatically when you save an order or a quotation, so you never type them twice." actions={[{ href: "/caterer/orders/new", label: "New order" }]} />
+                    : <EmptyState inTable icon={SearchX} title="No customers match" hint="Check the spelling, or clear the search and the balance filter." />}
                 </td></tr>
               )}
               {list.map((c) => (
