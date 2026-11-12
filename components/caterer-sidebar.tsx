@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, ClipboardList, Users2, Package, Receipt,
-  UtensilsCrossed, ChevronRight, Wallet, BarChart3, BookOpen, ShoppingCart, Truck, ShieldCheck, MessageSquare, History,
+  UtensilsCrossed, ChevronRight, Wallet, BarChart3, BookOpen, ShoppingCart, Truck, Settings,
 } from "lucide-react";
 import { canOpen } from "@/lib/caterer-access";
 import { AccessProvider } from "@/components/access-context";
@@ -39,26 +39,39 @@ export const CATERER_NAV_GROUPS = [
     items: [
       { href: "/caterer/customers", icon: Users2, label: "Parties", also: ["/caterer/followup", "/caterer/suppliers", "/caterer/staff"] },
       { href: "/caterer/items", icon: Package, label: "Menu & Prices", also: [] as string[] },
-      { href: "/caterer/profile", icon: UtensilsCrossed, label: "Service Profile", also: [] as string[] },
-      { href: "/caterer/messages", icon: MessageSquare, label: "Messages", also: [] as string[] },
     ],
   },
 ];
 
-// What this person sees in the menu: items hidden from them are left out, and only the main owner gets Team logins
-export function navFor(deny: readonly string[] | undefined, mainOwner: boolean) {
-  return CATERER_NAV_GROUPS.map((g) => ({
-    ...g,
-    items: [...g.items, ...(g.title === "Lists" && mainOwner ? [{ href: "/caterer/team", icon: ShieldCheck, label: "Team logins", also: [] as string[] }, { href: "/caterer/activity", icon: History, label: "Activity", also: [] as string[] }] : [])]
-      .map((i) => ({ ...i, href: [i.href, ...i.also].find((h) => canOpen(deny, h)) ?? "" }))
-      .filter((i) => i.href),
-  })).filter((g) => g.items.length > 0);
+// Settings gathers the set-up pages that are not daily work; each keeps its own address and its own permission
+export const SETTINGS_TABS = [
+  { href: "/caterer/profile", label: "Profile", mainOwnerOnly: false },
+  { href: "/caterer/messages", label: "Messages", mainOwnerOnly: false },
+  { href: "/caterer/team", label: "Team logins", mainOwnerOnly: true },
+  { href: "/caterer/activity", label: "Activity", mainOwnerOnly: true },
+];
+
+export const settingsTabsFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>
+  SETTINGS_TABS.filter((t) => (mainOwner || !t.mainOwnerOnly) && canOpen(deny, t.href));
+
+export const inSettings = (pathname: string) => SETTINGS_TABS.some((t) => pathname === t.href || pathname.startsWith(t.href + "/"));
+
+type NavItem = { href: string; icon: typeof Settings; label: string; also: string[]; settings?: boolean };
+
+// What this person sees in the menu: items hidden from them are left out. Settings opens on the first set-up page they may use.
+export function navFor(deny: readonly string[] | undefined, mainOwner: boolean): { title: string; items: NavItem[] }[] {
+  const groups = CATERER_NAV_GROUPS.map((g) => ({
+    title: g.title,
+    items: (g.items as NavItem[]).map((i) => ({ ...i, href: [i.href, ...i.also].find((h) => canOpen(deny, h)) ?? "" })).filter((i) => i.href),
+  }));
+  const first = settingsTabsFor(deny, mainOwner)[0];
+  return [...groups, ...(first ? [{ title: "Setup", items: [{ href: first.href, icon: Settings, label: "Settings", also: [], settings: true }] }] : [])].filter((g) => g.items.length > 0);
 }
 
 export const CATERER_NAV = CATERER_NAV_GROUPS.flatMap((g) => g.items);
 
-const isActive = (pathname: string, href: string, also: string[] = []) =>
-  [href, ...also].some((h) => pathname === h || pathname.startsWith(h + "/"));
+const isActive = (pathname: string, href: string, also: string[] = [], settings = false) =>
+  settings ? inSettings(pathname) : [href, ...also].some((h) => pathname === h || pathname.startsWith(h + "/"));
 
 export function CatererSidebar({ pendingEnquiries = 0, logoUrl, name, deny, mainOwner = true }: { pendingEnquiries?: number; logoUrl?: string | null; name?: string; deny?: string[]; mainOwner?: boolean }) {
   const pathname = usePathname();
@@ -79,8 +92,8 @@ export function CatererSidebar({ pendingEnquiries = 0, logoUrl, name, deny, main
       {navFor(deny, mainOwner).map((group) => (
         <div key={group.title} className="pb-1.5">
           <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{group.title}</div>
-          {group.items.map(({ href, icon: Icon, label, also }) => {
-            const active = isActive(pathname, href, also);
+          {group.items.map(({ href, icon: Icon, label, also, settings }) => {
+            const active = isActive(pathname, href, also, settings);
             return (
               <Link
                 key={href}
@@ -109,16 +122,19 @@ export function CatererSidebar({ pendingEnquiries = 0, logoUrl, name, deny, main
 
 export function CatererTopTabs({ pendingEnquiries = 0, deny, mainOwner = true }: { pendingEnquiries?: number; deny?: string[]; mainOwner?: boolean }) {
   const pathname = usePathname();
+  // keep the current tab in view when the row is wider than the phone
+  useEffect(() => { document.querySelector("[data-caterer-tab-active]")?.scrollIntoView({ inline: "center", block: "nearest" }); }, [pathname]);
   return (
     <nav className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-x-auto">
       <div className="flex min-w-max px-2">
         <CatererQuickFind variant="icon" />
-        {navFor(deny, mainOwner).flatMap((g) => g.items).map(({ href, icon: Icon, label, also }) => {
-          const active = isActive(pathname, href, also);
+        {navFor(deny, mainOwner).flatMap((g) => g.items).map(({ href, icon: Icon, label, also, settings }) => {
+          const active = isActive(pathname, href, also, settings);
           return (
             <Link
               key={href}
               href={href}
+              data-caterer-tab-active={active ? "" : undefined}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-3 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap",
                 active
@@ -152,11 +168,35 @@ export function CatererShell({ children, pendingEnquiries, logoUrl, name, upiId,
         <CatererSidebar pendingEnquiries={pendingEnquiries} logoUrl={logoUrl} name={name} deny={deny} mainOwner={mainOwner} />
         <div className="flex-1 flex flex-col min-w-0">
           <CatererTopTabs pendingEnquiries={pendingEnquiries} deny={deny} mainOwner={mainOwner} />
+          <CatererSettingsTabs deny={deny} mainOwner={mainOwner} />
           <div className="flex-1">{children}</div>
         </div>
       </div>
       <CatererNewMenu variant="fab" deny={deny} />
       </AccessProvider>
     </ToastProvider>
+  );
+}
+
+// The row of set-up pages, shown on top of each of them
+export function CatererSettingsTabs({ deny, mainOwner = true }: { deny?: string[]; mainOwner?: boolean }) {
+  const pathname = usePathname();
+  if (!inSettings(pathname)) return null;
+  const tabs = settingsTabsFor(deny, mainOwner);
+  if (tabs.length < 2) return null;
+  return (
+    <nav aria-label="Settings" className="w-full border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 overflow-x-auto">
+      <div className="mx-auto flex min-w-max max-w-3xl gap-1.5 px-4 py-2.5">
+        {tabs.map((t) => {
+          const active = pathname === t.href || pathname.startsWith(t.href + "/");
+          return (
+            <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined}
+              className={cn("whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-medium transition-colors", active ? "bg-amber-500 text-white" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800")}>
+              {t.label}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

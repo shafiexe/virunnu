@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2, CalendarCheck, Inbox, Settings } from "lucide-react";
 import { inSettings, settingsTabsFor } from "@/components/owner-sidebar";
+import { inSettings as catererInSettings, settingsTabsFor as catererSettingsTabsFor } from "@/components/caterer-sidebar";
 import { canOpen } from "@/lib/caterer-access";
 import { canOpenOwner } from "@/lib/owner-access";
 import { cn } from "@/lib/utils";
@@ -53,19 +54,21 @@ export function BottomNav() {
           { href: "/caterer/calendar", icon: CalendarDays, label: "Calendar" },
           { href: "/caterer/orders", icon: UtensilsCrossed, label: "Orders" },
           { href: "/caterer/customers", icon: Users2, label: "Parties" },
+          // Settings opens on the first set-up page this person may use
+          { href: catererSettingsTabsFor(session?.deny, !(session as { tm?: boolean } | null)?.tm)[0]?.href ?? "/caterer/profile", icon: Settings, label: "Settings", settings: true },
         ]
       : role === "ADMIN"
       ? [
           { href: "/admin", icon: Shield, label: "Admin" },
         ]
       : [];
-  const shown = links.filter((l) => (role === "CATERER" ? canOpen(session?.deny, l.href) : role === "OWNER" ? (l.settings ? settingsTabsFor(session?.deny, !(session as { tm?: boolean } | null)?.tm).length > 0 : canOpenOwner(session?.deny, l.href)) : true));
+  const shown = links.filter((l) => (role === "CATERER" ? (l.settings ? catererSettingsTabsFor(session?.deny, !(session as { tm?: boolean } | null)?.tm).length > 0 : canOpen(session?.deny, l.href)) : role === "OWNER" ? (l.settings ? settingsTabsFor(session?.deny, !(session as { tm?: boolean } | null)?.tm).length > 0 : canOpenOwner(session?.deny, l.href)) : true));
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-zinc-100 dark:border-zinc-800 bg-white/98 dark:bg-zinc-900/98 backdrop-blur-md md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="flex items-stretch h-16">
         {shown.map(({ href, icon: Icon, label, settings }) => {
-          const active = settings ? inSettings(pathname) : pathname === href || (href !== "/" && pathname.startsWith(href));
+          const active = settings ? (role === "CATERER" ? catererInSettings(pathname) : inSettings(pathname)) : pathname === href || (href !== "/" && pathname.startsWith(href));
           return (
             <Link
               key={href}
