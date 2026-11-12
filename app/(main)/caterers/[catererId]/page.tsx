@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
-import { MapPin, Phone, Globe, Link2, Star } from "lucide-react";
+import { MapPin, Phone, Globe, Link2, Share2, Star } from "lucide-react";
 import { LinkedinIcon, XIcon } from "@/components/social-icons";
 import { CatererEnquiryForm } from "@/components/caterer-enquiry-form";
 import { orgLogoUrl } from "@/lib/org-logo";
 import { toMenuDish } from "@/lib/caterer-items";
 import { CatererGallery } from "@/components/caterer-gallery";
 import { CatererStickyCta } from "@/components/caterer-sticky-cta";
+import { ClampText } from "@/components/clamp-text";
+import { ChipRow } from "@/components/chip-row";
+import { getAppUrl } from "@/lib/app-url";
 
 const SERVICE_LABELS: Record<string, string> = {
   FOOD: "🍽️ Food & Catering",
@@ -88,7 +91,7 @@ export default async function CatererPublicPage({
         <div className="flex items-center gap-3">
           {logoUrl
             // eslint-disable-next-line @next/next/no-img-element
-            ? <img src={logoUrl} alt={`${caterer.name} logo`} className="h-14 w-14 shrink-0 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white object-contain p-1" />
+            ? <img src={logoUrl} alt={`${caterer.name} logo`} className="h-20 w-20 shrink-0 rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-white object-contain p-1.5 shadow-sm" />
             : null}
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{caterer.name}</h1>
         </div>
@@ -108,9 +111,7 @@ export default async function CatererPublicPage({
             {guestLine ? <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{guestLine}</span> : null}
           </div>
         )}
-        {caterer.description && (
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{caterer.description}</p>
-        )}
+        {caterer.description && <ClampText text={caterer.description} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed" />}
       </div>
 
       {/* Quick facts */}
@@ -127,13 +128,8 @@ export default async function CatererPublicPage({
 
       {/* Services */}
       {caterer.services.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {caterer.services.map((s) => (
-            <span key={s} className="text-xs font-medium px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-              {SERVICE_LABELS[s] ?? s}
-            </span>
-          ))}
-        </div>
+        <ChipRow show={4} items={caterer.services.map((k) => ({ key: k, label: SERVICE_LABELS[k] ?? k }))}
+          chipClass="text-xs font-medium px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800" />
       )}
 
       {/* Cuisines */}
@@ -165,6 +161,10 @@ export default async function CatererPublicPage({
             💬 WhatsApp
           </a>
         )}
+        <a href={`https://wa.me/?text=${encodeURIComponent(`${caterer.name}: ${getAppUrl()}/caterers/${caterer.id}`)}`} target="_blank" rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-500 hover:text-emerald-600 transition-colors">
+          <Share2 className="h-3.5 w-3.5" /> Share
+        </a>
         {caterer.instagramUrl && (
           <a href={caterer.instagramUrl} target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-500 hover:text-pink-600 transition-colors">

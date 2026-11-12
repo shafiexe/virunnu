@@ -418,7 +418,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
       {/* Calendar grid */}
       <div className={cn("grid grid-cols-7 gap-px bg-zinc-100 dark:bg-zinc-800 rounded-xl overflow-hidden border border-zinc-100 dark:border-zinc-800 transition-opacity", loading && "opacity-50")}>
         {cells.map((day, i) => {
-          if (!day) return <div key={`empty-${i}`} className="bg-white dark:bg-zinc-900 min-h-[72px]" />;
+          if (!day) return <div key={`empty-${i}`} className="bg-white dark:bg-zinc-900 min-h-[56px]" />;
           const dayKey = formatDay(day);
           const entries = dayMap.get(dayKey) ?? [];
           const allSlots = entries.flatMap((e) => e.slots);
@@ -433,7 +433,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
             <button key={dayKey} type="button" disabled={!isClickable}
               onClick={() => handleDayClick(dayKey, status)}
               className={cn(
-                "relative flex flex-col items-start pt-1.5 pb-1.5 px-1 min-h-[72px] transition-colors text-left bg-white dark:bg-zinc-900",
+                "relative flex flex-col items-start pt-1.5 pb-1.5 px-1 min-h-[56px] transition-colors text-left bg-white dark:bg-zinc-900",
                 isPast ? "opacity-30 cursor-default"
                   : isSelected ? "bg-amber-50 dark:bg-amber-950/30"
                   : allHeld ? "bg-orange-50/60 dark:bg-orange-950/20 hover:bg-orange-50 dark:hover:bg-orange-950/30 cursor-pointer"
@@ -446,20 +446,15 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                   : isSelected ? "bg-amber-500 text-white font-bold"
                   : "text-zinc-800 dark:text-zinc-200"
               )}>{day.getDate()}</span>
-              {!isPast && allSlots.map((slot) => (
-                <div key={slot.id} className={cn(
-                  "flex items-center gap-0.5 w-full rounded px-0.5 py-px mb-px",
-                  slot.status === "AVAILABLE" ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-zinc-100 dark:bg-zinc-800"
-                )}>
-                  <span className={cn("w-1.5 h-1.5 rounded-full shrink-0",
-                    slot.status === "AVAILABLE" ? "bg-emerald-500"
-                    : slot.status === "HELD" ? "bg-amber-400" : "bg-zinc-400"
-                  )} />
-                  <span className={cn("text-[9px] font-medium truncate",
-                    slot.status === "AVAILABLE" ? "text-emerald-700 dark:text-emerald-400" : "text-zinc-400 dark:text-zinc-500"
-                  )}>{slot.template.name}</span>
+              {!isPast && allSlots.length > 0 && (
+                <div className="flex w-full items-center justify-center gap-1 pt-0.5" title={allSlots.map((sl) => `${sl.template.name}: ${sl.status === "AVAILABLE" ? "available" : sl.status === "HELD" ? "on hold" : "booked"}`).join(", ")}>
+                  {allSlots.map((slot) => (
+                    <span key={slot.id} className={cn("h-2 w-2 rounded-full",
+                      slot.status === "AVAILABLE" ? "bg-emerald-500" : slot.status === "HELD" ? "bg-amber-400" : "bg-zinc-300 dark:bg-zinc-600"
+                    )} />
+                  ))}
                 </div>
-              ))}
+              )}
             </button>
           );
         })}
@@ -471,6 +466,8 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />On hold</span>
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-600 inline-block" />Booked</span>
       </div>
+
+      <p className="text-xs text-zinc-400">One dot per slot. Tap a date to see the slots and prices.</p>
 
       {/* Day slot panel */}
       {selectedDay && (
