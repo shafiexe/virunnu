@@ -73,7 +73,7 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
       >
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-          <span className="font-semibold text-zinc-900 dark:text-zinc-50">Contact Requests</span>
+          <span className="font-semibold text-zinc-900 dark:text-zinc-50">Requests to book</span>
           <span className="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">{bookings.length}</span>
         </div>
         {expanded ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}

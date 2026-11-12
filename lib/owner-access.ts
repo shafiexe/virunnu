@@ -30,6 +30,7 @@ const RULES: Rule[] = [
   [/^\/owner\/(team|activity)/, ["__owner"]], [/^\/api\/owner\/team/, ["__owner"]],
   [/^\/owner\/dashboard/, ["dashboard"]],
   [/^\/owner\/calendar/, ["calendar"]], [/^\/api\/owner\/(calendar|blocked-dates)/, ["calendar"]], [/^\/api\/owner\/hall-slots\/toggle-block/, ["calendar"]],
+  [/^\/owner\/enquiries/, ["bookings"]],
   [/^\/owner\/bookings/, ["bookings"]], [/^\/api\/owner\/bookings/, ["bookings"]],
   // bookings are also made, cancelled and paid through these shared routes
   [/^\/api\/bookings/, ["bookings"]], [/^\/api\/payments/, ["bookings"]],
@@ -54,5 +55,5 @@ export function canOpenOwner(deny: readonly string[] | undefined, href: string) 
   return !deny?.length || !keys.some((k) => deny.includes(k));
 }
 
-const FIRST_STOPS = ["/owner/dashboard", "/owner/calendar", "/owner/bookings", "/owner/customers", "/owner/venues", "/owner/expenses", "/owner/workflows"];
+const FIRST_STOPS = ["/owner/dashboard", "/owner/calendar", "/owner/enquiries", "/owner/bookings", "/owner/customers", "/owner/venues", "/owner/expenses", "/owner/workflows"];
 export const firstAllowedOwnerPage = (deny: readonly string[] | undefined) => FIRST_STOPS.find((p) => canOpenOwner(deny, p)) ?? null;

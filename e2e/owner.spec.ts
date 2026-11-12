@@ -39,3 +39,35 @@ test.describe("convention centre owner", () => {
     await expect(page.locator(`input[type="number"][placeholder="0"]`)).toHaveValue("25000");
   });
 });
+
+test.describe("enquiries tab", () => {
+  test("a Request to Book appears under Enquiries, not on the dashboard", async ({ browser }) => {
+    const { centre } = account();
+    const phoneCtx = await browser.newContext({ viewport: { width: 1100, height: 900 } });
+    const c = await phoneCtx.newPage();
+    await c.goto(`/venues/${centre.venueId}`);
+    const day = new Date(Date.now() + 40 * 86400_000);
+    // the calendar shows the current month; go forward until the chosen day is on screen
+    const label = day.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
+    for (let i = 0; i < 3 && !(await c.getByText(label, { exact: true }).first().isVisible()); i++) await c.getByRole("button", { name: "Next month" }).first().click();
+    await c.getByRole("button", { name: new RegExp(`^${day.getDate()}\\b`) }).first().click();
+    await c.getByText("Morning").first().click();
+    await c.getByRole("button", { name: /Request to Book/ }).click();
+    await c.getByPlaceholder("Mohammed Shafi").fill("Browser Requester");
+    await c.getByPlaceholder("+91 98765 43210").fill("9000000321");
+    await c.getByRole("button", { name: /Send booking request/ }).click();
+    await expect(c.getByText(/request/i).first()).toBeVisible();
+    await phoneCtx.close();
+
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await signIn(ctx, centre.phone, centre.password);
+    const o = await ctx.newPage();
+    await o.goto("/owner/dashboard");
+    await expect(o.getByText("Requests to book")).toHaveCount(0);
+    await o.getByRole("link", { name: /Enquiries/ }).first().click();
+    await expect(o).toHaveURL(/\/owner\/enquiries/);
+    await expect(o.getByText("Requests to book")).toBeVisible();
+    await expect(o.getByText("Browser Requester")).toBeVisible();
+    await ctx.close();
+  });
+});
