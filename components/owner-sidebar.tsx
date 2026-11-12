@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, CalendarCheck,
-  Users2, Inbox, Settings, ChevronRight, Receipt,
+  Users2, Inbox, Settings, ChevronRight, Receipt, BarChart3,
 } from "lucide-react";
 import { CatererQuickFind } from "@/components/caterer-quick-find";
 import { OwnerNewMenu } from "@/components/owner-new-menu";
@@ -33,6 +33,7 @@ const NAV: NavItem[] = [
   { href: "/owner/bookings", icon: CalendarCheck, label: "Bookings" },
   { href: "/owner/customers", icon: Users2, label: "Customers" },
   { href: "/owner/expenses", icon: Receipt, label: "Expenses" },
+  { href: "/owner/reports", icon: BarChart3, label: "Reports" },
 ];
 
 // What this person sees: items hidden from them are left out; Settings opens on the first set-up page they may use

@@ -13,6 +13,7 @@ export const OWNER_ACCESS_TREE: AccessGroup[] = [
     { key: "venues", label: "Settings: Venue", hint: "Halls, slots and prices, photos, amenities, add-ons, GST" },
   ] },
   { title: "Money", items: [
+    { key: "reports", label: "Reports", hint: "Month-end summary, GST and profit, Excel export" },
     { key: "expenses", label: "Expenses", tabs: [{ key: "expenses.categories", label: "Categories" }, { key: "expenses.staff", label: "Staff" }] },
   ] },
   { title: "Private details", items: [
@@ -37,6 +38,7 @@ const RULES: Rule[] = [
   [/^\/owner\/customers/, ["customers"]], [/^\/api\/owner\/customers/, ["customers"]],
   [/^\/api\/owner\/booking-draft/, ["calendar"]],
   [/^\/owner\/(venues|facilities)/, ["venues"]], [/^\/api\/owner\/(venues|halls|hall-slots|facilities|ai-prefill|logo)/, ["venues"]],
+  [/^\/owner\/reports/, ["reports"]], [/^\/api\/owner\/reports/, ["reports"]],
   [/^\/owner\/expenses/, ["expenses"]], [/^\/api\/owner\/expenses/, ["expenses"]],
   [/^\/api\/owner\/expense-categories/, ["expenses", "expenses.categories"]], [/^\/api\/owner\/employees/, ["expenses", "expenses.staff"]],
   [/^\/owner\/workflows/, ["templates"]], [/^\/api\/owner\/templates/, ["templates"]],
@@ -55,5 +57,5 @@ export function canOpenOwner(deny: readonly string[] | undefined, href: string) 
   return !deny?.length || !keys.some((k) => deny.includes(k));
 }
 
-const FIRST_STOPS = ["/owner/dashboard", "/owner/calendar", "/owner/enquiries", "/owner/bookings", "/owner/customers", "/owner/venues", "/owner/expenses", "/owner/workflows"];
+const FIRST_STOPS = ["/owner/dashboard", "/owner/calendar", "/owner/enquiries", "/owner/bookings", "/owner/customers", "/owner/venues", "/owner/expenses", "/owner/reports", "/owner/workflows"];
 export const firstAllowedOwnerPage = (deny: readonly string[] | undefined) => FIRST_STOPS.find((p) => canOpenOwner(deny, p)) ?? null;
