@@ -71,3 +71,42 @@ test.describe("enquiries tab", () => {
     await ctx.close();
   });
 });
+
+test.describe("settings", () => {
+  test("Settings gathers venue, templates, team logins and activity", async ({ page }) => {
+    const { centre } = account();
+    await signIn(page.context(), centre.phone, centre.password);
+    await page.goto("/owner/dashboard");
+    // the set-up pages are no longer separate items in the menu
+    for (const gone of ["Venue Profile", "Templates", "Team logins", "Activity"]) await expect(page.getByRole("link", { name: gone, exact: true })).toHaveCount(0);
+    await page.getByRole("link", { name: "Settings", exact: true }).first().click();
+    await expect(page).toHaveURL(/\/owner\/venues/);
+    const tabs = page.getByRole("navigation", { name: "Settings" });
+    await expect(tabs.getByRole("link", { name: "Venue" })).toHaveAttribute("aria-current", "page");
+    await tabs.getByRole("link", { name: "Team logins" }).click();
+    await expect(page.getByRole("heading", { name: "Team logins", level: 1 })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Settings", exact: true }).first()).toBeVisible();
+    await tabs.getByRole("link", { name: "Templates" }).click();
+    await expect(page).toHaveURL(/\/owner\/workflows/);
+  });
+});
+
+test.describe("owner on a phone", () => {
+  test("bottom bar reaches Enquiries and Settings", async ({ browser }) => {
+    const { centre } = account();
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+    await signIn(ctx, centre.phone, centre.password);
+    const p = await ctx.newPage();
+    await p.goto("/owner/dashboard");
+    const bar = p.locator("nav.fixed");
+    await expect(bar.getByRole("link", { name: "Enquiries" })).toBeVisible();
+    await bar.getByRole("link", { name: "Settings" }).click();
+    await expect(p).toHaveURL(/\/owner\/venues/);
+    // the Settings row scrolls sideways; Team logins is one tap away
+    await p.getByRole("navigation", { name: "Settings" }).getByRole("link", { name: "Team logins" }).click();
+    await expect(p.getByRole("heading", { name: "Team logins", level: 1 })).toBeVisible();
+    await bar.getByRole("link", { name: "Enquiries" }).click();
+    await expect(p.getByRole("heading", { name: "Enquiries", level: 1 })).toBeVisible();
+    await ctx.close();
+  });
+});

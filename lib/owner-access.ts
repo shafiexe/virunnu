@@ -10,7 +10,7 @@ export const OWNER_ACCESS_TREE: AccessGroup[] = [
   ] },
   { title: "Lists", items: [
     { key: "customers", label: "Customers" },
-    { key: "venues", label: "Venue Profile", hint: "Halls, slots and prices, photos, amenities, add-ons, GST" },
+    { key: "venues", label: "Settings: Venue", hint: "Halls, slots and prices, photos, amenities, add-ons, GST" },
   ] },
   { title: "Money", items: [
     { key: "expenses", label: "Expenses", tabs: [{ key: "expenses.categories", label: "Categories" }, { key: "expenses.staff", label: "Staff" }] },
@@ -19,7 +19,7 @@ export const OWNER_ACCESS_TREE: AccessGroup[] = [
     { key: "hide.phones", label: "Customer phone numbers", hint: "Untick to hide numbers and the Call and WhatsApp buttons" },
   ] },
   { title: "Messages", items: [
-    { key: "templates", label: "Templates", hint: "Booking messages sent to customers" },
+    { key: "templates", label: "Settings: Templates", hint: "Booking messages sent to customers" },
   ] },
 ];
 

@@ -46,7 +46,7 @@ export default async function OwnerVenuesPage() {
       <div>
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Venue Profile</h1>
+            <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Venue</h1>
             <p className="text-sm text-zinc-500 mt-0.5">Manage your venue profile, halls, slots and photos</p>
           </div>
           {venues.length === 0 && (

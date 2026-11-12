@@ -602,7 +602,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
             <div className="p-10 text-center">
               <p className="text-zinc-400 text-sm">No slot templates configured.</p>
               <p className="text-zinc-300 dark:text-zinc-600 text-xs mt-1">
-                Add slot templates in Venue Profile.
+                Add slot templates in Settings.
               </p>
             </div>
           ) : (
