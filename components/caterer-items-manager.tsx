@@ -39,9 +39,9 @@ function ItemRow({ item, onChange, onDelete }: { item: PriceItem; onChange: (i: 
 
   return (
     <div className="space-y-1">
-      <div className={cn("grid grid-cols-[1fr_5.5rem_6rem_auto_auto] items-center gap-2", !item.active && "opacity-50")}>
+      <div className={cn("grid grid-cols-[5.5rem_1fr_auto_auto] sm:grid-cols-[1fr_5.5rem_6rem_auto_auto] items-center gap-2", !item.active && "opacity-50")}>
         <input
-          className={FIELD} value={name} maxLength={80}
+          className={cn(FIELD, "col-span-full sm:col-span-1")} value={name} maxLength={80}
           onChange={(e) => setName(e.target.value)}
           onBlur={() => name.trim() && name.trim() !== item.name && save({ name: name.trim() })}
         />

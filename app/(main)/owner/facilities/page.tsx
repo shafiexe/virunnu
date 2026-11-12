@@ -17,9 +17,11 @@ export default async function OwnerFacilitiesPage() {
   });
 
   return (
-    <FacilitiesManager
-      initial={facilities}
-      isEmpty={facilities.length === 0}
-    />
+    <div className="mx-auto max-w-3xl px-4 py-6">
+      <FacilitiesManager
+        initial={facilities}
+        isEmpty={facilities.length === 0}
+      />
+    </div>
   );
 }

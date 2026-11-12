@@ -1,3 +1,5 @@
+import { connection } from "next/server";
+export const instant = false;
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { MapPin, Phone, Globe, Link2, Share2, Star } from "lucide-react";
@@ -41,6 +43,7 @@ export default async function CatererPublicPage({
 }: {
   params: Promise<{ catererId: string }>;
 }) {
+  await connection();
   const { catererId } = await params;
 
   const caterer = await db.caterer.findUnique({

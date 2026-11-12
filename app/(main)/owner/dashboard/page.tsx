@@ -173,7 +173,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
       {setupSteps.length > 0 && <SetupChecklist steps={setupSteps} storageKey={`virunnu.setup.venue.${session.orgId}`} />}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Dashboard</h1>
           <p className="text-sm text-zinc-500 mt-0.5">Overview of your venues and bookings</p>
@@ -186,7 +186,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
           <div className="flex items-center gap-2">
             <Link
               href="/owner/calendar"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors"
             >
               <Plus className="h-4 w-4" /> Add booking
             </Link>
