@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { clientIp, rateLimited } from "@/lib/rate-limit";
 
 export async function GET(req: NextRequest) {
+  // the free map service we ask asks us to keep our use modest
+  if (rateLimited(`geo:${clientIp(req)}`, 60, 60 * 60_000)) return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   const q = req.nextUrl.searchParams.get("q");
   if (!q) return NextResponse.json({ error: "Missing q" }, { status: 400 });
 

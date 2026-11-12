@@ -1,3 +1,4 @@
+import { removeOrgLeftovers } from "@/lib/org-cleanup";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
@@ -54,6 +55,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ c
   await db.menuItem.deleteMany({ where: { catererId } });
   await db.cateringEnquiry.deleteMany({ where: { catererId } });
   await db.caterer.delete({ where: { id: catererId } });
+  // its logins, organisation, activity list and photos go too, so the phone number can be used again
+  await removeOrgLeftovers(caterer.orgId);
 
   return NextResponse.json({ ok: true });
 }

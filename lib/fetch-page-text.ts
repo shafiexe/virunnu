@@ -1,3 +1,4 @@
+import { fetchGuarded } from "./safe-fetch";
 // Anti-bot / error pages that come back as normal text but contain no listing data.
 const BLOCK_PAGE = /access denied|403 forbidden|forbidden|just a moment|attention required|verify you are (a )?human|captcha|unusual traffic/i;
 
@@ -17,13 +18,12 @@ export async function fetchPageText(url: string): Promise<string> {
   } catch { /* fall through */ }
 
   // Fallback: direct fetch
-  const response = await fetch(url, {
+  const response = await fetchGuarded(url, {
     headers: {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36",
       "Accept": "text/html,application/xhtml+xml;q=0.9,*/*;q=0.8",
     },
-    redirect: "follow",
-    signal: AbortSignal.timeout(10000),
+    timeoutMs: 10000,
   });
   if (!response.ok) throw new Error(`Page returned ${response.status}`);
   const html = await response.text();
@@ -78,10 +78,9 @@ export async function fetchSiteDetails(url: string): Promise<SiteDetails | null>
   const u = isPublicHttpUrl(url);
   if (!u || SKIP_HOSTS.test(u.hostname)) return null;
 
-  const res = await fetch(u.toString(), {
+  const res = await fetchGuarded(u.toString(), {
     headers: { "User-Agent": "Mozilla/5.0 (compatible; VirunnuBot/1.0)", Accept: "text/html" },
-    redirect: "follow",
-    signal: AbortSignal.timeout(10000),
+    timeoutMs: 10000,
   });
   if (!res.ok) return null;
   const html = (await res.text()).slice(0, 2_000_000);
@@ -196,7 +195,7 @@ async function pickPhotos(candidates: string[], max = 16): Promise<string[]> {
   const checked = await Promise.all(
     candidates.slice(0, 30).map(async (url) => {
       try {
-        const r = await fetch(url, { method: "HEAD", redirect: "follow", signal: AbortSignal.timeout(5000) });
+        const r = await fetchGuarded(url, { method: "HEAD", timeoutMs: 5000 });
         const type = r.headers.get("content-type") ?? "";
         const len = Number(r.headers.get("content-length") ?? 0);
         if (!r.ok || !type.startsWith("image/") || type.includes("svg")) return null;

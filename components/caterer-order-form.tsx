@@ -481,7 +481,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
                     </label>
                     {servings.length > 1 && (
                       <label className="flex items-center gap-1 text-xs text-zinc-500">Serve at
-                        <select className={SMALL} value={line.servingIndex ?? ""} onChange={(e) => patchLine(line.key, { servingIndex: e.target.value === "" ? undefined : Number(e.target.value) })}>
+                        <select aria-label="Serve time" className={SMALL} value={line.servingIndex ?? ""} onChange={(e) => patchLine(line.key, { servingIndex: e.target.value === "" ? undefined : Number(e.target.value) })}>
                           <option value="">Whole event</option>
                           {servings.map((s, i) => <option key={i} value={i}>{s.label} {formatTime(s.time)}</option>)}
                         </select>
@@ -518,10 +518,10 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
           <form onSubmit={addCustom} className="rounded-xl border border-zinc-200 dark:border-zinc-700 p-3 space-y-2.5">
             <input className={INPUT} placeholder="Item name, e.g. Extra tent" value={custom.name} onChange={(e) => setCustom((c) => ({ ...c, name: e.target.value }))} autoFocus required maxLength={80} />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <select className={INPUT} value={custom.group} onChange={(e) => setCustom((c) => ({ ...c, group: e.target.value as ItemGroupKey }))}>
+              <select aria-label="Item group" className={INPUT} value={custom.group} onChange={(e) => setCustom((c) => ({ ...c, group: e.target.value as ItemGroupKey }))}>
                 {ITEM_GROUPS.map((g) => <option key={g} value={g}>{GROUP_LABEL[g]}</option>)}
               </select>
-              <select className={INPUT} value={custom.unit} onChange={(e) => setCustom((c) => ({ ...c, unit: e.target.value }))}>
+              <select aria-label="Unit" className={INPUT} value={custom.unit} onChange={(e) => setCustom((c) => ({ ...c, unit: e.target.value }))}>
                 {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
               </select>
               <input className={INPUT} inputMode="decimal" placeholder="Rate ₹" value={custom.rate} onChange={(e) => setCustom((c) => ({ ...c, rate: e.target.value.replace(/[^\d.]/g, "") }))} />
@@ -561,7 +561,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
           </div>
         )}
         <div className="flex gap-2">
-          <select className={INPUT} value={pickPerson} onChange={(e) => addToTeam(e.target.value)}>
+          <select aria-label="Add a team member" className={INPUT} value={pickPerson} onChange={(e) => addToTeam(e.target.value)}>
             <option value="">Choose from the staff list…</option>
             {people.filter((p) => !team.some((t) => t.employeeId === p.id)).map((p) => <option key={p.id} value={p.id}>{p.name} · {p.role}</option>)}
           </select>
@@ -635,7 +635,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
         </div>
         {showAdvance && grandAdvance > 0 && (
           <Field label="Advance paid by">
-            <select className={cn(INPUT, "max-w-xs")} value={advanceMethod} onChange={(e) => setAdvanceMethod(e.target.value)}>
+            <select aria-label="How the advance was paid" className={cn(INPUT, "max-w-xs")} value={advanceMethod} onChange={(e) => setAdvanceMethod(e.target.value)}>
               <option value="CASH">Cash</option><option value="UPI">UPI</option><option value="CARD">Card</option><option value="BANK">Bank transfer</option>
             </select>
           </Field>

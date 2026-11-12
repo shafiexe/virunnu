@@ -6,7 +6,7 @@ export class ImageError extends Error {}
 
 // Where photos live. With a Vercel Blob store connected to the project (BLOB_READ_WRITE_TOKEN is added by Vercel), they go there and
 // are served from its CDN. Without one they are kept in the database and served at /api/img/<id>, so it works with no set-up.
-const useBlob = () => !!process.env.BLOB_READ_WRITE_TOKEN;
+const blobEnabled = () => !!process.env.BLOB_READ_WRITE_TOKEN;
 const BLOB_HOST = ".public.blob.vercel-storage.com";
 
 export const isStoredHere = (url: string) => url.startsWith("/api/img/") || url.includes(BLOB_HOST);
@@ -23,7 +23,7 @@ async function normalise(bytes: Buffer) {
 
 export async function saveImage(bytes: Buffer, orgId: string | null): Promise<string> {
   const jpeg = await normalise(bytes);
-  if (useBlob()) {
+  if (blobEnabled()) {
     const { put } = await import("@vercel/blob");
     const blob = await put(`photos/${orgId ?? "shared"}/photo.jpg`, jpeg, { access: "public", contentType: "image/jpeg", addRandomSuffix: true });
     return blob.url;
@@ -55,7 +55,7 @@ export async function importOrKeep(url: string, orgId: string | null): Promise<{
 export async function deleteImage(url: string) {
   try {
     if (url.startsWith("/api/img/")) await db.storedImage.deleteMany({ where: { id: url.slice("/api/img/".length) } });
-    else if (url.includes(BLOB_HOST) && useBlob()) { const { del } = await import("@vercel/blob"); await del(url); }
+    else if (url.includes(BLOB_HOST) && blobEnabled()) { const { del } = await import("@vercel/blob"); await del(url); }
   } catch { /* an image that is already gone is fine */ }
 }
 
@@ -85,4 +85,19 @@ export async function importCatererPhotos(catererId: string, orgId: string) {
   const done = await importMany(c.photos, orgId);
   if (done.some((d) => d.copied && d.url !== c.photos[done.indexOf(d)])) await db.caterer.update({ where: { id: catererId }, data: { photos: done.map((d) => d.url) } });
   return { copied: done.filter((d, i) => d.copied && d.url !== c.photos[i]).length, kept: done.filter((d) => !d.copied).length };
+}
+
+// Everything of an account's photos, for when the account is deleted. Photos in the database go with one delete; copies in Blob are listed and removed.
+export async function deleteOrgImages(orgId: string) {
+  await db.storedImage.deleteMany({ where: { orgId } });
+  if (!blobEnabled()) return;
+  try {
+    const { list, del } = await import("@vercel/blob");
+    let cursor: string | undefined;
+    do {
+      const page = await list({ prefix: `photos/${orgId}/`, cursor });
+      if (page.blobs.length) await del(page.blobs.map((b) => b.url));
+      cursor = page.hasMore ? page.cursor : undefined;
+    } while (cursor);
+  } catch { /* a photo that is already gone is fine */ }
 }

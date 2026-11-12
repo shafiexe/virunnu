@@ -45,7 +45,7 @@ export function LogoUploader({ initialUrl, name }: { initialUrl: string | null; 
     }
   }
 
-  async function useLink() {
+  async function applyLink() {
     if (!link.trim()) return;
     setBusy(true); setError("");
     try {
@@ -89,9 +89,9 @@ export function LogoUploader({ initialUrl, name }: { initialUrl: string | null; 
             {url && <button type="button" disabled={busy} onClick={remove} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"><Trash2 className="h-4 w-4" /> Remove</button>}
           </div>
           <div className="mt-3 flex items-center gap-2">
-            <input value={link} onChange={(e) => setLink(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); useLink(); } }} placeholder="…or paste a link to your logo (https://…)" inputMode="url"
+            <input value={link} onChange={(e) => setLink(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyLink(); } }} placeholder="…or paste a link to your logo (https://…)" inputMode="url"
               className="min-w-0 flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400" />
-            <button type="button" disabled={busy || !link.trim()} onClick={useLink} className="shrink-0 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50">Use link</button>
+            <button type="button" disabled={busy || !link.trim()} onClick={applyLink} className="shrink-0 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50">Use link</button>
           </div>
           {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
         </div>

@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
         lng: venueData.lng ?? 0,
       };
 
-      let existingVenue = await tx.venue.findFirst({ where: { orgId } });
+      const existingVenue = await tx.venue.findFirst({ where: { orgId } });
       const venue = existingVenue
         ? await tx.venue.update({ where: { id: existingVenue.id }, data: venueFields })
         : await tx.venue.create({ data: { ...venueFields, approved: true, orgId } });

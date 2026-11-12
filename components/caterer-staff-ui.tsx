@@ -127,7 +127,10 @@ export function EditStaffButton({ staff, roles = [] }: { staff: StaffFormValue; 
 
 // Salary, daily wages, an advance or a bonus: one small form, recorded with its date.
 export function PayStaffButton({ id, name, payType, toPayPaise, compact }: { id: string; name: string; payType: PayTypeKey; toPayPaise: number; compact?: boolean }) {
-  const canWrite = useCanWrite("parties") && useAllowed("salaries");
+  // both are asked every time, so the hooks always run in the same order
+  const mayEditParties = useCanWrite("parties");
+  const maySeeSalaries = useAllowed("salaries");
+  const canWrite = mayEditParties && maySeeSalaries;
   const router = useRouter();
   const today = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
   const [open, setOpen] = useState(false);

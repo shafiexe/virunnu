@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import Razorpay from "razorpay";
+import { checkOnlineAmount, PaymentRefused, quoteSlot } from "@/lib/online-payment";
+import { clientIp, rateLimited } from "@/lib/rate-limit";
 
 const schema = z.object({
   hallSlotId: z.string(),
@@ -10,6 +12,7 @@ const schema = z.object({
   guestPhone: z.string().min(10),
   guestEmail: z.string().nullable().optional(),
   guestAddress: z.string().nullable().optional(),
+  addons: z.array(z.object({ id: z.string(), quantity: z.number().min(0.5).max(48).default(1) })).max(20).optional(),
 });
 
 function getRazorpay() {
@@ -24,7 +27,20 @@ export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: "Invalid" }, { status: 400 });
 
-  const { hallSlotId, amountPaise, isFullPayment, guestName, guestPhone, guestEmail, guestAddress } = parsed.data;
+  const { hallSlotId, amountPaise, isFullPayment, guestName, guestPhone, guestEmail, guestAddress, addons } = parsed.data;
+
+  // an order is a real request to the payment gateway, so one visitor cannot open them without end
+  if (rateLimited(`order:${clientIp(req)}`, 20, 60 * 60_000)) return NextResponse.json({ error: "Too many attempts. Try again later." }, { status: 429 });
+
+  // what the booking costs and what may be paid now are decided here, from the venue's own prices and rules, not from the browser
+  try {
+    const quote = await quoteSlot(hallSlotId, addons);
+    const problem = checkOnlineAmount({ isFullPayment, amountPaise, ...quote });
+    if (problem) return NextResponse.json({ error: problem }, { status: 400 });
+  } catch (e) {
+    if (e instanceof PaymentRefused) return NextResponse.json({ error: e.message }, { status: e.status });
+    throw e;
+  }
 
   try {
     const order = await getRazorpay().orders.create({

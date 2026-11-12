@@ -7,3 +7,10 @@ allowBuilds:
   prisma: true
   "@parcel/watcher": true
   "@swc/core": true
+
+# Newer, patched copies of libraries that other packages pull in (none of them is called by our own code)
+overrides:
+  follow-redirects: ">=1.16.2"
+  hono: ">=4.12.25"
+  "@hono/node-server": ">=1.19.10"
+  "@vercel/cli-config>zod": ">=4.6.6"

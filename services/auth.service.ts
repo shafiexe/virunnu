@@ -18,7 +18,8 @@ export async function sendOtp(phone: string): Promise<string> {
 
   await db.otpCode.create({ data: { phone, code, expiresAt } });
 
-  console.log(`[OTP] ${phone} → ${code}`);
+  // only ever shown while developing: on a live site a code in the log would be a way to sign in as someone else
+  if (process.env.NODE_ENV !== "production") console.log(`[OTP] ${phone} → ${code}`);
   return code;
 }
 

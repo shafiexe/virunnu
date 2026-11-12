@@ -402,13 +402,13 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
       {/* Calendar header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-1">
-          <button onClick={prevMonth} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+          <button onClick={prevMonth} aria-label="Previous month" className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
             <ChevronLeft className="h-4 w-4 text-zinc-500" />
           </button>
           <span className="font-semibold text-zinc-900 dark:text-zinc-50 min-w-[160px] text-center text-base">
             {monthLabel}
           </span>
-          <button onClick={nextMonth} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
+          <button onClick={nextMonth} aria-label="Next month" className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
             <ChevronRight className="h-4 w-4 text-zinc-500" />
           </button>
           {loading && <span className="text-xs text-zinc-400 ml-2 animate-pulse">Refreshing…</span>}

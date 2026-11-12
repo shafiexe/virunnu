@@ -326,10 +326,12 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
         guestPhone,
         guestEmail: guestEmail || null,
         guestAddress: guestAddress || null,
+        addons: pickedList.length ? pickedList : undefined,
       }),
     });
     if (!orderRes.ok) {
-      setPayError("Could not initiate payment. Try again.");
+      const why = await orderRes.json().catch(() => ({}));
+      setPayError(why.error ?? "Could not initiate payment. Try again.");
       setPaying(false);
       return;
     }

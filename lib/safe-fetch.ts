@@ -28,6 +28,22 @@ async function assertPublic(url: URL) {
   if (addrs.length === 0 || addrs.some((a) => isPrivateAddress(a.address))) throw new FetchRefused("That link points inside a private network");
 }
 
+// Fetches any address a person typed in, following redirects by hand so every hop is checked, never reaching a private network.
+export async function fetchGuarded(raw: string | URL, init: RequestInit & { timeoutMs?: number } = {}): Promise<Response> {
+  const { timeoutMs, ...rest } = init;
+  let url: URL;
+  try { url = new URL(raw); } catch { throw new FetchRefused("That is not a valid link"); }
+  const signal = rest.signal ?? AbortSignal.timeout(timeoutMs ?? 10_000);
+  for (let hop = 0; hop < 5; hop++) {
+    await assertPublic(url);
+    const res = await fetch(url, { ...rest, signal, redirect: "manual" });
+    const next = res.headers.get("location");
+    if (res.status >= 300 && res.status < 400 && next) { url = new URL(next, url); continue; }
+    return res;
+  }
+  throw new FetchRefused("That link redirects too many times");
+}
+
 export async function fetchPublicImage(raw: string, opts: { maxBytes?: number; timeoutMs?: number } = {}): Promise<{ bytes: Buffer; contentType: string }> {
   const maxBytes = opts.maxBytes ?? 8 * 1024 * 1024;
   let url: URL;
