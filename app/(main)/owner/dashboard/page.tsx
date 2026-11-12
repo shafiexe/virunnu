@@ -7,6 +7,8 @@ import { db } from "@/lib/db";
 import { TrendingUp, CalendarCheck, Clock, Hash, Plus } from "lucide-react";
 import { AnalyticsCharts } from "@/components/analytics-charts";
 import { PendingRequests } from "@/components/pending-requests";
+import { SetupChecklist } from "@/components/setup-checklist";
+import { venueSetupSteps } from "@/lib/setup-steps";
 
 type Props = { searchParams: Promise<Record<string, string>> };
 
@@ -20,6 +22,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
   const venueCount = await db.venue.count({ where: { orgId: session.orgId! } });
   if (venueCount === 0) redirect("/owner/onboarding");
 
+  const setupSteps = session.tm ? [] : await venueSetupSteps(session.orgId!);
   const sp = await searchParams;
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -180,6 +183,8 @@ export default async function OwnerDashboard({ searchParams }: Props) {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 space-y-8">
+      {setupSteps.length > 0 && <SetupChecklist steps={setupSteps} storageKey={`virunnu.setup.venue.${session.orgId}`} />}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

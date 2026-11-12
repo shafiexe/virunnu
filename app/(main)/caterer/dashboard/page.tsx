@@ -11,6 +11,8 @@ import { getCatererForSession } from "@/lib/caterer-session";
 import { balanceSheet, billedInRange, currentMonthValue, expensesInRange, paymentsInRange, periodRange, yearByMonth } from "@/lib/caterer-finance";
 import { formatTime, rs } from "@/lib/caterer-orders";
 import { CatererBars } from "@/components/caterer-bars";
+import { SetupChecklist } from "@/components/setup-checklist";
+import { catererSetupSteps } from "@/lib/setup-steps";
 import { CatererMonthNav } from "@/components/caterer-month-nav";
 import { cn } from "@/lib/utils";
 
@@ -54,6 +56,8 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
   const year = parseInt(month.slice(0, 4));
   const today = new Date(new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }) + "T00:00:00.000Z");
   const weekEnd = new Date(today.getTime() + 7 * 86400000);
+  // only the main owner sets the business up
+  const setupSteps = session.tm ? [] : await catererSetupSteps(caterer);
 
   const [billed, payments, expenses, sheet, chart, orderCounts, upcoming] = await Promise.all([
     billedInRange(caterer.id, from, to),
@@ -77,6 +81,7 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 space-y-6">
+      {setupSteps.length > 0 && <SetupChecklist steps={setupSteps} storageKey={`virunnu.setup.caterer.${caterer.id}`} />}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Dashboard</h1>
