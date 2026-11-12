@@ -170,7 +170,7 @@ export function CatererItemsManager({ initial }: { initial: PriceItem[] }) {
   return (
     <div className="space-y-5">
       {items.length === 0 ? (
-        <div className="max-w-3xl rounded-2xl border border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/10 p-6 text-center space-y-3">
+        <div className="rounded-2xl border border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/10 p-6 text-center space-y-3">
           <p className="text-sm text-zinc-700 dark:text-zinc-300">Your price list is empty. Start with the usual items from your bills (food, plates, serving boys, counters) and change the rates to yours.</p>
           <button type="button" onClick={addStarter} disabled={seeding} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
             {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Add common items
@@ -186,8 +186,6 @@ export function CatererItemsManager({ initial }: { initial: PriceItem[] }) {
       )}
       {notice && <p className="text-sm text-emerald-600 dark:text-emerald-400">{notice}</p>}
 
-      {/* on a wide screen the groups flow into two columns: the long Food list on one side, the rest beside it */}
-      <div className="lg:columns-2 lg:gap-5 [&>*]:mb-5 lg:[&>*]:break-inside-avoid">
       {ITEM_GROUPS.map((group) => {
         const rows = items.filter((i) => i.group === group);
         return (
@@ -202,7 +200,6 @@ export function CatererItemsManager({ initial }: { initial: PriceItem[] }) {
           </section>
         );
       })}
-      </div>
     </div>
   );
 }

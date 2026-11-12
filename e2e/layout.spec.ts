@@ -135,15 +135,15 @@ test.describe("other page frames", () => {
 test.describe("menu and form bars", () => {
   test.use({ viewport: { width: 1440, height: 800 } });
 
-  test("Menu & Prices uses the frame and the order form's Save bar lines up", async ({ page }) => {
+  test("Menu & Prices is a narrow column on the frame's left edge and the order form's Save bar lines up", async ({ page }) => {
     const a = account();
     await signIn(page.context(), a.phone, a.password);
     await page.request.post("/api/caterer/items/starter");
     await page.goto("/caterer/items");
     const frameBox = await page.locator("div.mx-auto.max-w-6xl.px-4:visible").first().boundingBox();
-    const sections = await page.locator("section").evaluateAll((ns) => ns.map((n) => Math.round(n.getBoundingClientRect().right)));
-    // the groups spread across the frame instead of one narrow column
-    expect(Math.max(...sections)).toBeGreaterThan(Math.round(frameBox!.x + frameBox!.width) - 60);
+    const sections = await page.locator("section").evaluateAll((ns) => ns.map((n) => ({ left: Math.round(n.getBoundingClientRect().left), width: Math.round(n.getBoundingClientRect().width) })));
+    // one narrow column, starting at the frame's left edge like the Settings pages
+    for (const s of sections) { expect(s.left).toBe(Math.round(frameBox!.x + 16)); expect(s.width).toBeLessThanOrEqual(768); }
 
     await page.goto("/caterer/orders/new");
     const formLeft = Math.round((await page.locator("h1").first().boundingBox())!.x);
