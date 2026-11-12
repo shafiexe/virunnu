@@ -13,6 +13,8 @@ export function SetupChecklist({ steps, storageKey }: { steps: SetupStep[]; stor
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(true);
   useEffect(() => { try { setHidden(localStorage.getItem(storageKey) === "1"); } catch { /* shown */ } }, [storageKey]);
+  // on a phone the list starts folded to its title and progress bar, so the dashboard itself is the first thing seen
+  useEffect(() => { if (window.matchMedia("(max-width: 767px)").matches) setOpen(false); }, []);
 
   const done = steps.filter((s) => s.done).length;
   if (hidden || done === steps.length) return null;

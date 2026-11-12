@@ -30,7 +30,7 @@ const RULES: Rule[] = [
   [/^\/owner\/(team|activity)/, ["__owner"]], [/^\/api\/owner\/team/, ["__owner"]],
   [/^\/owner\/dashboard/, ["dashboard"]],
   [/^\/owner\/calendar/, ["calendar"]], [/^\/api\/owner\/(calendar|blocked-dates)/, ["calendar"]], [/^\/api\/owner\/hall-slots\/toggle-block/, ["calendar"]],
-  [/^\/owner\/enquiries/, ["bookings"]],
+  [/^\/owner\/enquiries/, ["bookings"]], [/^\/api\/owner\/caterers/, ["bookings"]],
   [/^\/owner\/bookings/, ["bookings"]], [/^\/api\/owner\/bookings/, ["bookings"]],
   // bookings are also made, cancelled and paid through these shared routes
   [/^\/api\/bookings/, ["bookings"]], [/^\/api\/payments/, ["bookings"]],

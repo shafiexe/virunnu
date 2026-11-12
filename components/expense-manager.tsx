@@ -1,12 +1,13 @@
 "use client";
 
 import { useUndoable } from "@/components/undo-toast";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   Plus, X, Pencil, Trash2, ChevronLeft, ChevronRight,
-  Search, LayoutList, Tags, ChevronDown, ChevronUp, Zap, Users, Receipt,
+  Search, LayoutList, Tags, ChevronDown, ChevronUp, Zap, Users, Receipt, Camera,
 } from "lucide-react";
+import { downscaleToJpeg } from "@/lib/image-downscale";
 import { PaginationBar } from "@/components/pagination-bar";
 import { cn } from "@/lib/utils";
 import { WriteOnly, ReadOnlyShield } from "@/components/access-context";
@@ -244,7 +245,28 @@ export function ExpenseManager({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // A photo of a bill fills in the form for the person to check. The photo itself is not kept.
+  const billInput = useRef<HTMLInputElement>(null);
+  const [scanning, setScanning] = useState(false);
+  const [scanNote, setScanNote] = useState("");
+  async function scanBill(file: File) {
+    setScanning(true); setScanNote("");
+    try {
+      const { base64, mediaType } = await downscaleToJpeg(file);
+      const res = await fetch("/api/owner/expenses/read-bill", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: base64, mediaType }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { setScanNote(data.error ?? "Could not read that bill. Fill the fields in yourself."); return; }
+      const d = data.draft as { label: string | null; amountRupees: number | null; date: string | null; category: string | null; notes: string | null };
+      if (d.category) setCustomCat(false);
+      setForm((f) => ({ ...f, label: d.label ?? f.label, amount: d.amountRupees ? String(d.amountRupees) : f.amount, date: d.date ?? f.date, category: d.category ?? f.category, notes: d.notes ?? f.notes }));
+      const found = [d.label && "name", d.amountRupees && "amount", d.date && "date", d.category && "category"].filter(Boolean);
+      setScanNote(found.length ? `Read from the bill: ${found.join(", ")}. Check them, then save.` : "Could not read anything from that photo. Fill the fields in yourself.");
+    } catch { setScanNote("Could not open that photo. Try another."); }
+    finally { setScanning(false); }
+  }
+
   function openAdd(prefill?: Partial<FormState>) {
+    setScanNote("");
     setEditId(null);
     setCustomCat(false);
     setForm({ ...EMPTY_FORM, date: new Date().toISOString().slice(0, 10), ...prefill });
@@ -1047,6 +1069,17 @@ export function ExpenseManager({
             </div>
 
             <div className="overflow-y-auto flex-1" style={{ paddingBottom: "max(env(safe-area-inset-bottom, 0px), 1rem)" }}>
+            {/* Photo of a bill: the name, amount, date and category are read from it; the person checks them and saves */}
+            {!editId && (
+              <div className="px-5 pt-4 space-y-1.5">
+                <input ref={billInput} type="file" accept="image/*" className="hidden" aria-label="Photo of the bill" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void scanBill(f); }} />
+                <button type="button" disabled={scanning} onClick={() => billInput.current?.click()}
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/10 px-4 py-3 text-sm font-semibold text-amber-800 dark:text-amber-300 hover:bg-amber-50 disabled:opacity-60">
+                  <Camera className="h-4 w-4" /> {scanning ? "Reading the bill…" : "Scan a bill"}
+                </button>
+                {scanNote && <p className="text-xs text-zinc-600 dark:text-zinc-400" role="status">{scanNote}</p>}
+              </div>
+            )}
             {/* Quick pick from items */}
             {!editId && categories.some((c) => c.items.length > 0) && (
               <div className="px-5 pt-4 pb-2">

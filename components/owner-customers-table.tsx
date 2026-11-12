@@ -98,6 +98,8 @@ export function OwnerCustomersTable() {
     try {
       const saved = localStorage.getItem("customers-view");
       if (saved === "card" || saved === "list") setView(saved);
+      // nothing chosen yet: a phone starts on cards, which fit the screen better than a wide table
+      else if (window.matchMedia("(max-width: 767px)").matches) setView("card");
     } catch { /* */ }
   }, []);
 

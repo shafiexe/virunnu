@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { FileText, Loader2, MessageCircle, Percent, Trash2, Wallet, X } from "lucide-react";
 import { BILL_LABEL, billMoney, rs as rsPaise, STATE_LABEL, type BillTypeKey } from "@/lib/caterer-orders";
 import { billMessage, whatsappLink } from "@/lib/caterer-share";
+import { catererReceiptText } from "@/lib/caterer-receipt-text";
 import { useUndoable } from "@/components/undo-toast";
 import { cn } from "@/lib/utils";
 import { WriteOnly, Show } from "@/components/access-context";
@@ -14,7 +15,7 @@ export type BillCardData = {
   id: string; type: BillTypeKey; number: number; shareToken: string; createdAt: string;
   subtotalPaise: number; discountPaise: number; taxPaise: number; gstRateBp: number; gstInclusive: boolean; gstPaise: number; discountReason: string | null; receivedPaise: number;
   lines: { id: string; name: string; unit: string; quantity: number; ratePaise: number; amountPaise: number }[];
-  payments: { id: string; amountPaise: number; method: string; note: string | null; paidOn: string; recordedBy?: string | null }[];
+  payments: { id: string; amountPaise: number; method: string; note: string | null; paidOn: string; recordedBy?: string | null; shareToken: string }[];
 };
 
 const INPUT =
@@ -74,6 +75,13 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
     window.open(whatsappLink(customer.phone, billMessage({ catererName, customerName: customer.name, number: bill.number, type: bill.type, date: orderDate, bill, url })), "_blank", "noopener");
   };
 
+  // the customer's receipt for one payment, sent on WhatsApp with its link
+  const sendReceipt = (p: BillCardData["payments"][number], index: number) => {
+    const upTo = bill.payments.slice(0, index + 1).reduce((s, x) => s + x.amountPaise, 0);
+    const text = catererReceiptText({ catererName, customerName: customer.name, amountPaise: p.amountPaise, method: METHOD[p.method] ?? p.method, paidOn: p.paidOn, billNo: bill.number, netPaise: m.netPaise, paidUpToNow: upTo, link: `${window.location.origin}/r/${p.shareToken}` });
+    window.open(whatsappLink(customer.phone, text), "_blank", "noopener");
+  };
+
   return (
     <section className={cn("rounded-2xl border bg-white dark:bg-zinc-900 p-5 space-y-4", cancelled ? "border-zinc-200 dark:border-zinc-800 opacity-60" : "border-zinc-200 dark:border-zinc-800")}>
       <div className="flex items-start justify-between gap-3 flex-wrap">
@@ -104,11 +112,13 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
       {bill.payments.length > 0 && (
         <div className="space-y-1">
           <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Payments received</div>
-          {bill.payments.map((p) => (
-            <div key={p.id} className="flex items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+          {bill.payments.map((p, i) => (
+            <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400">
               <span>{new Date(p.paidOn).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" })} · {METHOD[p.method] ?? p.method}{p.note ? ` · ${p.note}` : ""}{p.recordedBy ? ` · by ${p.recordedBy}` : ""}</span>
               <span className="flex items-center gap-2">
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">{rsPaise(p.amountPaise)}</span>
+                <Show what="phones"><button type="button" onClick={() => sendReceipt(p, i)} aria-label={`Send the ${rsPaise(p.amountPaise)} receipt on WhatsApp`} className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-semibold text-white hover:bg-[#1ebe5c]"><MessageCircle className="h-3 w-3" /> Send</button></Show>
+                <a href={`/r/${p.shareToken}`} target="_blank" rel="noopener noreferrer" className="rounded-md border border-zinc-200 dark:border-zinc-700 px-2 py-1 font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800">Receipt</a>
                 <WriteOnly page="orders"><button type="button" title="Undo this payment" aria-label="Undo this payment" disabled={busy} onClick={() => undoable(`Payment of ${rsPaise(p.amountPaise)} taken back`, {
                   request: { url: `/api/caterer/bills/${bill.id}/payments/${p.id}`, method: "DELETE" },
                   restore: { url: `/api/caterer/bills/${bill.id}/payments`, method: "POST", body: { amount: p.amountPaise / 100, method: p.method, note: p.note ?? undefined, paidOn: p.paidOn.slice(0, 10) } },
