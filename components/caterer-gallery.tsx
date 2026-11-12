@@ -24,7 +24,7 @@ export function CatererGallery({ photos, name }: { photos: string[]; name: strin
       <div ref={row} onScroll={(e) => { const el = e.currentTarget; setAt(Math.round(el.scrollLeft / el.clientWidth)); }}
         className="flex overflow-x-auto snap-x snap-mandatory rounded-2xl bg-zinc-100 dark:bg-zinc-800 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {shown.map((url, i) => (
-          <div key={url} className="relative w-full shrink-0 snap-center aspect-[16/10] sm:aspect-[16/9]">
+          <div key={url} className="relative w-full shrink-0 snap-center aspect-[16/10] sm:aspect-[16/9] lg:aspect-[5/2]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={url} alt={`${name} photo ${i + 1}`} loading={i === 0 ? "eager" : "lazy"} onError={() => setBroken((b) => [...b, url])} className="h-full w-full object-cover" />
           </div>

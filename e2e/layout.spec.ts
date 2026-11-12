@@ -118,10 +118,10 @@ test.describe("other page frames", () => {
     expect(new Set(seen).size, `admin frames differ: ${seen.join(" ")}`).toBe(1);
   });
 
-  test("home, venue page and apply pages are as wide as the site header", async ({ page }) => {
+  test("home, venue page, caterer page and apply pages are as wide as the site header", async ({ page }) => {
     const a = account();
     const seen: string[] = [];
-    for (const p of ["/", `/venues/${a.centre.venueId}`, "/apply/venue", "/apply/caterer"]) {
+    for (const p of ["/", `/venues/${a.centre.venueId}`, `/caterers/${a.catererId}`, "/apply/venue", "/apply/caterer"]) {
       await page.goto(p);
       const box = await page.locator("div.mx-auto.max-w-5xl.px-4:visible").first().boundingBox();
       seen.push(`${Math.round(box?.x ?? -1)}:${Math.round(box?.width ?? -1)}`);
