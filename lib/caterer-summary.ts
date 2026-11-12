@@ -4,7 +4,7 @@ import { billMoney, formatInvoiceDate, formatTime, rs } from "@/lib/caterer-orde
 import { getAppUrl } from "@/lib/app-url";
 import { normalizeCustomerPhone } from "@/lib/caterer-orders";
 import { quoteState } from "@/lib/caterer-quotes";
-import { sendRawMail, sendRawWhatsApp } from "@/services/notification.service";
+import { sendRawMail, sendRawWhatsApp, whatsappAutoOn } from "@/services/notification.service";
 
 type SummaryCaterer = { id: string; orgId: string | null; name: string; phone: string; whatsappNumber: string | null; email: string | null; summaryVia: string; summaryEmail: string | null };
 
@@ -86,7 +86,8 @@ export async function sendSummary(caterer: SummaryCaterer) {
   const wantsWa = caterer.summaryVia === "WHATSAPP" || caterer.summaryVia === "BOTH";
   const wantsMail = caterer.summaryVia === "EMAIL" || caterer.summaryVia === "BOTH";
   if (wantsWa) {
-    if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) result.whatsapp = "WhatsApp sending is not set up on this server";
+    if (!whatsappAutoOn()) result.whatsapp = "Automatic WhatsApp is switched off for now";
+    else if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) result.whatsapp = "WhatsApp sending is not set up on this server";
     else try { await sendRawWhatsApp(mobileOf(caterer), text); result.whatsapp = "sent"; } catch (e) { result.whatsapp = e instanceof Error ? e.message : "failed"; }
   }
   if (wantsMail) {

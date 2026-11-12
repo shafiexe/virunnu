@@ -17,7 +17,7 @@ function routes(dir = "app/api", base = "/api"): { url: string; method: string }
 const ALL = routes();
 
 // What a signed-out visitor may legitimately get an answer from
-const PUBLIC_OK = [/^GET \/api\/health$/, /^GET \/api\/caterers$/, /^GET \/api\/venues\//, /^(GET|POST) \/api\/auth\/logout$/, /^GET \/api\/img\//, /^GET \/api\/logo\//, /^GET \/api\/geocode$/, /^GET \/api\/venues$/, /^GET \/api\/owner\/waiting$/,
+const PUBLIC_OK = [/^GET \/api\/health$/, /^POST \/api\/client-error$/, /^GET \/api\/caterers$/, /^GET \/api\/venues\//, /^(GET|POST) \/api\/auth\/logout$/, /^GET \/api\/img\//, /^GET \/api\/logo\//, /^GET \/api\/geocode$/, /^GET \/api\/venues$/, /^GET \/api\/owner\/waiting$/,
   // open only while developing: on a live site they refuse without CRON_SECRET (see the cron routes)
   /^GET \/api\/cron\//];
 const call = (ctx: import("@playwright/test").APIRequestContext, r: { url: string; method: string }) =>
