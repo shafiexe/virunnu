@@ -36,7 +36,7 @@ export function BottomNav() {
   const role = session?.role;
 
   // Guests, customers and admins use the top header — no bottom nav needed.
-  if (!role || role === "CUSTOMER" || role === "ADMIN") return null;
+  if (!role || role === "ADMIN") return null;
 
   const links: { href: string; icon: typeof Users2; label: string; settings?: boolean }[] =
     role === "OWNER"

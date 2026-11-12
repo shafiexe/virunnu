@@ -104,8 +104,9 @@ export default function PrivacyPage() {
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Information you provide</h3>
           <ul className="list-disc pl-5 space-y-1.5">
             <li>
-              <strong>Mobile number:</strong> Collected at registration; used for OTP authentication
-              and account identification. This is your primary identifier on the platform.
+              <strong>Mobile number:</strong> Collected when you send a booking request, a payment or an
+              enquiry, and when a venue or catering account is created. It is used to contact you about
+              your booking and, for venue and catering accounts, as the sign-in name.
             </li>
             <li>
               <strong>Name:</strong> Collected during onboarding; displayed on booking confirmations
@@ -163,9 +164,9 @@ export default function PrivacyPage() {
           <Table
             headers={["Purpose", "Data used", "Legal basis"]}
             rows={[
-              ["Account creation & login (OTP)", "Mobile number, OTP code", "Contractual necessity"],
+              ["Sign-in for venue and catering accounts", "Mobile number, password (kept only as a one-way hash)", "Contractual necessity"],
               ["Booking creation & confirmation", "User ID, slot ID, payment reference", "Contractual necessity"],
-              ["Displaying your bookings to you", "Booking records, venue details", "Contractual necessity"],
+              ["Showing you the status of your booking (by booking reference)", "Booking record, venue details", "Contractual necessity"],
               ["Notifying venue owners of new bookings", "Customer name, booking details", "Contractual necessity"],
               ["Caterer discovery (listing views)", "No personal data — public content only", "Legitimate interest"],
               ["Admin review & approval of listings", "Venue / caterer details submitted", "Contractual necessity"],
@@ -182,23 +183,23 @@ export default function PrivacyPage() {
         </div>
       </section>
 
-      {/* 03 OTP */}
-      <section id="otp" className="py-8 border-b border-zinc-100 dark:border-zinc-800/60">
-        <SectionHeader num="03" title="OTP Authentication" />
+      {/* 03 Sign-in */}
+      <section id="sign-in" className="py-8 border-b border-zinc-100 dark:border-zinc-800/60">
+        <SectionHeader num="03" title="Sign-in and Passwords" />
         <div className="space-y-3 text-sm text-zinc-700 dark:text-zinc-300">
           <p>
-            Virunnu uses one-time passwords sent to your registered mobile number as its only
-            authentication method. There are no passwords stored on the platform. OTP codes are
-            generated fresh for each login request, expire after 10 minutes, and are permanently
-            deleted after use or expiry — whichever comes first.
+            Venue owners, caterers and the people they add to their team sign in with a mobile number
+            and a password. Passwords are stored only as a one-way hash, never in readable form, and
+            repeated wrong attempts are slowed down. If a password is forgotten, a new one is generated
+            and sent to the registered mobile number and email.
           </p>
           <p>
-            OTPs are currently delivered via SMS. The SMS delivery service receives only your mobile
-            number and the OTP code; it does not receive any other personal data.
+            Customers do not need an account. You can send a booking request, an enquiry or a payment
+            without signing in, and follow your booking with the booking reference you are given.
           </p>
           <Callout>
-            <strong>Never share your OTP.</strong> Virunnu staff will never ask for your OTP
-            through any channel — call, SMS, or email. If anyone requests it, it is a fraud attempt.
+            <strong>Never share your password.</strong> Virunnu staff will never ask for it through
+            any channel — call, message, or email. If anyone requests it, it is a fraud attempt.
           </Callout>
         </div>
       </section>
@@ -261,7 +262,6 @@ export default function PrivacyPage() {
           <Table
             headers={["Data type", "How long we keep it"]}
             rows={[
-              ["OTP codes", "Deleted immediately after first use or 10-minute expiry"],
               ["Session cookie", "7 days from last activity, or until logout"],
               ["Booking records & payments", "7 years (GST / income tax compliance)"],
               ["Access & server logs", "90 days"],
@@ -338,7 +338,7 @@ export default function PrivacyPage() {
               client-side theft
             </li>
             <li>
-              No password storage — OTP-only authentication eliminates the risk of password breaches
+              Passwords are stored only as one-way hashes, and sign-in and password-reset attempts are rate-limited
             </li>
             <li>Database access restricted to application services within a private network</li>
             <li>

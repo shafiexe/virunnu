@@ -110,16 +110,16 @@ export default function TermsPage() {
           </p>
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">One number, one role</h3>
           <p>
-            Each mobile number may be associated with exactly one account and one permanent role —
-            Customer, Venue Owner, or Caterer. A single phone number cannot be used for more than
-            one role. Once selected, your role cannot be changed. If you wish to operate under a
-            different role, you must register with a separate phone number.
+            Each mobile number may be associated with exactly one account and one role — Venue Owner
+            or Caterer. A single phone number cannot be used for more than one account. If you wish
+            to operate under a different role, you must use a separate phone number. Customers can
+            send booking requests and payments without an account.
           </p>
-          <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">OTP authentication</h3>
+          <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">Sign-in and password</h3>
           <p>
-            Virunnu uses one-time passwords delivered to your registered mobile number as its
-            authentication method. You are responsible for keeping your mobile number accessible
-            and for all activity that takes place under your account. Never share an OTP with anyone.
+            Venue and catering accounts sign in with a mobile number and a password. You are
+            responsible for keeping your password confidential and your mobile number accessible, and
+            for all activity that takes place under your account. Never share your password with anyone.
           </p>
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">Accuracy of information</h3>
           <p>

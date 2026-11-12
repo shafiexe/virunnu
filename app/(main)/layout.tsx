@@ -38,7 +38,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   const messages = await getMessages();
   const session = await getSession();
-  const showLanguageToggle = !session || session.role === "CUSTOMER";
+  const showLanguageToggle = !session;
   const f = (messages as Record<string, Record<string, string>>).footer ?? {};
 
   return (
