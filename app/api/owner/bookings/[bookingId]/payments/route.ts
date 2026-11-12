@@ -16,7 +16,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ boo
   const { bookingId } = await params;
   const booking = await db.booking.findFirst({ where: { id: bookingId, orgId: session.orgId }, include: { payments: { select: { amountPaise: true } } } });
   if (!booking) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (booking.status === "CANCELLED" || booking.status === "EXPIRED") return NextResponse.json({ error: "This booking is cancelled" }, { status: 409 });
+  if (booking.status === "CANCELLED" || booking.status === "EXPIRED" || booking.status === "REJECTED") return NextResponse.json({ error: "This booking is cancelled" }, { status: 409 });
 
   const { amountRupees, method, note } = parsed.data;
   const paidOn = parsed.data.paidOn ?? todayISO();

@@ -26,7 +26,7 @@ const STATUS_STYLE: Record<string, string> = {
 };
 const STATUS_LABEL: Record<string, string> = {
   PENDING: "Pending", APPROVED: "Approved", ADVANCE_PAID: "Advance paid",
-  CONFIRMED: "Confirmed", CANCELLED: "Cancelled", EXPIRED: "Expired",
+  CONFIRMED: "Confirmed", CANCELLED: "Cancelled", EXPIRED: "Expired", REJECTED: "Rejected",
 };
 
 const rs = (paise: number) => `₹${formatRupees(paise)}`;
@@ -79,7 +79,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
   const hallPaise = booking.totalPaise - addonsPaise;
   const discountPaise = booking.discountPaise ?? 0;
   const netPaise = booking.totalPaise - discountPaise;
-  const closed = booking.status === "CANCELLED" || booking.status === "EXPIRED";
+  const closed = booking.status === "CANCELLED" || booking.status === "EXPIRED" || booking.status === "REJECTED";
   const tax = splitForVenue(netPaise, venue);
 
   const dateLong = new Date(hallSlot.date).toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" });

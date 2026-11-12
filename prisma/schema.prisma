@@ -273,6 +273,8 @@ enum BookingStatus {
   CONFIRMED
   CANCELLED
   EXPIRED
+  // a request to book that the convention centre turned down; kept in Enquiries only, never in Bookings or Customers
+  REJECTED
 }
 
 model Payment {

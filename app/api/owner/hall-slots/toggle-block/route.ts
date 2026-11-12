@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   const existing = await db.hallSlot.findUnique({
     where: { hallId_templateId_date: { hallId, templateId, date: slotDate } },
-    include: { bookings: { where: { status: { notIn: ["CANCELLED", "EXPIRED"] } }, select: { id: true } } },
+    include: { bookings: { where: { status: { notIn: ["CANCELLED", "EXPIRED", "REJECTED"] } }, select: { id: true } } },
   });
 
   if (existing) {

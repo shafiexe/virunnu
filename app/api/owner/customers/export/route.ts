@@ -1,3 +1,4 @@
+import { REQUEST_STATUSES } from "@/lib/booking-requests";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
@@ -14,7 +15,7 @@ export async function GET(req: NextRequest) {
   const bookings = await db.booking.findMany({
     where: {
       orgId: session.orgId!,
-      status: { not: "EXPIRED" },
+      status: { notIn: ["EXPIRED", ...REQUEST_STATUSES] },
       ...(search ? {
         user: {
           OR: [

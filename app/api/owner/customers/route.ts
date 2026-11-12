@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
       SELECT COALESCE(b."userId"::text, 'g_' || COALESCE(b."guestPhone", b.id)) as cid
       FROM "Booking" b
       LEFT JOIN "User" u ON u.id = b."userId"
-      WHERE b."orgId" = $1 AND b.status != 'EXPIRED'
+      WHERE b."orgId" = $1 AND b.status NOT IN ('EXPIRED', 'PENDING', 'REJECTED')
       ${searchClause}
       GROUP BY cid, b."userId", b."guestPhone"
     ) sub
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
       MAX(b."createdAt") as last_booking
     FROM "Booking" b
     LEFT JOIN "User" u ON u.id = b."userId"
-    WHERE b."orgId" = $1 AND b.status != 'EXPIRED'
+    WHERE b."orgId" = $1 AND b.status NOT IN ('EXPIRED', 'PENDING', 'REJECTED')
     ${searchClause}
     GROUP BY
       COALESCE(b."userId"::text, 'g_' || COALESCE(b."guestPhone", b.id)),

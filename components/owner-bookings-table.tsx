@@ -13,7 +13,7 @@ import { addonSummary, type BookingAddonItem } from "@/components/booking-addons
 import { cn } from "@/lib/utils";
 import { WriteOnly, useCanWrite, Show } from "@/components/access-context";
 
-type BookingStatus = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
+type BookingStatus = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED" | "REJECTED";
 
 const STATUS_STYLE: Record<BookingStatus, string> = {
   PENDING:      "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400",
@@ -22,6 +22,7 @@ const STATUS_STYLE: Record<BookingStatus, string> = {
   CONFIRMED:    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400",
   CANCELLED:    "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
   EXPIRED:      "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+  REJECTED:     "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
 };
 const STATUS_STRIPE: Record<BookingStatus, string> = {
   PENDING:      "bg-amber-400",
@@ -30,10 +31,11 @@ const STATUS_STRIPE: Record<BookingStatus, string> = {
   CONFIRMED:    "bg-emerald-500",
   CANCELLED:    "bg-red-400",
   EXPIRED:      "bg-zinc-300 dark:bg-zinc-600",
+  REJECTED:     "bg-red-400",
 };
 const STATUS_LABEL: Record<BookingStatus, string> = {
   PENDING: "Pending", APPROVED: "Approved", ADVANCE_PAID: "Advance paid",
-  CONFIRMED: "Confirmed", CANCELLED: "Cancelled", EXPIRED: "Expired",
+  CONFIRMED: "Confirmed", CANCELLED: "Cancelled", EXPIRED: "Expired", REJECTED: "Rejected",
 };
 
 const TABS = [
