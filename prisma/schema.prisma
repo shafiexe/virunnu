@@ -891,6 +891,8 @@ model BookingPayment {
   paidOn      DateTime @db.Date
   // who on the team recorded it, shown as "by Rahim"
   recordedBy  String?
+  // the customer's receipt link (/r/<token>); anyone holding it can read that one receipt
+  shareToken  String   @unique @default(cuid())
   createdAt   DateTime @default(now())
 
   @@index([bookingId])
