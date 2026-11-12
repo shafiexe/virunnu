@@ -7,7 +7,7 @@ export const metadata = {
 
 export default function TrackPage() {
   return (
-    <div className="mx-auto max-w-lg px-4 py-16 text-center">
+    <div className="mx-auto w-full max-w-2xl px-4 py-16 text-center">
       <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center mx-auto mb-5">
         <Search className="h-7 w-7 text-amber-600 dark:text-amber-400" />
       </div>

@@ -44,7 +44,7 @@ export default async function MyBookingsPage() {
   });
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 space-y-6">
+    <div className="mx-auto w-full max-w-2xl px-4 py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">My bookings</h1>

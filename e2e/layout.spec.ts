@@ -100,3 +100,32 @@ test.describe("one page frame", () => {
     expect(bad, `different frame: ${JSON.stringify(bad)}`).toEqual([]);
   });
 });
+
+// Admin pages, customer pages and the public pages that sit under the same header and footer line up too
+test.describe("other page frames", () => {
+  test.use({ viewport: { width: 1440, height: 800 } });
+
+  test("admin pages share one frame", async ({ page }) => {
+    const res = await page.context().request.post("/api/admin/auth/login", { data: { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD } });
+    expect(res.ok()).toBeTruthy();
+    const a = account();
+    const seen: string[] = [];
+    for (const p of ["/admin", "/admin/owners", "/admin/caterers", "/admin/applications", `/admin/caterers/${a.catererId}`, `/admin/owners/${a.centre.orgId}`]) {
+      await page.goto(p);
+      const box = await page.locator("div.mx-auto.max-w-5xl.px-4:visible").first().boundingBox();
+      seen.push(`${Math.round(box?.x ?? -1)}:${Math.round(box?.width ?? -1)}`);
+    }
+    expect(new Set(seen).size, `admin frames differ: ${seen.join(" ")}`).toBe(1);
+  });
+
+  test("home, venue page and apply pages are as wide as the site header", async ({ page }) => {
+    const a = account();
+    const seen: string[] = [];
+    for (const p of ["/", `/venues/${a.centre.venueId}`, "/apply/venue", "/apply/caterer"]) {
+      await page.goto(p);
+      const box = await page.locator("div.mx-auto.max-w-5xl.px-4:visible").first().boundingBox();
+      seen.push(`${Math.round(box?.x ?? -1)}:${Math.round(box?.width ?? -1)}`);
+    }
+    expect(new Set(seen).size, `public frames differ: ${seen.join(" ")}`).toBe(1);
+  });
+});

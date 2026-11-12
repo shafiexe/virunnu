@@ -218,7 +218,7 @@ export default async function VenuePage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Back link */}
-      <div className="mx-auto max-w-6xl px-4 pt-4 pb-2">
+      <div className="mx-auto max-w-5xl px-4 pt-4 pb-2">
         <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
           <ArrowLeft className="h-4 w-4" />
           All venues
@@ -226,7 +226,7 @@ export default async function VenuePage({ params }: Props) {
       </div>
 
       {/* Hero photo carousel with info overlay */}
-      <div className="mx-auto max-w-6xl px-4 mb-0">
+      <div className="mx-auto max-w-5xl px-4 mb-0">
         <div className="rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-sm">
           <PhotoCarousel
             photos={allPhotos}
@@ -284,7 +284,7 @@ export default async function VenuePage({ params }: Props) {
 
       {/* Contact strip: the three main actions first, the rest smaller */}
       {(venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email || venue.instagramUrl || venue.facebookUrl || venue.youtubeUrl || venue.linkedinUrl || venue.twitterUrl) && (
-        <div className="mx-auto max-w-6xl px-4 pt-4">
+        <div className="mx-auto max-w-5xl px-4 pt-4">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-4 sm:px-5 py-4 flex flex-wrap items-center justify-center gap-2.5">
             {venue.phone && (
               <a href={`tel:${venue.phone}`} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors shadow-sm">
@@ -335,7 +335,7 @@ export default async function VenuePage({ params }: Props) {
       )}
 
       {/* Per-hall sections */}
-      <div className="mx-auto max-w-6xl px-4 pt-5 pb-10 space-y-8">
+      <div className="mx-auto max-w-5xl px-4 pt-5 pb-10 space-y-8">
         {hallsWithSlots.map((hall: Hall) => (
           <section key={hall.id} id={`hall-${hall.id}`} className="scroll-mt-4">
             {/* Two-column: sticky calendar left, content right */}
