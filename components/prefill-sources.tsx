@@ -67,6 +67,9 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
 }) {
   const [links, setLinks] = useState<Record<string, string>>({});
   const [panel, setPanel] = useState("");
+  // for any link the AI cannot open: the page text copied and pasted by hand
+  const [pasted, setPasted] = useState<Record<string, string>>({});
+  const [pasteOpen, setPasteOpen] = useState<Record<string, boolean>>({});
   const [notes, setNotes] = useState("");
   const [more, setMore] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
@@ -75,8 +78,9 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
   // What the AI reads: each link with its label, then the pasted Google details and any other text
   const composed = useMemo(() => {
     const lines = SOURCES.map((s) => (links[s.key]?.trim() ? `${s.label}: ${normalise(links[s.key])}` : "")).filter(Boolean);
-    return [...lines, panel.trim() && `Google details (copied from the Google search page):\n${panel.trim()}`, notes.trim()].filter(Boolean).join("\n\n");
-  }, [links, panel, notes]);
+    const pages = SOURCES.map((s) => (pasted[s.key]?.trim() ? `${s.label} (page text copied by hand):\n${pasted[s.key].trim()}` : "")).filter(Boolean);
+    return [...lines, panel.trim() && `Google details (copied from the Google search page):\n${panel.trim()}`, ...pages, notes.trim()].filter(Boolean).join("\n\n");
+  }, [links, panel, pasted, notes]);
   useEffect(() => { onChange(composed); }, [composed, onChange]);
 
   const state = (s: Source) => {
@@ -91,7 +95,7 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
   const have = (k: string) => (k === "google" ? state(SOURCES.find((x) => x.key === "google")!) === "ok" || panel.trim().length > 20 : state(SOURCES.find((x) => x.key === k)!) === "ok");
   const cantRead = (s: Source) => !!report?.unreadable.some((u) => links[s.key] && host(u) === host(normalise(links[s.key])));
   const wasRead = (s: Source) => !!report && state(s) === "ok" && !cantRead(s);
-  const addedCount = SOURCES.filter((s) => state(s) === "ok").length + (panel.trim().length > 20 ? 1 : 0) + (notes.trim().length > 20 ? 1 : 0);
+  const addedCount = SOURCES.filter((s) => state(s) === "ok" || (pasted[s.key]?.trim().length ?? 0) > 20).length + (panel.trim().length > 20 ? 1 : 0) + (notes.trim().length > 20 ? 1 : 0);
   const missingBest = [!have("website") && "your website", !have("google") && "the Google details"].filter(Boolean) as string[];
 
   const linkBox = (s: Source) => {
@@ -111,8 +115,17 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
         <p className="text-[11px] text-zinc-500">Gives: {s.gives}</p>
         <input className={INPUT} value={links[s.key] ?? ""} onChange={(e) => setLinks((l) => ({ ...l, [s.key]: e.target.value }))} placeholder={s.placeholder} inputMode="url" aria-label={s.label} />
         {st === "wrong" && <p className="text-[11px] text-red-500">{s.key === "website" && SOCIAL.test(normalise(links[s.key] ?? "")) ? "That is a social page. Put it under “More links”, and use the business's own website here." : s.wrong}</p>}
-        {cantRead(s) && <p className="text-[11px] text-red-500">We couldn&apos;t open this one. Open it, select all (Cmd/Ctrl+A), copy, and paste the text under “Paste text instead”.</p>}
+        {cantRead(s) && <p className="text-[11px] text-red-500">We couldn&apos;t open this link. Copy the page text and paste it in the box below, and we&apos;ll read that instead.</p>}
         {help === s.key && <p className="text-[11px] text-zinc-500 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 p-2">{s.how}</p>}
+        {(pasteOpen[s.key] || cantRead(s) || (pasted[s.key] ?? "").length > 0) ? (
+          <div className="space-y-1">
+            <textarea className={cn(INPUT, "resize-y")} rows={3} value={pasted[s.key] ?? ""} onChange={(e) => setPasted((p) => ({ ...p, [s.key]: e.target.value }))} aria-label={`${s.label} page text`}
+              placeholder="Paste the text of the page here" />
+            <p className="text-[11px] text-zinc-400">Open the page, press Ctrl/⌘ + A, then Ctrl/⌘ + C, and paste here. On a phone: touch and hold the text, Select all, Copy.</p>
+          </div>
+        ) : (
+          <button type="button" onClick={() => setPasteOpen((o) => ({ ...o, [s.key]: true }))} className="text-[11px] font-semibold text-amber-600 hover:underline">Can&apos;t be read? Copy the page text and paste it instead</button>
+        )}
       </div>
     );
   };
@@ -138,10 +151,10 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
             <button type="button" onClick={() => setHelp(help === "google" ? null : "google")} aria-label="How to copy the Google details" className="ml-auto text-zinc-400 hover:text-zinc-600"><HelpCircle className="h-3.5 w-3.5" /></button>
           </div>
           <p className="text-[11px] text-zinc-500">Gives: address, phone, rating &amp; reviews, opening hours{panel.trim().length > 20 ? "" : " (paste them here)"}</p>
-          <textarea className={cn(INPUT, "resize-y")} rows={3} value={panel} onChange={(e) => setPanel(e.target.value)} aria-label="Google details" placeholder="Search the business on Google, select the panel on the right (name, address, phone, rating) and paste it here" />
+          <textarea className={cn(INPUT, "resize-y")} rows={3} value={panel} onChange={(e) => setPanel(e.target.value)} aria-label="Google details" placeholder="Search the business on Google, copy the panel on the right (name, address, phone, rating, hours) and paste it here" />
           <input className={INPUT} value={links.google ?? ""} onChange={(e) => setLinks((l) => ({ ...l, google: e.target.value }))} placeholder="Google Maps link, for the map pin: https://maps.app.goo.gl/…" inputMode="url" aria-label="Google Maps link" />
           {state(maps) === "wrong" && <p className="text-[11px] text-red-500">{maps.wrong}</p>}
-          {help === "google" && <p className="text-[11px] text-zinc-500 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 p-2">On Google, search the business name and city. Select the information panel (name, address, phone, rating) and copy it into the first box. For the map pin, open it on Google Maps, tap Share, Copy link, and paste that in the second box. Google search page links can&apos;t be read, which is why the panel text is pasted.</p>}
+          {help === "google" && <p className="text-[11px] text-zinc-500 rounded-lg bg-zinc-50 dark:bg-zinc-800/60 p-2">On Google, search the business name and city. Select the information panel (name, address, phone, rating) and copy it into the first box. For the map pin, open it on Google Maps, tap Share, Copy link, and paste that in the second box. Google search page links can&apos;t be read, which is why the panel text is pasted. Tip: press Ctrl/⌘ + A to select the whole page, then Ctrl/⌘ + C. The AI picks out the useful part.</p>}
         </div>
       </div>
 
