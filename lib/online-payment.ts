@@ -1,3 +1,4 @@
+import { raiseAlert } from "@/lib/alert";
 import Razorpay from "razorpay";
 import { db } from "@/lib/db";
 import { splitGST } from "@/lib/gst";
@@ -63,6 +64,7 @@ export async function refundPayment(paymentId: string, amountPaise: number, reas
     return true;
   } catch (e) {
     console.error(`[refund-failed] payment ${paymentId} ₹${amountPaise / 100} (${reason}) NEEDS A MANUAL REFUND`, e);
+    await raiseAlert("A refund failed: do it by hand", `Razorpay payment ${paymentId}, ₹${amountPaise / 100}, reason: ${reason}. Refund it in the Razorpay dashboard.`);
     return false;
   }
 }

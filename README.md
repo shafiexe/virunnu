@@ -90,6 +90,10 @@ Put the result in `.env` as `SESSION_SECRET`.
 
 **Health check.** `GET /api/health` returns 200 `{ok:true}` when the database answers, 503 otherwise. Point an uptime monitor (UptimeRobot, Better Stack, free tiers) at it and have it alert you by email or WhatsApp.
 
+**Error alerts.** Set `ALERT_EMAIL` (needs the SMTP settings) and every server error, every page that crashes in a browser, and every refund Razorpay would not make is emailed to that address (`lib/alert.ts`: the same problem is mailed at most once every ten minutes). A failed refund means a customer's money is held and must be returned by hand in the Razorpay dashboard.
+
+**Uptime monitor (set this up once, outside the app).** The app cannot tell you when it is down, so a free monitor must ask it: in UptimeRobot (or Better Stack), add an HTTPS monitor for `https://<your domain>/api/health` every 5 minutes, add your email (and the phone's push alert) as the contact, and set the keyword `"ok":true` so a 200 with a broken body also counts as down.
+
 **Backups.** Neon keeps point-in-time history (length depends on the plan). Before any risky migration, create a Neon branch from the main branch; it is an instant, restorable copy. Photos still live on local disk, not in the database; they are not covered by Neon backups.
 
 **Daily summary.** Vercel Cron calls `/api/cron/daily-summary` with `CRON_SECRET`. After the first deploy, check Vercel → Project → Cron Jobs → Logs once to confirm it ran and a summary arrived.
