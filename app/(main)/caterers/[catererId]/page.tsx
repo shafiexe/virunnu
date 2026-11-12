@@ -5,6 +5,8 @@ import { LinkedinIcon, XIcon } from "@/components/social-icons";
 import { CatererEnquiryForm } from "@/components/caterer-enquiry-form";
 import { orgLogoUrl } from "@/lib/org-logo";
 import { toMenuDish } from "@/lib/caterer-items";
+import { CatererGallery } from "@/components/caterer-gallery";
+import { CatererStickyCta } from "@/components/caterer-sticky-cta";
 
 const SERVICE_LABELS: Record<string, string> = {
   FOOD: "🍽️ Food & Catering",
@@ -60,13 +62,16 @@ export default async function CatererPublicPage({
   ];
 
   const contactPhone = caterer.whatsappNumber || caterer.phone;
+  // what a customer asks first: the price per plate, and how big a group they can serve
+  const platePrices = menuItems.filter((m) => m.unit === "plate" && m.priceRupees > 0).map((m) => m.priceRupees);
+  const fromPrice = caterer.startingPriceRupees ?? (platePrices.length ? Math.min(...platePrices) : null);
+  const guestLine = caterer.minGuests || caterer.maxGuests ? `${caterer.minGuests ?? 1}–${caterer.maxGuests ? caterer.maxGuests.toLocaleString("en-IN") : "any"} guests` : null;
   const pastEvents = Array.isArray(caterer.pastEvents) ? (caterer.pastEvents as PastEvent[]) : [];
   const facts: [string, string][] = [
     caterer.serviceAreas.length ? ["Serves", caterer.serviceAreas.join(", ")] : null,
     caterer.minGuests || caterer.maxGuests ? ["Group size", `${caterer.minGuests ?? 1}–${caterer.maxGuests ?? "any"} guests`] : null,
     caterer.leadTimeHours != null ? ["Booking", noticeLabel(caterer.leadTimeHours)] : null,
     caterer.mealTypes.length ? ["Meals", caterer.mealTypes.map((m) => MEAL_LABELS[m] ?? m).join(", ")] : null,
-    caterer.startingPriceRupees ? ["Starting at", `₹${caterer.startingPriceRupees.toLocaleString("en-IN")} per plate`] : null,
     caterer.serviceRadiusKm ? ["Travels up to", `${caterer.serviceRadiusKm} km`] : null,
     caterer.teamSize ? ["Team", `${caterer.teamSize} people`] : null,
     caterer.yearsExperience ? ["Experience", `${caterer.yearsExperience} years`] : null,
@@ -74,18 +79,9 @@ export default async function CatererPublicPage({
   ].filter(Boolean) as [string, string][];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
+    <div className="mx-auto max-w-3xl px-4 py-8 pb-28 md:pb-8 space-y-6">
       {/* Photos */}
-      {caterer.photos.length > 0 && (
-        <div className={`grid gap-2 ${caterer.photos.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}>
-          {caterer.photos.slice(0, 4).map((url, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <div key={i} className={`rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 ${i === 0 && caterer.photos.length > 1 ? "col-span-2" : ""}`}>
-              <img src={url} alt="" className="w-full h-48 object-cover" />
-            </div>
-          ))}
-        </div>
-      )}
+      <CatererGallery photos={caterer.photos} name={caterer.name} />
 
       {/* Header */}
       <div className="space-y-2">
@@ -106,6 +102,12 @@ export default async function CatererPublicPage({
             {caterer.googleReviewCount ? <span className="text-zinc-400">({caterer.googleReviewCount} Google reviews)</span> : null}
           </div>
         ) : null}
+        {(fromPrice || guestLine) && (
+          <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-1">
+            {fromPrice ? <span className="text-lg font-bold text-amber-600 dark:text-amber-400">From ₹{fromPrice.toLocaleString("en-IN")} <span className="text-sm font-medium text-zinc-500">per plate</span></span> : null}
+            {guestLine ? <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{guestLine}</span> : null}
+          </div>
+        )}
         {caterer.description && (
           <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{caterer.description}</p>
         )}
@@ -113,9 +115,9 @@ export default async function CatererPublicPage({
 
       {/* Quick facts */}
       {facts.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-px overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-zinc-200 dark:bg-zinc-800">
+        <div className="flex flex-wrap gap-2">
           {facts.map(([label, value]) => (
-            <div key={label} className="bg-white dark:bg-zinc-900 px-4 py-3">
+            <div key={label} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 max-w-full">
               <div className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">{label}</div>
               <div className="mt-0.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">{value}</div>
             </div>
@@ -202,7 +204,7 @@ export default async function CatererPublicPage({
       </div>
 
       {/* Enquiry form */}
-      <CatererEnquiryForm catererId={caterer.id} catererName={caterer.name} contactPhone={contactPhone} />
+      <div id="enquiry" className="scroll-mt-24"><CatererEnquiryForm catererId={caterer.id} catererName={caterer.name} contactPhone={contactPhone} /></div>
 
       {/* Work done */}
       {pastEvents.length > 0 && (
@@ -253,6 +255,7 @@ export default async function CatererPublicPage({
           ))}
         </div>
       )}
+      <CatererStickyCta phone={caterer.phone} whatsapp={caterer.whatsappNumber} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Send, CheckCircle, ChevronDown, ChevronUp } from "lucide-react";
 
 export function CatererEnquiryForm({
@@ -13,6 +13,8 @@ export function CatererEnquiryForm({
   contactPhone: string;
 }) {
   const [open, setOpen] = useState(false);
+  // the sticky Enquire button on a phone opens this form
+  useEffect(() => { const on = () => setOpen(true); window.addEventListener("open-enquiry", on); return () => window.removeEventListener("open-enquiry", on); }, []);
   const [minDate] = useState(() => new Date().toISOString().split("T")[0]);
   const [form, setForm] = useState({ name: "", phone: "", eventDate: "", guestCount: "", message: "" });
   const [loading, setLoading] = useState(false);

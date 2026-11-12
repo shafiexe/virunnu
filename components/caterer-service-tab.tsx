@@ -392,6 +392,9 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
               <div key={idx} className="relative group aspect-video rounded-xl overflow-hidden bg-zinc-100 dark:bg-zinc-800">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="w-full h-full object-cover" />
+                {idx === 0
+                  ? <span className="absolute left-1 top-1 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white">Cover</span>
+                  : <button type="button" onClick={() => setForm((f) => ({ ...f, photos: [url, ...f.photos.filter((_, i) => i !== idx)] }))} className="absolute left-1 top-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">Make cover</button>}
                 <button
                   type="button"
                   onClick={() => removePhoto(idx)}
