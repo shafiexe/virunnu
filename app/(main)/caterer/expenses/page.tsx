@@ -37,7 +37,7 @@ export default async function CatererExpensesPage({ searchParams }: Props) {
   }));
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Expenses</h1>

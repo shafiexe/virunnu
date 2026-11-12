@@ -126,7 +126,7 @@ export function OwnerSettingsTabs({ deny, mainOwner = true }: { deny?: string[];
   if (tabs.length < 2) return null;
   return (
     <nav aria-label="Settings" className="w-full border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 overflow-x-auto">
-      <div className="mx-auto flex min-w-max max-w-3xl gap-1.5 px-4 py-2.5">
+      <div className="mx-auto flex min-w-max max-w-6xl gap-1.5 px-4 py-2.5">
         {tabs.map((t) => {
           const active = [t.href, ...t.also].some((h) => pathname === h || pathname.startsWith(h + "/"));
           return (

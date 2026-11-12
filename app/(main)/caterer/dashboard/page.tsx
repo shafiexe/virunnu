@@ -80,7 +80,7 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
   const cashProfit = receivedMonth - expenses.paidTotal;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-6">
       {setupSteps.length > 0 && <SetupChecklist steps={setupSteps} storageKey={`virunnu.setup.caterer.${caterer.id}`} />}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>

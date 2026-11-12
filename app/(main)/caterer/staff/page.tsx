@@ -33,7 +33,7 @@ export default async function CatererStaffPage({ searchParams }: { searchParams:
   const paid = staff.reduce((s, p) => s + p.paidPaise, 0);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-5">
       <CatererSectionTabs tabs={partyTabs()} active="staff" />
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>

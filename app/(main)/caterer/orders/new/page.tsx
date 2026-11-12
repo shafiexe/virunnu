@@ -25,7 +25,7 @@ export default async function NewOrderPage({ searchParams }: { searchParams: Pro
   const items = await db.catererItem.findMany({ where: { catererId: ctx.caterer.id }, orderBy: [{ sortOrder: "asc" }, { name: "asc" }] });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-5">
       <BackToList href="/caterer/orders" label="Back to orders" />
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">New order</h1>

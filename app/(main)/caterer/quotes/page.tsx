@@ -41,7 +41,7 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
     .filter((q) => quoteState(q) === "OPEN").reduce((s, q) => s + q.totalPaise, 0);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-4">
       <CatererSectionTabs tabs={orderTabs(pending)} active="quotes" />
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>

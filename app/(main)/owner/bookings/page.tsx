@@ -28,7 +28,7 @@ export default async function OwnerBookingsPage({
   const waiting = await pendingRequestCount(session.orgId);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6">
       {/* requests are not bookings: they wait in Enquiries until approved */}
       <Link href="/owner/enquiries" className={waiting > 0
         ? "mb-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm hover:bg-amber-100/60"

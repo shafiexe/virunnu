@@ -28,7 +28,7 @@ export default async function CatererSuppliersPage({ searchParams }: { searchPar
   const used = SUPPLIER_CATEGORIES.filter((c) => all.some((s) => s.category === c));
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-5">
       <CatererSectionTabs tabs={partyTabs()} active="suppliers" />
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>

@@ -67,7 +67,7 @@ export default async function CustomerDetailPage({ params }: Props) {
   }));
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl">
       <CustomerDetail
         customer={{ id: customer.id, name: customer.name, phone: customer.phone }}
         bookings={serialized}

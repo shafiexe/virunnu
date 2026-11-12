@@ -26,7 +26,7 @@ export default async function CatererOrdersPage({
   const pending = await db.cateringEnquiry.count({ where: { catererId: ctx.caterer.id, status: "PENDING" } });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-4">
       <CatererSectionTabs tabs={orderTabs(pending)} active="orders" />
       <CatererOrdersTable initial={{ status, search: (sp.search ?? "").slice(0, 100), page, pageSize }} />
     </div>

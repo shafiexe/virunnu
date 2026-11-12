@@ -57,7 +57,7 @@ export default async function CatererReportsPage({ searchParams }: { searchParam
   const rng = { catererId: caterer.id, orgId, from: range.from, to: range.to, label: range.label, pg };
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Reports</h1>
         <p className="text-sm text-zinc-500 mt-0.5">How the business is going. Pick any start and end date.</p>

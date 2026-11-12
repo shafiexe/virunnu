@@ -40,7 +40,7 @@ export default async function OwnerVenuesPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-10">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-10">
       <ReadOnlyShield page="venues">
       {/* ── My Venue (profile + halls + slots) ───────────────── */}
       <div>

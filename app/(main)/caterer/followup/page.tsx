@@ -46,7 +46,7 @@ export default async function FollowUpPage() {
   const { toCall, resting, totalPaise } = await followUpList(ctx.caterer.id, days);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-4">
       <CatererSectionTabs tabs={partyTabs()} active="followup" />
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>

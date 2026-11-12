@@ -27,7 +27,7 @@ export default async function QuotePage({ params }: { params: Promise<{ quoteId:
   const state = quoteState(q);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-4">
       <BackToList href="/caterer/quotes" label="Back to quotations" />
       <div className="flex items-center gap-3 flex-wrap">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Quotation {doc.info.label}</h1>

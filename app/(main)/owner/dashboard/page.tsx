@@ -171,7 +171,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 space-y-8">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-8">
       {setupSteps.length > 0 && <SetupChecklist steps={setupSteps} storageKey={`virunnu.setup.venue.${session.orgId}`} />}
 
       {/* Header */}
