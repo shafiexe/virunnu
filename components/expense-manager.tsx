@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useUndoable } from "@/components/undo-toast";
 import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
@@ -170,6 +172,7 @@ export function ExpenseManager({
     if (res.ok) { const d = await res.json(); setEmployees(d.employees ?? []); }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- loads from the server on open
   useEffect(() => { loadEmployees(); }, [loadEmployees]);
 
   // ── Load categories ───────────────────────────────────────────────────────────
@@ -184,6 +187,7 @@ export function ExpenseManager({
     setCatLoading(false);
   }, [hideStaff]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- loads from the server on open
   useEffect(() => { loadCategories(); }, [loadCategories]);
 
   // ── Refresh expenses ──────────────────────────────────────────────────────────
@@ -525,7 +529,7 @@ export function ExpenseManager({
         )}
       </div>
       {hideStaff && (
-        <p className="text-xs text-zinc-500">Salaries, daily wages and advances are recorded under <a href="/caterer/staff" className="font-semibold text-amber-600 hover:underline">Parties → Staff</a>, so they are never counted twice.</p>
+        <p className="text-xs text-zinc-500">Salaries, daily wages and advances are recorded under <Link href="/caterer/staff" className="font-semibold text-amber-600 hover:underline">Parties → Staff</Link>, so they are never counted twice.</p>
       )}
 
       {/* ── EXPENSES TAB ───────────────────────────────────────────────────────── */}

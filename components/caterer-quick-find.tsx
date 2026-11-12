@@ -40,12 +40,15 @@ export function CatererQuickFind({ variant, endpoint = "/api/caterer/find", plac
     return () => window.removeEventListener("keydown", key);
   }, [variant]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- the search starts empty each time it opens
   useEffect(() => { if (open) { setQ(""); setHits([]); setAt(0); requestAnimationFrame(() => input.current?.focus()); } }, [open]);
 
   useEffect(() => {
     if (!open) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- the results follow what is typed */
     if (!q.trim()) { setHits([]); return; }
     setLoading(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
     const t = setTimeout(async () => {
       try {
         const data = await fetch(`${endpoint}?q=${encodeURIComponent(q)}`).then((r) => r.json());

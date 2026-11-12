@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { Suspense } from "react";
@@ -53,9 +54,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <NextIntlClientProvider locale={locale} messages={messages}>
           <header className="sticky top-0 z-50 border-b border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md shadow-sm">
             <div className="mx-auto max-w-5xl px-4 h-14 flex items-center justify-between">
-              <a href="/" className="flex items-center text-zinc-900 dark:text-zinc-50">
+              <Link href="/" className="flex items-center text-zinc-900 dark:text-zinc-50">
                 <VirunnuLogo fontSize={24} />
-              </a>
+              </Link>
               <div className="flex items-center gap-1">
                 <ThemeToggle />
                 <div className="hidden sm:block w-px h-5 mx-2 bg-zinc-200 dark:bg-zinc-700 shrink-0" />

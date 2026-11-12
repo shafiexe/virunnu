@@ -300,7 +300,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                   <div className="flex items-center gap-2 mb-2.5">
                     <Zap className="h-3.5 w-3.5 text-purple-500" />
                     <span className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">Amenities</span>
-                    <span className="text-[11px] text-zinc-400 ml-1">Tap to deselect any that don't apply</span>
+                    <span className="text-[11px] text-zinc-400 ml-1">Tap to deselect any that don&apos;t apply</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {amenities.map(amenity => {

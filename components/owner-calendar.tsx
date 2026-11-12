@@ -107,6 +107,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
     }
   }, [selectedVenueId, year, month]);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- loads the month from the server when the venue or month changes
   useEffect(() => { fetchSlots(); }, [fetchSlots]);
 
   // Slot map: "YYYY-MM-DD" → CalendarSlot[]
@@ -179,16 +180,6 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
     setPasteText(""); setDraftNote("");
     setShowAddModal(true);
   }
-
-  // "+ New → New booking" from any page lands here with the form open and no date chosen yet
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    if (url.searchParams.get("new") !== "1") return;
-    url.searchParams.delete("new");
-    window.history.replaceState(null, "", url.pathname + url.search);
-    openAdd();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // A returning customer's name fills in once the number is known
   async function lookupName(phone: string) {
@@ -376,6 +367,17 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
     if (sl.status === "BOOKED" || sl.bookings.length > 0) slotBlockReason.set(sl.template.id, "booked");
     else if (sl.status !== "AVAILABLE") slotBlockReason.set(sl.template.id, "blocked");
   }
+
+  // "+ New → New booking" from any page lands here with the form open and no date chosen yet
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("new") !== "1") return;
+    url.searchParams.delete("new");
+    window.history.replaceState(null, "", url.pathname + url.search);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- opens the form once when sent here
+    openAdd();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="space-y-4">

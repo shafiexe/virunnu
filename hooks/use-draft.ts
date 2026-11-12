@@ -16,6 +16,7 @@ export function useDraft<T>(key: string, value: T, { enabled, meaningful }: { en
       const raw = localStorage.getItem(key);
       if (raw) {
         const d = JSON.parse(raw) as { value: T; at: number };
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- reads the saved draft from this browser once on open
         if (Date.now() - d.at < MAX_AGE && meaningful(d.value)) setPending(d);
         else localStorage.removeItem(key);
       }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminLoginForm } from "@/components/admin-login-form";
 
 export const metadata = { title: "Admin Login — Virunnu" };
@@ -97,9 +98,9 @@ export default function AdminLoginPage() {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <a href="/" className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+            <Link href="/" className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
               ← Back to home
-            </a>
+            </Link>
           </div>
         </div>
       </div>

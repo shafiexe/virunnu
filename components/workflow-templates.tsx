@@ -374,6 +374,7 @@ export function WorkflowTemplates() {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- loads from the server on open
   useEffect(() => { loadTemplates(); }, [loadTemplates]);
 
   const handleSave = useCallback(async (channel: EventChannel) => {

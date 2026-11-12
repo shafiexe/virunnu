@@ -108,7 +108,7 @@ export function LoginForm() {
       <form onSubmit={handleForgot} className="space-y-4">
         <div>
           <p className="text-sm text-zinc-500 mb-3">
-            Enter your registered phone number. We'll send a new password via WhatsApp and email.
+            Enter your registered phone number. We&apos;ll send a new password via WhatsApp and email.
           </p>
         </div>
         <div className="space-y-1">

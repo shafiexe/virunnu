@@ -45,6 +45,7 @@ export default async function SupplierLedgerPage({ params, searchParams }: { par
   const cycle = supplier.cycle as SupplierCycleKey;
   const unpaid = supplier.purchases.filter((p) => p.totalPaise > p.paidPaise);
   const oldest = unpaid.length ? unpaid.reduce((a, p) => (p.date < a ? p.date : a), unpaid[0].date) : null;
+  // eslint-disable-next-line react-hooks/purity -- a server page, rendered once per request
   const waitDays = oldest ? Math.floor((Date.now() - oldest.getTime()) / 86400000) : 0;
   const overdue = due > 0 && CYCLE_DAYS[cycle] > 0 && waitDays > CYCLE_DAYS[cycle];
 

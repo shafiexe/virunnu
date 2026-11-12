@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
 import { HeroBackground } from "@/components/hero-background";
 import { VirunnuLogo } from "@/components/virunnu-logo";
@@ -84,7 +85,7 @@ export default function LoginPage() {
         <div className="lg:hidden mb-10 text-center space-y-1 text-zinc-900 dark:text-zinc-50">
           <VirunnuLogo fontSize={34} />
           <p className="text-[11px] text-zinc-400 tracking-[0.18em] uppercase mt-2">
-            Kerala's hall booking platform
+            Kerala&apos;s hall booking platform
           </p>
         </div>
 
@@ -115,12 +116,12 @@ export default function LoginPage() {
           </p>
 
           <div className="text-center">
-            <a
+            <Link
               href="/"
               className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
             >
               ← Back to home
-            </a>
+            </Link>
           </div>
 
         </div>

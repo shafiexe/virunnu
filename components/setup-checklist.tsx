@@ -1,20 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { Check, ChevronDown, ChevronUp, Circle, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { setStoredValue, useMediaQuery, useStoredValue } from "@/hooks/use-browser-value";
 
 export type SetupStep = { key: string; label: string; hint: string; href: string; done: boolean };
 
 // A short "get set up" list on the dashboard: each step ticks itself when it is done, one tap opens it, and the card goes away when
 // everything is finished. It can be hidden for good by the person; the choice is remembered in this browser.
 export function SetupChecklist({ steps, storageKey }: { steps: SetupStep[]; storageKey: string }) {
-  const [hidden, setHidden] = useState(false);
-  const [open, setOpen] = useState(true);
-  useEffect(() => { try { setHidden(localStorage.getItem(storageKey) === "1"); } catch { /* shown */ } }, [storageKey]);
-  // on a phone the list starts folded to its title and progress bar, so the dashboard itself is the first thing seen
-  useEffect(() => { if (window.matchMedia("(max-width: 767px)").matches) setOpen(false); }, []);
+  // hidden for good (remembered in this browser), and open or folded: folded on a phone until the person opens it
+  const hidden = useStoredValue(storageKey) === "1";
+  const onPhone = useMediaQuery("(max-width: 767px)");
+  const [openChoice, setOpenChoice] = useState<boolean | null>(null);
+  const open = openChoice ?? !onPhone;
 
   const done = steps.filter((s) => s.done).length;
   if (hidden || done === steps.length) return null;
@@ -29,8 +30,8 @@ export function SetupChecklist({ steps, storageKey }: { steps: SetupStep[]; stor
           {next && <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5">Next: <span className="font-medium">{next.label}</span></p>}
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <button type="button" onClick={() => setOpen((o) => !o)} aria-label={open ? "Collapse" : "Expand"} className="p-1.5 text-zinc-400 hover:text-zinc-600">{open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</button>
-          <button type="button" onClick={() => { try { localStorage.setItem(storageKey, "1"); } catch { /* ignore */ } setHidden(true); }} aria-label="Hide this list" title="Hide for good" className="p-1.5 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={() => setOpenChoice(!open)} aria-label={open ? "Collapse" : "Expand"} className="p-1.5 text-zinc-400 hover:text-zinc-600">{open ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}</button>
+          <button type="button" onClick={() => setStoredValue(storageKey, "1")} aria-label="Hide this list" title="Hide for good" className="p-1.5 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
         </div>
       </div>
       <div className="h-1.5 rounded-full bg-amber-100 dark:bg-amber-950/40 overflow-hidden"><div className="h-full rounded-full bg-amber-500 transition-all" style={{ width: `${Math.max(pct, 4)}%` }} /></div>

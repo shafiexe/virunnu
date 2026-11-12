@@ -25,6 +25,7 @@ export function BookingCaterer({ bookingId, caterer, sent, closed, canShare }: {
   const canWrite = useCanWrite("bookings");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the list when the search is emptied
     if (q.trim().length < 2) { setFound([]); return; }
     const t = setTimeout(() => { fetch(`/api/owner/caterers/search?q=${encodeURIComponent(q.trim())}`).then((r) => r.json()).then((d) => setFound(d.caterers ?? [])).catch(() => {}); }, 200);
     return () => clearTimeout(t);

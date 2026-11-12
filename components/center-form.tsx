@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { PrefillSources, type PrefillReport } from "@/components/prefill-sources";
 import { useState } from "react";
 import { CheckCircle2, Copy, Plus, Sparkles, X } from "lucide-react";
@@ -276,9 +278,9 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
           Once approved, your listing goes live and your login is sent to your WhatsApp{f.email ? " and email" : ""}.
           You can update everything later from your dashboard.
         </p>
-        <a href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors">
           Back to home
-        </a>
+        </Link>
       </div>
     );
   }
@@ -513,7 +515,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
 
         <div className="space-y-2">
           <span className="text-xs font-medium text-zinc-500">
-            Amenities <span className="font-normal text-zinc-400">— the usual ones are ticked: untick any this place doesn't have, and tap to add more. Saved as the center's Amenities &amp; Add-ons (free by default); it can edit or price them later</span>
+            Amenities <span className="font-normal text-zinc-400">— the usual ones are ticked: untick any this place doesn&apos;t have, and tap to add more. Saved as the center&apos;s Amenities &amp; Add-ons (free by default); it can edit or price them later</span>
             {suggested.length > 0 && <span className="font-normal text-zinc-400"> — tap to include or remove; <Sparkles className="inline h-3 w-3 text-amber-500" /> are AI suggestions, not from the source</span>}
           </span>
           <div className="flex flex-wrap gap-2">

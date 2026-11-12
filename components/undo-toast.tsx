@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/refs -- the pending map is filled in the same step that adds the toast, so reading it while drawing is safe */
+
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Undo2, X } from "lucide-react";

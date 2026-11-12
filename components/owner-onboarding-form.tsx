@@ -275,7 +275,7 @@ export function OwnerOnboardingForm() {
             <div className="space-y-1">
               <Label htmlFor="googleReviewUrl" className="text-xs">
                 Google review link
-                <span className="ml-1 font-normal text-zinc-400">— link that opens "Write a review"</span>
+                <span className="ml-1 font-normal text-zinc-400">— link that opens &quot;Write a review&quot;</span>
               </Label>
               <Input id="googleReviewUrl" type="url" placeholder="https://search.google.com/local/writereview?placeid=..."
                 value={s1.googleReviewUrl} onChange={(e) => setS1({ ...s1, googleReviewUrl: e.target.value })} />

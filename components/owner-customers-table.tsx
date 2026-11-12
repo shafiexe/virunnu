@@ -7,6 +7,7 @@ import { usePaginated } from "@/hooks/use-paginated";
 import { PaginationBar } from "@/components/pagination-bar";
 import { cn } from "@/lib/utils";
 import { Show } from "@/components/access-context";
+import { setStoredValue, useMediaQuery, useStoredValue } from "@/hooks/use-browser-value";
 
 type Customer = {
   id: string;
@@ -93,15 +94,10 @@ function CustomerCard({ c }: { c: Customer }) {
 
 export function OwnerCustomersTable() {
   const [searchInput, setSearchInput] = useState("");
-  const [view, setView] = useState<"list" | "card">("list");
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("customers-view");
-      if (saved === "card" || saved === "list") setView(saved);
-      // nothing chosen yet: a phone starts on cards, which fit the screen better than a wide table
-      else if (window.matchMedia("(max-width: 767px)").matches) setView("card");
-    } catch { /* */ }
-  }, []);
+  // the layout the person chose; until they choose, a phone starts on cards, which fit its screen better than a wide table
+  const savedView = useStoredValue("customers-view");
+  const onPhone = useMediaQuery("(max-width: 767px)");
+  const view: "list" | "card" = savedView === "card" || savedView === "list" ? savedView : onPhone ? "card" : "list";
 
   const { data: customers, total, totalPages, page, pageSize, loading, error, goToPage, changePageSize, onSearchChange, refresh } =
     usePaginated<Customer>({ url: "/api/owner/customers", defaultPageSize: 50 });
@@ -111,10 +107,7 @@ export function OwnerCustomersTable() {
     onSearchChange(v);
   }, [onSearchChange]);
 
-  const toggleView = (v: "list" | "card") => {
-    setView(v);
-    try { localStorage.setItem("customers-view", v); } catch { /* */ }
-  };
+  const toggleView = (v: "list" | "card") => setStoredValue("customers-view", v);
 
   const exportUrl = `/api/owner/customers/export${searchInput ? `?search=${encodeURIComponent(searchInput)}` : ""}`;
 

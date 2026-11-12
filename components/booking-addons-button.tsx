@@ -48,6 +48,7 @@ export function BookingAddonsDialog({
 
   useEffect(() => {
     if (!open) return;
+    /* eslint-disable react-hooks/set-state-in-effect -- the form starts afresh each time the dialog opens */
     setRemove([]);
     setAdds({});
     setCustom([]);
@@ -55,6 +56,7 @@ export function BookingAddonsDialog({
     setHours(Object.fromEntries(addons.map((a) => [a.id, a.quantity])));
     setError("");
     setLoading(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
     fetch(`/api/owner/venues/${venueId}/addons`)
       .then((r) => r.json().catch(() => ({})))
       .then((data) => setVenueAddons(((data.addons ?? []) as VenueAddon[]).filter((a) => a.active)))

@@ -9,6 +9,7 @@ import { PURCHASE_CATEGORIES } from "@/lib/caterer-purchases";
 import { UNITS } from "@/lib/caterer-items";
 import { rs } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
+import { setStoredValue, useStoredValue } from "@/hooks/use-browser-value";
 
 type Person = { id: string; name: string };
 export type SupplierOption = { id: string; name: string; category: string };
@@ -54,14 +55,16 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
   const [justTotal, setJustTotal] = useState(initial ? initial.lines.length === 0 : false);
   const [total, setTotal] = useState(initial && initial.lines.length === 0 ? String(initial.totalPaise / 100) : "");
   const [paid, setPaid] = useState("");
-  const [method, setMethod] = useState("CASH");
+  // the way of paying used last time is chosen already, until the person picks another
+  const lastMode = useStoredValue("virunnu.payMode");
+  const [methodChoice, setMethodChoice] = useState<string | null>(null);
+  const method = methodChoice ?? (initial ? "CASH" : lastMode ?? "CASH");
+  const setMethod = setMethodChoice;
   const [newPerson, setNewPerson] = useState("");
   const [addingPerson, setAddingPerson] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // the way of paying used last time is chosen already
-  useEffect(() => { try { const m = localStorage.getItem("virunnu.payMode"); if (m && !initial) setMethod(m); } catch { /* ignore */ } }, [initial]);
 
   // an unfinished new purchase is kept, so nothing typed is lost
   const draft = useDraft("virunnu.draft.purchase", { date, supplierId, billNo, category, employeeId, orderId, notes, rows, justTotal, total, paid, method }, { enabled: !initial, meaningful: (v) => !!(v.supplierId || v.rows.length || v.total || v.billNo) });
@@ -118,7 +121,7 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not save"); return; }
-      try { if (paidNum > 0) localStorage.setItem("virunnu.payMode", method); } catch { /* ignore */ }
+      if (paidNum > 0) setStoredValue("virunnu.payMode", method);
       draft.clear();
       router.push("/caterer/purchases");
       router.refresh();

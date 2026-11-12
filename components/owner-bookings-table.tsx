@@ -11,6 +11,7 @@ import { QuickPayButton } from "@/components/quick-pay-button";
 import { addonSummary, type BookingAddonItem } from "@/components/booking-addons-button";
 import { cn } from "@/lib/utils";
 import { WriteOnly, useCanWrite, Show } from "@/components/access-context";
+import { setStoredValue, useMediaQuery, useStoredValue } from "@/hooks/use-browser-value";
 
 type BookingStatus = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED" | "REJECTED";
 
@@ -172,15 +173,10 @@ export type BookingsUrlState = { status: string; search: string; page: number; p
 export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
   const [status, setStatus] = useState(initial.status);
   const [searchInput, setSearchInput] = useState(initial.search);
-  const [view, setView] = useState<"list" | "card">("list");
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("bookings-view");
-      if (saved === "card" || saved === "list") setView(saved);
-      // nothing chosen yet: a phone starts on cards, which fit the screen better than a wide table
-      else if (window.matchMedia("(max-width: 767px)").matches) setView("card");
-    } catch { /* */ }
-  }, []);
+  // the layout the person chose; until they choose, a phone starts on cards, which fit its screen better than a wide table
+  const savedView = useStoredValue("bookings-view");
+  const onPhone = useMediaQuery("(max-width: 767px)");
+  const view: "list" | "card" = savedView === "card" || savedView === "list" ? savedView : onPhone ? "card" : "list";
 
   const { data: bookings, total, totalPages, page, pageSize, loading, error, goToPage, changePageSize, onSearchChange, changeExtraParams, refresh } =
     usePaginated<Booking>({
@@ -212,10 +208,7 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
     onSearchChange(v);
   }, [onSearchChange]);
 
-  const toggleView = (v: "list" | "card") => {
-    setView(v);
-    try { localStorage.setItem("bookings-view", v); } catch { /* */ }
-  };
+  const toggleView = (v: "list" | "card") => setStoredValue("bookings-view", v);
 
   const exportUrl = `/api/owner/bookings/export?${new URLSearchParams({ ...(status !== "ALL" ? { status } : {}), ...(searchInput ? { search: searchInput } : {}) })}`;
 

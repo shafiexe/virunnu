@@ -31,6 +31,7 @@ export function NewMenu({ variant, entries, fabClass }: { variant: "sidebar" | "
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- the list closes when the page changes
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => {
     if (!open) return;

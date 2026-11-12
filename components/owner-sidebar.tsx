@@ -58,7 +58,7 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true, waiting = 
           <span className="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Convention Centre</span>
         </span>
       </div>
-      <CatererQuickFind variant="sidebar" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
+      <CatererQuickFind variant="sidebar" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer&apos;s name or phone number to jump to them and their bookings.</>} />
       <OwnerNewMenu variant="sidebar" deny={deny} />
       {navFor(deny, mainOwner).map((item) => {
         const { href, icon: Icon, label } = item;
@@ -92,7 +92,7 @@ export function OwnerTopTabs({ deny, mainOwner = true, waiting = 0 }: { deny?: s
   return (
     <nav className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-x-auto">
       <div className="flex min-w-max px-2">
-        <CatererQuickFind variant="icon" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
+        <CatererQuickFind variant="icon" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer&apos;s name or phone number to jump to them and their bookings.</>} />
         {navFor(deny, mainOwner).map((item) => {
           const { href, icon: Icon, label } = item;
           const active = isActive(pathname, item);

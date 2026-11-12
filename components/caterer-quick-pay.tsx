@@ -6,6 +6,7 @@ import { Check, Loader2, Wallet, X } from "lucide-react";
 import { BILL_LABEL, rs, type BillTypeKey } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
 import { useCanWrite } from "@/components/access-context";
+import { setStoredValue, useStoredValue } from "@/hooks/use-browser-value";
 
 export type PayableBill = { id: string; number: number; type: BillTypeKey; balancePaise: number };
 
@@ -20,12 +21,14 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
   const [open, setOpen] = useState(false);
   const [billId, setBillId] = useState(bills[0]?.id ?? "");
   const [amount, setAmount] = useState("");
-  const [mode, setMode] = useState("CASH");
+  // the way of paying used last time is chosen already
+  const lastMode = useStoredValue(MODE_KEY);
+  const [modeChoice, setMode] = useState<string | null>(null);
+  const mode = modeChoice ?? (lastMode && MODES.some(([k]) => k === lastMode) ? lastMode : "CASH");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   const bill = bills.find((b) => b.id === billId) ?? bills[0];
-  useEffect(() => { try { const m = localStorage.getItem(MODE_KEY); if (m && MODES.some(([k]) => k === m)) setMode(m); } catch {} }, []);
   if (!bill) return null;
 
   function show() {
@@ -42,7 +45,7 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
       const res = await fetch(`/api/caterer/bills/${bill.id}/payments`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: value, method: mode }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not save"); return; }
-      try { localStorage.setItem(MODE_KEY, mode); } catch {}
+      setStoredValue(MODE_KEY, mode);
       setOpen(false); router.refresh(); onDone?.();
     } finally { setBusy(false); }
   }

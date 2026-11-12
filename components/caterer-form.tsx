@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { PrefillSources, type PrefillReport } from "@/components/prefill-sources";
 import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Copy, ImagePlus, Plus, Sparkles, X } from "lucide-react";
@@ -414,9 +416,9 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
           Thank you for registering {f.name} on Virunnu. Our team will review your details and get back to you within 1–2 business days.
           Once approved, your profile goes live and your login is sent to your WhatsApp and email. You can update everything later from your dashboard.
         </p>
-        <a href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors">
           Back to home
-        </a>
+        </Link>
       </div>
     );
   }
