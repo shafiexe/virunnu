@@ -13,12 +13,13 @@ const KIND_STYLE: Record<string, string> = {
   Customer: "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300",
   Order: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300",
   Supplier: "bg-rose-100 text-rose-800 dark:bg-rose-950/40 dark:text-rose-300",
+  Booking: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300",
   Team: "bg-teal-100 text-teal-800 dark:bg-teal-950/40 dark:text-teal-300",
 };
 
 // Type a name, a phone number, an invoice number (#14) or a quotation (Q-4) and Enter takes you straight there.
 // Opens from the Search button, or with "/" or Ctrl/⌘ + K from anywhere.
-export function CatererQuickFind({ variant }: { variant: "sidebar" | "icon" }) {
+export function CatererQuickFind({ variant, endpoint = "/api/caterer/find", placeholder = "Customer, phone, invoice #14, quotation Q-4…", hint }: { variant: "sidebar" | "icon"; endpoint?: string; placeholder?: string; hint?: React.ReactNode }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
@@ -28,6 +29,8 @@ export function CatererQuickFind({ variant }: { variant: "sidebar" | "icon" }) {
   const input = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // the sidebar and the phone tabs are both on the page; only the sidebar one answers the keyboard
+    if (variant !== "sidebar") return;
     const key = (e: KeyboardEvent) => {
       const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((e.target as HTMLElement)?.tagName) || (e.target as HTMLElement)?.isContentEditable;
       if ((e.key === "k" && (e.metaKey || e.ctrlKey)) || (e.key === "/" && !typing)) { e.preventDefault(); setOpen(true); }
@@ -35,7 +38,7 @@ export function CatererQuickFind({ variant }: { variant: "sidebar" | "icon" }) {
     };
     window.addEventListener("keydown", key);
     return () => window.removeEventListener("keydown", key);
-  }, []);
+  }, [variant]);
 
   useEffect(() => { if (open) { setQ(""); setHits([]); setAt(0); requestAnimationFrame(() => input.current?.focus()); } }, [open]);
 
@@ -45,7 +48,7 @@ export function CatererQuickFind({ variant }: { variant: "sidebar" | "icon" }) {
     setLoading(true);
     const t = setTimeout(async () => {
       try {
-        const data = await fetch(`/api/caterer/find?q=${encodeURIComponent(q)}`).then((r) => r.json());
+        const data = await fetch(`${endpoint}?q=${encodeURIComponent(q)}`).then((r) => r.json());
         setHits(data.hits ?? []); setAt(0);
       } catch { /* keep what was shown */ } finally { setLoading(false); }
     }, 150);
@@ -73,7 +76,7 @@ export function CatererQuickFind({ variant }: { variant: "sidebar" | "icon" }) {
           <div className="w-full max-w-lg rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 px-4">
               <Search className="h-4 w-4 text-zinc-400 shrink-0" />
-              <input ref={input} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey} placeholder="Customer, phone, invoice #14, quotation Q-4…" aria-label="Search"
+              <input ref={input} value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={onKey} placeholder={placeholder} aria-label="Search"
                 className="flex-1 bg-transparent py-3.5 text-base text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none" />
               {loading && <span className="text-[11px] text-zinc-400">…</span>}
             </div>
@@ -88,7 +91,7 @@ export function CatererQuickFind({ variant }: { variant: "sidebar" | "icon" }) {
                 </li>
               ))}
               {q.trim() && !loading && hits.length === 0 && <li className="px-4 py-8 text-center text-sm text-zinc-400">Nothing found for “{q}”.</li>}
-              {!q.trim() && <li className="px-4 py-6 text-center text-xs text-zinc-400">Try a name, a phone number, <b>#14</b> for an invoice, or <b>Q-4</b> for a quotation.</li>}
+              {!q.trim() && <li className="px-4 py-6 text-center text-xs text-zinc-400">{hint ?? <>Try a name, a phone number, <b>#14</b> for an invoice, or <b>Q-4</b> for a quotation.</>}</li>}
             </ul>
           </div>
         </div>

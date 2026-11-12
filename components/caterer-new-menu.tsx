@@ -18,7 +18,15 @@ const ENTRIES = [
 // Pages that already end in a Save bar, where a floating button would sit on top of it
 const hidesFab = (p: string) => /\/(new|edit|onboarding)(\/|$)/.test(p) || /\/invoice$/.test(p);
 
+export type NewEntry = { href: string; icon: React.ComponentType<{ className?: string }>; label: string; hint: string };
+
 export function CatererNewMenu({ variant, deny }: { variant: "sidebar" | "fab"; deny?: string[] }) {
+  const entries = ENTRIES.filter((e) => canOpen(deny, e.href) && !deny?.includes(`ro.${e.page}`));
+  return <NewMenu variant={variant} entries={entries} fabClass="bottom-[4.75rem]" />;
+}
+
+// The "+ New" button and its list; each side decides which entries a person may see.
+export function NewMenu({ variant, entries, fabClass }: { variant: "sidebar" | "fab"; entries: NewEntry[]; fabClass: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -32,7 +40,6 @@ export function CatererNewMenu({ variant, deny }: { variant: "sidebar" | "fab"; 
     return () => { document.removeEventListener("mousedown", close); document.removeEventListener("keydown", esc); };
   }, [open]);
 
-  const entries = ENTRIES.filter((e) => canOpen(deny, e.href) && !deny?.includes(`ro.${e.page}`));
   if (entries.length === 0 || (variant === "fab" && hidesFab(pathname))) return null;
 
   const list = (
@@ -59,7 +66,7 @@ export function CatererNewMenu({ variant, deny }: { variant: "sidebar" | "fab"; 
   }
 
   return (
-    <div ref={ref} className="md:hidden fixed right-4 bottom-[4.75rem] z-40" style={{ marginBottom: "env(safe-area-inset-bottom)" }}>
+    <div ref={ref} className={cn("md:hidden fixed right-4 z-40", fabClass)} style={{ marginBottom: "env(safe-area-inset-bottom)" }}>
       {open && list}
       <button type="button" onClick={() => setOpen((o) => !o)} aria-label={open ? "Close" : "New"} aria-expanded={open}
         className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/30 transition-transform active:scale-95">

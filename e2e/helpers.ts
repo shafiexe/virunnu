@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import type { BrowserContext, Page } from "@playwright/test";
 
-export type Account = { catererId: string; orgId: string; phone: string; password: string };
+export type Account = { catererId: string; orgId: string; phone: string; password: string; centre: { orgId: string; venueId: string; phone: string; password: string } };
 export const account = (): Account => JSON.parse(readFileSync("e2e/.state.json", "utf-8"));
 
 // Signs in through the app's own login call, so the browser holds a real session cookie

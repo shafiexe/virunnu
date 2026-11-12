@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  ChevronLeft, ChevronRight, Plus, Pencil, Trash2, X, Phone, User, IndianRupee, Ban, CalendarDays,
+  Sparkles, ChevronLeft, ChevronRight, Plus, Pencil, Trash2, X, Phone, User, IndianRupee, Ban, CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddonRow, addonLine } from "@/components/addon-row";
@@ -81,6 +81,9 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
   const [formError, setFormError] = useState("");
   const [blockLoading, setBlockLoading] = useState(false);
   const [addons, setAddons] = useState<Addon[]>([]);
+  const [pasteText, setPasteText] = useState("");
+  const [drafting, setDrafting] = useState(false);
+  const [draftNote, setDraftNote] = useState("");
 
   const venue = venues.find((v) => v.id === selectedVenueId);
   const year = currentDate.getFullYear();
@@ -154,7 +157,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
   }
   while (cells.length % 7 !== 0) cells.push({ day: null, dateStr: null });
 
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = new Date().toLocaleDateString("en-CA"); // the browser's own date, so early-morning IST is not "yesterday"
   const monthLabel = firstDayOfMonth.toLocaleDateString("en-IN", { month: "long", year: "numeric" });
 
   function prevMonth() { setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1)); setSelectedDay(null); }
@@ -173,7 +176,49 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
       addons: {},
     });
     setFormError("");
+    setPasteText(""); setDraftNote("");
     setShowAddModal(true);
+  }
+
+  // "+ New → New booking" from any page lands here with the form open and no date chosen yet
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("new") !== "1") return;
+    url.searchParams.delete("new");
+    window.history.replaceState(null, "", url.pathname + url.search);
+    openAdd();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // A returning customer's name fills in once the number is known
+  async function lookupName(phone: string) {
+    const digits = phone.replace(/\D/g, "").slice(-10);
+    if (digits.length < 10) return;
+    const res = await fetch(`/api/owner/customers?search=${digits}&pageSize=25`).then((r) => r.json()).catch(() => null);
+    const name: string | undefined = (res?.data ?? res?.customers ?? [])[0]?.name;
+    if (name) setAddForm((f) => (f.customerName.trim() ? f : { ...f, customerName: name }));
+  }
+
+  function chooseDate(date: string) {
+    setSelectedDay(date || null);
+    if (date) setCurrentDate(new Date(Number(date.slice(0, 4)), Number(date.slice(5, 7)) - 1, 1));
+    setAddForm((f) => ({ ...f, templateId: "" }));
+  }
+
+  async function fillFromMessage() {
+    const slotsOfHall = venue?.halls[0]?.slotTemplates ?? [];
+    setDrafting(true); setDraftNote(""); setFormError("");
+    try {
+      const res = await fetch("/api/owner/booking-draft", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text: pasteText, slots: slotsOfHall }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) { setDraftNote(data.error ?? "Could not read that message."); return; }
+      const d = data.draft as { customerName: string | null; customerPhone: string | null; date: string | null; templateId: string | null; advanceRupees: number | null };
+      if (d.date) chooseDate(d.date);
+      setAddForm((f) => ({ ...f, customerName: d.customerName ?? f.customerName, customerPhone: d.customerPhone ?? f.customerPhone, templateId: d.templateId ?? f.templateId, advanceRupees: d.advanceRupees ? String(d.advanceRupees) : f.advanceRupees }));
+      if (d.customerPhone && !d.customerName) void lookupName(d.customerPhone);
+      const found = [d.customerName && "name", d.customerPhone && "phone", d.date && "date", d.templateId && "slot", d.advanceRupees && "advance"].filter(Boolean);
+      setDraftNote(found.length ? `Filled in: ${found.join(", ")}. Check it, then fill what is missing.` : "Nothing usable found. Fill the fields below.");
+    } finally { setDrafting(false); }
   }
 
   async function submitAdd(e: React.FormEvent) {
@@ -184,6 +229,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
       setFormError(`That slot is ${blockedWhy} — pick another or unblock it first.`);
       return;
     }
+    if (!selectedDay) { setFormError("Pick the event date."); return; }
     if (!addForm.hallId || !addForm.templateId || !addForm.customerPhone || !addForm.totalRupees) {
       setFormError("Slot, phone and total amount are required.");
       return;
@@ -752,8 +798,26 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <form onSubmit={submitAdd} className="p-5 space-y-4">
+            <form onSubmit={submitAdd} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+              {/* Paste a WhatsApp message or note and the form fills itself */}
+              <div className="rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20 p-3 space-y-2">
+                <label className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300"><Sparkles className="h-3.5 w-3.5" /> Paste the customer&apos;s message</label>
+                <textarea value={pasteText} onChange={(e) => setPasteText(e.target.value)} rows={2} maxLength={2000}
+                  placeholder="e.g. Rahim 98470 12345, wedding 26 Nov evening, advance 50000"
+                  className="w-full rounded-lg border border-amber-200 dark:border-amber-900/50 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                <div className="flex items-center gap-3">
+                  <button type="button" onClick={fillFromMessage} disabled={drafting || pasteText.trim().length < 5}
+                    className="rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 px-3 py-1.5 text-xs font-semibold text-white">{drafting ? "Reading…" : "Fill the form"}</button>
+                  {draftNote && <span className="text-xs text-zinc-600 dark:text-zinc-400">{draftNote}</span>}
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-3">
+                {/* Date */}
+                <div className="col-span-2 space-y-1">
+                  <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Event date *</label>
+                  <input type="date" value={selectedDay ?? ""} min={todayStr} onChange={(e) => chooseDate(e.target.value)}
+                    className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                </div>
                 {/* Slot */}
                 <div className="col-span-2 space-y-1">
                   <label className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Slot *</label>
@@ -797,14 +861,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                     placeholder="9876543210"
                     value={addForm.customerPhone}
                     onChange={(e) => setAddForm((f) => ({ ...f, customerPhone: e.target.value }))}
-                    // a returning customer's name fills in once the number is typed
-                    onBlur={async (e) => {
-                      const digits = e.target.value.replace(/\D/g, "").slice(-10);
-                      if (digits.length < 10) return;
-                      const res = await fetch(`/api/owner/customers?search=${digits}&pageSize=25`).then((r) => r.json()).catch(() => null);
-                      const name: string | undefined = (res?.data ?? res?.customers ?? [])[0]?.name;
-                      if (name) setAddForm((f) => (f.customerName.trim() ? f : { ...f, customerName: name }));
-                    }}
+                    onBlur={(e) => void lookupName(e.target.value)}
                     maxLength={15}
                     className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                     required

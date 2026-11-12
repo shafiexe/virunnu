@@ -4,10 +4,11 @@ import { existsSync, readFileSync, rmSync } from "fs";
 
 export default async function globalTeardown() {
   if (!existsSync("e2e/.state.json")) return;
-  const { catererId, orgId } = JSON.parse(readFileSync("e2e/.state.json", "utf-8"));
+  const { catererId, orgId, centre } = JSON.parse(readFileSync("e2e/.state.json", "utf-8"));
   const admin = await request.newContext({ baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000" });
   await admin.post("/api/admin/auth/login", { data: { username: process.env.ADMIN_USERNAME, password: process.env.ADMIN_PASSWORD } });
   await admin.delete(`/api/admin/caterers/${catererId}`);
+  if (centre?.orgId) await admin.delete(`/api/admin/owners/${centre.orgId}`);
   await admin.dispose();
   // The admin delete removes the caterer only; take the throwaway login(s) and organisation with it
   if (process.env.DATABASE_URL && orgId) {
