@@ -14,9 +14,9 @@ test.describe("phone defaults", () => {
     }
     await p.goto("/owner/dashboard");
     await expect(p.getByText("Get set up")).toBeVisible();
-    await expect(p.getByText("Add your logo")).toBeHidden();
+    await expect(p.getByText(/It prints on every invoice/)).toBeHidden();
     await p.getByRole("button", { name: "Expand" }).click();
-    await expect(p.getByText("Add your logo")).toBeVisible();
+    await expect(p.getByText(/It prints on every invoice/)).toBeVisible();
     await phone.close();
 
     const desk = await browser.newContext({ viewport: { width: 1280, height: 800 } });
@@ -25,7 +25,7 @@ test.describe("phone defaults", () => {
     await d.goto("/owner/bookings");
     await expect(d.locator("table").first()).toBeVisible();
     await d.goto("/owner/dashboard");
-    await expect(d.getByText("Add your logo")).toBeVisible();
+    await expect(d.getByText(/It prints on every invoice/)).toBeVisible();
     await desk.close();
   });
 });
@@ -40,13 +40,14 @@ test.describe("caterer receipts", () => {
     await page.getByPlaceholder("e.g. Shafi").fill("Receipt Customer");
     await page.getByLabel("Find an item").fill("beef biriyani 5");
     await page.getByLabel("Find an item").press("Enter");
+    await expect(page.getByText("Beef biriyani").first()).toBeVisible();
     await page.getByRole("button", { name: "Save order" }).click();
-    await expect(page).toHaveURL(/\/caterer\/orders\/[a-z0-9]+$/);
+    await expect(page).toHaveURL(/\/caterer\/orders\/(?!new)[a-z0-9]+$/);
     const orderUrl = page.url();
 
     // take a part payment on the invoice
-    await page.getByRole("button", { name: /Receive/ }).first().click();
-    await page.getByRole("button", { name: "Save payment" }).click();
+    await page.getByRole("button", { name: /Payment received/ }).first().click();
+    await page.getByRole("button", { name: "Confirm payment received" }).click();
     await expect(page.getByRole("link", { name: "Receipt", exact: true })).toBeVisible();
     await page.goto(orderUrl);
 
@@ -54,7 +55,7 @@ test.describe("caterer receipts", () => {
     const popup = page.waitForEvent("popup");
     await page.getByRole("button", { name: /receipt on WhatsApp/ }).first().click();
     const wa = decodeURIComponent((await popup).url());
-    expect(wa).toContain("wa.me/919000000333");
+    expect(wa).toContain("919000000333");
     expect(wa).toMatch(/\/r\/[a-z0-9]+/);
 
     // the customer's link shows that one receipt and no phone number

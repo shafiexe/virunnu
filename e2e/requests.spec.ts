@@ -16,7 +16,7 @@ async function request(browser: Browser, name: string, phone: string, ahead: num
   await c.getByPlaceholder("Mohammed Shafi").fill(name);
   await c.getByPlaceholder("+91 98765 43210").fill(phone);
   await c.getByRole("button", { name: /Send booking request/ }).click();
-  await expect(c.getByText(/request/i).first()).toBeVisible();
+  await expect(c.getByText("Contact request sent")).toBeVisible();
   await ctx.close();
 }
 
