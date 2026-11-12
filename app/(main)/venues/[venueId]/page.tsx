@@ -6,6 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, Users, ArrowLeft, IndianRupee, Phone, MessageCircle, Globe, Mail, Star } from "lucide-react";
 import { SlotCalendar } from "@/components/slot-calendar";
+import { VenueStickyCta } from "@/components/venue-sticky-cta";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { getVenue, getHallAvailability } from "@/services/venue.service";
 import { releaseExpiredHolds } from "@/services/booking.service";
@@ -187,7 +188,7 @@ export default async function VenuePage({ params }: Props) {
   };
 
   return (
-    <div className="bg-zinc-50 dark:bg-zinc-950 min-h-screen">
+    <div className="bg-zinc-50 dark:bg-zinc-950 min-h-screen pb-24 md:pb-0">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -479,6 +480,7 @@ export default async function VenuePage({ params }: Props) {
         </section>
 
       </div>
+      <VenueStickyCta phone={venue.phone} whatsapp={venue.whatsappPhone ?? venue.phone} targetId={hallsWithSlots[0] ? `hall-${hallsWithSlots[0].id}` : null} />
     </div>
   );
 }
