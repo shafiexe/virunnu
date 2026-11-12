@@ -233,7 +233,7 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
       </section>
 
       <div className="fixed bottom-16 md:bottom-0 inset-x-0 md:left-52 z-30 border-t border-zinc-200 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/95 backdrop-blur px-4 py-3">
-        <div className="mx-auto max-w-3xl flex items-center gap-3 flex-wrap">
+        <div className="mx-auto w-full max-w-6xl px-4"><div className="max-w-3xl flex items-center gap-3 flex-wrap">
           <div className="flex-1 min-w-[10rem]">
             <div className="text-xs text-zinc-500">Bill total</div>
             <div className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{rs(Math.round(grand * 100))}{!initial && grand > 0 && paidNum < grand && <span className="ml-2 text-xs font-medium text-red-500">Due {rs(Math.round((grand - paidNum) * 100))}</span>}</div>
@@ -242,7 +242,7 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
           <button type="button" onClick={submit} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}{initial ? "Save changes" : "Save purchase"}
           </button>
-        </div>
+        </div></div>
       </div>
     </div>
   );
