@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, Building2, X, Check, Settings } from "lucide-react";
+import { AdminResetPassword } from "@/components/admin-reset-password";
 import { cn } from "@/lib/utils";
 import { CenterForm } from "@/components/center-form";
 
@@ -235,6 +236,7 @@ export function AdminOwnersClient({ initialOrgs }: { initialOrgs: Org[] }) {
                       >
                         {org.disabled ? <ToggleRight className="h-5 w-5" /> : <ToggleLeft className="h-5 w-5" />}
                       </button>
+                      <AdminResetPassword kind="owners" id={org.id} business={venue?.name ?? org.name} />
                       <Link
                         href={`/admin/owners/${org.id}`}
                         className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"

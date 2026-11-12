@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Plus, Pencil, Trash2, ToggleLeft, ToggleRight, UtensilsCrossed, X, Check,
   CheckCircle, ExternalLink, Settings, Phone, Mail, Link2, Globe } from "lucide-react";
 import Link from "next/link";
+import { AdminResetPassword } from "@/components/admin-reset-password";
 import { cn } from "@/lib/utils";
 import { CatererForm } from "@/components/caterer-form";
 
@@ -410,6 +411,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                       >
                         {c.disabled ? <ToggleRight className="h-4.5 w-4.5" /> : <ToggleLeft className="h-4.5 w-4.5" />}
                       </button>
+                      <AdminResetPassword kind="caterers" id={c.id} business={c.name} />
                       <button
                         onClick={() => openEdit(c)}
                         className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
