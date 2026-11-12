@@ -142,7 +142,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
         </button>
       )}
       {canAdjust && (
-        <button onClick={() => setPanel("adjust")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-amber-600 dark:text-amber-400">
+        <button onClick={() => setPanel("adjust")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-amber-700 dark:text-amber-400">
           🏷️ {discountPaise ? "Edit discount" : "Add discount"}
         </button>
       )}
@@ -172,7 +172,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
           <button
             ref={triggerRef}
             onClick={openDropdown}
-            className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
+            className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors"
           >
             <MoreHorizontal className="h-4 w-4" />
           </button>
@@ -184,7 +184,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
             >
               {cancelReason && (
                 <div className="px-3 py-2 border-b border-zinc-100 dark:border-zinc-800">
-                  <p className="text-[10px] text-zinc-400 uppercase font-semibold">Cancel reason</p>
+                  <p className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase font-semibold">Cancel reason</p>
                   <p className="text-xs text-zinc-600 dark:text-zinc-300 mt-0.5">{cancelReason}</p>
                 </div>
               )}
@@ -217,7 +217,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
               <>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Cancel booking</h3>
-                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-400" /></button>
+                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
                 </div>
                 <p className="text-xs text-zinc-500">This will release the slot. Enter the reason (visible to customer).</p>
                 <textarea
@@ -240,11 +240,11 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
               <>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Restore booking</h3>
-                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-400" /></button>
+                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
                 </div>
                 <p className="text-xs text-zinc-500">This will re-book the slot if it&apos;s still available.</p>
                 {error && <p className="text-xs text-red-500">{error}</p>}
-                <button onClick={handleRestore} disabled={loading} className="w-full py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2">
+                <button onClick={handleRestore} disabled={loading} className="w-full py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2">
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   Restore booking
                 </button>
@@ -256,7 +256,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
               <>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Payment received</h3>
-                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-400" /></button>
+                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
                 </div>
 
                 {/* Payment method */}
@@ -308,7 +308,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
                   )}
                 </div>
                 {error && <p className="text-xs text-red-500">{error}</p>}
-                <button onClick={handleCash} disabled={loading} className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2">
+                <button onClick={handleCash} disabled={loading} className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2">
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   Confirm payment received
                 </button>
@@ -320,14 +320,14 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
               <>
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Add discount</h3>
-                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-400" /></button>
+                  <button onClick={() => setPanel(null)}><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
                 </div>
                 <p className="text-xs text-zinc-500">
                   Total: ₹{(totalPaise / 100).toLocaleString("en-IN")}. Enter a discount to reduce what the customer owes.
                 </p>
                 <div className="space-y-2">
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">₹</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 text-sm">₹</span>
                     <input
                       type="number"
                       min={0}
@@ -348,7 +348,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
                   />
                 </div>
                 {error && <p className="text-xs text-red-500">{error}</p>}
-                <button onClick={handleDiscount} disabled={loading} className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2">
+                <button onClick={handleDiscount} disabled={loading} className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2">
                   {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                   Save discount
                 </button>

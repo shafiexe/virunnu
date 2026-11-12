@@ -34,7 +34,7 @@ export function NavUser() {
           <Navigation className="h-4 w-4 shrink-0" />
           <span className="hidden sm:inline">Track booking</span>
         </Link>
-        <Link href="/login" className="flex items-center gap-1.5 text-sm font-semibold text-white bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">
+        <Link href="/login" className="flex items-center gap-1.5 text-sm font-semibold text-zinc-900 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">
           <LogIn className="h-4 w-4 shrink-0" />
           <span className="hidden sm:inline">Sign in</span>
         </Link>
@@ -56,14 +56,6 @@ export function NavUser() {
       )}
       {session.role === "ADMIN" && (
         <Link href="/admin" className={navLink}>Admin</Link>
-      )}
-      {session.role === "CUSTOMER" && (
-        <>
-          <Link href="/bookings" className={navLink}>
-            <ResponsiveText mobile="Bookings" desktop="My bookings" />
-          </Link>
-          <Link href="/track" className={navLink}>Track</Link>
-        </>
       )}
       <button
         onClick={logout}

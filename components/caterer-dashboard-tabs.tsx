@@ -24,7 +24,7 @@ export function CatererDashboardTabs({ activeTab, pendingCount }: { activeTab: s
         >
           {t.label}
           {t.key === "enquiries" && pendingCount > 0 && activeTab !== "enquiries" && (
-            <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] font-bold">
+            <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-zinc-900 text-[10px] font-bold">
               {pendingCount}
             </span>
           )}

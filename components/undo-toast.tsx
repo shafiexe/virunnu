@@ -1,5 +1,7 @@
 "use client";
 
+/* eslint-disable react-hooks/refs -- the pending map is filled in the same step that adds the toast, so reading it while drawing is safe */
+
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Undo2, X } from "lucide-react";
@@ -100,7 +102,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 <Undo2 className="h-4 w-4" /> Undo
               </button>
             )}
-            <button type="button" onClick={() => drop(t.id)} aria-label="Dismiss" className="p-2 text-zinc-400"><X className="h-4 w-4" /></button>
+            <button type="button" onClick={() => drop(t.id)} aria-label="Dismiss" className="p-2 text-zinc-500 dark:text-zinc-400"><X className="h-4 w-4" /></button>
             {pending.current.has(t.id) && <span className="absolute left-0 bottom-0 h-0.5 bg-amber-400" style={{ animation: `undo-shrink ${t.ms}ms linear forwards` }} />}
           </div>
         ))}

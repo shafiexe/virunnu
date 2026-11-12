@@ -68,7 +68,7 @@ export default function TermsPage() {
         <div className="mt-4">
           <Link
             href="/privacy"
-            className="inline-flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400 hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-400 hover:underline"
           >
             View Privacy Policy <ExternalLink className="h-3.5 w-3.5" />
           </Link>
@@ -110,16 +110,16 @@ export default function TermsPage() {
           </p>
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">One number, one role</h3>
           <p>
-            Each mobile number may be associated with exactly one account and one permanent role —
-            Customer, Venue Owner, or Caterer. A single phone number cannot be used for more than
-            one role. Once selected, your role cannot be changed. If you wish to operate under a
-            different role, you must register with a separate phone number.
+            Each mobile number may be associated with exactly one account and one role — Venue Owner
+            or Caterer. A single phone number cannot be used for more than one account. If you wish
+            to operate under a different role, you must use a separate phone number. Customers can
+            send booking requests and payments without an account.
           </p>
-          <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">OTP authentication</h3>
+          <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">Sign-in and password</h3>
           <p>
-            Virunnu uses one-time passwords delivered to your registered mobile number as its
-            authentication method. You are responsible for keeping your mobile number accessible
-            and for all activity that takes place under your account. Never share an OTP with anyone.
+            Venue and catering accounts sign in with a mobile number and a password. You are
+            responsible for keeping your password confidential and your mobile number accessible, and
+            for all activity that takes place under your account. Never share your password with anyone.
           </p>
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">Accuracy of information</h3>
           <p>
@@ -495,7 +495,7 @@ export default function TermsPage() {
       {/* Contact */}
       <div className="pt-8">
         <div className="rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6">
-          <div className="text-[10px] font-semibold tracking-widest uppercase text-zinc-400 mb-3">
+          <div className="text-[10px] font-semibold tracking-widest uppercase text-zinc-500 dark:text-zinc-400 mb-3">
             Questions about these terms?
           </div>
           <div className="space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
@@ -513,7 +513,7 @@ export default function TermsPage() {
                 Virunnu Technologies, Kerala, India
               </span>
             </p>
-            <p className="text-zinc-400 text-xs mt-2">Response within 2 business days</p>
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-2">Response within 2 business days</p>
           </div>
         </div>
       </div>

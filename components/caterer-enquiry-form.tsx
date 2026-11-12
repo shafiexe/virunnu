@@ -69,7 +69,7 @@ export function CatererEnquiryForm({
           <Send className="h-4 w-4 text-amber-500" />
           <span className="font-semibold text-zinc-900 dark:text-zinc-50">Send an enquiry</span>
         </div>
-        {open ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}
+        {open ? <ChevronUp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
       </button>
 
       {open && (
@@ -100,7 +100,7 @@ export function CatererEnquiryForm({
               />
             </label>
             <label className="space-y-1">
-              <span className="text-xs font-medium text-zinc-500">Event date <span className="font-normal text-zinc-400">(optional)</span></span>
+              <span className="text-xs font-medium text-zinc-500">Event date <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span></span>
               <input
                 type="date"
                 value={form.eventDate}
@@ -110,7 +110,7 @@ export function CatererEnquiryForm({
               />
             </label>
             <label className="space-y-1">
-              <span className="text-xs font-medium text-zinc-500">Expected guests <span className="font-normal text-zinc-400">(optional)</span></span>
+              <span className="text-xs font-medium text-zinc-500">Expected guests <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span></span>
               <input
                 type="number"
                 min={1}
@@ -123,7 +123,7 @@ export function CatererEnquiryForm({
           </div>
 
           <label className="block space-y-1">
-            <span className="text-xs font-medium text-zinc-500">Message <span className="font-normal text-zinc-400">(optional)</span></span>
+            <span className="text-xs font-medium text-zinc-500">Message <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span></span>
             <textarea
               value={form.message}
               onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
@@ -138,7 +138,7 @@ export function CatererEnquiryForm({
           <button
             type="submit"
             disabled={loading || !form.name || form.phone.length < 10}
-            className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors disabled:opacity-50"
+            className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-50"
           >
             {loading ? "Sending…" : "Send enquiry →"}
           </button>

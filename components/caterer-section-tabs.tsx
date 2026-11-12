@@ -17,7 +17,7 @@ export async function CatererSectionTabs({ tabs: all, active }: { tabs: { key: s
           href={t.href}
           className={cn(
             "px-4 py-1.5 rounded-lg text-sm font-medium transition-colors",
-            active === t.key ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
+            active === t.key ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
           )}
         >
           {t.label}

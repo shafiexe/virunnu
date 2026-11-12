@@ -55,10 +55,10 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true, waiting = 
           : null}
         <span className="min-w-0">
           {name && <span className="block truncate text-sm font-bold text-zinc-900 dark:text-zinc-50">{name}</span>}
-          <span className="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Convention Centre</span>
+          <span className="block text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Convention Centre</span>
         </span>
       </div>
-      <CatererQuickFind variant="sidebar" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
+      <CatererQuickFind variant="sidebar" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer&apos;s name or phone number to jump to them and their bookings.</>} />
       <OwnerNewMenu variant="sidebar" deny={deny} />
       {navFor(deny, mainOwner).map((item) => {
         const { href, icon: Icon, label } = item;
@@ -74,9 +74,9 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true, waiting = 
                 : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-50"
             )}
           >
-            <Icon className={cn("h-4 w-4 shrink-0", active && "text-amber-600 dark:text-amber-400")} />
+            <Icon className={cn("h-4 w-4 shrink-0", active && "text-amber-700 dark:text-amber-400")} />
             <span className="flex-1">{label}</span>
-            {href === "/owner/enquiries" && waiting > 0 && <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">{waiting}</span>}
+            {href === "/owner/enquiries" && waiting > 0 && <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-zinc-900">{waiting}</span>}
             {active && <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />}
           </Link>
         );
@@ -92,7 +92,7 @@ export function OwnerTopTabs({ deny, mainOwner = true, waiting = 0 }: { deny?: s
   return (
     <nav className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-x-auto">
       <div className="flex min-w-max px-2">
-        <CatererQuickFind variant="icon" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
+        <CatererQuickFind variant="icon" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer&apos;s name or phone number to jump to them and their bookings.</>} />
         {navFor(deny, mainOwner).map((item) => {
           const { href, icon: Icon, label } = item;
           const active = isActive(pathname, item);
@@ -104,13 +104,13 @@ export function OwnerTopTabs({ deny, mainOwner = true, waiting = 0 }: { deny?: s
               className={cn(
                 "flex items-center gap-1.5 px-3 py-3 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap",
                 active
-                  ? "border-amber-500 text-amber-600 dark:text-amber-400"
+                  ? "border-amber-500 text-amber-700 dark:text-amber-400"
                   : "border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
               )}
             >
               <Icon className="h-3.5 w-3.5" />
               {label}
-              {href === "/owner/enquiries" && waiting > 0 && <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">{waiting}</span>}
+              {href === "/owner/enquiries" && waiting > 0 && <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-zinc-900">{waiting}</span>}
             </Link>
           );
         })}
@@ -132,7 +132,7 @@ export function OwnerSettingsTabs({ deny, mainOwner = true }: { deny?: string[];
           const active = [t.href, ...t.also].some((h) => pathname === h || pathname.startsWith(h + "/"));
           return (
             <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined}
-              className={cn("whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-medium transition-colors", active ? "bg-amber-500 text-white" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800")}>
+              className={cn("whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-medium transition-colors", active ? "bg-amber-500 text-zinc-900" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800")}>
               {t.label}
             </Link>
           );

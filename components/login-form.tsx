@@ -86,15 +86,15 @@ export function LoginForm() {
         </div>
         {devPassword && (
           <div className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-3 text-left">
-            <p className="text-[10px] font-bold text-amber-600 uppercase tracking-wide mb-1">Dev mode — new password</p>
+            <p className="text-[10px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-wide mb-1">Dev mode — new password</p>
             <p className="font-mono text-sm font-bold text-zinc-900 dark:text-zinc-50">{devPassword}</p>
-            <p className="text-[10px] text-zinc-400 mt-1">Not shown in production. Configure SMTP/Twilio in .env to send real notifications.</p>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Not shown in production. Configure SMTP/Twilio in .env to send real notifications.</p>
           </div>
         )}
         <button
           type="button"
           onClick={() => { setStep("login"); setPhone(fpPhone); setPassword(devPassword ?? ""); setDevPassword(null); setFpPhone(""); }}
-          className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors"
+          className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors"
         >
           Back to sign in
         </button>
@@ -108,7 +108,7 @@ export function LoginForm() {
       <form onSubmit={handleForgot} className="space-y-4">
         <div>
           <p className="text-sm text-zinc-500 mb-3">
-            Enter your registered phone number. We'll send a new password via WhatsApp and email.
+            Enter your registered phone number. We&apos;ll send a new password via WhatsApp and email.
           </p>
         </div>
         <div className="space-y-1">
@@ -134,7 +134,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={fpLoading || fpPhone.length < 10}
-          className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {fpLoading ? "Sending…" : "Send new password →"}
         </button>
@@ -179,7 +179,7 @@ export function LoginForm() {
           <button
             type="button"
             onClick={() => { setStep("forgot"); setFpPhone(phone); setError(""); }}
-            className="text-xs text-amber-600 hover:underline font-medium"
+            className="text-xs text-amber-700 dark:text-amber-500 hover:underline font-medium"
           >
             Forgot password?
           </button>
@@ -197,7 +197,7 @@ export function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPw((v) => !v)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600"
             tabIndex={-1}
             aria-label={showPw ? "Hide password" : "Show password"}
           >
@@ -211,19 +211,19 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={loading || phone.length < 10 || password.length === 0}
-        className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? "Signing in…" : "Sign in →"}
       </button>
 
       <div className="text-center space-y-2 pt-1">
-        <p className="text-xs text-zinc-400">Want to list your venue or catering?</p>
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">Want to list your venue or catering?</p>
         <div className="flex items-center justify-center gap-4">
-          <a href="/apply/venue" className="text-xs text-amber-600 hover:underline font-medium">
+          <a href="/apply/venue" className="text-xs text-amber-700 dark:text-amber-500 hover:underline font-medium">
             Add convention center →
           </a>
           <span className="text-zinc-300 dark:text-zinc-700">|</span>
-          <a href="/apply/caterer" className="text-xs text-amber-600 hover:underline font-medium">
+          <a href="/apply/caterer" className="text-xs text-amber-700 dark:text-amber-500 hover:underline font-medium">
             Add catering service →
           </a>
         </div>

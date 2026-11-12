@@ -31,6 +31,7 @@ export function NewMenu({ variant, entries, fabClass }: { variant: "sidebar" | "
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- the list closes when the page changes
   useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => {
     if (!open) return;
@@ -47,7 +48,7 @@ export function NewMenu({ variant, entries, fabClass }: { variant: "sidebar" | "
       {entries.map(({ href, icon: Icon, label, hint }) => (
         <Link key={href} href={href} className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-amber-50 dark:hover:bg-amber-950/20">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"><Icon className="h-4 w-4" /></span>
-          <span className="min-w-0"><span className="block truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">{label}</span><span className="block text-[11px] text-zinc-400">{hint}</span></span>
+          <span className="min-w-0"><span className="block truncate text-sm font-semibold text-zinc-900 dark:text-zinc-50">{label}</span><span className="block text-[11px] text-zinc-500 dark:text-zinc-400">{hint}</span></span>
         </Link>
       ))}
     </div>
@@ -57,7 +58,7 @@ export function NewMenu({ variant, entries, fabClass }: { variant: "sidebar" | "
     return (
       <div ref={ref} className="relative px-3 mb-2">
         <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open}
-          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2.5 text-sm font-semibold text-white transition-colors">
+          className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2.5 text-sm font-semibold text-zinc-900 transition-colors">
           <Plus className="h-4 w-4" /> New
         </button>
         {open && list}
@@ -69,7 +70,7 @@ export function NewMenu({ variant, entries, fabClass }: { variant: "sidebar" | "
     <div ref={ref} className={cn("md:hidden fixed right-4 z-40", fabClass)} style={{ marginBottom: "env(safe-area-inset-bottom)" }}>
       {open && list}
       <button type="button" onClick={() => setOpen((o) => !o)} aria-label={open ? "Close" : "New"} aria-expanded={open}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/30 transition-transform active:scale-95">
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500 hover:bg-amber-600 text-zinc-900 shadow-lg shadow-amber-500/30 transition-transform active:scale-95">
         {open ? <X className="h-6 w-6" /> : <Plus className="h-6 w-6" />}
       </button>
     </div>

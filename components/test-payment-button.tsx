@@ -32,7 +32,7 @@ export function TestPaymentButton({ bookingId, amountPaise }: { bookingId: strin
 
       <div className="space-y-1">
         <div className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Simulate payment</div>
-        <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">
+        <div className="text-2xl font-bold text-amber-700 dark:text-amber-400">
           ₹{(amountPaise / 100).toLocaleString("en-IN")}
         </div>
       </div>
@@ -43,7 +43,7 @@ export function TestPaymentButton({ bookingId, amountPaise }: { bookingId: strin
         type="button"
         onClick={handlePay}
         disabled={loading}
-        className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 text-zinc-900 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
       >
         {loading ? (
           <>

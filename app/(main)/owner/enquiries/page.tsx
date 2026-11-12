@@ -37,7 +37,7 @@ export default async function OwnerEnquiriesPage({ searchParams }: { searchParam
           const on = (t.key === "past") === past;
           return (
             <Link key={t.key} href={t.href} aria-current={on ? "page" : undefined}
-              className={cn("rounded-xl px-3 py-1.5 text-sm font-medium", on ? "bg-amber-500 text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400")}>
+              className={cn("rounded-xl px-3 py-1.5 text-sm font-medium", on ? "bg-amber-500 text-zinc-900" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400")}>
               {t.label} <span className="opacity-70">{t.count}</span>
             </Link>
           );
@@ -69,8 +69,8 @@ export default async function OwnerEnquiriesPage({ searchParams }: { searchParam
                 {r.reason && <p className="rounded-xl bg-zinc-50 dark:bg-zinc-800/60 px-3 py-2 text-sm text-zinc-600 dark:text-zinc-400">{r.reason}</p>}
                 {!hidePhones && digits.length === 10 && (
                   <div className="flex flex-wrap gap-2">
-                    <a href={`tel:+91${digits}`} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-3 py-2 text-sm font-semibold text-white"><Phone className="h-4 w-4" /> {digits}</a>
-                    <a href={`https://wa.me/91${digits}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-3 py-2 text-sm font-semibold text-white"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
+                    <a href={`tel:+91${digits}`} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 px-3 py-2 text-sm font-semibold text-white"><Phone className="h-4 w-4" /> {digits}</a>
+                    <a href={`https://wa.me/91${digits}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-3 py-2 text-sm font-semibold text-zinc-900"><MessageCircle className="h-4 w-4" /> WhatsApp</a>
                   </div>
                 )}
               </li>

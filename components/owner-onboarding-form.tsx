@@ -149,12 +149,12 @@ export function OwnerOnboardingForm() {
               n === step
                 ? "bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900"
                 : n < step
-                ? "bg-emerald-500 text-white"
-                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400"
+                ? "bg-emerald-700 text-white"
+                : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"
             }`}>
               {n < step ? "✓" : n}
             </div>
-            <span className={`text-sm ${n === step ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-400"}`}>
+            <span className={`text-sm ${n === step ? "text-zinc-900 dark:text-zinc-50 font-medium" : "text-zinc-500"}`}>
               {label}
             </span>
             {n < 2 && <div className="w-8 h-px bg-zinc-200 dark:bg-zinc-700" />}
@@ -174,7 +174,7 @@ export function OwnerOnboardingForm() {
           <div className="space-y-2">
             <Label htmlFor="googleMapsUrl">
               Google Maps link
-              <span className="ml-1.5 text-zinc-400 font-normal text-xs">— paste to auto-locate on map</span>
+              <span className="ml-1.5 text-zinc-500 dark:text-zinc-400 font-normal text-xs">— paste to auto-locate on map</span>
             </Label>
             <div className="relative">
               <Input
@@ -194,7 +194,7 @@ export function OwnerOnboardingForm() {
                 </span>
               )}
             </div>
-            <p className="text-xs text-zinc-400">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Search your venue on Google Maps → copy URL from address bar → paste here.
               Lat &amp; lng will be auto-detected.
             </p>
@@ -216,7 +216,7 @@ export function OwnerOnboardingForm() {
                 </span>
                 <button type="button"
                   onClick={() => { setS1((p) => ({ ...p, lat: "", lng: "" })); setManualGeo(false); }}
-                  className="text-xs text-zinc-400 hover:text-red-500 transition-colors">
+                  className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-red-500 transition-colors">
                   Clear
                 </button>
               </div>
@@ -227,7 +227,7 @@ export function OwnerOnboardingForm() {
           {!hasPin && (
             <div className="space-y-2">
               <button type="button" onClick={() => setManualGeo((v) => !v)}
-                className="text-xs text-zinc-400 underline hover:text-zinc-600">
+                className="text-xs text-zinc-500 dark:text-zinc-400 underline hover:text-zinc-600">
                 {manualGeo ? "Hide manual entry" : "Enter coordinates manually instead"}
               </button>
               {manualGeo && (
@@ -251,7 +251,7 @@ export function OwnerOnboardingForm() {
           <div className="space-y-1">
             <Label htmlFor="address">
               Address
-              <span className="ml-1.5 text-zinc-400 font-normal text-xs">— copy from Google Maps page</span>
+              <span className="ml-1.5 text-zinc-500 dark:text-zinc-400 font-normal text-xs">— copy from Google Maps page</span>
             </Label>
             <Input id="address" placeholder="4XW6+3WR, Kodimaram Rd, Kondotty, Kerala 673638" value={s1.address}
               onChange={(e) => setS1({ ...s1, address: e.target.value })} />
@@ -275,11 +275,11 @@ export function OwnerOnboardingForm() {
             <div className="space-y-1">
               <Label htmlFor="googleReviewUrl" className="text-xs">
                 Google review link
-                <span className="ml-1 font-normal text-zinc-400">— link that opens "Write a review"</span>
+                <span className="ml-1 font-normal text-zinc-500 dark:text-zinc-400">— link that opens &quot;Write a review&quot;</span>
               </Label>
               <Input id="googleReviewUrl" type="url" placeholder="https://search.google.com/local/writereview?placeid=..."
                 value={s1.googleReviewUrl} onChange={(e) => setS1({ ...s1, googleReviewUrl: e.target.value })} />
-              <p className="text-[10px] text-zinc-400 mt-0.5">
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">
                 Google Maps → your venue → click &quot;Write a review&quot; → copy URL from browser
               </p>
             </div>
@@ -324,7 +324,7 @@ export function OwnerOnboardingForm() {
               <Input id="minAdvance" type="number" min="0" placeholder="500"
                 value={s2.minimumAdvanceRupees}
                 onChange={(e) => setS2({ ...s2, minimumAdvanceRupees: e.target.value })} />
-              <p className="text-xs text-zinc-400">Minimum amount customer must pay online to confirm booking</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">Minimum amount customer must pay online to confirm booking</p>
             </div>
             <div className="flex flex-col justify-center space-y-2 pt-1">
               <Label>Payment requirement</Label>
@@ -385,7 +385,7 @@ export function OwnerOnboardingForm() {
                 <input type="time" value={s2.morningStart}
                   onChange={(e) => setS2({ ...s2, morningStart: e.target.value })}
                   className="flex-1 rounded-md border border-zinc-200 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm" />
-                <span className="text-zinc-400 text-sm">to</span>
+                <span className="text-zinc-500 dark:text-zinc-400 text-sm">to</span>
                 <input type="time" value={s2.morningEnd}
                   onChange={(e) => setS2({ ...s2, morningEnd: e.target.value })}
                   className="flex-1 rounded-md border border-zinc-200 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm" />
@@ -407,7 +407,7 @@ export function OwnerOnboardingForm() {
                   <input type="time" value={s2.eveningStart}
                     onChange={(e) => setS2({ ...s2, eveningStart: e.target.value })}
                     className="flex-1 rounded-md border border-zinc-200 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm" />
-                  <span className="text-zinc-400 text-sm">to</span>
+                  <span className="text-zinc-500 dark:text-zinc-400 text-sm">to</span>
                   <input type="time" value={s2.eveningEnd}
                     onChange={(e) => setS2({ ...s2, eveningEnd: e.target.value })}
                     className="flex-1 rounded-md border border-zinc-200 dark:border-zinc-700 bg-transparent px-3 py-2 text-sm" />

@@ -45,6 +45,7 @@ export default async function SupplierLedgerPage({ params, searchParams }: { par
   const cycle = supplier.cycle as SupplierCycleKey;
   const unpaid = supplier.purchases.filter((p) => p.totalPaise > p.paidPaise);
   const oldest = unpaid.length ? unpaid.reduce((a, p) => (p.date < a ? p.date : a), unpaid[0].date) : null;
+  // eslint-disable-next-line react-hooks/purity -- a server page, rendered once per request
   const waitDays = oldest ? Math.floor((Date.now() - oldest.getTime()) / 86400000) : 0;
   const overdue = due > 0 && CYCLE_DAYS[cycle] > 0 && waitDays > CYCLE_DAYS[cycle];
 
@@ -58,9 +59,9 @@ export default async function SupplierLedgerPage({ params, searchParams }: { par
           <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-zinc-500">
             <span className="rounded-full bg-amber-50 dark:bg-amber-950/30 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">{supplier.category}</span>
             <span>{CYCLE_LABEL[cycle]}</span>
-            {supplier.phone && <a href={`tel:${supplier.phone}`} className="inline-flex items-center gap-1 text-amber-600 hover:underline"><Phone className="h-3.5 w-3.5" />{supplier.phone}</a>}
+            {supplier.phone && <a href={`tel:${supplier.phone}`} className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-500 hover:underline"><Phone className="h-3.5 w-3.5" />{supplier.phone}</a>}
           </div>
-          {supplier.notes && <p className="mt-1 text-xs text-zinc-400">{supplier.notes}</p>}
+          {supplier.notes && <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{supplier.notes}</p>}
         </div>
         <div className="flex items-center gap-2">
           <EditSupplierButton supplier={{ id: supplier.id, name: supplier.name, phone: supplier.phone, category: supplier.category, cycle, notes: supplier.notes }} />
@@ -73,7 +74,7 @@ export default async function SupplierLedgerPage({ params, searchParams }: { par
         <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/20 p-3"><div className="text-[11px] text-emerald-700 dark:text-emerald-400">Paid</div><div className="text-lg font-bold text-emerald-800 dark:text-emerald-300">{rs(paid)}</div></div>
         <div className={cn("rounded-xl border p-3", due > 0 ? "border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900")}>
           <div className="text-[11px] text-zinc-500">You owe</div>
-          <div className={cn("text-lg font-bold", due > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-400")}>{due > 0 ? rs(due) : "Nil"}</div>
+          <div className={cn("text-lg font-bold", due > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-500 dark:text-zinc-400")}>{due > 0 ? rs(due) : "Nil"}</div>
           {overdue && <div className="text-[11px] font-semibold text-red-600">Overdue · oldest bill {waitDays} days</div>}
         </div>
       </div>

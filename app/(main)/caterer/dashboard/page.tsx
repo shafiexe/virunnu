@@ -89,7 +89,7 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <CatererMonthNav basePath="/caterer/dashboard" value={month} label={label} />
-          <WriteOnly page="orders"><Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New order</Link></WriteOnly>
+          <WriteOnly page="orders"><Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900"><Plus className="h-4 w-4" /> New order</Link></WriteOnly>
         </div>
       </div>
 
@@ -111,10 +111,10 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
       <div className="grid gap-4 lg:grid-cols-2">
         <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Next 7 days</h2>
-            <Link href="/caterer/calendar" className="text-xs font-semibold text-amber-600 hover:underline inline-flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" /> Calendar</Link>
+            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Next 7 days</h2>
+            <Link href="/caterer/calendar" className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline inline-flex items-center gap-1"><CalendarDays className="h-3.5 w-3.5" /> Calendar</Link>
           </div>
-          {upcoming.length === 0 ? <p className="text-sm text-zinc-400">No functions in the next 7 days.</p> : (
+          {upcoming.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400">No functions in the next 7 days.</p> : (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {upcoming.map((o) => (
                 <li key={o.id}>
@@ -136,10 +136,10 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
 
         <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Who owes you</h2>
-            <Link href="/caterer/customers?due=1" className="text-xs font-semibold text-amber-600 hover:underline">All</Link>
+            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Who owes you</h2>
+            <Link href="/caterer/customers?due=1" className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">All</Link>
           </div>
-          {sheet.dues.length === 0 ? <p className="text-sm text-zinc-400">Nobody owes you anything right now.</p> : (
+          {sheet.dues.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400">Nobody owes you anything right now.</p> : (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {sheet.dues.slice(0, 6).map((c) => (
                 <li key={c.id} className="flex items-center justify-between gap-3 py-2.5">
@@ -148,7 +148,7 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
                     <span className="block text-xs text-zinc-500">{c.invoices} open invoice{c.invoices === 1 ? "" : "s"}</span>
                   </Link>
                   <span className="flex items-center gap-3 shrink-0">
-                    <a href={`tel:${c.phone}`} aria-label={`Call ${c.name}`} className="text-zinc-400 hover:text-amber-600"><Phone className="h-4 w-4" /></a>
+                    <a href={`tel:${c.phone}`} aria-label={`Call ${c.name}`} className="text-zinc-500 dark:text-zinc-400 hover:text-amber-600"><Phone className="h-4 w-4" /></a>
                     <span className="text-sm font-semibold text-red-600 dark:text-red-400">{rs(c.balancePaise)}</span>
                   </span>
                 </li>
@@ -159,7 +159,7 @@ export default async function CatererDashboard({ searchParams }: { searchParams:
       </div>
 
       <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
-        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Billed vs expenses · {year}</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Billed vs expenses · {year}</h2>
         <CatererBars data={chart} />
       </section>
     </div>

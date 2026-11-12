@@ -106,7 +106,7 @@ export function CatererDetailsCard({ initial, adminCatererId }: { initial: Cater
         {areas.length > 0 && (
           <div className="flex flex-wrap gap-2">
             {areas.map((a) => (
-              <span key={a} className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1 text-xs font-medium text-white">
+              <span key={a} className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1 text-xs font-medium text-zinc-900">
                 {a}
                 <button type="button" onClick={() => setAreas(areas.filter((x) => x !== a))} aria-label={`Remove ${a}`}><X className="h-3 w-3" /></button>
               </span>
@@ -144,7 +144,7 @@ export function CatererDetailsCard({ initial, adminCatererId }: { initial: Cater
               key={k} type="button"
               onClick={() => setMeals(meals.includes(k) ? meals.filter((m) => m !== k) : [...meals, k])}
               className={cn("px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
-                meals.includes(k) ? "bg-amber-500 text-white border-amber-500" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}
+                meals.includes(k) ? "bg-amber-500 text-zinc-900 border-amber-500" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}
             >{l}</button>
           ))}
         </div>
@@ -165,11 +165,11 @@ export function CatererDetailsCard({ initial, adminCatererId }: { initial: Cater
             <input className={INPUT} value={p.title} placeholder="Event, e.g. Wedding at Kumarakom" onChange={(e) => setPast(past.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)))} />
             <input className={INPUT} value={p.type} placeholder="Type" onChange={(e) => setPast(past.map((x, j) => (j === i ? { ...x, type: e.target.value } : x)))} />
             <input className={INPUT} value={p.guests} placeholder="Guests" inputMode="numeric" onChange={(e) => setPast(past.map((x, j) => (j === i ? { ...x, guests: e.target.value } : x)))} />
-            <button type="button" onClick={() => setPast(past.filter((_, j) => j !== i))} aria-label="Remove" className="text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
+            <button type="button" onClick={() => setPast(past.filter((_, j) => j !== i))} aria-label="Remove" className="text-zinc-500 dark:text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
           </div>
         ))}
         {past.length < 10 && (
-          <button type="button" onClick={() => setPast([...past, { title: "", type: "", guests: "", note: "" }])} className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:underline">
+          <button type="button" onClick={() => setPast([...past, { title: "", type: "", guests: "", note: "" }])} className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">
             <Plus className="h-3.5 w-3.5" /> Add event
           </button>
         )}
@@ -179,7 +179,7 @@ export function CatererDetailsCard({ initial, adminCatererId }: { initial: Cater
       <div className="flex justify-end">
         <button
           type="button" onClick={save} disabled={saving}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors disabled:opacity-60"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-60"
         >
           {saved ? <><Check className="h-4 w-4" /> Saved!</> : saving ? "Saving…" : "Save details"}
         </button>

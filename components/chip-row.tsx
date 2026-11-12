@@ -9,7 +9,7 @@ export function ChipRow({ items, show = 4, chipClass }: { items: { key: string; 
   return (
     <div className="flex flex-wrap gap-2">
       {list.map((i) => <span key={i.key} className={chipClass}>{i.label}</span>)}
-      {!all && items.length > show && <button type="button" onClick={() => setAll(true)} className="text-xs font-semibold text-amber-600 px-2 py-1.5 hover:underline">+{items.length - show} more</button>}
+      {!all && items.length > show && <button type="button" onClick={() => setAll(true)} className="text-xs font-semibold text-amber-700 dark:text-amber-500 px-2 py-1.5 hover:underline">+{items.length - show} more</button>}
     </div>
   );
 }

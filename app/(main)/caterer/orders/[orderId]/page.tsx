@@ -65,7 +65,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
           </h1>
           <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-zinc-500">
             <span>{dateLong}</span>
-            <Show what="phones"><a href={`tel:${order.customer.phone}`} className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{order.customer.phone}</a></Show>
+            <Show what="phones"><a href={`tel:${order.customer.phone}`} className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{order.customer.phone}</a></Show>
             {order.place && <span className="inline-flex items-center gap-1"><MapPin className="h-3.5 w-3.5" />{order.place}</span>}
             {order.eventType && <span>{order.eventType}</span>}
           </div>
@@ -85,14 +85,14 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
           <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/20 p-3"><div className="text-[11px] text-emerald-700 dark:text-emerald-400">Received</div><div className="text-lg font-bold text-emerald-800 dark:text-emerald-300">{rs(totals.received)}</div></div>
           <div className={`rounded-xl border p-3 ${totals.balance > 0 ? "border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"}`}>
             <div className={`text-[11px] ${totals.balance > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-500"}`}>Balance</div>
-            <div className={`text-lg font-bold ${totals.balance > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-400"}`}>{totals.balance > 0 ? rs(totals.balance) : "Nil"}</div>
+            <div className={`text-lg font-bold ${totals.balance > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-500"}`}>{totals.balance > 0 ? rs(totals.balance) : "Nil"}</div>
           </div>
         </div>
       )}
 
       {(order.servings.length > 0 || order.notes) && (
         <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
-          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Serve times and kitchen sheet</h2>
+          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Serve times and kitchen sheet</h2>
           {order.servings.map((s) => {
             const lines = allLines.filter((l) => l.servingId === s.id);
             return (
@@ -105,7 +105,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
                   <ul className="pl-6 text-sm text-zinc-600 dark:text-zinc-400 columns-1 sm:columns-2">
                     {lines.map((l) => <li key={l.id}>{l.name} — {l.quantity} {l.unit}</li>)}
                   </ul>
-                ) : <p className="pl-6 text-xs text-zinc-400">No items tied to this time.</p>}
+                ) : <p className="pl-6 text-xs text-zinc-500 dark:text-zinc-400">No items tied to this time.</p>}
               </div>
             );
           })}
@@ -122,15 +122,15 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
       {order.team.length > 0 && (
         <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Team for this function</h2>
-            <Link href={`/caterer/orders/${order.id}/edit`} className="text-xs font-semibold text-amber-600 hover:underline">Change</Link>
+            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Team for this function</h2>
+            <Link href={`/caterer/orders/${order.id}/edit`} className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">Change</Link>
           </div>
           <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {order.team.map((t) => (
               <li key={t.id} className="flex items-center justify-between gap-3 py-2 text-sm">
-                <Link href={`/caterer/staff/${t.employeeId}?month=${dateIso.slice(0, 7)}`} className="min-w-0 hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{t.employee.name}</span><span className="ml-2 text-xs text-zinc-400">{t.employee.role}</span></Link>
+                <Link href={`/caterer/staff/${t.employeeId}?month=${dateIso.slice(0, 7)}`} className="min-w-0 hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{t.employee.name}</span><span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{t.employee.role}</span></Link>
                 <span className="flex items-center gap-3 shrink-0">
-                  <Show what="salaries"><span className="font-medium">{t.amountPaise > 0 ? rs(t.amountPaise) : <span className="text-xs text-zinc-400">pay not set</span>}</span></Show>
+                  <Show what="salaries"><span className="font-medium">{t.amountPaise > 0 ? rs(t.amountPaise) : <span className="text-xs text-zinc-500 dark:text-zinc-400">pay not set</span>}</span></Show>
                   <PayStaffButton id={t.employeeId} name={t.employee.name} payType={t.employee.payType as PayTypeKey} toPayPaise={t.amountPaise} compact />
                 </span>
               </li>
@@ -142,7 +142,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
 
       {order.bills.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-8 text-center text-sm text-zinc-500">
-          No billed items on this order yet. <Link href={`/caterer/orders/${order.id}/edit`} className="font-semibold text-amber-600 hover:underline">Edit the order</Link> to add food, equipment or staff.
+          No billed items on this order yet. <Link href={`/caterer/orders/${order.id}/edit`} className="font-semibold text-amber-700 dark:text-amber-500 hover:underline">Edit the order</Link> to add food, equipment or staff.
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
@@ -154,17 +154,17 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
       {!cancelled && (
         <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
           <div className="flex items-center justify-between gap-3 flex-wrap">
-            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Cost and profit for this function</h2>
-            <Link href="/caterer/purchases/new" className="text-xs font-semibold text-amber-600 hover:underline">+ Add a purchase</Link>
+            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Cost and profit for this function</h2>
+            <Link href="/caterer/purchases/new" className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">+ Add a purchase</Link>
           </div>
           {purchases.length === 0 ? (
-            <p className="text-sm text-zinc-400">No purchases tied to this function yet. Pick this function when you record a purchase to see your profit on it.</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">No purchases tied to this function yet. Pick this function when you record a purchase to see your profit on it.</p>
           ) : (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800 text-sm">
               {purchases.map((p) => (
                 <li key={p.id}>
                   <Link href={`/caterer/purchases/${p.id}`} className="flex items-center justify-between gap-3 py-2 hover:text-amber-600">
-                    <span className="min-w-0 truncate">{p.supplier} <span className="text-xs text-zinc-400">· {p.category}{p.employee ? ` · ${p.employee.name}` : ""}</span></span>
+                    <span className="min-w-0 truncate">{p.supplier} <span className="text-xs text-zinc-500 dark:text-zinc-400">· {p.category}{p.employee ? ` · ${p.employee.name}` : ""}</span></span>
                     <span className="shrink-0 font-medium">{rs(p.totalPaise)}</span>
                   </Link>
                 </li>
@@ -180,7 +180,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
           )}
         </section>
       )}
-      <p className="text-xs text-zinc-400">{Object.values(BILL_LABEL).join(" and ")} are separate invoices. You can share them one by one or together.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">{Object.values(BILL_LABEL).join(" and ")} are separate invoices. You can share them one by one or together.</p>
     </div>
   );
 }

@@ -40,9 +40,9 @@ export default async function CatererSuppliersPage({ searchParams }: { searchPar
 
       {used.length > 1 && (
         <div className="flex flex-wrap gap-1.5">
-          <Link href="/caterer/suppliers" className={cn("rounded-full border px-3 py-1 text-xs font-medium", !category ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>All</Link>
+          <Link href="/caterer/suppliers" className={cn("rounded-full border px-3 py-1 text-xs font-medium", !category ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>All</Link>
           {used.map((c) => (
-            <Link key={c} href={`/caterer/suppliers?category=${encodeURIComponent(c)}`} className={cn("rounded-full border px-3 py-1 text-xs font-medium", category === c ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</Link>
+            <Link key={c} href={`/caterer/suppliers?category=${encodeURIComponent(c)}`} className={cn("rounded-full border px-3 py-1 text-xs font-medium", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</Link>
           ))}
         </div>
       )}
@@ -64,7 +64,7 @@ export default async function CatererSuppliersPage({ searchParams }: { searchPar
                   </div>
                   <div className="mt-0.5 text-xs text-zinc-500">{CYCLE_LABEL[s.cycle]} · {s.billCount} bill{s.billCount === 1 ? "" : "s"} · bought {rs(s.totalPaise)}</div>
                 </Link>
-                {s.phone && <a href={`tel:${s.phone}`} aria-label={`Call ${s.name}`} className="text-zinc-400 hover:text-amber-600"><Phone className="h-4 w-4" /></a>}
+                {s.phone && <a href={`tel:${s.phone}`} aria-label={`Call ${s.name}`} className="text-zinc-500 dark:text-zinc-400 hover:text-amber-600"><Phone className="h-4 w-4" /></a>}
                 <div className="text-right shrink-0">
                   {s.duePaise > 0 ? (
                     <div className="flex items-center gap-3">

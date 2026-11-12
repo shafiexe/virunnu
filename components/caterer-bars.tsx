@@ -12,7 +12,7 @@ export function CatererBars({ data }: { data: { month: string; revenuePaise: num
               <div className="w-1/2 max-w-3 rounded-t bg-amber-400" style={{ height: `${(d.revenuePaise / max) * 100}%`, minHeight: d.revenuePaise ? 2 : 0 }} title={`Billed ${rs(d.revenuePaise)}`} />
               <div className="w-1/2 max-w-3 rounded-t bg-rose-400" style={{ height: `${(d.expensePaise / max) * 100}%`, minHeight: d.expensePaise ? 2 : 0 }} title={`Expenses ${rs(d.expensePaise)}`} />
             </div>
-            <span className="text-[10px] text-zinc-400">{d.month}</span>
+            <span className="text-[10px] text-zinc-500 dark:text-zinc-400">{d.month}</span>
           </div>
         ))}
       </div>

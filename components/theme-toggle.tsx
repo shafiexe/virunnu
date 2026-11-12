@@ -1,38 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { setStoredValue, useHydrated, useMediaQuery, useStoredValue } from "@/hooks/use-browser-value";
 
 type Theme = "light" | "dark";
-
-function resolveInitial(): Theme {
-  try {
-    const saved = localStorage.getItem("theme") as Theme | null;
-    if (saved === "light" || saved === "dark") return saved;
-  } catch {}
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
 
 function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  // the saved choice, else the device's own setting
+  const saved = useStoredValue("theme");
+  const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
+  const mounted = useHydrated();
+  const theme: Theme = saved === "light" || saved === "dark" ? saved : prefersDark ? "dark" : "light";
 
-  useEffect(() => {
-    const t = resolveInitial();
-    setTheme(t);
-    applyTheme(t);
-    setMounted(true);
-  }, []);
+  useEffect(() => { if (mounted) applyTheme(theme); }, [theme, mounted]);
 
-  function toggle() {
-    const next: Theme = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("theme", next);
-    applyTheme(next);
-  }
+  const toggle = () => setStoredValue("theme", theme === "dark" ? "light" : "dark");
 
   if (!mounted) return <div className="w-8 h-8" />;
 

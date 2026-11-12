@@ -23,7 +23,6 @@ model User {
   disabled      Boolean       @default(false)
   addedById     String?
   bookings      Booking[]
-  otpCodes      OtpCode[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
@@ -63,6 +62,9 @@ model Organization {
   messageTemplates  OrgMessageTemplate[]
   logoUpdatedAt     DateTime?
   logo              OrgLogo?
+  // where online-payment money is sent to this venue (a UPI id or bank details), kept by the admin
+  payoutDetails     String?              @db.Text
+  payouts           Payout[]
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
 }
@@ -526,17 +528,6 @@ model CatererApplication {
   updatedAt DateTime          @updatedAt
 }
 
-model OtpCode {
-  id        String   @id @default(cuid())
-  phone     String
-  code      String
-  expiresAt DateTime
-  used      Boolean  @default(false)
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-}
-
 // ── Catering team workspace ────────────────────────────────────────────────
 
 enum ItemGroup {
@@ -889,22 +880,39 @@ model ActivityLog {
 // Every rupee received against a booking: when, how much, how, and who recorded it.
 // Booking.advancePaise is kept equal to the sum of these, so everything that reads "paid so far" stays right.
 model BookingPayment {
-  id          String   @id @default(cuid())
-  bookingId   String
-  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
-  orgId       String
-  amountPaise Int
+  id              String   @id @default(cuid())
+  bookingId       String
+  booking         Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  orgId           String
+  amountPaise     Int
+  // Virunnu's share of an ONLINE payment (see lib/commission.ts); 0 for money the venue took itself
+  commissionPaise Int      @default(0)
   // CASH, UPI, BANK, CARD, CHEQUE or ONLINE (paid through the website)
-  method      String   @default("CASH")
-  note        String?
-  paidOn      DateTime @db.Date
+  method          String   @default("CASH")
+  note            String?
+  paidOn          DateTime @db.Date
   // who on the team recorded it, shown as "by Rahim"
-  recordedBy  String?
+  recordedBy      String?
   // the customer's receipt link (/r/<token>); anyone holding it can read that one receipt
-  shareToken  String   @unique @default(cuid())
-  createdAt   DateTime @default(now())
+  shareToken      String   @unique @default(cuid())
+  createdAt       DateTime @default(now())
 
   @@index([bookingId])
+  @@index([orgId, paidOn])
+}
+
+// Money sent to a venue owner out of what customers paid online (after Virunnu's commission).
+model Payout {
+  id          String       @id @default(cuid())
+  orgId       String
+  org         Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  amountPaise Int
+  paidOn      DateTime     @db.Date
+  // the bank or UPI reference, so the transfer can be found later
+  reference   String?
+  note        String?
+  createdAt   DateTime     @default(now())
+
   @@index([orgId, paidOn])
 }
 

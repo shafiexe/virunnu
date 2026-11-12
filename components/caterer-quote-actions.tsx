@@ -56,12 +56,12 @@ export function CatererQuoteActions(p: Props) {
     <div className="space-y-3">
       <div className="flex flex-wrap gap-2">
         {p.state === "ACCEPTED" && p.orderId ? (
-          <Link href={`/caterer/orders/${p.orderId}`} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"><CheckCircle2 className="h-4 w-4" /> Accepted · open the order</Link>
+          <Link href={`/caterer/orders/${p.orderId}`} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-sm font-semibold text-white"><CheckCircle2 className="h-4 w-4" /> Accepted · open the order</Link>
         ) : (
-          <WriteOnly page="orders"><button type="button" onClick={() => { setError(""); setConfirming(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white"><CheckCircle2 className="h-4 w-4" /> Customer accepted · make order</button></WriteOnly>
+          <WriteOnly page="orders"><button type="button" onClick={() => { setError(""); setConfirming(true); }} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-sm font-semibold text-white"><CheckCircle2 className="h-4 w-4" /> Customer accepted · make order</button></WriteOnly>
         )}
         <Show what="phones"><button type="button" onClick={send} className={cn(btn, "text-emerald-700 dark:text-emerald-400")}><MessageCircle className="h-4 w-4" /> WhatsApp</button></Show>
-        <a href={`/api/caterer/quotes/${p.id}/pdf`} download className={cn(btn, "text-amber-600 dark:text-amber-400")}><FileDown className="h-4 w-4" /> PDF</a>
+        <a href={`/api/caterer/quotes/${p.id}/pdf`} download className={cn(btn, "text-amber-700 dark:text-amber-400")}><FileDown className="h-4 w-4" /> PDF</a>
         <WriteOnly page="orders">{p.state !== "ACCEPTED" && <Link href={`/caterer/quotes/${p.id}/edit`} className={btn}><Pencil className="h-4 w-4" /> Edit</Link>}</WriteOnly>
         <WriteOnly page="orders">{p.state === "DECLINED" && <button type="button" disabled={!!busy} onClick={async () => { if (await call("reopen", `/api/caterer/quotes/${p.id}`, "PATCH", { status: "OPEN" })) router.refresh(); }} className={btn}><RotateCcw className="h-4 w-4" /> Reopen</button>}</WriteOnly>
         <WriteOnly page="orders">{(p.state === "OPEN" || p.state === "EXPIRED") && <button type="button" disabled={!!busy} onClick={async () => { if (await call("decline", `/api/caterer/quotes/${p.id}`, "PATCH", { status: "DECLINED" })) router.refresh(); }} className={btn}><XCircle className="h-4 w-4" /> Declined</button>}</WriteOnly>
@@ -88,7 +88,7 @@ export function CatererQuoteActions(p: Props) {
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Make this an order</h3>
                 <p className="text-xs text-zinc-500">The items, times and discounts come across. The invoices are created now.</p>
               </div>
-              <button type="button" onClick={() => setConfirming(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-400" /></button>
+              <button type="button" onClick={() => setConfirming(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
             </div>
             <label className="block space-y-1"><span className="text-xs font-medium text-zinc-500">Function date</span><input type="date" className={INPUT} value={date} onChange={(e) => setDate(e.target.value)} /></label>
             <div className="grid grid-cols-2 gap-2">
@@ -98,7 +98,7 @@ export function CatererQuoteActions(p: Props) {
               </label>
             </div>
             {error && <p className="text-xs text-red-500">{error}</p>}
-            <button type="submit" disabled={busy === "convert"} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+            <button type="submit" disabled={busy === "convert"} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
               {busy === "convert" && <Loader2 className="h-4 w-4 animate-spin" />} Create order
             </button>
           </form>

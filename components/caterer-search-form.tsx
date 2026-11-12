@@ -60,7 +60,7 @@ export function CatererSearchForm({ defaults }: Props) {
         <SlidersHorizontal className="h-4 w-4" />
         {open ? "Hide filters" : "Filter by place, date, guests or meal"}
         {!open && activeCount > 0 && (
-          <span className="rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold text-white">{activeCount}</span>
+          <span className="rounded-full bg-orange-700 px-2 py-0.5 text-[10px] font-bold text-white">{activeCount}</span>
         )}
         {open ? <ChevronUp className="ml-auto h-4 w-4" /> : <ChevronDown className="ml-auto h-4 w-4" />}
       </button>
@@ -96,7 +96,7 @@ export function CatererSearchForm({ defaults }: Props) {
             onClick={() => setCuisine(chip.value)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               cuisine === chip.value
-                ? "bg-orange-500 text-white border-orange-500"
+                ? "bg-orange-700 text-white border-orange-700"
                 : "bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:border-orange-300"
             }`}
           >

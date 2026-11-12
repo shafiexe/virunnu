@@ -69,8 +69,8 @@ export function PageLoader() {
       </div>
 
       {/* Tagline */}
-      <p className="text-zinc-400 dark:text-zinc-500 text-[11px] font-semibold tracking-[0.2em] uppercase mb-10">
-        Kerala's hall &amp; catering marketplace
+      <p className="text-zinc-500 dark:text-zinc-500 text-[11px] font-semibold tracking-[0.2em] uppercase mb-10">
+        Kerala&apos;s hall &amp; catering marketplace
       </p>
 
       {/* Rotating status text */}

@@ -48,7 +48,7 @@ export function CatererStatement({ catererName, catererPhone, customer, rows, lo
                     <td className="px-3 py-2 whitespace-nowrap">{formatInvoiceDate(r.functionDate)}</td>
                     <td className="px-3 py-2 text-right">{rs(m.netPaise)}</td>
                     <td className="px-3 py-2 text-right text-emerald-700">{rs(r.receivedPaise)}</td>
-                    <td className={`px-3 py-2 text-right font-semibold ${m.balancePaise > 0 ? "text-red-600" : "text-zinc-400"}`}>{m.balancePaise > 0 ? rs(m.balancePaise) : "—"}</td>
+                    <td className={`px-3 py-2 text-right font-semibold ${m.balancePaise > 0 ? "text-red-600" : "text-zinc-500 dark:text-zinc-400"}`}>{m.balancePaise > 0 ? rs(m.balancePaise) : "—"}</td>
                     <td className="px-3 py-2"><span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATE_STYLE[m.state]}`}>{STATE_LABEL[m.state]}</span></td>
                   </tr>
                 );

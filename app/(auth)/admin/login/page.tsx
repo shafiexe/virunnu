@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdminLoginForm } from "@/components/admin-login-form";
 
 export const metadata = { title: "Admin Login — Virunnu" };
@@ -78,7 +79,7 @@ export default function AdminLoginPage() {
             </div>
             <span className="font-bold text-zinc-900 dark:text-zinc-50 text-base">Virunnu</span>
           </div>
-          <div className="text-[11px] text-zinc-400 tracking-widest uppercase">Platform Admin</div>
+          <div className="text-[11px] text-zinc-500 dark:text-zinc-400 tracking-widest uppercase">Platform Admin</div>
         </div>
 
         <div className="w-full max-w-sm">
@@ -97,9 +98,9 @@ export default function AdminLoginPage() {
 
           {/* Footer */}
           <div className="mt-6 text-center">
-            <a href="/" className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
+            <Link href="/" className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">
               ← Back to home
-            </a>
+            </Link>
           </div>
         </div>
       </div>

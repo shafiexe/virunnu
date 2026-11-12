@@ -71,7 +71,7 @@ export function QuickPayButton({ bookingId, totalPaise, advancePaise, onSuccess 
           >
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Payment received</h3>
-              <button onClick={() => setOpen(false)} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
+              <button onClick={() => setOpen(false)} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -129,7 +129,7 @@ export function QuickPayButton({ bookingId, totalPaise, advancePaise, onSuccess 
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
+              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {loading && <Loader2 className="h-4 w-4 animate-spin" />}
               Confirm payment received

@@ -65,7 +65,7 @@ export default async function CatererReportsPage({ searchParams }: { searchParam
 
       <div className="flex flex-wrap gap-2">
         {GROUPS.map((g) => (
-          <Link key={g.key} href={href(g.tabs[0].key)} className={cn("rounded-xl border px-4 py-2 text-sm font-semibold transition-colors", group.key === g.key ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{g.label}</Link>
+          <Link key={g.key} href={href(g.tabs[0].key)} className={cn("rounded-xl border px-4 py-2 text-sm font-semibold transition-colors", group.key === g.key ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{g.label}</Link>
         ))}
       </div>
       {group.tabs.length > 1 && (
@@ -116,7 +116,7 @@ async function BalanceTab({ catererId, orgId }: { catererId: string; orgId: stri
       </div>
 
       <Panel title="Customer dues">
-        {s.dues.length === 0 ? <p className="text-sm text-zinc-400 py-2">Nobody owes you anything.</p> : (
+        {s.dues.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">Nobody owes you anything.</p> : (
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {s.dues.map((c) => (
               <div key={c.id} className="flex items-center justify-between gap-3 py-2.5">
@@ -125,7 +125,7 @@ async function BalanceTab({ catererId, orgId }: { catererId: string; orgId: stri
                   <span className="block text-xs text-zinc-500">{c.invoices} open invoice{c.invoices === 1 ? "" : "s"}</span>
                 </Link>
                 <span className="flex items-center gap-3 shrink-0">
-                  <a href={`tel:${c.phone}`} className="text-xs text-amber-600 hover:underline">{c.phone}</a>
+                  <a href={`tel:${c.phone}`} className="text-xs text-amber-700 dark:text-amber-500 hover:underline">{c.phone}</a>
                   <span className="text-sm font-semibold text-red-600 dark:text-red-400">{rs(c.balancePaise)}</span>
                 </span>
               </div>
@@ -135,7 +135,7 @@ async function BalanceTab({ catererId, orgId }: { catererId: string; orgId: stri
         )}
       </Panel>
       <Panel title="You owe suppliers">
-        {s.supplierDues.length === 0 ? <p className="text-sm text-zinc-400 py-2">You don&apos;t owe any supplier.</p> : (
+        {s.supplierDues.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">You don&apos;t owe any supplier.</p> : (
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {s.supplierDues.map((c) => (
               <div key={c.name} className="flex items-center justify-between gap-3 py-2.5 text-sm">
@@ -147,7 +147,7 @@ async function BalanceTab({ catererId, orgId }: { catererId: string; orgId: stri
           </div>
         )}
       </Panel>
-      <p className="text-xs text-zinc-400">A simple balance sheet for a catering team: money in, money out, money customers owe you and money you owe suppliers. Record every purchase and expense to keep it accurate.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">A simple balance sheet for a catering team: money in, money out, money customers owe you and money you owe suppliers. Record every purchase and expense to keep it accurate.</p>
     </div>
   );
 }
@@ -167,7 +167,7 @@ async function ProfitTab({ catererId, orgId, from, to, label, month }: { caterer
           <Row label="Total billed" sub={`${billed.count} invoice${billed.count === 1 ? "" : "s"}`} value={rs(billed.total)} strong />
         </Panel>
         <Panel title={`Expenses · ${label}`}>
-          {expenses.byCategory.length === 0 ? <p className="text-sm text-zinc-400 py-2">No expenses or purchases recorded.</p> : expenses.byCategory.map((c) => <Row key={c.category} label={c.category} value={rs(c.totalPaise)} />)}
+          {expenses.byCategory.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No expenses or purchases recorded.</p> : expenses.byCategory.map((c) => <Row key={c.category} label={c.category} value={rs(c.totalPaise)} />)}
           <Row label="Total costs" sub={`Expenses ${rs(expenses.expenseTotal)} · Purchases ${rs(expenses.purchaseTotal)} · Staff ${rs(expenses.staffTotal)}`} value={rs(expenses.total)} strong />
         </Panel>
       </div>
@@ -188,7 +188,7 @@ async function ProfitTab({ catererId, orgId, from, to, label, month }: { caterer
           <span className="font-semibold">{rs(staffOwed)} of staff pay for {label} is still to be paid.</span> It is not in the costs above yet, because salary counts as a cost when you pay it. <Link href={`/caterer/staff?month=${month}`} className="font-semibold underline">See who is owed</Link>.
         </div>
       )}
-      <p className="text-xs text-zinc-400">Profit counts what you billed for functions in this period. Cash profit counts what customers actually paid in this period, so the two differ while balances are pending.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">Profit counts what you billed for functions in this period. Cash profit counts what customers actually paid in this period, so the two differ while balances are pending.</p>
     </div>
   );
 }
@@ -200,14 +200,14 @@ async function BalancesTab({ catererId, from, to, label, pg }: { catererId: stri
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4"><div className="text-xs text-zinc-500">Billed</div><div className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{rs(b.totals.billedPaise)}</div><div className="text-xs text-zinc-400">{b.totals.invoices} invoice{b.totals.invoices === 1 ? "" : "s"}</div></div>
+        <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4"><div className="text-xs text-zinc-500">Billed</div><div className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{rs(b.totals.billedPaise)}</div><div className="text-xs text-zinc-500 dark:text-zinc-400">{b.totals.invoices} invoice{b.totals.invoices === 1 ? "" : "s"}</div></div>
         <div className="rounded-2xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/20 p-4"><div className="text-xs text-emerald-700 dark:text-emerald-400">Received</div><div className="text-xl font-bold text-emerald-800 dark:text-emerald-300">{rs(b.totals.receivedPaise)}</div></div>
-        <div className={cn("rounded-2xl border p-4", b.totals.balancePaise > 0 ? "border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900")}><div className="text-xs text-zinc-500">Balance due from customers</div><div className={cn("text-xl font-bold", b.totals.balancePaise > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-400")}>{b.totals.balancePaise > 0 ? rs(b.totals.balancePaise) : "Nil"}</div><div className="text-xs text-zinc-400">{b.open.length} open · {b.totals.closed} closed</div></div>
-        <div className={cn("rounded-2xl border p-4", supplierDue > 0 ? "border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900")}><div className="text-xs text-zinc-500">Still to pay suppliers</div><div className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{supplierDue > 0 ? rs(supplierDue) : "Nil"}</div><div className="text-xs text-zinc-400">bills in {label}</div></div>
+        <div className={cn("rounded-2xl border p-4", b.totals.balancePaise > 0 ? "border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900")}><div className="text-xs text-zinc-500">Balance due from customers</div><div className={cn("text-xl font-bold", b.totals.balancePaise > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-500 dark:text-zinc-400")}>{b.totals.balancePaise > 0 ? rs(b.totals.balancePaise) : "Nil"}</div><div className="text-xs text-zinc-500 dark:text-zinc-400">{b.open.length} open · {b.totals.closed} closed</div></div>
+        <div className={cn("rounded-2xl border p-4", supplierDue > 0 ? "border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900")}><div className="text-xs text-zinc-500">Still to pay suppliers</div><div className="text-xl font-bold text-zinc-900 dark:text-zinc-50">{supplierDue > 0 ? rs(supplierDue) : "Nil"}</div><div className="text-xs text-zinc-500 dark:text-zinc-400">bills in {label}</div></div>
       </div>
 
       <Panel title={`Open invoices · ${label}`}>
-        {b.open.length === 0 ? <p className="text-sm text-zinc-400 py-2">No balance is due on functions in this period.</p> : (
+        {b.open.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No balance is due on functions in this period.</p> : (
           <>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -217,9 +217,9 @@ async function BalancesTab({ catererId, from, to, label, pg }: { catererId: stri
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {paged.rows.map((r) => (
                   <tr key={r.id}>
-                    <td className="py-2 whitespace-nowrap"><Link href={`/caterer/orders/${r.orderId}`} className="font-medium text-zinc-900 dark:text-zinc-50 hover:text-amber-600">#{r.number}</Link><span className="block text-xs text-zinc-400">{BILL_LABEL[r.type as "FOOD" | "SERVICE"]}</span></td>
-                    <td className="py-2"><Link href={`/caterer/customers/${r.customer.id}`} className="hover:text-amber-600">{r.customer.name}</Link><a href={`tel:${r.customer.phone}`} className="block text-xs text-zinc-400 hover:text-amber-600">{r.customer.phone}</a></td>
-                    <td className="py-2 whitespace-nowrap text-zinc-600 dark:text-zinc-400">{formatInvoiceDate(r.functionDate)}{r.daysSince > 0 && <span className="block text-xs text-zinc-400">{r.daysSince} days ago</span>}</td>
+                    <td className="py-2 whitespace-nowrap"><Link href={`/caterer/orders/${r.orderId}`} className="font-medium text-zinc-900 dark:text-zinc-50 hover:text-amber-600">#{r.number}</Link><span className="block text-xs text-zinc-500 dark:text-zinc-400">{BILL_LABEL[r.type as "FOOD" | "SERVICE"]}</span></td>
+                    <td className="py-2"><Link href={`/caterer/customers/${r.customer.id}`} className="hover:text-amber-600">{r.customer.name}</Link><a href={`tel:${r.customer.phone}`} className="block text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600">{r.customer.phone}</a></td>
+                    <td className="py-2 whitespace-nowrap text-zinc-600 dark:text-zinc-400">{formatInvoiceDate(r.functionDate)}{r.daysSince > 0 && <span className="block text-xs text-zinc-500 dark:text-zinc-400">{r.daysSince} days ago</span>}</td>
                     <td className="py-2 text-right">{rs(r.netPaise)}</td>
                     <td className="py-2 text-right text-emerald-600 dark:text-emerald-400">{rs(r.receivedPaise)}</td>
                     <td className="py-2 text-right font-semibold text-red-600 dark:text-red-400"><div className="flex items-center justify-end gap-2">{rs(r.balancePaise)}<QuickPay compact customer={r.customer.name} bills={[{ id: r.id, number: r.number, type: r.type as "FOOD" | "SERVICE", balancePaise: r.balancePaise }]} /><SendReminder compact customerId={r.customer.id} customerName={r.customer.name} phone={r.customer.phone} balancePaise={r.balancePaise} invoices={`Invoice ${r.number}`} date={r.functionDate.toISOString()} path={`/b/${r.shareToken}`} /></div></td>
@@ -239,7 +239,7 @@ async function BalancesTab({ catererId, from, to, label, pg }: { catererId: stri
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {b.customers.map((c) => (
               <div key={c.id} className="flex items-center justify-between gap-3 py-2 text-sm">
-                <Link href={`/caterer/customers/${c.id}`} className="min-w-0 hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{c.name}</span><span className="ml-2 text-xs text-zinc-400">{c.invoices} invoice{c.invoices === 1 ? "" : "s"}</span></Link>
+                <Link href={`/caterer/customers/${c.id}`} className="min-w-0 hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{c.name}</span><span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{c.invoices} invoice{c.invoices === 1 ? "" : "s"}</span></Link>
                 <span className="font-semibold text-red-600 dark:text-red-400">{rs(c.balancePaise)}</span>
               </div>
             ))}
@@ -252,7 +252,7 @@ async function BalancesTab({ catererId, from, to, label, pg }: { catererId: stri
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {suppliers.map((p) => (
               <div key={p.id} className="flex items-center justify-between gap-3 py-2 text-sm">
-                <Link href={`/caterer/purchases/${p.id}`} className="min-w-0 hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{p.supplier}</span><span className="ml-2 text-xs text-zinc-400">{p.category} · {formatInvoiceDate(p.date)}</span></Link>
+                <Link href={`/caterer/purchases/${p.id}`} className="min-w-0 hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{p.supplier}</span><span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{p.category} · {formatInvoiceDate(p.date)}</span></Link>
                 <span className="font-semibold text-red-600 dark:text-red-400">{rs(p.duePaise)}</span>
               </div>
             ))}
@@ -265,7 +265,7 @@ async function BalancesTab({ catererId, from, to, label, pg }: { catererId: stri
 
 async function AnalyticsTab({ catererId, from, to, label, pg }: { catererId: string; from: Date; to: Date; label: string; pg: ReportPaging }) {
   const a = await analyticsInRange(catererId, from, to);
-  if (a.functions === 0) return <Panel title={`Items & analytics · ${label}`}><p className="text-sm text-zinc-400 py-2">No functions in this period.</p></Panel>;
+  if (a.functions === 0) return <Panel title={`Items & analytics · ${label}`}><p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No functions in this period.</p></Panel>;
 
   const byRevenue = [...a.items].sort((x, y) => y.amountPaise - x.amountPaise);
   const itemsPage = pageOf(byRevenue, pg);
@@ -294,7 +294,7 @@ async function AnalyticsTab({ catererId, from, to, label, pg }: { catererId: str
           <div className="space-y-3">
             {a.groups.map((g) => (
               <div key={g.group} className="space-y-1">
-                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{GROUP_LABEL[g.group as ItemGroupKey] ?? g.group}</span><span><span className="font-semibold text-zinc-900 dark:text-zinc-50">{rs(g.amountPaise)}</span><span className="ml-2 text-xs text-zinc-400">{Math.round((g.amountPaise / Math.max(1, a.billedPaise)) * 100)}%</span></span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{GROUP_LABEL[g.group as ItemGroupKey] ?? g.group}</span><span><span className="font-semibold text-zinc-900 dark:text-zinc-50">{rs(g.amountPaise)}</span><span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{Math.round((g.amountPaise / Math.max(1, a.billedPaise)) * 100)}%</span></span></div>
                 <Bar pct={(g.amountPaise / maxGroup) * 100} />
               </div>
             ))}
@@ -322,12 +322,12 @@ async function AnalyticsTab({ catererId, from, to, label, pg }: { catererId: str
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {itemsPage.rows.map((r) => (
                 <tr key={`${r.name}|${r.unit}`}>
-                  <td className="py-2">{r.name}<span className="ml-2 text-xs text-zinc-400">{GROUP_LABEL[r.group as ItemGroupKey]?.toLowerCase() ?? r.group}</span></td>
+                  <td className="py-2">{r.name}<span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{GROUP_LABEL[r.group as ItemGroupKey]?.toLowerCase() ?? r.group}</span></td>
                   <td className="py-2 text-right text-zinc-600 dark:text-zinc-400 whitespace-nowrap">{r.quantity.toLocaleString("en-IN")} {r.unit}</td>
                   <td className="py-2 text-right text-zinc-600 dark:text-zinc-400 whitespace-nowrap">{r.functions} of {a.functions}</td>
                   <td className="py-2 text-right text-zinc-600 dark:text-zinc-400">{rs(r.avgRatePaise)}</td>
                   <td className="py-2 text-right font-medium">{rs(r.amountPaise)}</td>
-                  <td className="py-2 text-right text-xs text-zinc-400">{Math.round((r.amountPaise / Math.max(1, a.billedPaise)) * 100)}%</td>
+                  <td className="py-2 text-right text-xs text-zinc-500 dark:text-zinc-400">{Math.round((r.amountPaise / Math.max(1, a.billedPaise)) * 100)}%</td>
                 </tr>
               ))}
               <tr className="font-bold"><td className="py-2" colSpan={4}>Total · {a.distinctItems} items · {a.lineCount} lines</td><td className="py-2 text-right">{rs(byRevenue.reduce((s, r) => s + r.amountPaise, 0))}</td><td /></tr>
@@ -335,7 +335,7 @@ async function AnalyticsTab({ catererId, from, to, label, pg }: { catererId: str
           </table>
         </div>
         <ReportPager pg={pg} paged={itemsPage} />
-        <p className="mt-3 text-xs text-zinc-400">Item amounts include any discount you gave, so they add up to what you actually billed. Quantities stay in each item&apos;s own unit.</p>
+        <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Item amounts include any discount you gave, so they add up to what you actually billed. Quantities stay in each item&apos;s own unit.</p>
       </Panel>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -353,7 +353,7 @@ async function AnalyticsTab({ catererId, from, to, label, pg }: { catererId: str
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {a.customers.slice(0, 8).map((c) => (
               <Link key={c.id} href={`/caterer/customers/${c.id}`} className="flex items-center justify-between gap-3 py-2 text-sm hover:text-amber-600">
-                <span className="truncate text-zinc-800 dark:text-zinc-200">{c.name}<span className="ml-2 text-xs text-zinc-400">{c.functions} function{c.functions === 1 ? "" : "s"}</span></span>
+                <span className="truncate text-zinc-800 dark:text-zinc-200">{c.name}<span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{c.functions} function{c.functions === 1 ? "" : "s"}</span></span>
                 <span className="shrink-0 font-medium">{rs(c.billedPaise)}</span>
               </Link>
             ))}
@@ -366,12 +366,12 @@ async function AnalyticsTab({ catererId, from, to, label, pg }: { catererId: str
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {withCost.slice(0, 10).map((f) => (
               <Link key={f.id} href={`/caterer/orders/${f.id}`} className="flex items-center justify-between gap-3 py-2 text-sm hover:text-amber-600">
-                <span className="min-w-0 truncate">{f.customer}<span className="ml-2 text-xs text-zinc-400">{formatInvoiceDate(f.date)} · billed {rs(f.billedPaise)} · costs {rs(f.costPaise)}</span></span>
+                <span className="min-w-0 truncate">{f.customer}<span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{formatInvoiceDate(f.date)} · billed {rs(f.billedPaise)} · costs {rs(f.costPaise)}</span></span>
                 <span className={cn("shrink-0 font-semibold", f.profitPaise < 0 ? "text-red-600" : "text-emerald-600")}>{rs(f.profitPaise)}</span>
               </Link>
             ))}
           </div>
-          <p className="mt-3 text-xs text-zinc-400">Only functions with purchases or team pay tied to them are shown. Choose the function when you record a purchase, and add the team on the order, to include them.</p>
+          <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Only functions with purchases or team pay tied to them are shown. Choose the function when you record a purchase, and add the team on the order, to include them.</p>
         </Panel>
       )}
     </div>
@@ -404,7 +404,7 @@ async function CashTab({ catererId, orgId, from, to, label }: { catererId: strin
           </tbody>
         </table>
       </div>
-      <p className="mt-3 text-xs text-zinc-400">Receipts from customers, payments to suppliers and staff pay use the way they were paid. Everyday expenses don&apos;t record how they were paid, so they are taken from cash.</p>
+      <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Receipts from customers, payments to suppliers and staff pay use the way they were paid. Everyday expenses don&apos;t record how they were paid, so they are taken from cash.</p>
     </Panel>
   );
 }

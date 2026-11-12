@@ -40,7 +40,7 @@ export function CatererInvoiceShare({ orderId, orderToken, orderDate, customer, 
           ))}
         </div>
       )}
-      <Show what="phones"><button type="button" onClick={send} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">
+      <Show what="phones"><button type="button" onClick={send} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-sm font-semibold text-white">
         <MessageCircle className="h-4 w-4" /> Send on WhatsApp
       </button></Show>
     </div>

@@ -71,14 +71,14 @@ export default async function CatererStaffPage({ searchParams }: { searchParams:
                   </div>
                   <Show what="salaries"><div className="mt-0.5 text-xs text-zinc-500">{PAY_LABEL[p.payType]} · {rs(p.ratePaise)}{p.payType === "DAILY" ? " a day" : " a month"}</div></Show>
                 </Link>
-                {p.phone && <a href={`tel:${p.phone}`} aria-label={`Call ${p.name}`} className="text-zinc-400 hover:text-amber-600"><Phone className="h-4 w-4" /></a>}
+                {p.phone && <a href={`tel:${p.phone}`} aria-label={`Call ${p.name}`} className="text-zinc-500 dark:text-zinc-400 hover:text-amber-600"><Phone className="h-4 w-4" /></a>}
               </div>
               <div className="flex items-center justify-between gap-3 flex-wrap">
                 <Show what="salaries"><div className="text-xs text-zinc-500 space-x-3">
                   {p.payType === "DAILY" && <span>{p.days} day{p.days === 1 ? "" : "s"} worked</span>}
                   <span>Earned <span className="font-semibold text-zinc-800 dark:text-zinc-200">{rs(p.earnedPaise)}</span></span>
                   <span>Paid <span className="font-semibold text-emerald-600">{rs(p.paidPaise)}</span></span>
-                  <span>To pay <span className={cn("font-semibold", p.toPayPaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-400")}>{p.toPayPaise > 0 ? rs(p.toPayPaise) : "Nil"}</span></span>
+                  <span>To pay <span className={cn("font-semibold", p.toPayPaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-500 dark:text-zinc-400")}>{p.toPayPaise > 0 ? rs(p.toPayPaise) : "Nil"}</span></span>
                 </div></Show>
                 <div className="flex items-center gap-2">
                   {p.payType === "DAILY" && isThisMonth && <QuickAttendance id={p.id} date={today} units={p.todayUnits} />}

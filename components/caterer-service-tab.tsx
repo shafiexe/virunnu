@@ -196,26 +196,26 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
             <span className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm">AI Prefill</span>
             <span className="text-xs text-zinc-500">Paste raw details — AI will extract and fill all fields</span>
           </div>
-          {aiOpen ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}
+          {aiOpen ? <ChevronUp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
         </button>
 
         {aiOpen && (
           <div className="border-t border-violet-100 dark:border-violet-900 px-5 py-4 space-y-3">
             {/* URL input */}
             <div className="space-y-1">
-              <label className="text-xs font-medium text-zinc-500">Google Maps / Website URL <span className="font-normal text-zinc-400">(optional)</span></label>
+              <label className="text-xs font-medium text-zinc-500">Google Maps / Website URL <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span></label>
               <input
                 value={aiUrl}
                 onChange={(e) => setAiUrl(e.target.value)}
                 placeholder="https://maps.google.com/… or caterer website URL"
                 className="w-full rounded-xl border border-violet-200 dark:border-violet-700 bg-white dark:bg-zinc-900 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-300 placeholder:text-zinc-400"
               />
-              <p className="text-[11px] text-zinc-400">Paste a Google Maps place URL, Instagram page, Facebook page, or the caterer&apos;s own website. The server will fetch and read it. You&apos;ll verify and save the result — just a quick way to avoid manual typing.</p>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Paste a Google Maps place URL, Instagram page, Facebook page, or the caterer&apos;s own website. The server will fetch and read it. You&apos;ll verify and save the result — just a quick way to avoid manual typing.</p>
             </div>
 
             {/* Text paste */}
             <div className="space-y-1">
-              <label className="text-xs font-medium text-zinc-500">Or paste raw text <span className="font-normal text-zinc-400">(WhatsApp message, bio, any text)</span></label>
+              <label className="text-xs font-medium text-zinc-500">Or paste raw text <span className="font-normal text-zinc-500 dark:text-zinc-400">(WhatsApp message, bio, any text)</span></label>
               <textarea
                 value={aiText}
                 onChange={(e) => setAiText(e.target.value)}
@@ -249,14 +249,14 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
                       type="button"
                       onClick={addAiMenuItems}
                       disabled={addingMenus}
-                      className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold transition-colors disabled:opacity-50"
+                      className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold transition-colors disabled:opacity-50"
                     >
                       {addingMenus ? "Adding…" : "Add to menu"}
                     </button>
                   </div>
                 )}
                 {aiResult.menuItems?.length === 0 && (
-                  <p className="text-xs text-zinc-400">Menu items added successfully — refresh to see them.</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">Menu items added successfully — refresh to see them.</p>
                 )}
               </div>
             )}
@@ -350,7 +350,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
                 className={cn(
                   "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                   form.cuisines.includes(c)
-                    ? "bg-amber-500 text-white border-amber-500"
+                    ? "bg-amber-500 text-zinc-900 border-amber-500"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
                 )}
               >
@@ -405,7 +405,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
             onClick={addPhoto}
             disabled={addingPhoto}
             aria-label="Add this link"
-            className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white text-sm font-semibold transition-colors"
+            className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-zinc-900 text-sm font-semibold transition-colors"
           >
             <Plus className="h-4 w-4" />
           </button>
@@ -422,7 +422,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="w-full h-full object-cover" />
                 {idx === 0
-                  ? <span className="absolute left-1 top-1 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white">Cover</span>
+                  ? <span className="absolute left-1 top-1 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-zinc-900">Cover</span>
                   : <button type="button" onClick={() => setForm((f) => ({ ...f, photos: [url, ...f.photos.filter((_, i) => i !== idx)] }))} className="absolute left-1 top-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">Make cover</button>}
                 <button
                   type="button"
@@ -436,7 +436,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
           </div>
         )}
         {form.photos.length === 0 && (
-          <p className="text-xs text-zinc-400">No photos yet. Upload one, or paste a photo link.</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">No photos yet. Upload one, or paste a photo link.</p>
         )}
       </div>
 
@@ -445,7 +445,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
         <button
           onClick={save}
           disabled={saving}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors disabled:opacity-60"
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-60"
         >
           {saved ? <><Check className="h-4 w-4" /> Saved!</> : saving ? "Saving…" : "Save changes"}
         </button>
@@ -458,7 +458,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Menu and prices</h2>
             <p className="text-sm text-zinc-500 mt-0.5">Your dishes and rates are kept in one list. Tick “Show on my public page” there to put a dish on your menu here.</p>
           </div>
-          <a href="/caterer/items" className="inline-flex items-center rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">Open Menu &amp; Prices</a>
+          <a href="/caterer/items" className="inline-flex items-center rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900">Open Menu &amp; Prices</a>
         </div>
       )}
     </div>

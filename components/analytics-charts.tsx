@@ -69,7 +69,7 @@ function forecast(values: number[], ahead: number): number[] {
 function RevenueTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number; name: string }[]; label?: string }) {
   if (!active || !payload?.length) return null;
   const colorMap: Record<string, string> = {
-    Revenue: "text-amber-600", Forecast: "text-amber-400", Expenses: "text-rose-500",
+    Revenue: "text-amber-700 dark:text-amber-500", Forecast: "text-amber-400", Expenses: "text-rose-500",
   };
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg p-3 text-sm">
@@ -86,7 +86,7 @@ function RevenueTooltip({ active, payload, label }: { active?: boolean; payload?
 function OccupancyTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number | null }[]; label?: string }) {
   if (!active || !payload?.length || payload[0]?.value == null) return null;
   const pct = payload[0].value;
-  const color = pct >= 70 ? "text-emerald-600" : pct >= 40 ? "text-amber-600" : "text-red-500";
+  const color = pct >= 70 ? "text-emerald-600" : pct >= 40 ? "text-amber-700 dark:text-amber-500" : "text-red-500";
   return (
     <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg p-3 text-sm">
       <p className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">{label}</p>
@@ -173,14 +173,14 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
       items.push({
         icon: "⚠",
         text: `High cancellation rate (${cancellationRate}%) — consider a deposit policy`,
-        color: "text-amber-600 dark:text-amber-400",
+        color: "text-amber-700 dark:text-amber-400",
       });
     }
     if (bestMonth) {
       items.push({
         icon: "★",
         text: `${bestMonth} is your busiest month — consider premium pricing`,
-        color: "text-amber-600 dark:text-amber-400",
+        color: "text-amber-700 dark:text-amber-400",
       });
     }
     if (nextMonthForecast > 0) {
@@ -191,7 +191,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
       });
     }
     if (items.length === 0) {
-      items.push({ icon: "◎", text: "Add more bookings to see trend insights", color: "text-zinc-400" });
+      items.push({ icon: "◎", text: "Add more bookings to see trend insights", color: "text-zinc-500 dark:text-zinc-400" });
     }
     return items;
   }, [trendPct, trendDirection, cancellationRate, bestMonth, nextMonthForecast, nextMonthName]);
@@ -229,12 +229,12 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
           valueColor="text-emerald-600"
         />
         <KpiCard
-          icon={<IndianRupee className="h-5 w-5 text-amber-600" />}
+          icon={<IndianRupee className="h-5 w-5 text-amber-700 dark:text-amber-500" />}
           bg="bg-amber-50 dark:bg-amber-950/30"
           label="Revenue"
           value={`₹${(totalRevenuePaise / 100).toLocaleString("en-IN")}`}
           sub={avgMonthlyRevenue > 0 ? `~₹${(avgMonthlyRevenue / 100).toLocaleString("en-IN")}/mo` : undefined}
-          valueColor="text-amber-600"
+          valueColor="text-amber-700 dark:text-amber-500"
           small
         />
         <KpiCard
@@ -253,7 +253,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
           label="Avg occupancy"
           value={avgOccupancy !== null ? `${avgOccupancy}%` : "—"}
           sub={avgOccupancy !== null ? (avgOccupancy >= 70 ? "High demand" : avgOccupancy >= 40 ? "Moderate" : "Low demand") : "No data yet"}
-          valueColor={avgOccupancy === null ? "text-zinc-400" : avgOccupancy >= 70 ? "text-emerald-600" : avgOccupancy >= 40 ? "text-amber-600" : "text-red-500"}
+          valueColor={avgOccupancy === null ? "text-zinc-500 dark:text-zinc-400" : avgOccupancy >= 70 ? "text-emerald-600" : avgOccupancy >= 40 ? "text-amber-700 dark:text-amber-500" : "text-red-500"}
         />
       </div>
 
@@ -285,7 +285,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
         <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
           <div>
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Revenue vs Expenses</h2>
-            <p className="text-xs text-zinc-400 mt-0.5">Monthly revenue (amber) · expenses (rose) · dashed = forecast</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Monthly revenue (amber) · expenses (rose) · dashed = forecast</p>
           </div>
           {trendDirection !== "stable" && trendPct !== null && (
             <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${
@@ -365,7 +365,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
         <div className="mb-5">
           <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Bookings by month</h2>
-          <p className="text-xs text-zinc-400 mt-0.5">Confirmed · Advance paid · Cancelled</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Confirmed · Advance paid · Cancelled</p>
         </div>
         <ResponsiveContainer width="100%" height={220}>
           <BarChart data={bookingChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }} barCategoryGap="30%" barGap={3}>
@@ -393,7 +393,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
           <div className="mb-5">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Occupancy rate</h2>
-            <p className="text-xs text-zinc-400 mt-0.5">% of available slots filled per month · green ≥70% · amber 40–69% · red &lt;40%</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">% of available slots filled per month · green ≥70% · amber 40–69% · red &lt;40%</p>
           </div>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={occupancyData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }} barCategoryGap="30%">
@@ -418,7 +418,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
       {(totalCash + totalOnline) > 0 && (
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5">
           <h2 className="font-semibold text-zinc-900 dark:text-zinc-50 mb-1">Payment method</h2>
-          <p className="text-xs text-zinc-400 mb-5">Cash vs online breakdown</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-5">Cash vs online breakdown</p>
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <div className="shrink-0">
               <ResponsiveContainer width={180} height={180}>
@@ -456,14 +456,14 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
         <table className="w-full text-xs min-w-[520px]">
           <thead>
             <tr className="border-b border-zinc-100 dark:border-zinc-800">
-              <th className="pb-2 text-left font-medium text-zinc-400">Month</th>
-              <th className="pb-2 text-right font-medium text-amber-500">Confirmed</th>
-              <th className="pb-2 text-right font-medium text-blue-500">Advance paid</th>
-              <th className="pb-2 text-right font-medium text-red-400">Cancelled</th>
-              <th className="pb-2 text-right font-medium text-amber-600">Revenue</th>
-              {yearExpensePaise > 0 && <th className="pb-2 text-right font-medium text-rose-500">Expenses</th>}
-              {yearExpensePaise > 0 && <th className="pb-2 text-right font-medium text-emerald-600">Net</th>}
-              <th className="pb-2 text-right font-medium text-zinc-400">Cash</th>
+              <th className="pb-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Month</th>
+              <th className="pb-2 text-right font-medium text-amber-700 dark:text-amber-500">Confirmed</th>
+              <th className="pb-2 text-right font-medium text-blue-700 dark:text-blue-400">Advance paid</th>
+              <th className="pb-2 text-right font-medium text-red-700 dark:text-red-400">Cancelled</th>
+              <th className="pb-2 text-right font-medium text-amber-700 dark:text-amber-500">Revenue</th>
+              {yearExpensePaise > 0 && <th className="pb-2 text-right font-medium text-rose-700 dark:text-rose-400">Expenses</th>}
+              {yearExpensePaise > 0 && <th className="pb-2 text-right font-medium text-emerald-700 dark:text-emerald-500">Net</th>}
+              <th className="pb-2 text-right font-medium text-zinc-500 dark:text-zinc-400">Cash</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-50 dark:divide-zinc-800/50">
@@ -485,7 +485,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
                   <td className="py-2 text-right text-emerald-600">{m.confirmed || "—"}</td>
                   <td className="py-2 text-right text-blue-500">{m.advancePaid || "—"}</td>
                   <td className="py-2 text-right text-red-400">{m.cancelled || "—"}</td>
-                  <td className="py-2 text-right text-amber-600 font-medium">
+                  <td className="py-2 text-right text-amber-700 dark:text-amber-500 font-medium">
                     {netRevenue !== 0 ? (
                       <span className={netRevenue < 0 ? "text-red-500" : ""}>
                         {netRevenue < 0 ? "−" : ""}₹{Math.round(Math.abs(netRevenue) / 100).toLocaleString("en-IN")}
@@ -505,7 +505,7 @@ export function AnalyticsCharts({ year, availableYears, monthData, expenseMonthD
                         : "—"}
                     </td>
                   )}
-                  <td className="py-2 text-right text-zinc-400">{m.cashCount || "—"}</td>
+                  <td className="py-2 text-right text-zinc-500 dark:text-zinc-400">{m.cashCount || "—"}</td>
                 </tr>
               );
             })}
@@ -522,7 +522,7 @@ function PaymentBar({ label, count, total, color }: { label: string; count: numb
     <div className="space-y-1.5">
       <div className="flex justify-between text-sm">
         <span className="text-zinc-600 dark:text-zinc-400 font-medium">{label}</span>
-        <span className="text-zinc-900 dark:text-zinc-50 font-semibold">{count} <span className="text-zinc-400 font-normal text-xs">({pct}%)</span></span>
+        <span className="text-zinc-900 dark:text-zinc-50 font-semibold">{count} <span className="text-zinc-500 dark:text-zinc-400 font-normal text-xs">({pct}%)</span></span>
       </div>
       <div className="w-full h-2.5 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
         <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
@@ -543,7 +543,7 @@ function KpiCard({
       <div>
         <div className="text-xs text-zinc-500 font-medium">{label}</div>
         <div className={`${small ? "text-xl" : "text-2xl"} font-bold mt-0.5 ${valueColor ?? "text-zinc-700 dark:text-zinc-300"}`}>{value}</div>
-        {sub && <div className="text-[10px] text-zinc-400 mt-0.5">{sub}</div>}
+        {sub && <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">{sub}</div>}
       </div>
     </div>
   );

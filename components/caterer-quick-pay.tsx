@@ -6,6 +6,7 @@ import { Check, Loader2, Wallet, X } from "lucide-react";
 import { BILL_LABEL, rs, type BillTypeKey } from "@/lib/caterer-orders";
 import { cn } from "@/lib/utils";
 import { useCanWrite } from "@/components/access-context";
+import { setStoredValue, useStoredValue } from "@/hooks/use-browser-value";
 
 export type PayableBill = { id: string; number: number; type: BillTypeKey; balancePaise: number };
 
@@ -20,12 +21,14 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
   const [open, setOpen] = useState(false);
   const [billId, setBillId] = useState(bills[0]?.id ?? "");
   const [amount, setAmount] = useState("");
-  const [mode, setMode] = useState("CASH");
+  // the way of paying used last time is chosen already
+  const lastMode = useStoredValue(MODE_KEY);
+  const [modeChoice, setMode] = useState<string | null>(null);
+  const mode = modeChoice ?? (lastMode && MODES.some(([k]) => k === lastMode) ? lastMode : "CASH");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
   const bill = bills.find((b) => b.id === billId) ?? bills[0];
-  useEffect(() => { try { const m = localStorage.getItem(MODE_KEY); if (m && MODES.some(([k]) => k === m)) setMode(m); } catch {} }, []);
   if (!bill) return null;
 
   function show() {
@@ -42,7 +45,7 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
       const res = await fetch(`/api/caterer/bills/${bill.id}/payments`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ amount: value, method: mode }) });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not save"); return; }
-      try { localStorage.setItem(MODE_KEY, mode); } catch {}
+      setStoredValue(MODE_KEY, mode);
       setOpen(false); router.refresh(); onDone?.();
     } finally { setBusy(false); }
   }
@@ -63,7 +66,7 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Payment received</h3>
                 <p className="text-xs text-zinc-500">{customer} · owes {rs(total)}</p>
               </div>
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-400" /></button>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
             </div>
 
             {bills.length > 1 && (
@@ -80,7 +83,7 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
 
             <div>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">₹</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400">₹</span>
                 <input autoFocus inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} onFocus={(e) => e.target.select()} aria-label="Amount received"
                   className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 pl-7 pr-3 py-2.5 text-lg font-semibold text-zinc-900 dark:text-zinc-50 focus:outline-none focus:ring-2 focus:ring-emerald-400" />
               </div>
@@ -92,12 +95,12 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
 
             <div className="grid grid-cols-4 gap-1.5">
               {MODES.map(([k, label]) => (
-                <button key={k} type="button" onClick={() => setMode(k)} className={cn("rounded-lg border py-1.5 text-xs font-medium", mode === k ? "border-emerald-500 bg-emerald-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>{label}</button>
+                <button key={k} type="button" onClick={() => setMode(k)} className={cn("rounded-lg border py-1.5 text-xs font-medium", mode === k ? "border-emerald-500 bg-emerald-700 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>{label}</button>
               ))}
             </div>
 
             {error && <p className="text-xs text-red-500">{error}</p>}
-            <button type="submit" disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+            <button type="submit" disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />} Save payment
             </button>
           </form>

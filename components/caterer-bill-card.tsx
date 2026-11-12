@@ -33,7 +33,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
       <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3>
-          <button onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-400" /></button>
+          <button onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
         </div>
         {children}
       </div>
@@ -86,7 +86,7 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
     <section className={cn("rounded-2xl border bg-white dark:bg-zinc-900 p-5 space-y-4", cancelled ? "border-zinc-200 dark:border-zinc-800 opacity-60" : "border-zinc-200 dark:border-zinc-800")}>
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
-          <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{BILL_LABEL[bill.type]}</div>
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{BILL_LABEL[bill.type]}</div>
           <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Invoice #{bill.number}</h2>
         </div>
         <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full", STATE_STYLE[m.state])}>{STATE_LABEL[m.state]}</span>
@@ -95,7 +95,7 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
       <div className="rounded-xl bg-zinc-50 dark:bg-zinc-800/50 divide-y divide-zinc-200/70 dark:divide-zinc-700/60 text-sm">
         {bill.lines.map((l) => (
           <div key={l.id} className="flex items-start justify-between gap-3 px-3 py-2">
-            <span className="text-zinc-700 dark:text-zinc-300 min-w-0">{l.name}<span className="block text-xs text-zinc-400">{l.quantity} {l.unit} × {rsPaise(l.ratePaise)}</span></span>
+            <span className="text-zinc-700 dark:text-zinc-300 min-w-0">{l.name}<span className="block text-xs text-zinc-500 dark:text-zinc-400">{l.quantity} {l.unit} × {rsPaise(l.ratePaise)}</span></span>
             <span className="shrink-0 text-zinc-900 dark:text-zinc-50">{rsPaise(l.amountPaise)}</span>
           </div>
         ))}
@@ -103,26 +103,26 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
 
       <div className="space-y-1 text-sm">
         <div className="flex justify-between text-zinc-500"><span>Sub total</span><span>{rsPaise(bill.subtotalPaise)}</span></div>
-        {bill.discountPaise > 0 && <div className="flex justify-between text-amber-600 dark:text-amber-400"><span>Discount{bill.discountReason ? ` (${bill.discountReason})` : ""}</span><span>−{rsPaise(bill.discountPaise)}</span></div>}
+        {bill.discountPaise > 0 && <div className="flex justify-between text-amber-700 dark:text-amber-400"><span>Discount{bill.discountReason ? ` (${bill.discountReason})` : ""}</span><span>−{rsPaise(bill.discountPaise)}</span></div>}
         <div className="flex justify-between font-bold text-base text-zinc-900 dark:text-zinc-50 border-t border-zinc-200 dark:border-zinc-700 pt-1.5"><span>Total</span><span>{rsPaise(m.netPaise)}</span></div>
         <div className="flex justify-between text-emerald-600 dark:text-emerald-400"><span>Received</span><span>{rsPaise(bill.receivedPaise)}</span></div>
-        <div className="flex justify-between font-semibold"><span>Balance</span><span className={m.balancePaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-400"}>{m.balancePaise > 0 ? rsPaise(m.balancePaise) : "Nil"}</span></div>
+        <div className="flex justify-between font-semibold"><span>Balance</span><span className={m.balancePaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-500 dark:text-zinc-400"}>{m.balancePaise > 0 ? rsPaise(m.balancePaise) : "Nil"}</span></div>
       </div>
 
       {bill.payments.length > 0 && (
         <div className="space-y-1">
-          <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Payments received</div>
+          <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Payments received</div>
           {bill.payments.map((p, i) => (
             <div key={p.id} className="flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400">
               <span>{new Date(p.paidOn).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "UTC" })} · {METHOD[p.method] ?? p.method}{p.note ? ` · ${p.note}` : ""}{p.recordedBy ? ` · by ${p.recordedBy}` : ""}</span>
               <span className="flex items-center gap-2">
                 <span className="font-medium text-zinc-900 dark:text-zinc-50">{rsPaise(p.amountPaise)}</span>
-                <Show what="phones"><button type="button" onClick={() => sendReceipt(p, i)} aria-label={`Send the ${rsPaise(p.amountPaise)} receipt on WhatsApp`} className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-semibold text-white hover:bg-[#1ebe5c]"><MessageCircle className="h-3 w-3" /> Send</button></Show>
+                <Show what="phones"><button type="button" onClick={() => sendReceipt(p, i)} aria-label={`Send the ${rsPaise(p.amountPaise)} receipt on WhatsApp`} className="inline-flex items-center gap-1 rounded-md bg-[#25D366] px-2 py-1 font-semibold text-zinc-900 hover:bg-[#1ebe5c]"><MessageCircle className="h-3 w-3" /> Send</button></Show>
                 <a href={`/r/${p.shareToken}`} target="_blank" rel="noopener noreferrer" className="rounded-md border border-zinc-200 dark:border-zinc-700 px-2 py-1 font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800">Receipt</a>
                 <WriteOnly page="orders"><button type="button" title="Undo this payment" aria-label="Undo this payment" disabled={busy} onClick={() => undoable(`Payment of ${rsPaise(p.amountPaise)} taken back`, {
                   request: { url: `/api/caterer/bills/${bill.id}/payments/${p.id}`, method: "DELETE" },
                   restore: { url: `/api/caterer/bills/${bill.id}/payments`, method: "POST", body: { amount: p.amountPaise / 100, method: p.method, note: p.note ?? undefined, paidOn: p.paidOn.slice(0, 10) } },
-                })} className="p-1.5 -m-1.5 text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button></WriteOnly>
+                })} className="p-1.5 -m-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button></WriteOnly>
               </span>
             </div>
           ))}
@@ -133,7 +133,7 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
         <div className="flex flex-wrap gap-2">
           <WriteOnly page="orders">
           {m.balancePaise > 0 && (
-            <button type="button" onClick={() => { setAmount(String(m.balancePaise / 100)); setError(""); setPanel("pay"); }} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white">
+            <button type="button" onClick={() => { setAmount(String(m.balancePaise / 100)); setError(""); setPanel("pay"); }} className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-3.5 py-2 text-sm font-semibold text-white">
               <Wallet className="h-4 w-4" /> Payment received
             </button>
           )}
@@ -143,7 +143,7 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
             <Percent className="h-4 w-4" /> {bill.discountPaise > 0 ? "Edit discount" : "Discount"}
           </button>
           </WriteOnly>
-          <Link href={`/caterer/orders/${orderId}/invoice?bill=${bill.type}`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20">
+          <Link href={`/caterer/orders/${orderId}/invoice?bill=${bill.type}`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20">
             <FileText className="h-4 w-4" /> Invoice
           </Link>
           <Show what="phones"><button type="button" onClick={share} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20">
@@ -163,7 +163,7 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
             <input className={INPUT} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} maxLength={120} />
           </div>
           {error && <p className="text-xs text-red-500">{error}</p>}
-          <button type="button" disabled={busy} onClick={async () => { if (await call(`/api/caterer/bills/${bill.id}/payments`, "POST", { amount: Number(amount), method, note })) setPanel(null); }} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={async () => { if (await call(`/api/caterer/bills/${bill.id}/payments`, "POST", { amount: Number(amount), method, note })) setPanel(null); }} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} Confirm payment received
           </button>
         </Modal>
@@ -177,7 +177,7 @@ export function CatererBillCard({ bill, orderId, orderDate, customer, catererNam
             <input className={INPUT} placeholder="Reason (optional)" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={120} />
           </div>
           {error && <p className="text-xs text-red-500">{error}</p>}
-          <button type="button" disabled={busy} onClick={async () => { if (await call(`/api/caterer/bills/${bill.id}`, "PATCH", { discount: Number(discount) || 0, discountReason: reason })) setPanel(null); }} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          <button type="button" disabled={busy} onClick={async () => { if (await call(`/api/caterer/bills/${bill.id}`, "PATCH", { discount: Number(discount) || 0, discountReason: reason })) setPanel(null); }} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-50">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} Save discount
           </button>
         </Modal>

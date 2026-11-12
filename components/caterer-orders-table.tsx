@@ -69,14 +69,14 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Orders</h1>
           <p className="text-sm text-zinc-500 mt-0.5">{loading ? "Loading…" : `${total.toLocaleString("en-IN")} order${total !== 1 ? "s" : ""}`}</p>
         </div>
-        <WriteOnly page="orders"><Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors">
+        <WriteOnly page="orders"><Link href="/caterer/orders/new" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900 transition-colors">
           <Plus className="h-4 w-4" /> New order
         </Link></WriteOnly>
       </div>
 
       <div className="mb-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 dark:text-zinc-400 pointer-events-none" />
           <input
             type="search" placeholder="Search by customer, phone or place…" value={searchInput} onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -85,7 +85,7 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
         <div className="flex gap-1 flex-wrap">
           {TABS.map(({ key, label }) => (
             <button key={key} onClick={() => handleStatus(key)}
-              className={cn("px-3 py-2 rounded-xl text-xs font-medium transition-colors whitespace-nowrap", status === key ? "bg-amber-500 text-white shadow-sm" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
+              className={cn("px-3 py-2 rounded-xl text-xs font-medium transition-colors whitespace-nowrap", status === key ? "bg-amber-500 text-zinc-900 shadow-sm" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
               {label}
             </button>
           ))}
@@ -111,7 +111,7 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-              {loading && <tr><td colSpan={7} className="px-4 py-12 text-center text-zinc-400 text-sm">Loading…</td></tr>}
+              {loading && <tr><td colSpan={7} className="px-4 py-12 text-center text-zinc-500 dark:text-zinc-400 text-sm">Loading…</td></tr>}
               {!loading && orders.length === 0 && (
                 <tr><td colSpan={7}>
                   {searchInput || status !== "ALL"
@@ -147,7 +147,7 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
                       ))}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap font-semibold">
-                      {o.bills.length === 0 || o.status === "CANCELLED" ? <span className="text-zinc-400">—</span>
+                      {o.bills.length === 0 || o.status === "CANCELLED" ? <span className="text-zinc-500 dark:text-zinc-400">—</span>
                         : balance > 0 ? (
                           <div className="space-y-1">
                             <div className="text-red-600 dark:text-red-400">{rs(balance)}</div>
@@ -165,7 +165,7 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
                       <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full", STATUS_STYLE[o.status])}>{STATUS_LABEL[o.status]}</span>
                     </td>
                     <td className="px-4 py-3">
-                      {o.bills.length === 0 || o.status === "CANCELLED" ? <span className="text-zinc-400">—</span> : (
+                      {o.bills.length === 0 || o.status === "CANCELLED" ? <span className="text-zinc-500 dark:text-zinc-400">—</span> : (
                         <div className="space-y-1">
                           {o.bills.map((b) => (
                             <div key={b.id} className="flex items-center gap-1.5 whitespace-nowrap text-xs">
@@ -196,7 +196,7 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
         </div>
         {!loading && total > 25 && <PaginationBar page={page} totalPages={totalPages} total={total} pageSize={pageSize} onPage={goToPage} onPageSize={changePageSize} />}
       </div>
-      <p className="mt-3 text-xs text-zinc-400">{Object.values(BILL_LABEL).join(" · ")} are billed separately for each function.</p>
+      <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">{Object.values(BILL_LABEL).join(" · ")} are billed separately for each function.</p>
     </div>
   );
 }

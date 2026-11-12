@@ -15,7 +15,7 @@ const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const CHIP = {
   CONFIRMED: "bg-sky-100 text-sky-800 dark:bg-sky-950/40 dark:text-sky-300",
   COMPLETED: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300",
-  CANCELLED: "bg-zinc-100 text-zinc-400 line-through dark:bg-zinc-800 dark:text-zinc-500",
+  CANCELLED: "bg-zinc-100 text-zinc-500 line-through dark:bg-zinc-800 dark:text-zinc-500",
 } as const;
 
 export default async function CatererCalendarPage({ searchParams }: { searchParams: Promise<{ month?: string; day?: string }> }) {
@@ -62,7 +62,7 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <CatererMonthNav basePath="/caterer/calendar" value={month} label={label} />
-          <WriteOnly page="orders"><Link href={`/caterer/orders/new${day ? `?date=${day}` : ""}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> New order</Link></WriteOnly>
+          <WriteOnly page="orders"><Link href={`/caterer/orders/new${day ? `?date=${day}` : ""}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900"><Plus className="h-4 w-4" /> New order</Link></WriteOnly>
         </div>
       </div>
 
@@ -77,11 +77,11 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
           <div className="flex items-center justify-between gap-3 px-5 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800 flex-wrap">
             <div>
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">{new Date(day + "T00:00:00Z").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}</h2>
-              <p className="text-xs text-zinc-400">{dayOrders.length} order{dayOrders.length === 1 ? "" : "s"}</p>
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">{dayOrders.length} order{dayOrders.length === 1 ? "" : "s"}</p>
             </div>
-            <WriteOnly page="orders"><Link href={`/caterer/orders/new?date=${day}`} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white"><Plus className="h-3.5 w-3.5" /> New order</Link></WriteOnly>
+            <WriteOnly page="orders"><Link href={`/caterer/orders/new?date=${day}`} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900"><Plus className="h-3.5 w-3.5" /> New order</Link></WriteOnly>
           </div>
-          {dayOrders.length === 0 ? <p className="p-6 text-center text-sm text-zinc-400">Nothing booked on this day.</p> : (
+          {dayOrders.length === 0 ? <p className="p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">Nothing booked on this day.</p> : (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {dayOrders.map((o) => {
                 const balance = o.bills.reduce((s, b) => s + billMoney(b).balancePaise, 0);
@@ -92,7 +92,7 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
                         <span className="block text-sm font-semibold text-zinc-900 dark:text-zinc-50">{o.customer.name}</span>
                         <span className="block text-xs text-zinc-500">{o.eventType ?? "Function"}{o.place ? ` · ${o.place}` : ""}</span>
                         <span className="mt-1 flex flex-wrap gap-x-3 text-xs text-zinc-600 dark:text-zinc-400">
-                          {o.servings.length === 0 ? <span className="text-zinc-400">No serve time set</span> : o.servings.map((s) => <span key={s.id}>{s.label} {formatTime(s.time)}{s.guests ? ` · ${s.guests}` : ""}</span>)}
+                          {o.servings.length === 0 ? <span className="text-zinc-500 dark:text-zinc-400">No serve time set</span> : o.servings.map((s) => <span key={s.id}>{s.label} {formatTime(s.time)}{s.guests ? ` · ${s.guests}` : ""}</span>)}
                         </span>
                       </span>
                       <span className="shrink-0 text-right text-xs">
@@ -110,7 +110,7 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
 
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
         <div className="grid grid-cols-7 border-b border-zinc-100 dark:border-zinc-800">
-          {WEEKDAYS.map((d) => <div key={d} className="py-2 text-center text-[11px] font-medium uppercase tracking-wide text-zinc-400">{d}</div>)}
+          {WEEKDAYS.map((d) => <div key={d} className="py-2 text-center text-[11px] font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{d}</div>)}
         </div>
         <div className="grid grid-cols-7">
           {cells.map((date, i) => {
@@ -122,7 +122,7 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
               <div key={date} className={cn("relative min-h-20 sm:min-h-28 border-b border-r border-zinc-100 dark:border-zinc-800 p-1 sm:p-1.5 space-y-1 transition-colors hover:bg-amber-50/60 dark:hover:bg-amber-950/10", isSel && "bg-amber-50/70 dark:bg-amber-950/10 ring-1 ring-inset ring-amber-400")}>
                 {/* the whole box selects the date; chips and links sit above it */}
                 <Link href={`/caterer/calendar?month=${month}&day=${date}`} scroll={false} aria-label={`Select ${date}`} className="absolute inset-0 z-0" />
-                <span className={cn("pointer-events-none relative z-10 inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-xs font-medium", isToday ? "bg-amber-500 text-white" : "text-zinc-600 dark:text-zinc-400")}>
+                <span className={cn("pointer-events-none relative z-10 inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1 text-xs font-medium", isToday ? "bg-amber-500 text-zinc-900" : "text-zinc-600 dark:text-zinc-400")}>
                   {Number(date.slice(8))}
                 </span>
                 {list.slice(0, 3).map((o) => (

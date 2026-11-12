@@ -100,16 +100,16 @@ export function VenueCard({ venue, distanceKm }: { venue: Venue; distanceKm?: nu
 
         {minPrice > 0 && (
           <div className="flex items-baseline gap-0.5">
-            <span className="text-[10px] text-zinc-400">from</span>
-            <IndianRupee className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-            <span className="font-bold text-amber-600 dark:text-amber-400 text-sm">
+            <span className="text-[10px] text-zinc-500 dark:text-zinc-400">from</span>
+            <IndianRupee className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
+            <span className="font-bold text-amber-700 dark:text-amber-400 text-sm">
               {(minPrice / 100).toLocaleString("en-IN")}
             </span>
           </div>
         )}
 
         <div className="pt-0.5 border-t border-zinc-100 dark:border-zinc-800">
-          <span className="text-xs font-semibold text-amber-600 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">
+          <span className="text-xs font-semibold text-amber-700 dark:text-amber-500 group-hover:text-amber-700 dark:group-hover:text-amber-300 transition-colors">
             Check availability →
           </span>
         </div>

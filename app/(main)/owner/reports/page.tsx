@@ -4,6 +4,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronLeft, ChevronRight, FileSpreadsheet } from "lucide-react";
 import { getSession } from "@/lib/session";
+import { payoutBalances } from "@/lib/commission";
+import { db } from "@/lib/db";
 import { monthReport, parseMonth, shiftMonth } from "@/lib/owner-month-report";
 import { formatRupees } from "@/lib/gst";
 import { PrintButton } from "@/components/print-button";
@@ -20,7 +22,7 @@ function Card({ label, value, sub, tone }: { label: string; value: string; sub?:
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
       <p className="text-xs text-zinc-500">{label}</p>
       <p className={cn("mt-1 text-xl font-bold tabular-nums", tone === "good" && "text-emerald-600 dark:text-emerald-400", tone === "bad" && "text-red-600 dark:text-red-400", !tone && "text-zinc-900 dark:text-zinc-50")}>{value}</p>
-      {sub && <p className="mt-0.5 text-[11px] text-zinc-400">{sub}</p>}
+      {sub && <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">{sub}</p>}
     </div>
   );
 }
@@ -42,6 +44,8 @@ export default async function OwnerReportsPage({ searchParams }: { searchParams:
   if (!session.orgId) redirect("/owner/onboarding");
 
   const r = await monthReport(session.orgId, parseMonth((await searchParams).month).key);
+  const [bal, payouts] = await Promise.all([payoutBalances([session.orgId]), db.payout.findMany({ where: { orgId: session.orgId }, orderBy: { paidOn: "desc" }, take: 6 })]);
+  const money = bal.get(session.orgId) ?? { onlinePaise: 0, commissionPaise: 0, paidOutPaise: 0, owedPaise: 0 };
   const { period: p, summary: s } = r;
   const prev = shiftMonth(p.key, -1);
   const next = shiftMonth(p.key, 1);
@@ -62,7 +66,7 @@ export default async function OwnerReportsPage({ searchParams }: { searchParams:
             <span className="min-w-32 text-center text-sm font-semibold text-zinc-900 dark:text-zinc-50">{p.label}</span>
             <Link href={`/owner/reports?month=${next}`} aria-label="Next month" className="p-2.5 text-zinc-500 hover:text-zinc-900"><ChevronRight className="h-4 w-4" /></Link>
           </div>
-          <a href={`/api/owner/reports/export?month=${p.key}`} download className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-white"><FileSpreadsheet className="h-4 w-4" /> Excel</a>
+          <a href={`/api/owner/reports/export?month=${p.key}`} download className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-zinc-900"><FileSpreadsheet className="h-4 w-4" /> Excel</a>
           <PrintButton />
         </div>
       </div>
@@ -126,6 +130,23 @@ export default async function OwnerReportsPage({ searchParams }: { searchParams:
           </>
         )}
       </Section>
+
+      {(money.onlinePaise > 0 || payouts.length > 0) && (
+        <Section title="Online payments and payouts" hint="Customers who pay on the website pay Virunnu, which keeps 1% and sends you the rest. All time, not just this month.">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <Card label="Paid online" value={rs(money.onlinePaise)} />
+            <Card label="Virunnu's 1%" value={rs(money.commissionPaise)} />
+            <Card label="Sent to you" value={rs(money.paidOutPaise)} />
+            <Card label="Still to come" value={rs(money.owedPaise)} tone={money.owedPaise > 0 ? "good" : undefined} />
+          </div>
+          {payouts.length > 0 && (
+            <Table><thead><tr><th className={TH}>Date</th><th className={TH}>Reference</th><th className={cn(TH, "text-right")}>Amount</th></tr></thead>
+              <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">{payouts.map((x) => (
+                <tr key={x.id}><td className={TD}>{dmy(x.paidOn.toISOString().slice(0, 10))}</td><td className={TD}>{x.reference ?? ""}</td><td className={cn(TD, NUM)}>{rs(x.amountPaise)}</td></tr>
+              ))}</tbody></Table>
+          )}
+        </Section>
+      )}
 
       <Section title="Expenses" hint={`Everything recorded as an expense in ${p.label}, including salaries.`}>
         {r.expenses.length === 0 ? <p className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-6 text-center text-sm text-zinc-500">No expenses recorded in {p.label}.</p> : (

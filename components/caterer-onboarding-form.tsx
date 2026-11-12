@@ -114,7 +114,7 @@ export function CatererOnboardingForm() {
                 onClick={() => toggle(c)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
                   selected
-                    ? "bg-amber-500 text-white border-amber-500"
+                    ? "bg-amber-500 text-zinc-900 border-amber-500"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
                 }`}
               >
@@ -130,11 +130,11 @@ export function CatererOnboardingForm() {
       <button
         type="submit"
         disabled={loading || !form.businessName || !form.city || !form.contactPhone}
-        className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-2.5 px-4 rounded-lg bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? "Submitting…" : "Submit for approval →"}
       </button>
-      <p className="text-xs text-zinc-400 text-center">Your listing will go live once approved by our team.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center">Your listing will go live once approved by our team.</p>
     </form>
   );
 }

@@ -79,7 +79,7 @@ function DiscountEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (
     return (
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-amber-600 transition-colors"
+        className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600 transition-colors"
       >
         <Tag className="h-3 w-3" />
         {booking.discountPaise > 0 ? `Discount: ${paise(booking.discountPaise)}` : "Add discount"}
@@ -92,7 +92,7 @@ function DiscountEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (
       <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">Set discount</p>
       <div className="flex gap-2">
         <div className="flex-1 space-y-1">
-          <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Amount (₹)</label>
+          <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Amount (₹)</label>
           <input
             type="number"
             min={0}
@@ -104,7 +104,7 @@ function DiscountEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (
           />
         </div>
         <div className="flex-[2] space-y-1">
-          <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Reason (optional)</label>
+          <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Reason (optional)</label>
           <input
             type="text"
             value={reason}
@@ -119,7 +119,7 @@ function DiscountEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (
         <button
           onClick={save}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-xs font-semibold"
+          className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 text-xs font-semibold"
         >
           {loading ? "Saving…" : "Save"}
         </button>
@@ -160,7 +160,7 @@ function RefundEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (b:
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-blue-600 transition-colors">
+      <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-blue-600 transition-colors">
         💸 {booking.refundPaise > 0 ? `Refunded: ${paise(booking.refundPaise)}` : "Record refund"}
       </button>
     );
@@ -171,12 +171,12 @@ function RefundEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (b:
       <p className="text-xs font-semibold text-blue-700 dark:text-blue-400">Record refund</p>
       <div className="flex gap-2">
         <div className="flex-1 space-y-1">
-          <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Amount (₹)</label>
+          <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Amount (₹)</label>
           <input type="number" min={0} value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0"
             className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div className="flex-2 space-y-1">
-          <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Reason (optional)</label>
+          <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Reason (optional)</label>
           <input type="text" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Customer request, weather…"
             className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
@@ -230,7 +230,7 @@ function CashPaymentEditor({ booking }: { booking: Booking }) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-emerald-600 transition-colors"
+        className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-emerald-600 transition-colors"
       >
         <Banknote className="h-3 w-3" />
         Payment received
@@ -262,11 +262,11 @@ function CashPaymentEditor({ booking }: { booking: Booking }) {
 
       {/* Amount input */}
       <div className="space-y-1">
-        <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">
+        <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
           Amount (₹) — remaining: {paise(remaining)}
         </label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">₹</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 text-sm">₹</span>
           <input
             type="number"
             min={1}
@@ -279,7 +279,7 @@ function CashPaymentEditor({ booking }: { booking: Booking }) {
         {(() => {
           const a = Math.round(parseFloat(amountInput || "0") * 100);
           if (!isNaN(a) && a > 0 && a < remaining) {
-            return <p className="text-[10px] text-amber-600">Partial payment — {paise(remaining - a)} will remain due</p>;
+            return <p className="text-[10px] text-amber-700 dark:text-amber-500">Partial payment — {paise(remaining - a)} will remain due</p>;
           }
           return null;
         })()}
@@ -288,7 +288,7 @@ function CashPaymentEditor({ booking }: { booking: Booking }) {
       {error && <p className="text-xs text-red-500">{error}</p>}
       <div className="flex gap-2">
         <button onClick={save} disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white text-xs font-semibold">
+          className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-xs font-semibold">
           {loading ? "Saving…" : "Confirm payment received"}
         </button>
         <button onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
@@ -323,17 +323,17 @@ function BookingCard({ booking: initial, onUpdated }: { booking: Booking; onUpda
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm">{booking.venueName}</span>
-            <span className="text-zinc-400">·</span>
+            <span className="text-zinc-500 dark:text-zinc-400">·</span>
             <span className="text-sm text-zinc-500">{booking.hallName}</span>
             {booking.templateName && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500">{booking.templateName}</span>}
           </div>
-          <div className="text-xs text-zinc-400 mt-0.5">{dateStr} · {booking.slotSession}</div>
+          <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{dateStr} · {booking.slotSession}</div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${STATUS_STYLE[booking.status] ?? ""}`}>
             {STATUS_LABEL[booking.status] ?? booking.status}
           </span>
-          <button onClick={() => setExpanded((v) => !v)} className="p-1 text-zinc-400 hover:text-zinc-600">
+          <button onClick={() => setExpanded((v) => !v)} className="p-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600">
             {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </button>
         </div>
@@ -348,36 +348,36 @@ function BookingCard({ booking: initial, onUpdated }: { booking: Booking; onUpda
         return (
           <div className="px-4 pb-3 flex gap-4 flex-wrap text-sm">
             <div>
-              <div className="text-[10px] text-zinc-400 uppercase tracking-wide font-semibold">Total</div>
+              <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-semibold">Total</div>
               <div className="font-semibold text-zinc-800 dark:text-zinc-200">{paise(booking.totalPaise)}</div>
             </div>
             {disc > 0 && (
               <div>
-                <div className="text-[10px] text-zinc-400 uppercase tracking-wide font-semibold">Discount</div>
-                <div className="font-semibold text-amber-600 dark:text-amber-400">−{paise(disc)}</div>
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-semibold">Discount</div>
+                <div className="font-semibold text-amber-700 dark:text-amber-400">−{paise(disc)}</div>
               </div>
             )}
             {cancelled && advanceTaken && (
               <div>
-                <div className="text-[10px] text-zinc-400 uppercase tracking-wide font-semibold">Advance collected</div>
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-semibold">Advance collected</div>
                 <div className="font-semibold text-zinc-600 dark:text-zinc-400">{paise(booking.advancePaise)}</div>
               </div>
             )}
             {cancelled && refund > 0 && (
               <div>
-                <div className="text-[10px] text-zinc-400 uppercase tracking-wide font-semibold">Refunded</div>
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-semibold">Refunded</div>
                 <div className="font-semibold text-blue-600 dark:text-blue-400">{paise(refund)}</div>
               </div>
             )}
             {!cancelled && totalPaid > 0 && (
               <div>
-                <div className="text-[10px] text-zinc-400 uppercase tracking-wide font-semibold">Paid</div>
+                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-semibold">Paid</div>
                 <div className="font-semibold text-emerald-600 dark:text-emerald-400">{paise(totalPaid)}</div>
               </div>
             )}
             {!cancelled && (
               <div>
-                <div className={`text-[10px] uppercase tracking-wide font-semibold ${overdue ? "text-red-500" : "text-zinc-400"}`}>
+                <div className={`text-[10px] uppercase tracking-wide font-semibold ${overdue ? "text-red-500" : "text-zinc-500 dark:text-zinc-400"}`}>
                   {overdue ? "⚠ Overdue" : "Balance"}
                 </div>
                 <div className={`font-bold ${balance > 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400"}`}>
@@ -401,10 +401,10 @@ function BookingCard({ booking: initial, onUpdated }: { booking: Booking; onUpda
             {booking.discountPaise > 0 && (
               <div className="flex justify-between px-3 py-2">
                 <div>
-                  <span className="text-amber-600">Discount</span>
-                  {booking.discountReason && <span className="ml-2 text-[10px] text-zinc-400 italic">{booking.discountReason}</span>}
+                  <span className="text-amber-700 dark:text-amber-500">Discount</span>
+                  {booking.discountReason && <span className="ml-2 text-[10px] text-zinc-500 dark:text-zinc-400 italic">{booking.discountReason}</span>}
                 </div>
-                <span className="font-medium text-amber-600">−{paise(booking.discountPaise)}</span>
+                <span className="font-medium text-amber-700 dark:text-amber-500">−{paise(booking.discountPaise)}</span>
               </div>
             )}
             <div className="flex justify-between px-3 py-2 bg-zinc-50 dark:bg-zinc-800/50 font-semibold">
@@ -431,7 +431,7 @@ function BookingCard({ booking: initial, onUpdated }: { booking: Booking; onUpda
                     <span>{paise(booking.refundPaise)}</span>
                   </div>
                 ) : booking.advancePaise > 0 ? (
-                  <div className="flex justify-between px-3 py-2 text-zinc-400 italic text-xs">
+                  <div className="flex justify-between px-3 py-2 text-zinc-500 dark:text-zinc-400 italic text-xs">
                     <span className="not-italic font-semibold text-sm text-zinc-500">Booking cancelled</span>
                     <span>No refund recorded</span>
                   </div>
@@ -464,7 +464,7 @@ function BookingCard({ booking: initial, onUpdated }: { booking: Booking; onUpda
             <p className="text-xs text-red-500">Cancelled: {booking.cancelReason}</p>
           )}
 
-          <div className="text-[10px] text-zinc-400">
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400">
             Booked on {new Date(booking.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} · {booking.paymentMethod}
           </div>
         </div>
@@ -499,7 +499,7 @@ export function CustomerDetail({ customer, bookings: initialBookings }: Props) {
     <div className="space-y-6">
       {/* Back + customer header */}
       <div>
-        <Link href="/owner/customers" className="inline-flex items-center gap-1.5 text-sm text-zinc-400 hover:text-zinc-600 mb-4">
+        <Link href="/owner/customers" className="inline-flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 mb-4">
           <ArrowLeft className="h-4 w-4" /> Customers
         </Link>
         <div className="flex items-center gap-4">
@@ -508,7 +508,7 @@ export function CustomerDetail({ customer, bookings: initialBookings }: Props) {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{customer.name ?? "No name"}</h1>
-            <a href={`tel:${customer.phone}`} className="inline-flex items-center gap-1.5 text-amber-600 hover:underline text-sm mt-0.5">
+            <a href={`tel:${customer.phone}`} className="inline-flex items-center gap-1.5 text-amber-700 dark:text-amber-500 hover:underline text-sm mt-0.5">
               <Phone className="h-3.5 w-3.5" />
               {customer.phone}
             </a>
@@ -520,12 +520,12 @@ export function CustomerDetail({ customer, bookings: initialBookings }: Props) {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: "Total booked", value: paise(Math.max(0, totalPaise - totalDiscount)), color: "text-zinc-900 dark:text-zinc-50" },
-          { label: "Discount given", value: totalDiscount > 0 ? paise(totalDiscount) : "—", color: "text-amber-600 dark:text-amber-400" },
+          { label: "Discount given", value: totalDiscount > 0 ? paise(totalDiscount) : "—", color: "text-amber-700 dark:text-amber-400" },
           { label: "Amount paid", value: totalPaid > 0 ? paise(totalPaid) : "—", color: "text-emerald-600 dark:text-emerald-400" },
-          { label: "Balance due", value: totalPaid === 0 && totalBalance === 0 ? "—" : totalBalance > 0 ? paise(totalBalance) : "Fully paid", color: totalPaid === 0 && totalBalance === 0 ? "text-zinc-400" : totalBalance > 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400" },
+          { label: "Balance due", value: totalPaid === 0 && totalBalance === 0 ? "—" : totalBalance > 0 ? paise(totalBalance) : "Fully paid", color: totalPaid === 0 && totalBalance === 0 ? "text-zinc-500 dark:text-zinc-400" : totalBalance > 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400" },
         ].map((t) => (
           <div key={t.label} className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 p-4">
-            <div className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">{t.label}</div>
+            <div className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">{t.label}</div>
             <div className={`text-lg font-bold mt-1 ${t.color}`}>{t.value}</div>
           </div>
         ))}

@@ -30,7 +30,7 @@ export function BookingLookupForm() {
       <button
         type="submit"
         disabled={loading || !ref.trim()}
-        className="shrink-0 flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50 px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+        className="shrink-0 flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50 px-4 py-2.5 text-sm font-semibold text-zinc-900 transition-colors"
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
         Track

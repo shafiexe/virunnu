@@ -105,12 +105,12 @@ export default async function CatererPublicPage({
           <div className="flex items-center gap-1 text-sm text-zinc-600 dark:text-zinc-400">
             <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
             <span className="font-semibold">{caterer.googleRating}</span>
-            {caterer.googleReviewCount ? <span className="text-zinc-400">({caterer.googleReviewCount} Google reviews)</span> : null}
+            {caterer.googleReviewCount ? <span className="text-zinc-500 dark:text-zinc-400">({caterer.googleReviewCount} Google reviews)</span> : null}
           </div>
         ) : null}
         {(fromPrice || guestLine) && (
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1 pt-1">
-            {fromPrice ? <span className="text-lg font-bold text-amber-600 dark:text-amber-400">From ₹{fromPrice.toLocaleString("en-IN")} <span className="text-sm font-medium text-zinc-500">per plate</span></span> : null}
+            {fromPrice ? <span className="text-lg font-bold text-amber-700 dark:text-amber-400">From ₹{fromPrice.toLocaleString("en-IN")} <span className="text-sm font-medium text-zinc-500">per plate</span></span> : null}
             {guestLine ? <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">{guestLine}</span> : null}
           </div>
         )}
@@ -124,7 +124,7 @@ export default async function CatererPublicPage({
         <div className="flex flex-wrap gap-2">
           {facts.map(([label, value]) => (
             <div key={label} className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-4 py-2.5 max-w-full">
-              <div className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">{label}</div>
+              <div className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">{label}</div>
               <div className="mt-0.5 text-sm font-medium text-zinc-900 dark:text-zinc-50">{value}</div>
             </div>
           ))}
@@ -165,7 +165,7 @@ export default async function CatererPublicPage({
             href={`https://wa.me/${caterer.whatsappNumber.replace(/\D/g, "")}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-semibold text-sm transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-sm transition-colors"
           >
             💬 WhatsApp
           </a>
@@ -225,7 +225,7 @@ export default async function CatererPublicPage({
           <ul className="divide-y divide-zinc-100 dark:divide-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
             {pastEvents.map((e, i) => (
               <li key={i} className="px-4 py-3 flex items-center justify-between gap-3 text-sm">
-                <span className="text-zinc-900 dark:text-zinc-50">{e.title}{e.type ? <span className="text-zinc-400"> · {e.type}</span> : null}</span>
+                <span className="text-zinc-900 dark:text-zinc-50">{e.title}{e.type ? <span className="text-zinc-500 dark:text-zinc-400"> · {e.type}</span> : null}</span>
                 {e.guests ? <span className="shrink-0 text-xs text-zinc-500">{e.guests.toLocaleString("en-IN")} guests</span> : null}
               </li>
             ))}
@@ -257,8 +257,8 @@ export default async function CatererPublicPage({
                       </div>
                       {item.description && <p className="text-xs text-zinc-500 mt-0.5 ml-5">{item.description}</p>}
                     </div>
-                    <span className="font-semibold text-amber-600 dark:text-amber-400 text-sm shrink-0">
-                      ₹{item.priceRupees.toLocaleString("en-IN")}{item.unit && item.unit !== "nos" ? <span className="text-xs font-normal text-zinc-400"> /{item.unit}</span> : null}
+                    <span className="font-semibold text-amber-700 dark:text-amber-400 text-sm shrink-0">
+                      ₹{item.priceRupees.toLocaleString("en-IN")}{item.unit && item.unit !== "nos" ? <span className="text-xs font-normal text-zinc-500 dark:text-zinc-400"> /{item.unit}</span> : null}
                     </span>
                   </div>
                 ))}

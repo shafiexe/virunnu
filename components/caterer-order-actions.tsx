@@ -76,7 +76,7 @@ export function CatererOrderActions({ orderId, status, shareToken, date, custome
         </Link></WriteOnly>
         {bills.length > 0 && status !== "CANCELLED" && (
           <>
-            <Link href={`/caterer/orders/${orderId}/invoice`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20">
+            <Link href={`/caterer/orders/${orderId}/invoice`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20">
               <FileText className="h-4 w-4" /> {bills.length > 1 ? "Both invoices" : "Invoice"}
             </Link>
             <Show what="phones"><button type="button" onClick={shareAll} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-emerald-700 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/20">
@@ -85,7 +85,7 @@ export function CatererOrderActions({ orderId, status, shareToken, date, custome
           </>
         )}
         <span className="ml-auto" />
-        <WriteOnly page="orders"><button type="button" onClick={remove} disabled={deleting} className="inline-flex items-center gap-1 rounded-lg px-2 py-2 text-xs text-zinc-400 hover:text-red-500 disabled:opacity-50"><Trash2 className="h-3.5 w-3.5" /> {deleting ? "Deleting…" : "Delete"}</button></WriteOnly>
+        <WriteOnly page="orders"><button type="button" onClick={remove} disabled={deleting} className="inline-flex items-center gap-1 rounded-lg px-2 py-2 text-xs text-zinc-500 dark:text-zinc-400 hover:text-red-500 disabled:opacity-50"><Trash2 className="h-3.5 w-3.5" /> {deleting ? "Deleting…" : "Delete"}</button></WriteOnly>
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}
     </div>

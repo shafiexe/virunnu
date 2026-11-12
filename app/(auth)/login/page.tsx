@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
 import { HeroBackground } from "@/components/hero-background";
 import { VirunnuLogo } from "@/components/virunnu-logo";
@@ -30,7 +31,7 @@ export default function LoginPage() {
       {/* ── Left brand panel ──────────────────────────────────── */}
       <div
         className="hidden lg:flex lg:w-5/12 xl:w-1/2 flex-col justify-center p-14 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #D97706 0%, #C96A20 55%, #DB5F2E 100%)" }}
+        style={{ background: "linear-gradient(135deg, #B45309 0%, #C96A20 55%, #DB5F2E 100%)" }}
       >
         <HeroBackground />
 
@@ -83,15 +84,15 @@ export default function LoginPage() {
         {/* Mobile brand */}
         <div className="lg:hidden mb-10 text-center space-y-1 text-zinc-900 dark:text-zinc-50">
           <VirunnuLogo fontSize={34} />
-          <p className="text-[11px] text-zinc-400 tracking-[0.18em] uppercase mt-2">
-            Kerala's hall booking platform
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400 tracking-[0.18em] uppercase mt-2">
+            Kerala&apos;s hall booking platform
           </p>
         </div>
 
         <div className="w-full max-w-sm">
 
           {/* Amber accent bar */}
-          <div className="w-8 h-1 rounded-full mb-7" style={{ background: "#D97706" }} />
+          <div className="w-8 h-1 rounded-full mb-7" style={{ background: "#B45309" }} />
 
           <div className="mb-8 space-y-1">
             <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
@@ -107,20 +108,20 @@ export default function LoginPage() {
             <LoginForm />
           </div>
 
-          <p className="text-center text-xs text-zinc-400 dark:text-zinc-600 mb-5">
+          <p className="text-center text-xs text-zinc-500 dark:text-zinc-600 mb-5">
             By continuing, you agree to our{" "}
-            <a href="/terms" className="hover:underline font-medium" style={{ color: "#D97706" }}>Terms</a>
+            <a href="/terms" className="hover:underline font-medium" style={{ color: "#B45309" }}>Terms</a>
             {" & "}
-            <a href="/privacy" className="hover:underline font-medium" style={{ color: "#D97706" }}>Privacy Policy</a>.
+            <a href="/privacy" className="hover:underline font-medium" style={{ color: "#B45309" }}>Privacy Policy</a>.
           </p>
 
           <div className="text-center">
-            <a
+            <Link
               href="/"
-              className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+              className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
             >
               ← Back to home
-            </a>
+            </Link>
           </div>
 
         </div>

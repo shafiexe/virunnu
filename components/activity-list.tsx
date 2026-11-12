@@ -19,7 +19,7 @@ export async function ActivityList({ orgId, basePath, sp }: { orgId: string; bas
 
   const dayOf = (d: Date) => d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" });
   const days = [...new Set(rows.map((r) => dayOf(r.at)))];
-  const chip = (active: boolean) => cn("rounded-full border px-3 py-1 text-xs font-medium", active ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300");
+  const chip = (active: boolean) => cn("rounded-full border px-3 py-1 text-xs font-medium", active ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300");
 
   return (
     <div className="space-y-4">
@@ -38,7 +38,7 @@ export async function ActivityList({ orgId, basePath, sp }: { orgId: string; bas
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {rows.filter((r) => dayOf(r.at) === d).map((r) => (
                 <li key={r.id} className="flex items-start gap-3 px-4 py-2.5">
-                  <span className="w-16 shrink-0 pt-0.5 text-xs text-zinc-400">{r.at.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" })}</span>
+                  <span className="w-16 shrink-0 pt-0.5 text-xs text-zinc-500 dark:text-zinc-400">{r.at.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" })}</span>
                   <span className="min-w-0 flex-1 text-sm text-zinc-800 dark:text-zinc-200"><span className="font-semibold">{r.userName}</span> · {r.summary}</span>
                 </li>
               ))}

@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { PrefillSources, type PrefillReport } from "@/components/prefill-sources";
 import { useState } from "react";
 import { CheckCircle2, Copy, Plus, Sparkles, X } from "lucide-react";
@@ -27,7 +29,7 @@ function Field({ label, required, hint, children }: { label: string; required?: 
     <label className="block space-y-1">
       <span className="text-xs font-medium text-zinc-500">
         {label}{required && <span className="text-red-500"> *</span>}
-        {hint && <span className="font-normal text-zinc-400"> — {hint}</span>}
+        {hint && <span className="font-normal text-zinc-500 dark:text-zinc-400"> — {hint}</span>}
       </span>
       {children}
     </label>
@@ -37,7 +39,7 @@ function Field({ label, required, hint, children }: { label: string; required?: 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3">
-      <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{title}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{title}</div>
       {children}
     </div>
   );
@@ -276,9 +278,9 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
           Once approved, your listing goes live and your login is sent to your WhatsApp{f.email ? " and email" : ""}.
           You can update everything later from your dashboard.
         </p>
-        <a href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors">
           Back to home
-        </a>
+        </Link>
       </div>
     );
   }
@@ -309,7 +311,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
           </button>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors"
+            className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors"
           >
             Done
           </button>
@@ -330,7 +332,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
       {isAdmin && (
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Add convention center</h2>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
+          <button onClick={onClose} className="p-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
         </div>
       )}
 
@@ -347,7 +349,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
                 className={cn(
                   "px-3 py-1.5 rounded-full border text-xs font-medium transition-colors",
                   venueType === t.key
-                    ? "bg-amber-500 border-amber-500 text-white"
+                    ? "bg-amber-500 border-amber-500 text-zinc-900"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
                 )}
               >
@@ -380,7 +382,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
           <input className={INPUT} value={f.googleMapsUrl} onChange={(e) => onMapsUrl(e.target.value)} placeholder="https://www.google.com/maps/place/…" />
         </Field>
         {f.googleMapsUrl && (
-          <p className={cn("text-xs", hasPin ? "text-emerald-600" : "text-amber-600")}>
+          <p className={cn("text-xs", hasPin ? "text-emerald-600" : "text-amber-700 dark:text-amber-500")}>
             {hasPin ? `📍 ${Number(f.lat).toFixed(4)}, ${Number(f.lng).toFixed(4)}` : "Couldn't read coordinates from this link — enter them below"}
           </p>
         )}
@@ -435,7 +437,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
               <button
                 onClick={() => setSlots((p) => p.filter((_, idx) => idx !== i))}
                 disabled={slots.length === 1}
-                className="p-1.5 text-zinc-400 hover:text-red-500 disabled:opacity-30"
+                className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500 disabled:opacity-30"
                 aria-label="Remove slot"
               >
                 <X className="h-4 w-4" />
@@ -444,7 +446,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
           ))}
           <button
             onClick={() => setSlots((p) => [...p, { name: "", startTime: "09:00", endTime: "13:00" }])}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline"
           >
             <Plus className="h-3.5 w-3.5" /> Add slot
           </button>
@@ -452,7 +454,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
 
         <div className="space-y-2">
           <span className="text-xs font-medium text-zinc-500">
-            Photos {photoOptions.length > 0 && <span className="font-normal text-zinc-400">— tap to include or remove ({selectedPhotos.filter((u) => !brokenPhotos.includes(u)).length} selected). The first selected is the cover; the center can change these later</span>}
+            Photos {photoOptions.length > 0 && <span className="font-normal text-zinc-500 dark:text-zinc-400">— tap to include or remove ({selectedPhotos.filter((u) => !brokenPhotos.includes(u)).length} selected). The first selected is the cover; the center can change these later</span>}
           </span>
           {photoOptions.length > 0 && (
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
@@ -478,7 +480,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
                       className="h-full w-full object-cover"
                     />
                     {on && (
-                      <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white">
+                      <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-zinc-900">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                       </span>
                     )}
@@ -513,8 +515,8 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
 
         <div className="space-y-2">
           <span className="text-xs font-medium text-zinc-500">
-            Amenities <span className="font-normal text-zinc-400">— the usual ones are ticked: untick any this place doesn't have, and tap to add more. Saved as the center's Amenities &amp; Add-ons (free by default); it can edit or price them later</span>
-            {suggested.length > 0 && <span className="font-normal text-zinc-400"> — tap to include or remove; <Sparkles className="inline h-3 w-3 text-amber-500" /> are AI suggestions, not from the source</span>}
+            Amenities <span className="font-normal text-zinc-500 dark:text-zinc-400">— the usual ones are ticked: untick any this place doesn&apos;t have, and tap to add more. Saved as the center&apos;s Amenities &amp; Add-ons (free by default); it can edit or price them later</span>
+            {suggested.length > 0 && <span className="font-normal text-zinc-500 dark:text-zinc-400"> — tap to include or remove; <Sparkles className="inline h-3 w-3 text-amber-500" /> are AI suggestions, not from the source</span>}
           </span>
           <div className="flex flex-wrap gap-2">
             {[...AMENITIES, ...extraAmenities.filter((a) => !AMENITIES.includes(a))].map((a) => {
@@ -528,7 +530,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
                   className={cn(
                     "px-3 py-1 rounded-full border text-xs font-medium transition-colors inline-flex items-center gap-1",
                     on
-                      ? "bg-amber-500 border-amber-500 text-white"
+                      ? "bg-amber-500 border-amber-500 text-zinc-900"
                       : isSuggestion
                         ? "border-dashed border-amber-400 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"
                         : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
@@ -563,7 +565,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
         <button
           onClick={submit}
           disabled={loading}
-          className="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+          className="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-60"
         >
           {loading ? (isAdmin ? "Creating…" : "Submitting…") : isAdmin ? "Create & publish" : "Submit application"}
         </button>

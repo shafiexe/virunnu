@@ -203,8 +203,8 @@ export default async function HomePage({ searchParams }: Props) {
             <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-12 text-center">
               <Building2 className="h-10 w-10 text-zinc-300 dark:text-zinc-600 mx-auto mb-3" />
               <p className="text-zinc-500 font-medium">{tv("noVenues")}</p>
-              <p className="text-sm text-zinc-400 mt-1">{tv("noVenuesSub")}</p>
-              <Link href="/" className="mt-4 inline-block text-sm font-semibold text-amber-600 hover:underline">
+              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{tv("noVenuesSub")}</p>
+              <Link href="/" className="mt-4 inline-block text-sm font-semibold text-amber-700 dark:text-amber-500 hover:underline">
                 {tv("clearFilters")}
               </Link>
             </div>
@@ -251,7 +251,7 @@ export default async function HomePage({ searchParams }: Props) {
               )}
               {isCatFiltering && (
                 <>
-                  <p className="text-sm text-zinc-400 mt-1">{tc("noCaterersSub")}</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{tc("noCaterersSub")}</p>
                   <Link href={`/?${new URLSearchParams({ ...(sp.city ? { city: sp.city } : {}), ...(sp.guests ? { guests: sp.guests } : {}), ...(sp.date ? { date: sp.date } : {}), ...(sp.type ? { type: sp.type } : {}) })}`} className="mt-4 inline-block text-sm font-semibold text-orange-600 hover:underline">
                     {tc("clearFilters")}
                   </Link>
@@ -270,7 +270,7 @@ export default async function HomePage({ searchParams }: Props) {
         {/* ── List with us ─────────────────────────────────────── */}
         <section>
           <div className="mb-5 text-center">
-            <div className="inline-block bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full mb-3">
+            <div className="inline-block bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full mb-3">
               {tCta("forProviders")}
             </div>
             <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
@@ -285,7 +285,7 @@ export default async function HomePage({ searchParams }: Props) {
             {/* Convention Hall CTA */}
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-7 flex flex-col">
               <div className="w-12 h-12 rounded-2xl bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center mb-5">
-                <Building2 className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+                <Building2 className="h-6 w-6 text-amber-700 dark:text-amber-400" />
               </div>
               <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 mb-2">
                 {tCta("hallTitle")}
@@ -303,7 +303,7 @@ export default async function HomePage({ searchParams }: Props) {
               </ul>
               <Link
                 href="/apply/venue"
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-5 py-2.5 text-sm font-bold text-white transition-colors"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-5 py-2.5 text-sm font-bold text-zinc-900 transition-colors"
               >
                 {tCta("addVenue")}
               </Link>
@@ -330,7 +330,7 @@ export default async function HomePage({ searchParams }: Props) {
               </ul>
               <Link
                 href="/apply/caterer"
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-orange-500 hover:bg-orange-600 active:bg-orange-700 px-5 py-2.5 text-sm font-bold text-white transition-colors"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-orange-700 hover:bg-orange-800 active:bg-orange-900 px-5 py-2.5 text-sm font-bold text-white transition-colors"
               >
                 {tCta("addCatering")}
               </Link>
@@ -347,7 +347,7 @@ export default async function HomePage({ searchParams }: Props) {
           <div className="grid sm:grid-cols-3 gap-6 text-center">
             {(tHow.raw("steps") as { num: string; title: string; desc: string }[]).map((step) => (
               <div key={step.num} className="space-y-2">
-                <div className="text-3xl font-bold text-amber-400/60">{step.num}</div>
+                <div className="text-3xl font-bold text-amber-600">{step.num}</div>
                 <div className="font-semibold text-zinc-900 dark:text-zinc-50">{step.title}</div>
                 <p className="text-sm text-zinc-500 leading-relaxed">{step.desc}</p>
               </div>

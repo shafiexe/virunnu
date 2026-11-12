@@ -72,7 +72,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
           <p className="text-zinc-500 text-sm">
             {filter === "ALL" ? "No enquiries yet. They appear here when customers contact you from your public page." : `No ${filter.toLowerCase()} enquiries.`}
           </p>
-          {filter === "ALL" && <a href="/caterer/profile" className="mt-3 inline-flex rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">Complete your public profile</a>}
+          {filter === "ALL" && <a href="/caterer/profile" className="mt-3 inline-flex rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900">Complete your public profile</a>}
         </div>
       )}
 
@@ -106,7 +106,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">ATTENDED</span>
                     )}
                   </div>
-                  <div className="text-xs text-zinc-400">Received {receivedStr}</div>
+                  <div className="text-xs text-zinc-500 dark:text-zinc-400">Received {receivedStr}</div>
                 </div>
 
                 {e.status === "PENDING" && (
@@ -122,7 +122,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
                     <button
                       onClick={() => updateStatus(e.id, "IGNORED")}
                       disabled={actingId === e.id}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-zinc-600 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-50"
                     >
                       <XCircle className="h-3.5 w-3.5" />
                       Ignore
@@ -132,7 +132,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
               </div>
 
               <div className="flex flex-wrap gap-3 text-xs text-zinc-500">
-                <a href={`tel:${e.phone}`} className="flex items-center gap-1 text-amber-600 hover:underline font-medium">
+                <a href={`tel:${e.phone}`} className="flex items-center gap-1 text-amber-700 dark:text-amber-500 hover:underline font-medium">
                   <Phone className="h-3 w-3" /> {e.phone}
                 </a>
                 {dateStr && (
@@ -150,7 +150,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
               {e.status !== "IGNORED" && (
                 <Link
                   href={`/caterer/orders/new?enquiry=${e.id}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-white transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-zinc-900 transition-colors"
                 >
                   <ClipboardPlus className="h-3.5 w-3.5" /> Create order
                 </Link>
@@ -158,7 +158,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
 
               {e.message && (
                 <div className="flex items-start gap-2 text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-50 dark:bg-zinc-800 rounded-xl px-3 py-2">
-                  <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5 text-zinc-400" />
+                  <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5 text-zinc-500 dark:text-zinc-400" />
                   <span>{e.message}</span>
                 </div>
               )}

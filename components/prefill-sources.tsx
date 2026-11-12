@@ -108,7 +108,7 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
           <Icon className="h-4 w-4 text-zinc-500 shrink-0" />
           <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50 truncate">{s.label}</span>
           {s.recommended && <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 dark:bg-amber-950/40 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400"><Star className="h-2.5 w-2.5" /> Best</span>}
-          <button type="button" onClick={() => setHelp(help === s.key ? null : s.key)} aria-label={`How to find the ${s.label}`} className="ml-auto text-zinc-400 hover:text-zinc-600"><HelpCircle className="h-3.5 w-3.5" /></button>
+          <button type="button" onClick={() => setHelp(help === s.key ? null : s.key)} aria-label={`How to find the ${s.label}`} className="ml-auto text-zinc-500 dark:text-zinc-400 hover:text-zinc-600"><HelpCircle className="h-3.5 w-3.5" /></button>
           {wasRead(s) && <Check className="h-4 w-4 text-emerald-600" aria-label="Read" />}
           {cantRead(s) && <AlertTriangle className="h-4 w-4 text-red-500" aria-label="Could not read" />}
         </div>
@@ -121,10 +121,10 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
           <div className="space-y-1">
             <textarea className={cn(INPUT, "resize-y")} rows={3} value={pasted[s.key] ?? ""} onChange={(e) => setPasted((p) => ({ ...p, [s.key]: e.target.value }))} aria-label={`${s.label} page text`}
               placeholder="Paste the text of the page here" />
-            <p className="text-[11px] text-zinc-400">Open the page, press Ctrl/⌘ + A, then Ctrl/⌘ + C, and paste here. On a phone: touch and hold the text, Select all, Copy.</p>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Open the page, press Ctrl/⌘ + A, then Ctrl/⌘ + C, and paste here. On a phone: touch and hold the text, Select all, Copy.</p>
           </div>
         ) : (
-          <button type="button" onClick={() => setPasteOpen((o) => ({ ...o, [s.key]: true }))} className="text-[11px] font-semibold text-amber-600 hover:underline">Can&apos;t be read? Copy the page text and paste it instead</button>
+          <button type="button" onClick={() => setPasteOpen((o) => ({ ...o, [s.key]: true }))} className="text-[11px] font-semibold text-amber-700 dark:text-amber-500 hover:underline">Can&apos;t be read? Copy the page text and paste it instead</button>
         )}
       </div>
     );
@@ -148,7 +148,7 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
             <MapPin className="h-4 w-4 text-zinc-500 shrink-0" />
             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Google details</span>
             <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-100 dark:bg-amber-950/40 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400"><Star className="h-2.5 w-2.5" /> Best</span>
-            <button type="button" onClick={() => setHelp(help === "google" ? null : "google")} aria-label="How to copy the Google details" className="ml-auto text-zinc-400 hover:text-zinc-600"><HelpCircle className="h-3.5 w-3.5" /></button>
+            <button type="button" onClick={() => setHelp(help === "google" ? null : "google")} aria-label="How to copy the Google details" className="ml-auto text-zinc-500 dark:text-zinc-400 hover:text-zinc-600"><HelpCircle className="h-3.5 w-3.5" /></button>
           </div>
           <p className="text-[11px] text-zinc-500">Gives: address, phone, rating &amp; reviews, opening hours{panel.trim().length > 20 ? "" : " (paste them here)"}</p>
           <textarea className={cn(INPUT, "resize-y")} rows={3} value={panel} onChange={(e) => setPanel(e.target.value)} aria-label="Google details" placeholder="Search the business on Google, copy the panel on the right (name, address, phone, rating, hours) and paste it here" />
@@ -160,10 +160,10 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
 
       <div>
         <button type="button" onClick={() => setMore((v) => !v)} className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-600 dark:text-zinc-300 hover:text-amber-600">
-          {more ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />} More links: Instagram, Facebook, YouTube, other pages <span className="font-normal text-zinc-400">(optional)</span>
+          {more ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />} More links: Instagram, Facebook, YouTube, other pages <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span>
         </button>
         {more && <div className="grid gap-2.5 sm:grid-cols-2 mt-2">{SOURCES.filter((s) => !MAIN.includes(s.key)).map(linkBox)}</div>}
-        {more && <p className="mt-1.5 text-[11px] text-zinc-400">If your website links to these pages, we find them on our own. Add them here only if the website doesn&apos;t.</p>}
+        {more && <p className="mt-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">If your website links to these pages, we find them on our own. Add them here only if the website doesn&apos;t.</p>}
       </div>
 
       <div>
@@ -183,12 +183,12 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
           className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
           {loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />} {loading ? "Reading…" : "Fill the form"}
         </button>
-        <span className="text-xs text-zinc-400">{addedCount} source{addedCount === 1 ? "" : "s"} added</span>
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">{addedCount} source{addedCount === 1 ? "" : "s"} added</span>
       </div>
 
       {report && (
         <div className="rounded-xl bg-zinc-50 dark:bg-zinc-800/40 p-3 space-y-2.5">
-          <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">What we found <span className="font-normal text-zinc-400">· the tag shows where each came from, so you know what to check</span></div>
+          <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-200">What we found <span className="font-normal text-zinc-500 dark:text-zinc-400">· the tag shows where each came from, so you know what to check</span></div>
           <div className="flex flex-wrap gap-1.5">
             {report.filled.map((f) => (
               <span key={f.label} className="inline-flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-950/40 px-2 py-0.5 text-[11px] font-medium text-emerald-800 dark:text-emerald-300"><Check className="h-3 w-3" />{f.label}{f.from && f.from !== "text" ? <span className="opacity-70">· {SRC_LABEL[f.from]}</span> : null}</span>
@@ -199,15 +199,15 @@ export function PrefillSources({ kind, onChange, onFill, loading, note, report, 
           {report.missing.length > 0 && (
             <div className="space-y-1">
               <div className="text-xs font-semibold text-amber-700 dark:text-amber-400">Still to add</div>
-              {report.missing.map((m) => <div key={m.label} className="text-xs text-zinc-600 dark:text-zinc-300"><span className="font-medium">{m.label}</span> <span className="text-zinc-400">· {m.hint}</span></div>)}
+              {report.missing.map((m) => <div key={m.label} className="text-xs text-zinc-600 dark:text-zinc-300"><span className="font-medium">{m.label}</span> <span className="text-zinc-500 dark:text-zinc-400">· {m.hint}</span></div>)}
             </div>
           )}
           {report.photos > 0 && <p className="text-xs text-zinc-500">Photos found online may belong to someone else. Untick any you don&apos;t have the right to use.</p>}
           {report.googleNote && <p className="text-xs text-zinc-500">{report.googleNote}</p>}
-          <p className="text-[11px] text-zinc-400">Check everything before saving. Facts come only from what you added; the description and suggested items are written by AI.</p>
+          <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Check everything before saving. Facts come only from what you added; the description and suggested items are written by AI.</p>
         </div>
       )}
-      {note && !report && <p className={cn("text-xs", note.ok ? "text-emerald-600" : "text-amber-600")}>{note.text}</p>}
+      {note && !report && <p className={cn("text-xs", note.ok ? "text-emerald-600" : "text-amber-700 dark:text-amber-500")}>{note.text}</p>}
     </div>
   );
 }

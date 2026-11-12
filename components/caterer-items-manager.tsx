@@ -49,7 +49,7 @@ function ItemRow({ item, onChange, onDelete }: { item: PriceItem; onChange: (i: 
           {[...new Set([...UNITS, item.unit])].map((u) => <option key={u} value={u}>{u}</option>)}
         </select>
         <div className="relative">
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-zinc-400">₹</span>
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400">₹</span>
           <input
             className={cn(FIELD, "w-full pl-6")} inputMode="decimal" value={rate}
             onChange={(e) => setRate(e.target.value.replace(/[^\d.]/g, ""))}
@@ -60,7 +60,7 @@ function ItemRow({ item, onChange, onDelete }: { item: PriceItem; onChange: (i: 
           <input type="checkbox" checked={item.active} onChange={(e) => save({ active: e.target.checked })} className="h-4 w-4 accent-amber-500" />
           Use
         </label>
-        <button type="button" onClick={() => onDelete(item.id)} aria-label={`Delete ${item.name}`} className="p-1.5 text-zinc-400 hover:text-red-500">
+        <button type="button" onClick={() => onDelete(item.id)} aria-label={`Delete ${item.name}`} className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500">
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
         </button>
       </div>
@@ -115,7 +115,7 @@ function AddRow({ group, onAdded }: { group: ItemGroupKey; onAdded: (i: PriceIte
 
   if (!open) {
     return (
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:underline">
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">
         <Plus className="h-3.5 w-3.5" /> Add {GROUP_LABEL[group].toLowerCase()} item
       </button>
     );
@@ -128,11 +128,11 @@ function AddRow({ group, onAdded }: { group: ItemGroupKey; onAdded: (i: PriceIte
           {UNITS.map((u) => <option key={u} value={u}>{u}</option>)}
         </select>
         <div className="relative">
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-zinc-400">₹</span>
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400">₹</span>
           <input className={cn(FIELD, "w-full pl-6")} inputMode="decimal" placeholder="Rate" value={rate} onChange={(e) => setRate(e.target.value.replace(/[^\d.]/g, ""))} />
         </div>
         <div className="flex gap-1.5">
-          <button type="submit" disabled={saving} className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold disabled:opacity-50">{saving ? "…" : "Add"}</button>
+          <button type="submit" disabled={saving} className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">{saving ? "…" : "Add"}</button>
           <button type="button" onClick={() => setOpen(false)} className="px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">Cancel</button>
         </div>
       </div>
@@ -172,14 +172,14 @@ export function CatererItemsManager({ initial }: { initial: PriceItem[] }) {
       {items.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-amber-300 dark:border-amber-800 bg-amber-50/60 dark:bg-amber-950/10 p-6 text-center space-y-3">
           <p className="text-sm text-zinc-700 dark:text-zinc-300">Your price list is empty. Start with the usual items from your bills (food, plates, serving boys, counters) and change the rates to yours.</p>
-          <button type="button" onClick={addStarter} disabled={seeding} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+          <button type="button" onClick={addStarter} disabled={seeding} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-60">
             {seeding ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Add common items
           </button>
         </div>
       ) : (
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <p className="text-xs text-zinc-500">Tick items on an order and the rate you set here fills in. You can still change the rate on each order.</p>
-          <button type="button" onClick={addStarter} disabled={seeding} className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-600 hover:underline disabled:opacity-50">
+          <button type="button" onClick={addStarter} disabled={seeding} className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline disabled:opacity-50">
             {seeding ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />} Add common items
           </button>
         </div>
@@ -190,7 +190,7 @@ export function CatererItemsManager({ initial }: { initial: PriceItem[] }) {
         const rows = items.filter((i) => i.group === group);
         return (
           <section key={group} className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 space-y-2.5">
-            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+            <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
               {GROUP_LABEL[group]} <span className="text-zinc-300">· {rows.length}</span>
             </h2>
             {rows.map((i) => (

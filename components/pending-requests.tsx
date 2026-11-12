@@ -74,9 +74,9 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
           <span className="font-semibold text-zinc-900 dark:text-zinc-50">Requests to book</span>
-          <span className="text-xs font-bold bg-amber-500 text-white px-2 py-0.5 rounded-full">{bookings.length}</span>
+          <span className="text-xs font-bold bg-amber-500 text-zinc-900 px-2 py-0.5 rounded-full">{bookings.length}</span>
         </div>
-        {expanded ? <ChevronUp className="h-4 w-4 text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-400" />}
+        {expanded ? <ChevronUp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /> : <ChevronDown className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
       </button>
 
       {expanded && (
@@ -97,13 +97,13 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                     <div className="text-xs text-zinc-500">
                       {slotDate} · {b.hallSlot.template.startTime}–{b.hallSlot.template.endTime}
                     </div>
-                    <div className="text-xs text-zinc-400">{b.hallSlot.hall.venue.name}</div>
+                    <div className="text-xs text-zinc-500 dark:text-zinc-400">{b.hallSlot.hall.venue.name}</div>
                   </div>
                   {b.guestPhone && (
                     <a
                       href={`https://wa.me/${b.guestPhone.replace(/\D/g, "")}`}
                       target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-[#25D366] hover:bg-[#1ebe5c] px-3 py-1.5 rounded-lg transition-colors shrink-0"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 bg-[#25D366] hover:bg-[#1ebe5c] px-3 py-1.5 rounded-lg transition-colors shrink-0"
                     >
                       <MessageCircle className="h-3.5 w-3.5" />
                       WhatsApp
@@ -118,13 +118,13 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                   </span>
                   <span className="flex items-center gap-1">
                     <Phone className="h-3 w-3" />
-                    {b.guestPhone ? <a href={`tel:${b.guestPhone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{b.guestPhone}</a> : "—"}
+                    {b.guestPhone ? <a href={`tel:${b.guestPhone}`} className="text-amber-700 dark:text-amber-400 hover:underline">{b.guestPhone}</a> : "—"}
                   </span>
                   <span className="flex items-center gap-1 font-medium text-zinc-700 dark:text-zinc-300">
                     <IndianRupee className="h-3 w-3" />
                     {(b.totalPaise / 100).toLocaleString("en-IN")}
                   </span>
-                  {b.guestEmail && <span className="text-zinc-400">{b.guestEmail}</span>}
+                  {b.guestEmail && <span className="text-zinc-500 dark:text-zinc-400">{b.guestEmail}</span>}
                 </div>
 
                 {isRejecting ? (
@@ -154,7 +154,7 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                     <button
                       onClick={() => approve(b.id)}
                       disabled={!!actingId}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-semibold hover:bg-emerald-600 transition-colors disabled:opacity-60"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-700 text-white text-xs font-semibold hover:bg-emerald-800 transition-colors disabled:opacity-60"
                     >
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       {actingId === b.id ? "Approving…" : "Approve"}

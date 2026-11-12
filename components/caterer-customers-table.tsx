@@ -55,14 +55,14 @@ export function CatererCustomersTable({ customers, totalCustomers, totalDuePaise
 
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 dark:text-zinc-400 pointer-events-none" />
           <input type="search" placeholder="Search by name or phone…" value={search} onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
         </div>
         <div className="flex gap-1">
           {[{ k: false, l: "All" }, { k: true, l: "Balance due" }].map((t) => (
             <button key={String(t.k)} onClick={() => dueSetter(t.k)}
-              className={cn("px-3 py-2 rounded-xl text-xs font-medium transition-colors", dueOnly === t.k ? "bg-amber-500 text-white shadow-sm" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
+              className={cn("px-3 py-2 rounded-xl text-xs font-medium transition-colors", dueOnly === t.k ? "bg-amber-500 text-zinc-900 shadow-sm" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
               {t.l}
             </button>
           ))}
@@ -95,11 +95,11 @@ export function CatererCustomersTable({ customers, totalCustomers, totalDuePaise
                       <span className="font-medium text-zinc-900 dark:text-zinc-50">{c.name}</span>
                     </Link>
                   </td>
-                  <td className="px-4 py-3"><Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-600 hover:underline"><Phone className="h-3 w-3" />{c.phone}</a></Show></td>
-                  <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400 whitespace-nowrap">{c.orderCount}<span className="text-xs text-zinc-400"> · {c.billCount} invoice{c.billCount === 1 ? "" : "s"}</span></td>
+                  <td className="px-4 py-3"><Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-500 hover:underline"><Phone className="h-3 w-3" />{c.phone}</a></Show></td>
+                  <td className="px-4 py-3 text-zinc-600 dark:text-zinc-400 whitespace-nowrap">{c.orderCount}<span className="text-xs text-zinc-500 dark:text-zinc-400"> · {c.billCount} invoice{c.billCount === 1 ? "" : "s"}</span></td>
                   <td className="px-4 py-3 font-semibold whitespace-nowrap">{c.billedPaise > 0 ? rs(c.billedPaise) : "—"}</td>
                   <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 whitespace-nowrap">{c.receivedPaise > 0 ? rs(c.receivedPaise) : "—"}</td>
-                  <td className="px-4 py-3 font-semibold whitespace-nowrap">{c.balancePaise > 0 ? <div className="space-y-1"><div className="text-red-600 dark:text-red-400">{rs(c.balancePaise)}</div><Show what="phones"><SendReminder compact customerId={c.id} customerName={c.name} phone={c.phone} balancePaise={c.balancePaise} invoices="your account" date={c.lastDate ?? new Date().toISOString()} path={`/s/${c.shareToken}`} /></Show></div> : <span className="text-zinc-400 text-xs">{c.billedPaise > 0 ? "Closed" : "—"}</span>}</td>
+                  <td className="px-4 py-3 font-semibold whitespace-nowrap">{c.balancePaise > 0 ? <div className="space-y-1"><div className="text-red-600 dark:text-red-400">{rs(c.balancePaise)}</div><Show what="phones"><SendReminder compact customerId={c.id} customerName={c.name} phone={c.phone} balancePaise={c.balancePaise} invoices="your account" date={c.lastDate ?? new Date().toISOString()} path={`/s/${c.shareToken}`} /></Show></div> : <span className="text-zinc-500 dark:text-zinc-400 text-xs">{c.billedPaise > 0 ? "Closed" : "—"}</span>}</td>
                   <td className="px-4 py-3 text-zinc-500 whitespace-nowrap">{c.lastDate ? new Date(c.lastDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" }) : "—"}</td>
                 </tr>
               ))}

@@ -84,14 +84,14 @@ export function CatererSidebar({ pendingEnquiries = 0, logoUrl, name, deny, main
           : <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"><UtensilsCrossed className="h-4 w-4" /></span>}
         <span className="min-w-0">
           <span className="block truncate text-sm font-bold text-zinc-900 dark:text-zinc-50">{name || "Catering Books"}</span>
-          <span className="block text-[10px] text-zinc-400">Catering Books</span>
+          <span className="block text-[10px] text-zinc-500 dark:text-zinc-400">Catering Books</span>
         </span>
       </div>
       <CatererQuickFind variant="sidebar" />
       <CatererNewMenu variant="sidebar" deny={deny} />
       {navFor(deny, mainOwner).map((group) => (
         <div key={group.title} className="pb-1.5">
-          <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{group.title}</div>
+          <div className="px-4 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{group.title}</div>
           {group.items.map(({ href, icon: Icon, label, also, settings }) => {
             const active = isActive(pathname, href, also, settings);
             return (
@@ -105,10 +105,10 @@ export function CatererSidebar({ pendingEnquiries = 0, logoUrl, name, deny, main
                     : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-zinc-50"
                 )}
               >
-                <Icon className={cn("h-4 w-4 shrink-0", active && "text-amber-600 dark:text-amber-400")} />
+                <Icon className={cn("h-4 w-4 shrink-0", active && "text-amber-700 dark:text-amber-400")} />
                 <span className="flex-1">{label}</span>
                 {href === "/caterer/orders" && pendingEnquiries > 0 && (
-                  <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">{pendingEnquiries}</span>
+                  <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-zinc-900">{pendingEnquiries}</span>
                 )}
                 {active && <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />}
               </Link>
@@ -138,14 +138,14 @@ export function CatererTopTabs({ pendingEnquiries = 0, deny, mainOwner = true }:
               className={cn(
                 "flex items-center gap-1.5 px-3 py-3 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap",
                 active
-                  ? "border-amber-500 text-amber-600 dark:text-amber-400"
+                  ? "border-amber-500 text-amber-700 dark:text-amber-400"
                   : "border-transparent text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
               )}
             >
               <Icon className="h-3.5 w-3.5" />
               {label}
               {href === "/caterer/orders" && pendingEnquiries > 0 && (
-                <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">{pendingEnquiries}</span>
+                <span className="inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-zinc-900">{pendingEnquiries}</span>
               )}
             </Link>
           );
@@ -191,7 +191,7 @@ export function CatererSettingsTabs({ deny, mainOwner = true }: { deny?: string[
           const active = pathname === t.href || pathname.startsWith(t.href + "/");
           return (
             <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined}
-              className={cn("whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-medium transition-colors", active ? "bg-amber-500 text-white" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800")}>
+              className={cn("whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-medium transition-colors", active ? "bg-amber-500 text-zinc-900" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800")}>
               {t.label}
             </Link>
           );

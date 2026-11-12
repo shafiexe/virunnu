@@ -413,7 +413,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
       {/* Day-of-week headers */}
       <div className="grid grid-cols-7 text-center">
         {DAYS.map((d) => (
-          <div key={d} className="text-xs font-semibold text-zinc-400 py-1">{d}</div>
+          <div key={d} className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 py-1">{d}</div>
         ))}
       </div>
 
@@ -445,7 +445,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
               <span className={cn(
                 "text-xs sm:text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full leading-none mb-1 self-center",
                 isToday && !isSelected ? "ring-2 ring-amber-400 text-amber-700 dark:text-amber-400 font-bold"
-                  : isSelected ? "bg-amber-500 text-white font-bold"
+                  : isSelected ? "bg-amber-500 text-zinc-900 font-bold"
                   : "text-zinc-800 dark:text-zinc-200"
               )}>{day.getDate()}</span>
               {!isPast && allSlots.length > 0 && (
@@ -469,7 +469,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
         <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-600 inline-block" />Booked</span>
       </div>
 
-      <p className="text-xs text-zinc-400">One dot per slot. Tap a date to see the slots and prices.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">One dot per slot. Tap a date to see the slots and prices.</p>
 
       {/* Day slot panel */}
       {selectedDay && (
@@ -556,7 +556,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                     <InputField label="Address" value={guestAddress} onChange={setGuestAddress} placeholder="optional" />
                     {addons.length > 0 && (
                       <div className="space-y-1.5">
-                        <div className="text-xs font-medium text-zinc-500">Optional add-ons <span className="font-normal text-zinc-400">— you can also ask the centre to add these later</span></div>
+                        <div className="text-xs font-medium text-zinc-500">Optional add-ons <span className="font-normal text-zinc-500 dark:text-zinc-400">— you can also ask the centre to add these later</span></div>
                         {addons.map((a) => (
                           <AddonRow
                             key={a.id}
@@ -573,7 +573,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                     )}
                     {bookError && <p className="text-sm text-red-500">{bookError}</p>}
                     <button type="submit" disabled={requesting}
-                      className="w-full sm:w-auto rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 px-6 py-3 text-sm font-semibold text-white transition-colors">
+                      className="w-full sm:w-auto rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 px-6 py-3 text-sm font-semibold text-zinc-900 transition-colors">
                       {requesting ? "Sending request…" : bookingPath === "pay" ? "Continue to payment →" : "Send booking request →"}
                     </button>
                   </form>
@@ -602,7 +602,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                         <>
                           <div className="flex justify-between text-sm">
                             <span className="text-zinc-500">Advance to pay now</span>
-                            <span className="font-semibold text-amber-600">{paise(payCtx.minimumAdvancePaise)}</span>
+                            <span className="font-semibold text-amber-700 dark:text-amber-500">{paise(payCtx.minimumAdvancePaise)}</span>
                           </div>
                           <div className="flex justify-between text-sm border-t border-zinc-100 dark:border-zinc-700 pt-2">
                             <span className="text-zinc-500">Balance (cash on the day)</span>
@@ -610,7 +610,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                           </div>
                         </>
                       )}
-                      <p className="text-xs text-zinc-400 pt-1">
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 pt-1">
                         Your slot is booked instantly after payment — no approval needed.
                       </p>
                     </div>
@@ -622,7 +622,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                       {!payCtx.requireFullPayment && (
                         <button type="button" disabled={paying}
                           onClick={() => handlePay(payCtx.minimumAdvancePaise, false)}
-                          className="flex-1 rounded-xl border-2 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 disabled:opacity-60 px-5 py-3 text-sm font-semibold transition-colors">
+                          className="flex-1 rounded-xl border-2 border-amber-500 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30 disabled:opacity-60 px-5 py-3 text-sm font-semibold transition-colors">
                           {paying ? "Opening payment…" : `Pay advance ${paise(payCtx.minimumAdvancePaise)}`}
                         </button>
                       )}
@@ -630,13 +630,13 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                       {payCtx.requireFullPayment && (
                         <button type="button" disabled={paying}
                           onClick={() => handlePay(payCtx.totalPaise, true)}
-                          className="flex-1 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 px-5 py-3 text-sm font-semibold text-white transition-colors">
+                          className="flex-1 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-60 px-5 py-3 text-sm font-semibold text-zinc-900 transition-colors">
                           {paying ? "Opening payment…" : `Pay in full ${paise(payCtx.totalPaise)}`}
                         </button>
                       )}
                     </div>
                     <button type="button" onClick={() => setCheckoutStep("form")}
-                      className="text-xs text-zinc-400 hover:text-zinc-600 underline">
+                      className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 underline">
                       ← Back to details
                     </button>
                   </div>

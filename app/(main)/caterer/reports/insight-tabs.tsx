@@ -34,7 +34,7 @@ export async function OverviewTab({ catererId, orgId, from, to, label }: Rng) {
       </div>
 
       <Panel title={`How it is going · ${label}`} hint={`Compared with the ${o.prev.days} days just before.`}>
-        {o.insights.length === 0 ? <p className="text-sm text-zinc-400 py-2">Not enough activity in this period to say much yet.</p> : (
+        {o.insights.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">Not enough activity in this period to say much yet.</p> : (
           <ul className="space-y-2">
             {o.insights.map((i, k) => (
               <li key={k} className={cn("flex items-start gap-3 rounded-xl border px-3.5 py-2.5 text-sm", TONE[i.tone])}>
@@ -53,7 +53,7 @@ export async function OverviewTab({ catererId, orgId, from, to, label }: Rng) {
 
 export async function SalesTab({ catererId, from, to, label }: Omit<Rng, "orgId">) {
   const s = await salesTrend(catererId, from, to);
-  if (s.functions === 0) return <Panel title={`Sales · ${label}`}><p className="text-sm text-zinc-400 py-2">No functions in this period.</p></Panel>;
+  if (s.functions === 0) return <Panel title={`Sales · ${label}`}><p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No functions in this period.</p></Panel>;
   const maxM = Math.max(1, ...s.months.map((m) => m.billedPaise));
   const maxT = Math.max(1, ...s.types.map((t) => t.billedPaise));
   return (
@@ -71,7 +71,7 @@ export async function SalesTab({ catererId, from, to, label }: Omit<Rng, "orgId"
               <span className="w-20 text-zinc-500 shrink-0">{m.label}</span>
               <div className="flex-1"><Bar pct={(m.billedPaise / maxM) * 100} /></div>
               <span className="w-24 text-right font-medium">{rs(m.billedPaise)}</span>
-              <span className="w-20 text-right text-xs text-zinc-400">{m.functions} function{m.functions === 1 ? "" : "s"}</span>
+              <span className="w-20 text-right text-xs text-zinc-500 dark:text-zinc-400">{m.functions} function{m.functions === 1 ? "" : "s"}</span>
             </div>
           ))}
         </div>
@@ -81,18 +81,18 @@ export async function SalesTab({ catererId, from, to, label }: Omit<Rng, "orgId"
           <div className="space-y-3">
             {s.types.map((t) => (
               <div key={t.type} className="space-y-1">
-                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{t.type}</span><span className="font-semibold">{rs(t.billedPaise)}<span className="ml-2 text-xs font-normal text-zinc-400">{pct(t.billedPaise, s.billedPaise)}%</span></span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{t.type}</span><span className="font-semibold">{rs(t.billedPaise)}<span className="ml-2 text-xs font-normal text-zinc-500 dark:text-zinc-400">{pct(t.billedPaise, s.billedPaise)}%</span></span></div>
                 <Bar pct={(t.billedPaise / maxT) * 100} tone="violet" />
-                <div className="text-[11px] text-zinc-400">{t.functions} function{t.functions === 1 ? "" : "s"} · average {rs(Math.round(t.billedPaise / t.functions))}</div>
+                <div className="text-[11px] text-zinc-500 dark:text-zinc-400">{t.functions} function{t.functions === 1 ? "" : "s"} · average {rs(Math.round(t.billedPaise / t.functions))}</div>
               </div>
             ))}
           </div>
         </Panel>
         <Panel title="Where your functions are">
-          {s.places.length === 0 ? <p className="text-sm text-zinc-400 py-2">Add the place on an order to see this.</p> : (
+          {s.places.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">Add the place on an order to see this.</p> : (
             <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {s.places.map((p) => (
-                <div key={p.place} className="flex items-center justify-between gap-3 py-2 text-sm"><span className="truncate text-zinc-800 dark:text-zinc-200">{p.place}<span className="ml-2 text-xs text-zinc-400">{p.functions} function{p.functions === 1 ? "" : "s"}</span></span><span className="font-medium shrink-0">{rs(p.billedPaise)}</span></div>
+                <div key={p.place} className="flex items-center justify-between gap-3 py-2 text-sm"><span className="truncate text-zinc-800 dark:text-zinc-200">{p.place}<span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{p.functions} function{p.functions === 1 ? "" : "s"}</span></span><span className="font-medium shrink-0">{rs(p.billedPaise)}</span></div>
               ))}
             </div>
           )}
@@ -106,7 +106,7 @@ export async function CustomersTab({ catererId, from, to, label, pg }: Omit<Rng,
   const c = await customerInsights(catererId, from, to);
   const paged = pg ? pageOf(c.customers, pg) : null;
   const custRows = paged ? paged.rows : c.customers;
-  if (c.count === 0) return <Panel title={`Customers · ${label}`}><p className="text-sm text-zinc-400 py-2">No functions in this period.</p></Panel>;
+  if (c.count === 0) return <Panel title={`Customers · ${label}`}><p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No functions in this period.</p></Panel>;
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -122,18 +122,18 @@ export async function CustomersTab({ catererId, from, to, label, pg }: Omit<Rng,
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {custRows.map((x) => (
                 <tr key={x.id}>
-                  <td className="py-2"><Link href={`/caterer/customers/${x.id}`} className="font-medium text-zinc-900 dark:text-zinc-50 hover:text-amber-600">{x.name}</Link>{x.repeat && <span className="ml-2 rounded-full bg-sky-100 dark:bg-sky-950/40 px-2 py-0.5 text-[10px] font-semibold text-sky-700 dark:text-sky-400">returning</span>}<a href={`tel:${x.phone}`} className="block text-xs text-zinc-400 hover:text-amber-600">{x.phone}</a></td>
+                  <td className="py-2"><Link href={`/caterer/customers/${x.id}`} className="font-medium text-zinc-900 dark:text-zinc-50 hover:text-amber-600">{x.name}</Link>{x.repeat && <span className="ml-2 rounded-full bg-sky-100 dark:bg-sky-950/40 px-2 py-0.5 text-[10px] font-semibold text-sky-700 dark:text-sky-400">returning</span>}<a href={`tel:${x.phone}`} className="block text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600">{x.phone}</a></td>
                   <td className="py-2 text-right text-zinc-600 dark:text-zinc-400">{x.functions}</td>
                   <td className="py-2 text-right font-medium">{rs(x.billedPaise)}</td>
-                  <td className="py-2 text-right text-xs text-zinc-400">{pct(x.billedPaise, c.total)}%</td>
-                  <td className="py-2 text-right">{x.balancePaise > 0 ? <span className="font-semibold text-red-600 dark:text-red-400">{rs(x.balancePaise)}</span> : <span className="text-xs text-zinc-400">—</span>}</td>
+                  <td className="py-2 text-right text-xs text-zinc-500 dark:text-zinc-400">{pct(x.billedPaise, c.total)}%</td>
+                  <td className="py-2 text-right">{x.balancePaise > 0 ? <span className="font-semibold text-red-600 dark:text-red-400">{rs(x.balancePaise)}</span> : <span className="text-xs text-zinc-500 dark:text-zinc-400">—</span>}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         {pg && paged && <ReportPager pg={pg} paged={paged} />}
-        <p className="mt-3 text-xs text-zinc-400">Returning means the customer had a function with you before this period. Repeat customers brought in {rs(c.repeatBilledPaise)} ({pct(c.repeatBilledPaise, c.total)}% of billing).</p>
+        <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Returning means the customer had a function with you before this period. Repeat customers brought in {rs(c.repeatBilledPaise)} ({pct(c.repeatBilledPaise, c.total)}% of billing).</p>
       </Panel>
     </div>
   );
@@ -142,7 +142,7 @@ export async function CustomersTab({ catererId, from, to, label, pg }: Omit<Rng,
 export async function FunctionsTab({ catererId, from, to, label, pg }: Omit<Rng, "orgId">) {
   const rows = await functionsReport(catererId, from, to);
   const paged = pg ? pageOf(rows, pg) : null;
-  if (rows.length === 0) return <Panel title={`Functions · ${label}`}><p className="text-sm text-zinc-400 py-2">No functions in this period.</p></Panel>;
+  if (rows.length === 0) return <Panel title={`Functions · ${label}`}><p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No functions in this period.</p></Panel>;
   const tracked = rows.filter((r) => r.tracked);
   const billed = rows.reduce((s, r) => s + r.billedPaise, 0);
   const costs = tracked.reduce((s, r) => s + r.costPaise, 0);
@@ -164,19 +164,19 @@ export async function FunctionsTab({ catererId, from, to, label, pg }: Omit<Rng,
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {(paged ? paged.rows : rows).map((r) => (
                 <tr key={r.id}>
-                  <td className="py-2"><Link href={`/caterer/orders/${r.id}`} className="font-medium text-zinc-900 dark:text-zinc-50 hover:text-amber-600">{r.customer}</Link><span className="block text-xs text-zinc-400">{formatInvoiceDate(r.date)}{r.eventType ? ` · ${r.eventType}` : ""}{r.place ? ` · ${r.place}` : ""}</span></td>
+                  <td className="py-2"><Link href={`/caterer/orders/${r.id}`} className="font-medium text-zinc-900 dark:text-zinc-50 hover:text-amber-600">{r.customer}</Link><span className="block text-xs text-zinc-500 dark:text-zinc-400">{formatInvoiceDate(r.date)}{r.eventType ? ` · ${r.eventType}` : ""}{r.place ? ` · ${r.place}` : ""}</span></td>
                   <td className="py-2 text-right text-zinc-600 dark:text-zinc-400">{r.guests || "—"}</td>
                   <td className="py-2 text-right font-medium">{rs(r.billedPaise)}</td>
                   <td className="py-2 text-right text-zinc-600 dark:text-zinc-400">{r.tracked ? rs(r.costPaise) : <span className="text-xs text-zinc-300">not tracked</span>}</td>
-                  <td className="py-2 text-right">{r.tracked ? <span className={cn("font-semibold", r.profitPaise < 0 ? "text-red-600" : "text-emerald-600")}>{rs(r.profitPaise)}<span className="block text-[11px] font-normal text-zinc-400">{r.marginPct}%</span></span> : "—"}</td>
-                  <td className="py-2 text-right">{r.balancePaise > 0 ? <span className="font-semibold text-red-600 dark:text-red-400">{rs(r.balancePaise)}</span> : <span className="text-xs text-zinc-400">—</span>}</td>
+                  <td className="py-2 text-right">{r.tracked ? <span className={cn("font-semibold", r.profitPaise < 0 ? "text-red-600" : "text-emerald-600")}>{rs(r.profitPaise)}<span className="block text-[11px] font-normal text-zinc-500 dark:text-zinc-400">{r.marginPct}%</span></span> : "—"}</td>
+                  <td className="py-2 text-right">{r.balancePaise > 0 ? <span className="font-semibold text-red-600 dark:text-red-400">{rs(r.balancePaise)}</span> : <span className="text-xs text-zinc-500 dark:text-zinc-400">—</span>}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
         {pg && paged && <ReportPager pg={pg} paged={paged} />}
-        <p className="mt-3 text-xs text-zinc-400">Costs are purchases tied to the function plus the pay you set for its team. Functions without any show &ldquo;not tracked&rdquo; so a missing cost never looks like free profit.</p>
+        <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Costs are purchases tied to the function plus the pay you set for its team. Functions without any show &ldquo;not tracked&rdquo; so a missing cost never looks like free profit.</p>
       </Panel>
     </div>
   );
@@ -184,7 +184,7 @@ export async function FunctionsTab({ catererId, from, to, label, pg }: Omit<Rng,
 
 export async function CostsTab({ catererId, orgId, from, to, label }: Rng) {
   const c = await costReport(catererId, orgId, from, to);
-  if (c.total === 0) return <Panel title={`Costs · ${label}`}><p className="text-sm text-zinc-400 py-2">No expenses, purchases or staff pay recorded in this period.</p></Panel>;
+  if (c.total === 0) return <Panel title={`Costs · ${label}`}><p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No expenses, purchases or staff pay recorded in this period.</p></Panel>;
   const maxCat = Math.max(1, ...c.byCategory.map((x) => x.totalPaise));
   const maxSup = Math.max(1, ...c.suppliers.map((x) => x.totalPaise));
   return (
@@ -200,18 +200,18 @@ export async function CostsTab({ catererId, orgId, from, to, label }: Rng) {
           <div className="space-y-3">
             {c.byCategory.map((x) => (
               <div key={x.category} className="space-y-1">
-                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{x.category}</span><span className="font-semibold">{rs(x.totalPaise)}<span className="ml-2 text-xs font-normal text-zinc-400">{pct(x.totalPaise, c.total)}%</span></span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{x.category}</span><span className="font-semibold">{rs(x.totalPaise)}<span className="ml-2 text-xs font-normal text-zinc-500 dark:text-zinc-400">{pct(x.totalPaise, c.total)}%</span></span></div>
                 <Bar pct={(x.totalPaise / maxCat) * 100} tone="rose" />
               </div>
             ))}
           </div>
         </Panel>
         <Panel title="Suppliers, biggest first">
-          {c.suppliers.length === 0 ? <p className="text-sm text-zinc-400 py-2">No purchases in this period.</p> : (
+          {c.suppliers.length === 0 ? <p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No purchases in this period.</p> : (
             <div className="space-y-3">
               {c.suppliers.slice(0, 10).map((s) => (
                 <div key={s.name} className="space-y-1">
-                  <div className="flex justify-between text-sm"><span className="truncate text-zinc-700 dark:text-zinc-300">{s.name}<span className="ml-2 text-xs text-zinc-400">{s.category} · {s.bills} bill{s.bills === 1 ? "" : "s"}</span></span><span className="font-semibold shrink-0">{rs(s.totalPaise)}</span></div>
+                  <div className="flex justify-between text-sm"><span className="truncate text-zinc-700 dark:text-zinc-300">{s.name}<span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{s.category} · {s.bills} bill{s.bills === 1 ? "" : "s"}</span></span><span className="font-semibold shrink-0">{rs(s.totalPaise)}</span></div>
                   <Bar pct={(s.totalPaise / maxSup) * 100} tone="violet" />
                   {s.totalPaise > s.paidPaise && <div className="text-[11px] text-red-500">{rs(s.totalPaise - s.paidPaise)} still to pay</div>}
                 </div>
@@ -220,14 +220,14 @@ export async function CostsTab({ catererId, orgId, from, to, label }: Rng) {
           )}
         </Panel>
       </div>
-      <p className="text-xs text-zinc-400">Costs include everyday expenses ({rs(c.expenseTotal)}), purchases ({rs(c.purchaseTotal)}) and staff pay ({rs(c.staffTotal)}). Ingredient cost counts meat, fish, chicken, vegetables and groceries.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">Costs include everyday expenses ({rs(c.expenseTotal)}), purchases ({rs(c.purchaseTotal)}) and staff pay ({rs(c.staffTotal)}). Ingredient cost counts meat, fish, chicken, vegetables and groceries.</p>
     </div>
   );
 }
 
 export async function StaffTab({ catererId, orgId, from, to, label }: Rng) {
   const s = await staffReport(catererId, orgId, from, to);
-  if (s.rows.length === 0) return <Panel title={`Staff · ${label}`}><p className="text-sm text-zinc-400 py-2">No staff pay recorded and nobody on a function in this period.</p></Panel>;
+  if (s.rows.length === 0) return <Panel title={`Staff · ${label}`}><p className="text-sm text-zinc-500 dark:text-zinc-400 py-2">No staff pay recorded and nobody on a function in this period.</p></Panel>;
   const max = Math.max(1, ...s.rows.map((r) => r.paidPaise));
   return (
     <div className="space-y-4">
@@ -241,11 +241,11 @@ export async function StaffTab({ catererId, orgId, from, to, label }: Rng) {
           {s.rows.map((r) => (
             <div key={r.id} className="space-y-1">
               <div className="flex justify-between text-sm gap-3">
-                <Link href={`/caterer/staff/${r.id}`} className="min-w-0 truncate hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{r.name}</span><span className="ml-2 text-xs text-zinc-400">{r.role} · {PAY_LABEL[r.payType as PayTypeKey]}</span></Link>
+                <Link href={`/caterer/staff/${r.id}`} className="min-w-0 truncate hover:text-amber-600"><span className="font-medium text-zinc-900 dark:text-zinc-50">{r.name}</span><span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{r.role} · {PAY_LABEL[r.payType as PayTypeKey]}</span></Link>
                 <span className="font-semibold shrink-0">{rs(r.paidPaise)}</span>
               </div>
               <Bar pct={(r.paidPaise / max) * 100} tone="emerald" />
-              <div className="text-[11px] text-zinc-400">{r.functions > 0 ? `${r.functions} function${r.functions === 1 ? "" : "s"} · agreed ${rs(r.agreedPaise)}` : ""}{r.advancePaise > 0 ? `${r.functions > 0 ? " · " : ""}advances ${rs(r.advancePaise)}` : ""}</div>
+              <div className="text-[11px] text-zinc-500 dark:text-zinc-400">{r.functions > 0 ? `${r.functions} function${r.functions === 1 ? "" : "s"} · agreed ${rs(r.agreedPaise)}` : ""}{r.advancePaise > 0 ? `${r.functions > 0 ? " · " : ""}advances ${rs(r.advancePaise)}` : ""}</div>
             </div>
           ))}
         </div>
@@ -267,7 +267,7 @@ export async function AgingTab({ catererId, pg }: { catererId: string; pg?: Repo
           <div className="space-y-3">
             {a.receivable.map((b) => (
               <div key={b.key} className="space-y-1">
-                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{b.label}<span className="ml-2 text-xs text-zinc-400">{b.count} invoice{b.count === 1 ? "" : "s"}</span></span><span className={cn("font-semibold", b.paise > 0 && (b.key === "d61_90" || b.key === "d90") && "text-red-600 dark:text-red-400")}>{rs(b.paise)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{b.label}<span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{b.count} invoice{b.count === 1 ? "" : "s"}</span></span><span className={cn("font-semibold", b.paise > 0 && (b.key === "d61_90" || b.key === "d90") && "text-red-600 dark:text-red-400")}>{rs(b.paise)}</span></div>
                 <Bar pct={(b.paise / maxR) * 100} tone={b.key === "d61_90" || b.key === "d90" ? "rose" : "amber"} />
               </div>
             ))}
@@ -278,7 +278,7 @@ export async function AgingTab({ catererId, pg }: { catererId: string; pg?: Repo
           <div className="space-y-3">
             {a.payable.map((b) => (
               <div key={b.key} className="space-y-1">
-                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{b.label}<span className="ml-2 text-xs text-zinc-400">{b.count} bill{b.count === 1 ? "" : "s"}</span></span><span className={cn("font-semibold", b.paise > 0 && (b.key === "d61_90" || b.key === "d90") && "text-red-600 dark:text-red-400")}>{rs(b.paise)}</span></div>
+                <div className="flex justify-between text-sm"><span className="text-zinc-700 dark:text-zinc-300">{b.label}<span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">{b.count} bill{b.count === 1 ? "" : "s"}</span></span><span className={cn("font-semibold", b.paise > 0 && (b.key === "d61_90" || b.key === "d90") && "text-red-600 dark:text-red-400")}>{rs(b.paise)}</span></div>
                 <Bar pct={(b.paise / maxP) * 100} tone={b.key === "d61_90" || b.key === "d90" ? "rose" : "violet"} />
               </div>
             ))}
@@ -292,7 +292,7 @@ export async function AgingTab({ catererId, pg }: { catererId: string; pg?: Repo
           <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
             {a.owed.slice(0, 25).map((p) => (
               <Link key={p.id} href={`/caterer/purchases/${p.id}`} className="flex items-center justify-between gap-3 py-2 text-sm hover:text-amber-600">
-                <span className="min-w-0 truncate font-medium text-zinc-900 dark:text-zinc-50">{p.supplier}<span className="ml-2 text-xs font-normal text-zinc-400">{formatInvoiceDate(p.date)}</span></span>
+                <span className="min-w-0 truncate font-medium text-zinc-900 dark:text-zinc-50">{p.supplier}<span className="ml-2 text-xs font-normal text-zinc-500 dark:text-zinc-400">{formatInvoiceDate(p.date)}</span></span>
                 <span className="flex items-center gap-3 shrink-0"><span className={cn("text-xs", p.days > 60 ? "font-semibold text-red-600" : "text-zinc-500")}>{p.days} days</span><span className="font-semibold text-red-600 dark:text-red-400">{rs(p.duePaise)}</span></span>
               </Link>
             ))}
@@ -308,10 +308,10 @@ export async function AgingTab({ catererId, pg }: { catererId: string; pg?: Repo
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                 {(paged ? paged.rows : a.owing.slice(0, 25)).map((r) => (
                   <tr key={`${r.orderId}-${r.number}`}>
-                    <td className="py-2 whitespace-nowrap"><Link href={`/caterer/orders/${r.orderId}`} className="font-medium hover:text-amber-600">#{r.number}</Link><span className="block text-xs text-zinc-400">{BILL_LABEL[r.type as "FOOD" | "SERVICE"]}</span></td>
-                    <td className="py-2"><Link href={`/caterer/customers/${r.customer.id}`} className="hover:text-amber-600">{r.customer.name}</Link><a href={`tel:${r.customer.phone}`} className="block text-xs text-zinc-400 hover:text-amber-600">{r.customer.phone}</a></td>
+                    <td className="py-2 whitespace-nowrap"><Link href={`/caterer/orders/${r.orderId}`} className="font-medium hover:text-amber-600">#{r.number}</Link><span className="block text-xs text-zinc-500 dark:text-zinc-400">{BILL_LABEL[r.type as "FOOD" | "SERVICE"]}</span></td>
+                    <td className="py-2"><Link href={`/caterer/customers/${r.customer.id}`} className="hover:text-amber-600">{r.customer.name}</Link><a href={`tel:${r.customer.phone}`} className="block text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600">{r.customer.phone}</a></td>
                     <td className="py-2 whitespace-nowrap text-zinc-600 dark:text-zinc-400">{formatInvoiceDate(r.functionDate)}</td>
-                    <td className="py-2 text-right whitespace-nowrap">{r.days < 0 ? <span className="text-xs text-zinc-400">in {-r.days} days</span> : <span className={cn(r.days > 60 && "font-semibold text-red-600")}>{r.days} days</span>}</td>
+                    <td className="py-2 text-right whitespace-nowrap">{r.days < 0 ? <span className="text-xs text-zinc-500 dark:text-zinc-400">in {-r.days} days</span> : <span className={cn(r.days > 60 && "font-semibold text-red-600")}>{r.days} days</span>}</td>
                     <td className="py-2 text-right font-semibold text-red-600 dark:text-red-400">{rs(r.balancePaise)}</td>
                   </tr>
                 ))}
