@@ -8,6 +8,7 @@ import { BottomNav } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { getSession } from "@/lib/session";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { VirunnuLogo } from "@/components/virunnu-logo";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getLocale } from "next-intl/server";
@@ -108,6 +109,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
           <Analytics />
+          <SpeedInsights />
         </NextIntlClientProvider>
       </body>
     </html>
