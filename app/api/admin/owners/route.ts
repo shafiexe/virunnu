@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { importVenuePhotos } from "@/lib/image-store";
+import { NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { centerSchema, createCenter, CenterError, sendCenterCredentials } from "@/services/center-setup.service";
@@ -30,6 +31,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const created = await createCenter(parsed.data);
+    // the photo links the new account came with are copied into our own storage once the response has gone
+    after(() => importVenuePhotos(created.venueId, created.orgId));
     sendCenterCredentials({ name: parsed.data.name, phone: created.phone, email: parsed.data.email, password: created.password });
     return NextResponse.json(created, { status: 201 });
   } catch (err) {

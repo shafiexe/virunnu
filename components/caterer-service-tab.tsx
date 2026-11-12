@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { Check, Plus, X, Link2, Globe, Phone, Mail, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { useRef, useState } from "react";
+import { Camera, Check, Plus, X, Link2, Globe, Phone, Mail, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { downscaleToFile } from "@/lib/image-downscale";
 import { cn } from "@/lib/utils";
 import { CatererDetailsCard } from "@/components/caterer-details-card";
 import type { CatererDetailsValue } from "@/lib/caterer-details-value";
@@ -75,13 +76,35 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
     }));
   }
 
-  function addPhoto() {
+  // Photos are saved with the profile; adding one first stores it (a file) or copies it (a link) and then lists its saved address.
+  const [addingPhoto, setAddingPhoto] = useState(false);
+  const fileInput = useRef<HTMLInputElement>(null);
+
+  async function addPhoto() {
     const url = photoInput.trim();
     if (!url) return;
-    if (!url.startsWith("http")) { setPhotoError("Enter a valid URL starting with http"); return; }
-    setPhotoError("");
-    setForm((f) => ({ ...f, photos: [...f.photos, url] }));
-    setPhotoInput("");
+    if (!/^https?:\/\//i.test(url)) { setPhotoError("Enter a link that starts with http"); return; }
+    setPhotoError(""); setAddingPhoto(true);
+    try {
+      const res = await fetch("/api/caterer/photos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url }) });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setPhotoError(d.error ?? "Could not add that photo"); return; }
+      setForm((f) => ({ ...f, photos: [...f.photos, d.url] }));
+      setPhotoInput("");
+      if (d.copied === false) setPhotoError("We could not copy that photo, so it is kept as a link. A link can stop working later; uploading the photo itself is safer.");
+    } finally { setAddingPhoto(false); }
+  }
+
+  async function uploadPhoto(file: File) {
+    setPhotoError(""); setAddingPhoto(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", await downscaleToFile(file).catch(() => file));
+      const res = await fetch("/api/caterer/photos", { method: "POST", body: fd });
+      const d = await res.json().catch(() => ({}));
+      if (!res.ok) { setPhotoError(d.error ?? "Upload failed"); return; }
+      setForm((f) => ({ ...f, photos: [...f.photos, d.url] }));
+    } finally { setAddingPhoto(false); }
   }
 
   function removePhoto(idx: number) {
@@ -374,17 +397,23 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
             value={photoInput}
             onChange={(e) => setPhotoInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && addPhoto()}
-            placeholder="Paste image URL and press Enter…"
+            placeholder="Or paste a photo link and press Enter…"
             className="flex-1 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
           />
           <button
             type="button"
             onClick={addPhoto}
-            className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors"
+            disabled={addingPhoto}
+            aria-label="Add this link"
+            className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-60 text-white text-sm font-semibold transition-colors"
           >
             <Plus className="h-4 w-4" />
           </button>
         </div>
+        <input ref={fileInput} type="file" accept="image/*" className="hidden" aria-label="Photo file" onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ""; if (f) void uploadPhoto(f); }} />
+        <button type="button" disabled={addingPhoto} onClick={() => fileInput.current?.click()} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-60">
+          <Camera className="h-4 w-4" /> {addingPhoto ? "Adding…" : "Upload a photo"}
+        </button>
         {photoError && <p className="text-xs text-red-500">{photoError}</p>}
         {form.photos.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -407,7 +436,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
           </div>
         )}
         {form.photos.length === 0 && (
-          <p className="text-xs text-zinc-400">No photos yet — paste an image URL above to add one.</p>
+          <p className="text-xs text-zinc-400">No photos yet. Upload one, or paste a photo link.</p>
         )}
       </div>
 

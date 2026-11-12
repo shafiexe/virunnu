@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { unlink } from "fs/promises";
-import path from "path";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { deleteImage } from "@/lib/image-store";
 
 export async function DELETE(
   _req: NextRequest,
@@ -19,11 +18,8 @@ export async function DELETE(
 
   await db.hallPhoto.delete({ where: { id: photoId } });
 
-  // Best-effort file removal
-  try {
-    const filepath = path.join(process.cwd(), "public", photo.url);
-    await unlink(filepath);
-  } catch { /* ignore if file already gone */ }
+  // the saved copy goes with it (a photo that was only a link has nothing to remove)
+  await deleteImage(photo.url);
 
   return NextResponse.json({ ok: true });
 }

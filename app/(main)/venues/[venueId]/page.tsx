@@ -11,6 +11,7 @@ import { VenueStickyCta } from "@/components/venue-sticky-cta";
 import { PhotoCarousel } from "@/components/photo-carousel";
 import { getVenue, getHallAvailability } from "@/services/venue.service";
 import { releaseExpiredHolds } from "@/services/booking.service";
+import { getAppUrl } from "@/lib/app-url";
 import { orgLogoUrl } from "@/lib/org-logo";
 
 type Props = { params: Promise<{ venueId: string }> };
@@ -41,8 +42,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .filter(Boolean)
     .join(" ");
 
-  const ogImage =
-    venue.halls.flatMap((h) => h.photos).find((p) => p?.url)?.url ?? null;
+  // a photo we keep ourselves has a relative address; a link preview needs the full one
+  const rawOg = venue.halls.flatMap((h) => h.photos).find((p) => p?.url)?.url ?? null;
+  const ogImage = rawOg && rawOg.startsWith("/") ? `${getAppUrl()}${rawOg}` : rawOg;
 
   const url = `https://virunnu.com/venues/${venueId}`;
 
@@ -207,7 +209,7 @@ export default async function VenuePage({ params }: Props) {
     geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
     telephone: venue.phone ?? undefined,
     url: `https://virunnu.com/venues/${venueId}`,
-    ...(allPhotos[0]?.url ? { image: allPhotos[0].url } : {}),
+    ...(allPhotos[0]?.url ? { image: allPhotos[0].url.startsWith("/") ? `${getAppUrl()}${allPhotos[0].url}` : allPhotos[0].url } : {}),
     ...(maxCap ? { maximumAttendeeCapacity: maxCap } : {}),
   };
 

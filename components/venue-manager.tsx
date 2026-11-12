@@ -1,5 +1,6 @@
 "use client";
 
+import { downscaleToFile } from "@/lib/image-downscale";
 import { useState, useRef } from "react";
 import {
   Plus, Pencil, X,
@@ -304,11 +305,13 @@ function HallCard({
     setUploadingPhoto(true);
     setPhotoError("");
     const fd = new FormData();
-    fd.append("file", file);
+    // a phone photo is several MB; shrink it here so it goes up quickly and always fits
+    const small = await downscaleToFile(file).catch(() => file);
+    fd.append("file", small);
     const res = await fetch(`/api/owner/halls/${hall.id}/photos`, { method: "POST", body: fd });
     setUploadingPhoto(false);
     if (!res.ok) {
-      const d = await res.json();
+      const d = await res.json().catch(() => ({}));
       setPhotoError(d.error ?? "Upload failed");
       return;
     }
@@ -326,6 +329,7 @@ function HallCard({
     setUploadingPhoto(true);
     setPhotoError("");
     const added: HallPhoto[] = [];
+    let kept = 0;
     for (const url of urls) {
       const res = await fetch(`/api/owner/halls/${hall.id}/photos`, {
         method: "POST",
@@ -334,11 +338,14 @@ function HallCard({
       });
       if (res.ok) {
         const photo = await res.json();
+        if (photo.copied === false) kept++;
         added.push(photo);
       }
     }
     setUploadingPhoto(false);
     if (!added.length) { setPhotoError("Failed to add photos"); return; }
+    // a link we could not copy is still shown, but it can stop working if the other site changes it
+    if (kept > 0) setPhotoError(`${kept} photo${kept === 1 ? " was" : "s were"} kept as a link, because we could not copy ${kept === 1 ? "it" : "them"}. A link can stop working later; uploading the photo itself is safer.`);
     setPhotos((prev) => [...prev, ...added]);
     setPhotoUrl("");
     setShowUrlInput(false);

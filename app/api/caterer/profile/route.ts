@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
+import { after } from "next/server";
 import { catererDetailsSchema, detailsToData } from "@/lib/caterer-details";
+import { deleteImage, importCatererPhotos } from "@/lib/image-store";
 
 export async function PATCH(req: NextRequest) {
   const session = await getSession();
@@ -36,5 +38,10 @@ export async function PATCH(req: NextRequest) {
     },
   });
 
+  if (Array.isArray(photos)) {
+    // photos taken off the page lose their saved copy; any that are still only links are copied in the background
+    const gone = caterer.photos.filter((u) => !photos.includes(u));
+    after(async () => { await Promise.all(gone.map(deleteImage)); await importCatererPhotos(caterer.id, caterer.orgId!); });
+  }
   return NextResponse.json({ caterer: updated });
 }

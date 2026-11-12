@@ -20,6 +20,7 @@
     "@types/bcryptjs": "^3.0.0",
     "@types/nodemailer": "^8.0.2",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/blob": "^2.9.0",
     "@vercel/speed-insights": "^2.1.0",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

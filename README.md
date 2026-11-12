@@ -95,3 +95,11 @@ Put the result in `.env` as `SESSION_SECRET`.
 **Daily summary.** Vercel Cron calls `/api/cron/daily-summary` with `CRON_SECRET`. After the first deploy, check Vercel → Project → Cron Jobs → Logs once to confirm it ran and a summary arrived.
 
 **Errors.** Vercel → Logs shows server errors. For alerts when something breaks, add an error tracker such as Sentry (free tier) later.
+
+## Photos
+
+Hall and caterer photos are uploaded from the phone or computer, or added as a link. Either way Virunnu keeps its own copy (a link is downloaded when it is added), so a photo cannot expire or be taken down by another site.
+
+- **Where they live.** If a Vercel Blob store is connected to the project, photos go there and are served from its CDN. Connect it in Vercel → Storage → Create → Blob → Connect Project; Vercel adds `BLOB_READ_WRITE_TOKEN` itself. Without a store, photos are kept in the database (table `StoredImage`, served at `/api/img/<id>`), which needs no set-up.
+- **Photos already saved as links.** Run `npx tsx --env-file=.env scripts/import-photo-links.ts` once, against the database you want to fix. It is safe to repeat.
+- **Links we cannot copy** (the other site blocks us, or it is not a photo) are still kept as links, and the person is told, as before.

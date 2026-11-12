@@ -907,3 +907,14 @@ model BookingPayment {
   @@index([bookingId])
   @@index([orgId, paidOn])
 }
+
+// A photo kept in the database, used when no Vercel Blob store is connected. Served at /api/img/<id>.
+model StoredImage {
+  id          String   @id @default(cuid())
+  orgId       String?
+  contentType String
+  data        Bytes
+  createdAt   DateTime @default(now())
+
+  @@index([orgId])
+}

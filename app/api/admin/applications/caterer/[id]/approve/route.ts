@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import { importCatererPhotos } from "@/lib/image-store";
+import { NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
@@ -34,6 +35,8 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     }
     try {
       const created = await createCaterer(parsed.data);
+    // the photo links the new account came with are copied into our own storage once the response has gone
+    after(() => importCatererPhotos(created.catererId, created.orgId));
       await db.catererApplication.update({ where: { id }, data: { status: "APPROVED" } });
       sendCatererCredentials({ name: app.name, phone: created.phone, email: app.email, password: created.password });
       return NextResponse.json({ ok: true, phone: created.phone, password: created.password, catererId: created.catererId });
