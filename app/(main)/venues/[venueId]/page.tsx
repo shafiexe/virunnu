@@ -4,7 +4,8 @@ import { YoutubeIcon, LinkedinIcon, XIcon } from "@/components/social-icons";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPin, Users, ArrowLeft, IndianRupee, Phone, MessageCircle, Globe, Mail, Star } from "lucide-react";
+import { MapPin, Users, ArrowLeft, Phone, MessageCircle, Globe, Mail, Star, CalendarDays, Clock } from "lucide-react";
+import { ClampText } from "@/components/clamp-text";
 import { SlotCalendar } from "@/components/slot-calendar";
 import { VenueStickyCta } from "@/components/venue-sticky-cta";
 import { PhotoCarousel } from "@/components/photo-carousel";
@@ -104,7 +105,30 @@ const AMENITY_ICON_MAP: [string, string][] = [
   ["security", "security"],
   ["kids", "child_care"],
   [" ac", "ac_unit"],
+  ["bridal", "checkroom"], ["green room", "checkroom"], ["lounge", "weekend"],
+  ["guest room", "bed"], ["room", "bed"], ["restroom", "wc"], ["toilet", "wc"], ["washroom", "wc"],
+  ["amphitheatre", "theater_comedy"], ["amphitheater", "theater_comedy"], ["dining", "restaurant"],
+  ["lift", "elevator"], ["elevator", "elevator"], ["wheelchair", "accessible"], ["valet", "local_parking"],
 ];
+
+// The saved icon is only a Material name for some facilities (the default is an emoji), so fall back to the name
+function facilityIcon(name: string, stored: string) {
+  if (/^[a-z][a-z0-9_]*$/.test(stored)) return stored;
+  const lower = ` ${name.toLowerCase()} `;
+  return AMENITY_ICON_MAP.find(([kw]) => lower.includes(kw.toLowerCase()))?.[1] ?? "check_circle";
+}
+
+const slotTimes = (slots: SlotData[]) => {
+  const seen = new Map<string, { name: string; startTime: string; endTime: string }>();
+  for (const sl of slots) if (!seen.has(sl.template.name)) seen.set(sl.template.name, sl.template);
+  return [...seen.values()].sort((a, b) => a.startTime.localeCompare(b.startTime));
+};
+
+const fmtTime = (t: string) => {
+  const [h, m] = t.split(":").map(Number);
+  if (Number.isNaN(h)) return t;
+  return `${h % 12 || 12}${m ? `:${String(m).padStart(2, "0")}` : ""} ${h < 12 ? "AM" : "PM"}`;
+};
 
 function AmenityIcon({ name }: { name: string }) {
   const lower = ` ${name.toLowerCase()} `;
@@ -229,12 +253,6 @@ export default async function VenuePage({ params }: Props) {
                       Up to {maxCap.toLocaleString()} guests
                     </span>
                   )}
-                  {minPrice > 0 && (
-                    <span className="flex items-center gap-1 font-semibold text-amber-300">
-                      <IndianRupee className="h-3 w-3 shrink-0" />
-                      from {(minPrice / 100).toLocaleString("en-IN")} per slot
-                    </span>
-                  )}
                 </div>
                 {/* Rating row */}
                 {venue.googleRating && (
@@ -264,87 +282,54 @@ export default async function VenuePage({ params }: Props) {
         </div>
       </div>
 
-      {/* Contact strip */}
+      {/* Contact strip: the three main actions first, the rest smaller */}
       {(venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email || venue.instagramUrl || venue.facebookUrl || venue.youtubeUrl || venue.linkedinUrl || venue.twitterUrl) && (
         <div className="mx-auto max-w-6xl px-4 pt-4">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-5 py-4">
-            <div className="flex flex-wrap justify-center items-center gap-2.5">
-              {venue.phone && (
-                <a href={`tel:${venue.phone}`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors shadow-sm">
-                  <Phone className="h-4 w-4" />
-                  Call
-                </a>
-              )}
-              {(venue.whatsappPhone ?? venue.phone) && (
-                <a
-                  href={`https://wa.me/${(venue.whatsappPhone ?? venue.phone)!.replace(/\D/g, "")}`}
-                  target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5c] text-white text-sm font-semibold transition-colors shadow-sm">
-                  <MessageCircle className="h-4 w-4" />
-                  WhatsApp
-                </a>
-              )}
-              {venue.websiteUrl && (
-                <a href={venue.websiteUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-semibold hover:border-amber-400 transition-colors">
-                  <Globe className="h-4 w-4 text-amber-500" />
-                  Website
-                </a>
-              )}
-              {venue.email && (
-                <a href={`mailto:${venue.email}`}
-                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-semibold hover:border-amber-400 transition-colors">
-                  <Mail className="h-4 w-4 text-amber-500" />
-                  Email
-                </a>
-              )}
-              {/* Divider before social */}
-              {(venue.instagramUrl || venue.facebookUrl || venue.youtubeUrl || venue.linkedinUrl || venue.twitterUrl) && (venue.phone || venue.whatsappPhone || venue.websiteUrl || venue.email) && (
-                <span className="h-7 w-px bg-zinc-200 dark:bg-zinc-700 mx-1" />
-              )}
-              {venue.instagramUrl && (
-                <a href={venue.instagramUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#E1306C] hover:border-pink-300 transition-colors">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4">
-                    <rect x="2" y="2" width="20" height="20" rx="5"/>
-                    <circle cx="12" cy="12" r="4"/>
-                    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none"/>
-                  </svg>
-                  <span className="text-sm font-semibold">Instagram</span>
-                </a>
-              )}
-              {venue.facebookUrl && (
-                <a href={venue.facebookUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#1877F2] hover:border-blue-300 transition-colors">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4">
-                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                  </svg>
-                  <span className="text-sm font-semibold">Facebook</span>
-                </a>
-              )}
-              {venue.youtubeUrl && (
-                <a href={venue.youtubeUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#FF0000] hover:border-red-300 transition-colors">
-                  <YoutubeIcon className="h-4 w-4" />
-                  <span className="text-sm font-semibold">YouTube</span>
-                </a>
-              )}
-              {venue.linkedinUrl && (
-                <a href={venue.linkedinUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-[#0A66C2] hover:border-blue-300 transition-colors">
-                  <LinkedinIcon className="h-4 w-4" />
-                  <span className="text-sm font-semibold">LinkedIn</span>
-                </a>
-              )}
-              {venue.twitterUrl && (
-                <a href={venue.twitterUrl} target="_blank" rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-400 transition-colors">
-                  <XIcon className="h-4 w-4" />
-                  <span className="text-sm font-semibold">Twitter / X</span>
-                </a>
-              )}
-            </div>
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-4 sm:px-5 py-4 flex flex-wrap items-center justify-center gap-2.5">
+            {venue.phone && (
+              <a href={`tel:${venue.phone}`} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors shadow-sm">
+                <Phone className="h-4 w-4" /> Call
+              </a>
+            )}
+            {(venue.whatsappPhone ?? venue.phone) && (
+              <a href={`https://wa.me/${(venue.whatsappPhone ?? venue.phone)!.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5c] text-white text-sm font-semibold transition-colors shadow-sm">
+                <MessageCircle className="h-4 w-4" /> WhatsApp
+              </a>
+            )}
+            {hallsWithSlots[0] && (
+              <a href={`#hall-${hallsWithSlots[0].id}`} className="hidden md:inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors shadow-sm">
+                <CalendarDays className="h-4 w-4" /> Check dates
+              </a>
+            )}
+            {(venue.websiteUrl || venue.email) && <span className="h-7 w-px bg-zinc-200 dark:bg-zinc-700 mx-1 hidden sm:block" />}
+            {venue.websiteUrl && (
+              <a href={venue.websiteUrl} target="_blank" rel="noopener noreferrer" aria-label="Website" title="Website"
+                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-medium hover:border-amber-400 transition-colors">
+                <Globe className="h-4 w-4 text-amber-500" /> Website
+              </a>
+            )}
+            {venue.email && (
+              <a href={`mailto:${venue.email}`} aria-label="Email" title={venue.email}
+                className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 text-sm font-medium hover:border-amber-400 transition-colors">
+                <Mail className="h-4 w-4 text-amber-500" /> Email
+              </a>
+            )}
+            {/* Social links are small icons */}
+            {[
+              { href: venue.instagramUrl, label: "Instagram", hover: "hover:text-[#E1306C] hover:border-pink-300", icon: (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" /></svg>) },
+              { href: venue.facebookUrl, label: "Facebook", hover: "hover:text-[#1877F2] hover:border-blue-300", icon: (
+                <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>) },
+              { href: venue.youtubeUrl, label: "YouTube", hover: "hover:text-[#FF0000] hover:border-red-300", icon: <YoutubeIcon className="h-4 w-4" /> },
+              { href: venue.linkedinUrl, label: "LinkedIn", hover: "hover:text-[#0A66C2] hover:border-blue-300", icon: <LinkedinIcon className="h-4 w-4" /> },
+              { href: venue.twitterUrl, label: "Twitter / X", hover: "hover:text-zinc-900 dark:hover:text-zinc-100 hover:border-zinc-400", icon: <XIcon className="h-4 w-4" /> },
+            ].filter((l) => l.href).map((l) => (
+              <a key={l.label} href={l.href!} target="_blank" rel="noopener noreferrer" aria-label={l.label} title={l.label}
+                className={`inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 text-zinc-500 transition-colors ${l.hover}`}>
+                {l.icon}
+              </a>
+            ))}
           </div>
         </div>
       )}
@@ -375,34 +360,55 @@ export default async function VenuePage({ params }: Props) {
               </div>
 
               {/* RIGHT: Hall details */}
-              <div className="space-y-5">
+              <div className="space-y-5 order-first lg:order-none">
 
-                {/* About — only shown when description exists */}
-                {hall.description && (
-                  <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-5">
-                    <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">About</h3>
-                    <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{hall.description}</p>
+                {/* Hall summary: what it is, what it holds, what a slot costs */}
+                <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-5 space-y-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50 leading-tight">{hall.name}</h2>
+                      <p className="mt-1 flex items-center gap-1.5 text-sm text-zinc-500"><Users className="h-4 w-4 text-amber-500" /> Up to {hall.capacity.toLocaleString("en-IN")} guests</p>
+                    </div>
+                    {hall.pricePerSlot > 0 && (
+                      <div className="text-right">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Hall rent</p>
+                        <p className="text-xl font-bold text-amber-600 dark:text-amber-400">₹{(hall.pricePerSlot / 100).toLocaleString("en-IN")}<span className="text-xs font-medium text-zinc-500"> / slot</span></p>
+                      </div>
+                    )}
                   </div>
-                )}
+                  {slotTimes(hall.slots).length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {slotTimes(hall.slots).map((t) => (
+                        <span key={t.name} className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 dark:bg-zinc-800 px-3 py-1 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                          <Clock className="h-3 w-3 text-amber-500" /> {t.name} · {fmtTime(t.startTime)} – {fmtTime(t.endTime)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {includedFacilities.length === 0 && hall.amenities.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {hall.amenities.map((a) => (
+                        <span key={a} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-2.5 py-1 text-xs text-zinc-700 dark:text-zinc-300"><AmenityIcon name={a} />{a}</span>
+                      ))}
+                    </div>
+                  )}
+                  {hall.description && <ClampText text={hall.description} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed" />}
+                  <p className="text-xs text-zinc-400">Pick a date in the calendar to see slots and book.</p>
+                </div>
 
                 {/* Included facilities */}
                 {includedFacilities.length > 0 && (
                   <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
                     <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                      <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Included with booking</h3>
-                      <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full">Free</span>
+                      <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Included in the hall rent</h3>
+                      <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-full">No extra charge</span>
                     </div>
-                    <div className="p-4 grid grid-cols-3 gap-2">
+                    <div className="p-4 flex flex-wrap gap-2">
                       {includedFacilities.map((f) => (
-                        <div key={f.id} className="flex flex-col items-center gap-2 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-2 py-3 text-center">
-                          <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-100 dark:border-amber-900/40 flex items-center justify-center">
-                            <span
-                              className="material-symbols-rounded leading-none text-amber-600 dark:text-amber-400"
-                              style={{ fontSize: 18, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}
-                            >{f.icon}</span>
-                          </div>
-                          <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 leading-tight">{f.name}</span>
-                        </div>
+                        <span key={f.id} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-2.5 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
+                          <span className="material-symbols-rounded leading-none text-amber-600 dark:text-amber-400" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>{facilityIcon(f.name, f.icon)}</span>
+                          {f.name}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -422,7 +428,7 @@ export default async function VenuePage({ params }: Props) {
                             <span
                               className="material-symbols-rounded leading-none text-amber-600 dark:text-amber-400"
                               style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}
-                            >{f.icon}</span>
+                            >{facilityIcon(f.name, f.icon)}</span>
                           </div>
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-zinc-800 dark:text-zinc-100 truncate">{f.name}</p>
@@ -467,7 +473,7 @@ export default async function VenuePage({ params }: Props) {
           </div>
           {/* Embedded map */}
           {mapSrc && (
-            <div className="relative h-72 sm:h-96">
+            <div className="relative h-56 sm:h-96">
               <iframe
                 src={mapSrc}
                 className="w-full h-full border-0"
