@@ -10,7 +10,7 @@ export default function ApplyVenuePage() {
         </div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Add Your Convention Center</h1>
         <p className="mx-auto max-w-2xl text-sm text-zinc-500 leading-relaxed">
-          Fill in your details below — paste your website or Google Maps link and we&apos;ll fill most of it for you.
+          Fill in your details below — add your website and your Google details and we&apos;ll fill most of it for you, and write the description.
           Our team will review your request and send your login within 1–2 business days. You can update everything later.
         </p>
       </div>

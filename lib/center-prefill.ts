@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { fetchPageText, fetchSiteDetails, type SiteDetails } from "@/lib/fetch-page-text";
 import { parseGoogleMapsCoords } from "@/lib/maps";
 import { lookupGooglePlace } from "@/lib/google-places";
+import { provenance, readPlaceWebsite, searchByName } from "@/lib/prefill-places";
 
 const AMENITIES = ["AC", "Projector", "Stage", "Parking", "Catering Kitchen", "Sound System", "Generator Backup", "Dressing Room", "CCTV"];
 
@@ -102,6 +103,10 @@ export async function centerPrefill(rawInput: string): Promise<PrefillResult> {
   const pastedImages = allUrls.filter((u) => IMAGE_URL.test(u));
   const urls = allUrls.filter((u) => !IMAGE_URL.test(u)).slice(0, 4);
 
+  // just a name (and city) typed: find the Google listing and read its website and map link as if they had been pasted
+  const named = await searchByName(input, urls.length > 0);
+  if (named) urls.push(...named.urls.slice(0, 4));
+
   const sites: SiteDetails[] = [];
   const isGoogleSearch = (u: string) => {
     try {
@@ -148,7 +153,7 @@ export async function centerPrefill(rawInput: string): Promise<PrefillResult> {
     if (coords) break;
   }
 
-  const combined = [input, ...pageTexts.filter(Boolean)].join("\n\n").slice(0, 14000);
+  const combined = [input, named?.text, ...pageTexts.filter(Boolean)].filter(Boolean).join("\n\n").slice(0, 14000);
 
   try {
     const client = new Anthropic();
@@ -171,15 +176,19 @@ export async function centerPrefill(rawInput: string): Promise<PrefillResult> {
     const suggestedAmenities = cleanList(x.suggestedAmenities, 6).filter((a) => !have.has(a.toLowerCase()));
 
     // Google's own data is authoritative for rating, review count and the map pin.
-    let place = null;
-    try {
-      place = await lookupGooglePlace(
-        typeof x.name === "string" ? x.name : "",
-        [x.city, x.pincode].filter((v) => typeof v === "string" && v).join(" ")
-      );
-    } catch (e) {
-      console.error("Google Places lookup failed:", e);
+    let place = named?.place ?? null;
+    if (!place) {
+      try {
+        place = await lookupGooglePlace(
+          typeof x.name === "string" ? x.name : "",
+          [x.city, x.pincode].filter((v) => typeof v === "string" && v).join(" ")
+        );
+      } catch (e) {
+        console.error("Google Places lookup failed:", e);
+      }
     }
+    // the listing's own website, when no link to it was given
+    await readPlaceWebsite(place, urls, sites);
 
     return {
       status: 200,
@@ -205,6 +214,7 @@ export async function centerPrefill(rawInput: string): Promise<PrefillResult> {
         slots: Array.isArray(x.slots) ? x.slots : [],
       },
       unreadable,
+      sources: provenance({ x, place, mapsUrl, coordsFromLink: !!coords && !!mapsUrl, sites }),
       photos: [...new Set([...pastedImages, ...sites.flatMap((d) => d.images).map(resizeCdn)])].slice(0, 20),
       googlePlace: place ? { name: place.name, address: place.address } : null,
       placesConfigured: Boolean(process.env.GOOGLE_PLACES_API_KEY),

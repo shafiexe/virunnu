@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { PrefillSources, type PrefillReport } from "@/components/prefill-sources";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Copy, ImagePlus, Plus, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parseGoogleMapsCoords } from "@/lib/maps";
@@ -129,14 +130,24 @@ async function toJpeg(file: File): Promise<MenuImage> {
   return { mediaType: "image/jpeg", data: dataUrl.split(",")[1], preview: dataUrl };
 }
 
+// What would fill each missing detail, so the person knows which link to add
+const HINT: Record<string, string> = {
+  Name: "any link, or type it", Phone: "the Google details, or the website's contact page", Email: "the website's contact page or footer", City: "the Google details", Address: "the Google details",
+  "Google rating": "the Google details (the rating is in the panel)", Photos: "your website or Instagram page",
+  "areas you serve": "the website or Facebook About page", "guest range": "the website, or paste the brochure text", "a package with price per plate": "menu card photos, or paste the price list",
+};
+
 export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClose?: () => void }) {
   const isAdmin = mode === "admin";
   const [f, setF] = useState(EMPTY);
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [services, setServices] = useState<string[]>(["FOOD"]);
   const [suggestedServices, setSuggestedServices] = useState<string[]>([]);
-  const [mealTypes, setMealTypes] = useState<string[]>([]);
+  // lunch and dinner are ticked to start; untick or add breakfast and snacks
+  const [mealTypes, setMealTypes] = useState<string[]>(["LUNCH", "DINNER"]);
   const [serviceAreas, setServiceAreas] = useState<string[]>([]);
+  // the city is offered as the first area served, until the person edits the list
+  const areasTouched = useRef(false);
   const [packages, setPackages] = useState<Pkg[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [pastEvents, setPastEvents] = useState<Past[]>([]);
@@ -150,6 +161,8 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
   const [aiText, setAiText] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiNote, setAiNote] = useState<{ ok: boolean; text: string } | null>(null);
+  const [aiReport, setAiReport] = useState<PrefillReport | null>(null);
+  useEffect(() => { if (!areasTouched.current && f.city.trim()) setServiceAreas([f.city.trim()]); }, [f.city]);
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -199,6 +212,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
     if (aiLoading) return;
     setAiLoading(true);
     setAiNote(null);
+    setAiReport(null);
     try {
       const res = await fetch(isAdmin ? "/api/admin/ai-caterer-prefill" : "/api/apply/ai-caterer-prefill", {
         method: "POST",
@@ -241,7 +255,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
       if (list(x.services).length) setServices(list(x.services));
       setSuggestedServices(list(x.suggestedServices));
       if (list(x.mealTypes).length) setMealTypes(list(x.mealTypes));
-      if (list(x.serviceAreas).length) setServiceAreas(list(x.serviceAreas));
+      if (list(x.serviceAreas).length) { areasTouched.current = true; setServiceAreas(list(x.serviceAreas)); }
 
       if (Array.isArray(x.packages) && x.packages.length) {
         setPackages(
@@ -285,6 +299,33 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
       const gp = data.googlePlace as { name: string; address: string | null } | null;
       const googleNote = gp ? ` Rating & pin from Google: “${gp.name}” — check it's the right place.` : "";
       const tail = nudges.length ? ` Worth adding: ${nudges.join(", ")}.` : "";
+      const labels: Partial<Record<FormKey, string>> = {
+        name: "Name", description: "About", phone: "Phone", whatsappPhone: "WhatsApp", email: "Email", googleMapsUrl: "Map link", address: "Address", city: "City", pincode: "Pincode",
+        serviceRadiusKm: "Service radius", minGuests: "Guest range", maxGuests: "Guest range", leadTimeHours: "Notice needed", fssaiNumber: "FSSAI number", teamSize: "Team size", yearsExperience: "Experience",
+        googleRating: "Google rating", websiteUrl: "Website", instagramUrl: "Instagram", facebookUrl: "Facebook", youtubeUrl: "YouTube",
+      };
+      const src = (data.sources ?? {}) as Record<string, "google" | "website" | "text" | "ai">;
+      const filledLabels: { label: string; from?: "google" | "website" | "text" | "ai" }[] = map
+        .filter(([k, v]) => s(v) !== undefined && labels[k] && labels[k] !== "About")
+        .map(([k]) => ({ label: labels[k] as string, from: src[k as string] }));
+      const add = (label: string) => filledLabels.push({ label, from: "text" });
+      if (list(x.cuisines).length) add("Cuisines");
+      if (list(x.services).length) add("Services");
+      if (list(x.serviceAreas).length) add("Areas served");
+      if (Array.isArray(x.packages) && x.packages.length) add(`${x.packages.length} packages`);
+      if (Array.isArray(x.items) && x.items.length) add(`${x.items.length} menu items`);
+      if (Array.isArray(x.pastEvents) && x.pastEvents.length) add("Past events");
+      const wanted: { label: string; hint: string }[] = [
+        ...missing.map((label) => ({ label, hint: HINT[label] ?? "paste the details" })),
+        ...nudges.map((label) => ({ label: label[0].toUpperCase() + label.slice(1), hint: HINT[label] ?? "the website, or paste the menu text" })),
+        ...(!next.googleRating ? [{ label: "Google rating", hint: HINT["Google rating"] }] : []),
+        ...(!pics.length ? [{ label: "Photos", hint: HINT.Photos }] : []),
+      ];
+      setAiReport({
+        filled: filledLabels, missing: wanted, unreadable, photos: pics.length,
+        descriptionWritten: typeof x.description === "string" && !!x.description.trim(),
+        googleNote: gp ? `Rating and map pin came from Google: “${gp.name}”. Check it is the right place.` : undefined,
+      });
       setAiNote(
         missing.length
           ? { ok: false, text: `Filled ${filled} fields. Still needed: ${missing.join(", ")}.${tail}${googleNote}${skipped}` }
@@ -426,19 +467,10 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
         </div>
       )}
 
-      {/* AI fill */}
-      <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-white dark:bg-zinc-900 p-4 space-y-3">
-        <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-          <Sparkles className="h-4 w-4 text-amber-500" /> Fill with AI
-          <span className="text-xs font-normal text-zinc-400">— paste links or text, and/or upload photos of the menu card</span>
-        </div>
-        <textarea
-          value={aiText}
-          onChange={(e) => setAiText(e.target.value)}
-          rows={4}
-          placeholder="Paste links (website, Google Maps, Instagram, Facebook) and/or text — a WhatsApp message, brochure text, menu with prices. Google search results can’t be opened from a link: copy the page text and paste it here."
-          className={cn(INPUT, "resize-y")}
-        />
+            {/* AI fill */}
+      <PrefillSources kind="caterer" onChange={setAiText} onFill={fillWithAi} loading={aiLoading} note={aiNote} report={aiReport}>
+        <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 p-3 space-y-1.5">
+          <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Menu card or price list photos <span className="text-[11px] font-normal text-zinc-500">· gives: dishes, packages and prices</span></div>
         <div className="flex flex-wrap items-center gap-3">
           <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => onMenuFiles(e.target.files)} />
           <button
@@ -464,18 +496,8 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-3 flex-wrap">
-          <button
-            type="button"
-            onClick={fillWithAi}
-            disabled={aiLoading || (aiText.trim().length < 5 && menuImages.length === 0)}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            <Sparkles className="h-3.5 w-3.5" /> {aiLoading ? "Reading…" : "Fill form"}
-          </button>
-          {aiNote && <span className={cn("text-xs", aiNote.ok ? "text-emerald-600" : "text-amber-600")}>{aiNote.text}</span>}
         </div>
-      </div>
+      </PrefillSources>
 
       <Section title="Basics">
         <Field label="Catering team name" required>
@@ -525,7 +547,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
           <Field label="Pincode"><input className={INPUT} value={f.pincode} onChange={set("pincode")} placeholder="673001" inputMode="numeric" /></Field>
         </div>
         <Field label="Towns / districts you serve" hint="travellers search by these — type one and press Enter">
-          <TagInput values={serviceAreas} onChange={setServiceAreas} placeholder="e.g. Wayanad, Kalpetta" />
+          <TagInput values={serviceAreas} onChange={(v) => { areasTouched.current = true; setServiceAreas(v); }} placeholder="e.g. Wayanad, Kalpetta" />
         </Field>
         <Field label="Will travel up to (km)" hint="optional">
           <input className={cn(INPUT, "max-w-[10rem]")} value={f.serviceRadiusKm} onChange={set("serviceRadiusKm")} placeholder="100" inputMode="numeric" />
