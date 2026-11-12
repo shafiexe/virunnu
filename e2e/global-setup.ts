@@ -17,6 +17,14 @@ export default async function globalSetup() {
   });
   if (!res.ok()) throw new Error(`Could not create the test caterer: ${res.status()} ${await res.text()}`);
   const data = await res.json();
-  writeFileSync("e2e/.state.json", JSON.stringify({ catererId: data.catererId, orgId: data.orgId, phone: data.phone.replace(/^\+91/, ""), password: data.password }));
+  const cres = await admin.post("/api/admin/owners", {
+    data: { name: `ZZ E2E Centre ${stamp}`, phone: `98471${stamp.slice(-5)}`, email: `e2ec${stamp}@example.com`, address: "Test Road, Kochi", city: "Kochi", capacity: 500, priceRupees: 100000, hallName: "Main Hall" },
+  });
+  if (!cres.ok()) throw new Error(`Could not create the test centre: ${cres.status()} ${await cres.text()}`);
+  const centre = await cres.json();
+  writeFileSync("e2e/.state.json", JSON.stringify({
+    catererId: data.catererId, orgId: data.orgId, phone: data.phone.replace(/^\+91/, ""), password: data.password,
+    centre: { orgId: centre.orgId, venueId: centre.venueId, phone: String(centre.phone).replace(/^\+91/, ""), password: centre.password },
+  }));
   await admin.dispose();
 }

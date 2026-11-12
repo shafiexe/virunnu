@@ -6,6 +6,8 @@ import {
   LayoutDashboard, CalendarDays, CalendarCheck,
   Users2, Building2, Workflow, ChevronRight, Receipt, ShieldCheck, History,
 } from "lucide-react";
+import { CatererQuickFind } from "@/components/caterer-quick-find";
+import { OwnerNewMenu } from "@/components/owner-new-menu";
 import { canOpenOwner } from "@/lib/owner-access";
 import { cn } from "@/lib/utils";
 
@@ -37,6 +39,8 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true }: { logoUr
           <span className="block text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Convention Centre</span>
         </span>
       </div>
+      <CatererQuickFind variant="sidebar" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
+      <OwnerNewMenu variant="sidebar" deny={deny} />
       {navFor(deny, mainOwner).map(({ href, icon: Icon, label }) => {
         const active = pathname === href || pathname.startsWith(href + "/");
         return (
@@ -65,6 +69,7 @@ export function OwnerTopTabs({ deny, mainOwner = true }: { deny?: string[]; main
   return (
     <nav className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-x-auto">
       <div className="flex min-w-max px-2">
+        <CatererQuickFind variant="icon" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
         {navFor(deny, mainOwner).map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (

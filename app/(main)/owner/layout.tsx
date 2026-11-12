@@ -5,6 +5,7 @@ import { getSession } from "@/lib/session";
 import { OwnerSidebar, OwnerTopTabs } from "@/components/owner-sidebar";
 import { db } from "@/lib/db";
 import { orgLogoUrl } from "@/lib/org-logo";
+import { OwnerNewMenu } from "@/components/owner-new-menu";
 import { AccessProvider } from "@/components/access-context";
 import { ToastProvider } from "@/components/undo-toast";
 
@@ -25,6 +26,7 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
           <div className="flex-1">{children}</div>
         </div>
       </div>
+      <OwnerNewMenu variant="fab" deny={session.deny} />
       </AccessProvider>
     </ToastProvider>
   );

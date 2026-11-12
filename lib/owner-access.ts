@@ -34,6 +34,7 @@ const RULES: Rule[] = [
   // bookings are also made, cancelled and paid through these shared routes
   [/^\/api\/bookings/, ["bookings"]], [/^\/api\/payments/, ["bookings"]],
   [/^\/owner\/customers/, ["customers"]], [/^\/api\/owner\/customers/, ["customers"]],
+  [/^\/api\/owner\/booking-draft/, ["calendar"]],
   [/^\/owner\/(venues|facilities)/, ["venues"]], [/^\/api\/owner\/(venues|halls|hall-slots|facilities|ai-prefill|logo)/, ["venues"]],
   [/^\/owner\/expenses/, ["expenses"]], [/^\/api\/owner\/expenses/, ["expenses"]],
   [/^\/api\/owner\/expense-categories/, ["expenses", "expenses.categories"]], [/^\/api\/owner\/employees/, ["expenses", "expenses.staff"]],
