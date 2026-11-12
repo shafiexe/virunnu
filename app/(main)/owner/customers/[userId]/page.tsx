@@ -61,11 +61,8 @@ export default async function CustomerDetailPage({ params }: Props) {
     templateName: b.hallSlot.template?.name ?? null,
     slotDate: b.hallSlot.date.toISOString().slice(0, 10),
     slotSession: b.hallSlot.template?.name ?? "",
-    paidPaise:
-      b.status === "CANCELLED" ? 0 :
-      b.status === "CONFIRMED"
-        ? b.totalPaise - (b.discountPaise ?? 0) - (b.advancePaise ?? 0)
-        : (b.payment?.status === "PAID" ? b.payment.amountPaise : 0),
+    // everything received is already in advancePaise (the sum of the booking's payments)
+    paidPaise: 0,
   }));
 
   return (

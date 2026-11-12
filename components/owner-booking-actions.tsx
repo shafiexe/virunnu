@@ -128,7 +128,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
 
   const items = (
     <>
-          {canCash && (
+          {canCash && !inline && (
         <button onClick={() => setPanel("cash")} className="w-full text-left px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
           💰 Payment received
         </button>

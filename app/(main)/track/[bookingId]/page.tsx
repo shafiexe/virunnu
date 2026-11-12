@@ -163,7 +163,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
             )}
             {advancePaid > 0 && (
               <div className="flex justify-between text-emerald-600">
-                <span>Advance paid</span>
+                <span>{remaining > 0 ? "Advance paid" : "Paid"}</span>
                 <span>− {fmt(advancePaid)}</span>
               </div>
             )}

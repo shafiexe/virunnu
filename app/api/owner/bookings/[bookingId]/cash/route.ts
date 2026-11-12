@@ -4,7 +4,8 @@ import { db } from "@/lib/db";
 import { BookingStatus, SlotStatus, PaymentMethod } from "@prisma/client";
 import { z } from "zod";
 import { notifyBookingConfirmed } from "@/services/notification.service";
-import { logActivity } from "@/lib/activity";
+import { actorOf, logActivity } from "@/lib/activity";
+import { asDay, netOf, todayISO } from "@/lib/booking-ledger";
 
 const schema = z.object({
   advancePaise: z.number().int().min(0).optional(),
@@ -54,19 +55,29 @@ export async function POST(
 
   const newStatus = isPartial ? BookingStatus.ADVANCE_PAID : BookingStatus.CONFIRMED;
 
+  // What is now paid in total, and the part of it that is new money. Recording a full payment on a booking that already
+  // had an advance only adds what was still due.
+  const net = netOf(booking);
+  const targetPaid = isPartial ? advancePaise : net;
+  const newMoney = Math.max(0, targetPaid - (booking.advancePaise ?? 0));
+  const actor = await actorOf(session);
+
   await db.$transaction([
     db.booking.update({
       where: { id: bookingId },
       data: {
         status: newStatus,
         paymentMethod: payMethod === "ONLINE" ? PaymentMethod.ONLINE : PaymentMethod.CASH,
-        ...(isPartial ? { advancePaise } : {}),
+        advancePaise: Math.max(booking.advancePaise ?? 0, targetPaid),
       },
     }),
     db.hallSlot.update({
       where: { id: booking.hallSlotId },
       data: { status: SlotStatus.BOOKED, heldUntil: null },
     }),
+    ...(newMoney > 0
+      ? [db.bookingPayment.create({ data: { bookingId, orgId: session.orgId!, amountPaise: newMoney, method: payMethod === "ONLINE" ? "UPI" : "CASH", paidOn: asDay(todayISO()), recordedBy: actor.label } })]
+      : []),
   ]);
 
   const phone = booking.user?.phone ?? booking.guestPhone;

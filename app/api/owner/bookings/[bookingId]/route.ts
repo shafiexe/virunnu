@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 import { BookingStatus, SlotStatus } from "@prisma/client";
 import { priceAddon } from "@/lib/addons";
+import { actorOf } from "@/lib/activity";
+import { asDay, todayISO } from "@/lib/booking-ledger";
 
 type Params = { params: Promise<{ bookingId: string }> };
 
@@ -89,6 +91,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   let newAdvancePaise = booking.advancePaise;
   let newStatus = booking.status;
 
+  let receivedNow = 0;
   if (additionalAdvanceRupees !== undefined && additionalAdvanceRupees > 0) {
     newAdvancePaise = (booking.advancePaise ?? 0) + additionalAdvanceRupees * 100;
     if (newAdvancePaise >= totalPaise) {
@@ -97,6 +100,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     } else {
       newStatus = BookingStatus.ADVANCE_PAID;
     }
+    receivedNow = newAdvancePaise - (booking.advancePaise ?? 0);
   } else if (totalChanged && booking.advancePaise != null) {
     if (booking.advancePaise >= totalPaise) {
       newStatus = BookingStatus.CONFIRMED;
@@ -125,7 +129,11 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     ...toAdd.map((a) => db.bookingAddon.create({ data: { bookingId, ...a } })),
   ]);
 
+  const actor = receivedNow > 0 ? await actorOf(session) : null;
   await Promise.all([
+    receivedNow > 0
+      ? db.bookingPayment.create({ data: { bookingId, orgId: session.orgId!, amountPaise: receivedNow, method: "CASH", paidOn: asDay(todayISO()), recordedBy: actor?.label ?? null } })
+      : null,
     db.booking.update({
       where: { id: bookingId },
       data: {

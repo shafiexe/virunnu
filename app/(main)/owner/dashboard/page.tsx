@@ -80,7 +80,8 @@ export default async function OwnerDashboard({ searchParams }: Props) {
       d.confirmed++;
       const net = b.totalPaise - (b.discountPaise ?? 0);
       d.revenuePaise += net;
-      d.collectedPaise += net;
+      // what has actually been received, not what is expected
+      d.collectedPaise += Math.min(b.advancePaise ?? 0, net);
     } else if (b.status === "ADVANCE_PAID") {
       d.advancePaid++;
       d.collectedPaise += b.advancePaise ?? 0;
@@ -114,7 +115,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
 
   // --- Stat card data (selected year) ---
   const totalRevenuePaise = allYearBookings.reduce((sum, b) => {
-    if (b.status === "CONFIRMED") return sum + b.totalPaise - (b.discountPaise ?? 0);
+    if (b.status === "CONFIRMED") return sum + Math.min(b.advancePaise ?? 0, b.totalPaise - (b.discountPaise ?? 0));
     if (b.status === "ADVANCE_PAID") return sum + (b.advancePaise ?? 0);
     if (b.status === "CANCELLED") return sum + Math.max(0, (b.advancePaise ?? 0) - (b.refundPaise ?? 0));
     return sum;
@@ -162,7 +163,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
     .slice(0, 4) as [string, number][];
 
   const stats = [
-    { label: `Revenue ${year}`, value: `₹${(totalRevenuePaise / 100).toLocaleString("en-IN")}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
+    { label: `Received ${year}`, value: `₹${(totalRevenuePaise / 100).toLocaleString("en-IN")}`, icon: TrendingUp, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
     { label: "Confirmed", value: counts.CONFIRMED ?? 0, icon: CalendarCheck, color: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-950/30" },
     { label: "Advance paid", value: counts.ADVANCE_PAID ?? 0, icon: Clock, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
     { label: "Total bookings", value: allYearBookings.length, icon: Hash, color: "text-zinc-700 dark:text-zinc-300", bg: "bg-zinc-100 dark:bg-zinc-800" },

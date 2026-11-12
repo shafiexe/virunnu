@@ -132,7 +132,7 @@ export default async function BookingPage({ params }: Props) {
             </div>
             {advancePaise && (
               <div className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                Advance paid: ₹{(advancePaise / 100).toLocaleString("en-IN")}
+                {advancePaise >= booking.totalPaise - (booking.discountPaise ?? 0) ? "Paid" : "Advance paid"}: ₹{(advancePaise / 100).toLocaleString("en-IN")}
               </div>
             )}
           </div>

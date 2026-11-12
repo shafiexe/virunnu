@@ -1,3 +1,4 @@
+import { todayISO } from "@/lib/booking-ledger";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { getBooking } from "@/services/booking.service";
@@ -44,6 +45,7 @@ export async function POST(
       where: { id: bookingId },
       data: { status: BookingStatus.ADVANCE_PAID, advancePaise },
     }),
+    db.bookingPayment.create({ data: { bookingId, orgId: booking.orgId, amountPaise: advancePaise, method: "ONLINE", paidOn: new Date(todayISO() + "T00:00:00Z") } }),
     db.hallSlot.update({
       where: { id: booking.hallSlotId },
       data: { status: SlotStatus.BOOKED, heldUntil: null },
