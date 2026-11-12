@@ -18,7 +18,8 @@ const EMPTY = {
   name: "", phone: "", whatsappPhone: "", email: "",
   googleMapsUrl: "", lat: "", lng: "", address: "", city: "", pincode: "",
   googleRating: "", googleReviewCount: "", websiteUrl: "", instagramUrl: "", facebookUrl: "", youtubeUrl: "", linkedinUrl: "", twitterUrl: "",
-  hallName: "", capacity: "", priceRupees: "",
+  // a first hall is started for you; rename it, or change anything below
+  hallName: "Main Hall", capacity: "", priceRupees: "",
 };
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
@@ -53,7 +54,8 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
   const isAdmin = mode === "admin";
   const [venueType, setVenueType] = useState<VenueTypeKey>("CONVENTION_CENTER");
   const [f, setF] = useState(EMPTY);
-  const [amenities, setAmenities] = useState<string[]>([]);
+  // the usual ones are ticked to start; untick any this place does not have
+  const [amenities, setAmenities] = useState<string[]>(["AC", "Parking", "Sound System", "Stage"]);
   const [extraAmenities, setExtraAmenities] = useState<string[]>([]);
   const [suggested, setSuggested] = useState<string[]>([]);
   const [description, setDescription] = useState("");
@@ -511,7 +513,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
 
         <div className="space-y-2">
           <span className="text-xs font-medium text-zinc-500">
-            Amenities <span className="font-normal text-zinc-400">— saved as the center's Amenities &amp; Add-ons (free by default); the center can edit or price them later</span>
+            Amenities <span className="font-normal text-zinc-400">— the usual ones are ticked: untick any this place doesn't have, and tap to add more. Saved as the center's Amenities &amp; Add-ons (free by default); it can edit or price them later</span>
             {suggested.length > 0 && <span className="font-normal text-zinc-400"> — tap to include or remove; <Sparkles className="inline h-3 w-3 text-amber-500" /> are AI suggestions, not from the source</span>}
           </span>
           <div className="flex flex-wrap gap-2">

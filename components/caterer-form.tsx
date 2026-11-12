@@ -1,7 +1,7 @@
 "use client";
 
 import { PrefillSources, type PrefillReport } from "@/components/prefill-sources";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Copy, ImagePlus, Plus, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parseGoogleMapsCoords } from "@/lib/maps";
@@ -143,8 +143,11 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
   const [cuisines, setCuisines] = useState<string[]>([]);
   const [services, setServices] = useState<string[]>(["FOOD"]);
   const [suggestedServices, setSuggestedServices] = useState<string[]>([]);
-  const [mealTypes, setMealTypes] = useState<string[]>([]);
+  // lunch and dinner are ticked to start; untick or add breakfast and snacks
+  const [mealTypes, setMealTypes] = useState<string[]>(["LUNCH", "DINNER"]);
   const [serviceAreas, setServiceAreas] = useState<string[]>([]);
+  // the city is offered as the first area served, until the person edits the list
+  const areasTouched = useRef(false);
   const [packages, setPackages] = useState<Pkg[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const [pastEvents, setPastEvents] = useState<Past[]>([]);
@@ -159,6 +162,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
   const [aiLoading, setAiLoading] = useState(false);
   const [aiNote, setAiNote] = useState<{ ok: boolean; text: string } | null>(null);
   const [aiReport, setAiReport] = useState<PrefillReport | null>(null);
+  useEffect(() => { if (!areasTouched.current && f.city.trim()) setServiceAreas([f.city.trim()]); }, [f.city]);
   const [checked, setChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -251,7 +255,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
       if (list(x.services).length) setServices(list(x.services));
       setSuggestedServices(list(x.suggestedServices));
       if (list(x.mealTypes).length) setMealTypes(list(x.mealTypes));
-      if (list(x.serviceAreas).length) setServiceAreas(list(x.serviceAreas));
+      if (list(x.serviceAreas).length) { areasTouched.current = true; setServiceAreas(list(x.serviceAreas)); }
 
       if (Array.isArray(x.packages) && x.packages.length) {
         setPackages(
@@ -543,7 +547,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
           <Field label="Pincode"><input className={INPUT} value={f.pincode} onChange={set("pincode")} placeholder="673001" inputMode="numeric" /></Field>
         </div>
         <Field label="Towns / districts you serve" hint="travellers search by these — type one and press Enter">
-          <TagInput values={serviceAreas} onChange={setServiceAreas} placeholder="e.g. Wayanad, Kalpetta" />
+          <TagInput values={serviceAreas} onChange={(v) => { areasTouched.current = true; setServiceAreas(v); }} placeholder="e.g. Wayanad, Kalpetta" />
         </Field>
         <Field label="Will travel up to (km)" hint="optional">
           <input className={cn(INPUT, "max-w-[10rem]")} value={f.serviceRadiusKm} onChange={set("serviceRadiusKm")} placeholder="100" inputMode="numeric" />
