@@ -23,6 +23,7 @@ export default async function InvoicePage({ params }: Params) {
     where: { id: bookingId },
     include: {
       addons: true,
+      payments: { select: { amountPaise: true } },
       user: { select: { name: true, phone: true } },
       hallSlot: {
         include: {
@@ -50,6 +51,8 @@ export default async function InvoicePage({ params }: Params) {
 
   // Compute GST breakdown from stored total
   const totalPaise = booking.totalPaise;
+  const receivedPaise = booking.payments.reduce((sum, p) => sum + p.amountPaise, 0);
+  const dueAfterPaise = Math.max(0, totalPaise - (booking.discountPaise ?? 0) - receivedPaise);
 
   const invoiceNo = `VIR-${booking.id.slice(-8).toUpperCase()}`;
   const invoiceDate = booking.createdAt.toLocaleDateString("en-IN", {
@@ -183,6 +186,12 @@ export default async function InvoicePage({ params }: Params) {
             <span>Total</span>
             <span>₹{formatRupees(totalPaise)}</span>
           </div>
+          {receivedPaise > 0 && (
+            <>
+              <div className="flex justify-between text-zinc-600 pt-1"><span>Received</span><span>₹{formatRupees(receivedPaise)}</span></div>
+              <div className="flex justify-between font-semibold text-zinc-900"><span>Balance due</span><span>{dueAfterPaise > 0 ? `₹${formatRupees(dueAfterPaise)}` : "Nil"}</span></div>
+            </>
+          )}
           <div className="text-[10px] text-zinc-400 text-right">All amounts in Indian Rupees (INR)</div>
         </div>
 

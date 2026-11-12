@@ -63,7 +63,8 @@ type PendingBooking = {
 function getAmounts(b: Booking) {
   const disc = b.discountPaise ?? 0;
   const net = b.totalPaise - disc;
-  const paid = b.status === "CONFIRMED" ? net : b.status === "ADVANCE_PAID" ? (b.advancePaise ?? 0) : (b.payment?.status === "PAID" ? b.payment.amountPaise : 0);
+  // what was actually received (kept equal to the sum of the booking's payments)
+  const paid = b.status === "CONFIRMED" || b.status === "ADVANCE_PAID" ? Math.min(b.advancePaise ?? 0, net) : (b.payment?.status === "PAID" ? b.payment.amountPaise : 0);
   const balance = Math.max(0, net - paid);
   const cancelled = b.status === "CANCELLED" || b.status === "EXPIRED";
   const awaiting = b.status === "PENDING" || b.status === "APPROVED";

@@ -1,3 +1,5 @@
+import { BookingPayments } from "@/components/booking-payments";
+import { receiptNo } from "@/lib/booking-ledger";
 import { ShowS as Show } from "@/components/show-server";
 import { connection } from "next/server";
 export const instant = false;
@@ -59,6 +61,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
       user: { select: { name: true, phone: true, email: true } },
       addons: { orderBy: { name: "asc" } },
       payment: true,
+      payments: { orderBy: { createdAt: "asc" } },
       hallSlot: { include: { template: true, hall: { include: { venue: true } } } },
     },
   });
@@ -76,11 +79,6 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
   const hallPaise = booking.totalPaise - addonsPaise;
   const discountPaise = booking.discountPaise ?? 0;
   const netPaise = booking.totalPaise - discountPaise;
-  const paidPaise =
-    booking.status === "CONFIRMED" ? netPaise
-    : booking.status === "ADVANCE_PAID" ? (booking.advancePaise ?? 0)
-    : booking.payment?.status === "PAID" ? booking.payment.amountPaise : 0;
-  const balancePaise = Math.max(0, netPaise - paidPaise);
   const closed = booking.status === "CANCELLED" || booking.status === "EXPIRED";
   const tax = splitForVenue(netPaise, venue);
 
@@ -205,14 +203,14 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
         )}
       </Card>
 
-      <Card title="Payment">
-        <Row label="Paid">{closed ? "—" : <span className="text-emerald-600 dark:text-emerald-400">{rs(paidPaise)}</span>}</Row>
-        {!closed && (
-          <Row label="Balance due">
-            {balancePaise > 0 ? <span className="font-semibold text-red-500 dark:text-red-400">{rs(balancePaise)}</span> : <span className="text-emerald-600 dark:text-emerald-400">Fully paid</span>}
-          </Row>
-        )}
-        <Row label="Method">{booking.paymentMethod === "CASH" ? "Cash / offline" : "Online"}</Row>
+      <Card title="Payments">
+        <BookingPayments
+          bookingId={booking.id}
+          netPaise={netPaise}
+          closed={closed}
+          canRemove={!session.tm}
+          payments={booking.payments.map((p, i) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, paidOn: p.paidOn.toISOString().slice(0, 10), note: p.note, recordedBy: p.recordedBy, receiptNo: receiptNo(booking.id, i) }))}
+        />
       </Card>
 
       <div className="pt-1">

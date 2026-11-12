@@ -1,3 +1,4 @@
+import { todayISO } from "@/lib/booking-ledger";
 import Razorpay from "razorpay";
 import { db } from "@/lib/db";
 import { BookingStatus, PaymentStatus, SlotStatus } from "@prisma/client";
@@ -113,7 +114,8 @@ export async function handleWebhook(body: string, signature: string): Promise<vo
         orgId: slot.hall.venue.orgId,
         totalPaise,
         status: bookingStatus,
-        advancePaise: isFullPayment ? 0 : amountPaise,
+        advancePaise: amountPaise,
+        payments: { create: { orgId: slot.hall.venue.orgId, amountPaise, method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } },
         guestName,
         guestPhone,
         guestEmail,

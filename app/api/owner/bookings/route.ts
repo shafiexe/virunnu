@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 import { BookingStatus, SlotStatus } from "@prisma/client";
 import { priceAddon } from "@/lib/addons";
+import { asDay, todayISO } from "@/lib/booking-ledger";
 import { actorOf, logActivity } from "@/lib/activity";
 
 export async function GET(req: NextRequest) {
@@ -110,6 +111,7 @@ export async function POST(req: NextRequest) {
     user = await db.user.update({ where: { id: user.id }, data: { name: customerName } });
   }
 
+  const actor = await actorOf(session);
   const result = await db.$transaction(async (tx) => {
     const existing = await tx.hallSlot.findUnique({
       where: { hallId_templateId_date: { hallId, templateId, date: dateObj } },
@@ -150,6 +152,8 @@ export async function POST(req: NextRequest) {
         status: bookingStatus,
         paymentMethod: "CASH",
         addons: { create: addons },
+        // what was handed over at the time is the first entry in the booking's payments
+        ...(advPaise != null && advPaise > 0 ? { payments: { create: { orgId: session.orgId!, amountPaise: Math.min(advPaise, totalPaise), method: "CASH", paidOn: asDay(todayISO()), recordedBy: actor.label } } } : {}),
       },
     });
 

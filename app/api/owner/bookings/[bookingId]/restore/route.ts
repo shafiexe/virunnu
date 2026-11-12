@@ -33,7 +33,8 @@ export async function POST(
   }
 
   // Restore to ADVANCE_PAID if advance was collected, otherwise CONFIRMED
-  const restoreStatus = booking.advancePaise != null
+  const paid = booking.advancePaise ?? 0;
+  const restoreStatus = paid > 0 && paid < booking.totalPaise - (booking.discountPaise ?? 0)
     ? BookingStatus.ADVANCE_PAID
     : BookingStatus.CONFIRMED;
 

@@ -256,6 +256,7 @@ model Booking {
   hallSlot          HallSlot       @relation(fields: [hallSlotId], references: [id])
   payment           Payment?
   addons            BookingAddon[]
+  payments          BookingPayment[]
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 }
@@ -874,4 +875,24 @@ model ActivityLog {
   at       DateTime @default(now())
 
   @@index([orgId, at])
+}
+
+// Every rupee received against a booking: when, how much, how, and who recorded it.
+// Booking.advancePaise is kept equal to the sum of these, so everything that reads "paid so far" stays right.
+model BookingPayment {
+  id          String   @id @default(cuid())
+  bookingId   String
+  booking     Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  orgId       String
+  amountPaise Int
+  // CASH, UPI, BANK, CARD, CHEQUE or ONLINE (paid through the website)
+  method      String   @default("CASH")
+  note        String?
+  paidOn      DateTime @db.Date
+  // who on the team recorded it, shown as "by Rahim"
+  recordedBy  String?
+  createdAt   DateTime @default(now())
+
+  @@index([bookingId])
+  @@index([orgId, paidOn])
 }

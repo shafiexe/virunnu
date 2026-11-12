@@ -1,3 +1,4 @@
+import { todayISO } from "@/lib/booking-ledger";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import crypto from "crypto";
@@ -47,9 +48,10 @@ export async function POST(req: NextRequest) {
       data: {
         status: newStatus,
         razorpayPaymentId,
-        advancePaise: isFullPayment ? 0 : amountPaise,
+        advancePaise: amountPaise,
       },
     }),
+    db.bookingPayment.create({ data: { bookingId, orgId: booking.orgId, amountPaise, method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } }),
     db.hallSlot.update({
       where: { id: booking.hallSlotId },
       data: { status: "BOOKED", heldUntil: null },
