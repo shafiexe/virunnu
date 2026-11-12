@@ -51,6 +51,7 @@ test.describe("month-end report", () => {
     const { centre } = account();
     await signIn(page.context(), centre.phone, centre.password);
     await page.goto("/owner/dashboard");
+    await page.waitForLoadState("networkidle");
     await page.locator("aside").getByRole("link", { name: "Reports", exact: true }).click();
     await expect(page).toHaveURL(/\/owner\/reports/);
 

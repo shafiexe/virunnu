@@ -276,7 +276,12 @@ export async function sendRawMail(to: string, subject: string, body: string) {
   return sendMail(to, subject, body);
 }
 
-async function sendWhatsApp(to: string, body: string) {
+// Messages sent by the system itself over WhatsApp cost money per message, so they are off unless WHATSAPP_AUTO=true.
+// People send their own messages with the wa.me buttons instead. Only sign-in details (`always`) are still sent.
+export const whatsappAutoOn = () => process.env.WHATSAPP_AUTO === "true";
+
+async function sendWhatsApp(to: string, body: string, opts?: { always?: boolean }) {
+  if (!opts?.always && !whatsappAutoOn()) return;
   const client = whatsappClient();
   if (!client) { console.warn("[WhatsApp] Not configured — skipping"); return; }
   const from = process.env.TWILIO_WHATSAPP_FROM ?? "whatsapp:+14155238886";
@@ -341,7 +346,7 @@ export async function sendCredentialsWhatsApp(opts: {
     `Login: ${appUrl}/login`,
     `— Team Virunnu`,
   ].join("\n");
-  await sendWhatsApp(to, body);
+  await sendWhatsApp(to, body, { always: true });
 }
 
 // ── Notification types ────────────────────────────────────────────────────────

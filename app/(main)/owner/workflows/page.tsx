@@ -14,7 +14,7 @@ export default async function WorkflowsPage() {
       <ReadOnlyShield page="templates">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Templates</h1>
-        <p className="text-sm text-zinc-500 mt-0.5">Message templates for SMS and WhatsApp communications</p>
+        <p className="text-sm text-zinc-500 mt-0.5">Message templates for email and WhatsApp communications</p>
       </div>
       <WorkflowTemplates />
       </ReadOnlyShield>
