@@ -76,14 +76,16 @@ test.describe("photo storage", () => {
       await api.delete(`/api/owner/halls/${id}/photos/${d.id}`);
     }
 
-    // a real public photo is copied into our storage
-    const probe = await fetch("https://picsum.photos/id/10/600/400", { redirect: "follow" }).then((r) => r.ok).catch(() => false);
-    test.skip(!probe, "needs internet access");
-    const res = await api.post(`/api/owner/halls/${id}/photos`, { data: { url: "https://picsum.photos/id/10/1200/800" } });
+    // a real public photo is copied into our storage; the first of these hosts that answers is used
+    const hosts = ["https://www.python.org/static/img/python-logo.png", "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png", "https://httpbin.org/image/jpeg"];
+    let link = "";
+    for (const h of hosts) { if (await fetch(h, { signal: AbortSignal.timeout(6000) }).then((r) => r.ok && (r.headers.get("content-type") ?? "").startsWith("image/")).catch(() => false)) { link = h; break; } }
+    test.skip(!link, "needs internet access");
+    const res = await api.post(`/api/owner/halls/${id}/photos`, { data: { url: link } });
     expect(res.status()).toBe(201);
     const d = await res.json();
     expect(d.copied).toBe(true);
-    expect(d.url).not.toContain("picsum.photos");
+    expect(d.url).not.toContain(new URL(link).hostname);
     expect((await api.get(d.url)).status()).toBe(200);
     await api.delete(`/api/owner/halls/${id}/photos/${d.id}`);
   });
@@ -91,7 +93,9 @@ test.describe("photo storage", () => {
   test("the upload button on the venue page adds a photo", async ({ page }) => {
     const { centre } = account();
     await signIn(page.context(), centre.phone, centre.password);
-    await page.goto("/owner/venues");
+    // wait until the page is ready to react before choosing a file (in dev the first load can still be hydrating)
+    await page.goto("/owner/venues", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1000);
     const before = await page.locator('img[src^="/api/img/"], img[src*="blob.vercel-storage.com"]').count();
     await page.locator('input[type="file"]').first().setInputFiles("e2e/fixtures/hall.jpg");
     await expect.poll(async () => page.locator('img[src^="/api/img/"], img[src*="blob.vercel-storage.com"]').count(), { timeout: 20_000 }).toBeGreaterThan(before);
@@ -103,7 +107,8 @@ test.describe("photo storage", () => {
     const api = page.context().request;
 
     // the button on the profile page
-    await page.goto("/caterer/profile");
+    await page.goto("/caterer/profile", { waitUntil: "networkidle" });
+    await page.waitForTimeout(1000);
     await page.getByLabel("Photo file").setInputFiles("e2e/fixtures/hall.jpg");
     await expect(page.locator('img[src^="/api/img/"], img[src*="blob.vercel-storage.com"]').first()).toBeVisible({ timeout: 20_000 });
 

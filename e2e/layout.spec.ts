@@ -59,7 +59,9 @@ test.describe("tab rows stay put", () => {
       const seen: number[] = [];
       for (const p of g.pages) {
         await page.goto(`/caterer/${p}`);
-        const box = await page.locator("div.inline-flex.rounded-xl:visible").first().boundingBox();
+        const tabEl = page.locator("div.inline-flex.rounded-xl:visible").first();
+        await tabEl.waitFor();
+        const box = await tabEl.boundingBox();
         expect(box, `${p} has no tab row`).not.toBeNull();
         seen.push(Math.round(box!.x));
       }
@@ -78,7 +80,9 @@ test.describe("one page frame", () => {
   async function frame(page: import("@playwright/test").Page, path: string) {
     await page.goto(path);
     // the page's own frame is the first full-width centred container after the menu
-    const box = await page.locator("div.mx-auto.max-w-6xl.px-4:visible").first().boundingBox();
+    const frameEl = page.locator("div.mx-auto.max-w-6xl.px-4:visible").first();
+    await frameEl.waitFor();
+    const box = await frameEl.boundingBox();
     const h1 = await page.locator("h1").first().boundingBox();
     return { path, x: Math.round(box?.x ?? -1), w: Math.round(box?.width ?? -1), top: Math.round(box?.y ?? -1), h1x: Math.round(h1?.x ?? -1) };
   }
@@ -113,7 +117,9 @@ test.describe("other page frames", () => {
     const seen: string[] = [];
     for (const p of ["/admin", "/admin/owners", "/admin/caterers", "/admin/applications", `/admin/caterers/${a.catererId}`, `/admin/owners/${a.centre.orgId}`]) {
       await page.goto(p);
-      const box = await page.locator("div.mx-auto.max-w-5xl.px-4:visible").first().boundingBox();
+      const el = page.locator("div.mx-auto.max-w-5xl.px-4:visible").first();
+      await el.waitFor();
+      const box = await el.boundingBox();
       seen.push(`${Math.round(box?.x ?? -1)}:${Math.round(box?.width ?? -1)}`);
     }
     expect(new Set(seen).size, `admin frames differ: ${seen.join(" ")}`).toBe(1);
@@ -124,7 +130,9 @@ test.describe("other page frames", () => {
     const seen: string[] = [];
     for (const p of ["/", `/venues/${a.centre.venueId}`, `/caterers/${a.catererId}`, "/apply/venue", "/apply/caterer"]) {
       await page.goto(p);
-      const box = await page.locator("div.mx-auto.max-w-5xl.px-4:visible").first().boundingBox();
+      const el = page.locator("div.mx-auto.max-w-5xl.px-4:visible").first();
+      await el.waitFor();
+      const box = await el.boundingBox();
       seen.push(`${Math.round(box?.x ?? -1)}:${Math.round(box?.width ?? -1)}`);
     }
     expect(new Set(seen).size, `public frames differ: ${seen.join(" ")}`).toBe(1);
@@ -140,7 +148,9 @@ test.describe("menu and form bars", () => {
     await signIn(page.context(), a.phone, a.password);
     await page.request.post("/api/caterer/items/starter");
     await page.goto("/caterer/items");
-    const frameBox = await page.locator("div.mx-auto.max-w-6xl.px-4:visible").first().boundingBox();
+    const frameEl = page.locator("div.mx-auto.max-w-6xl.px-4:visible").first();
+    await frameEl.waitFor();
+    const frameBox = await frameEl.boundingBox();
     const sections = await page.locator("section").evaluateAll((ns) => ns.map((n) => ({ left: Math.round(n.getBoundingClientRect().left), width: Math.round(n.getBoundingClientRect().width) })));
     // one narrow column, starting at the frame's left edge like the Settings pages
     for (const s of sections) { expect(s.left).toBe(Math.round(frameBox!.x + 16)); expect(s.width).toBeLessThanOrEqual(768); }
