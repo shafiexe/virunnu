@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { fetchPageText, fetchSiteDetails, type SiteDetails } from "@/lib/fetch-page-text";
 import { lookupGooglePlace } from "@/lib/google-places";
+import { provenance, readPlaceWebsite, searchByName } from "@/lib/prefill-places";
 import { cleanList, resizeCdn, IMAGE_URL, URL_RE, resolveMapsCoords } from "@/lib/center-prefill";
 import { SERVICE_KEYS, MEAL_TYPES } from "@/services/caterer-setup.service";
 
@@ -77,6 +78,10 @@ export async function catererPrefill(rawInput: string, images: PrefillImage[] = 
   const pastedImages = allUrls.filter((u) => IMAGE_URL.test(u));
   const urls = allUrls.filter((u) => !IMAGE_URL.test(u)).slice(0, 4);
 
+  // just a name (and city) typed: find the Google listing and read its website and map link as if they had been pasted
+  const named = images.length === 0 ? await searchByName(input, urls.length > 0) : null;
+  if (named) urls.push(...named.urls.slice(0, 4));
+
   const isGoogleSearch = (u: string) => {
     try {
       const x = new URL(u);
@@ -123,7 +128,7 @@ export async function catererPrefill(rawInput: string, images: PrefillImage[] = 
     if (coords) break;
   }
 
-  const combined = [input, ...fetched.map((r) => r.text).filter(Boolean)].join("\n\n").slice(0, 14000);
+  const combined = [input, named?.text, ...fetched.map((r) => r.text).filter(Boolean)].filter(Boolean).join("\n\n").slice(0, 14000);
 
   try {
     const client = new Anthropic();
@@ -188,15 +193,19 @@ export async function catererPrefill(rawInput: string, images: PrefillImage[] = 
       .filter((e: { title?: string }) => e.title)
       .slice(0, 10);
 
-    let place = null;
-    try {
-      place = await lookupGooglePlace(
-        typeof x.name === "string" ? x.name : "",
-        [x.city].filter((v) => typeof v === "string" && v).join(" ")
-      );
-    } catch (e) {
-      console.error("Google Places lookup failed:", e);
+    let place = named?.place ?? null;
+    if (!place) {
+      try {
+        place = await lookupGooglePlace(
+          typeof x.name === "string" ? x.name : "",
+          [x.city].filter((v) => typeof v === "string" && v).join(" ")
+        );
+      } catch (e) {
+        console.error("Google Places lookup failed:", e);
+      }
     }
+    // the listing's own website, when no link to it was given
+    await readPlaceWebsite(place, urls, sites);
 
     return {
       status: 200,
@@ -227,6 +236,7 @@ export async function catererPrefill(rawInput: string, images: PrefillImage[] = 
         },
         photos: [...new Set([...pastedImages, ...sites.flatMap((d) => d.images).map(resizeCdn)])].slice(0, 20),
         unreadable,
+        sources: provenance({ x, place, mapsUrl, coordsFromLink: !!coords && !!mapsUrl, sites }),
         googlePlace: place ? { name: place.name, address: place.address } : null,
         placesConfigured: Boolean(process.env.GOOGLE_PLACES_API_KEY),
       },

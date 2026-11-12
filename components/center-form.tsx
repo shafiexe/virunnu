@@ -1,5 +1,6 @@
 "use client";
 
+import { PrefillSources, type PrefillReport } from "@/components/prefill-sources";
 import { useState } from "react";
 import { CheckCircle2, Copy, Plus, Sparkles, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -41,6 +42,13 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+// What would fill each missing detail, so the person knows which link to add
+const HINT: Record<string, string> = {
+  Name: "any link, or type it", Phone: "the Google details, or the website's contact page", Email: "the website's contact page or footer",
+  Address: "the Google details", City: "the Google details", Capacity: "the website, or paste the brochure text", "Price per slot": "paste the price list text",
+  "Google rating": "the Google details (the rating is in the panel)", Photos: "your website or Instagram page",
+};
+
 export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose?: () => void }) {
   const isAdmin = mode === "admin";
   const [venueType, setVenueType] = useState<VenueTypeKey>("CONVENTION_CENTER");
@@ -65,6 +73,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
   const [aiText, setAiText] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [aiNote, setAiNote] = useState<{ ok: boolean; text: string } | null>(null);
+  const [aiReport, setAiReport] = useState<PrefillReport | null>(null);
   const [checked, setChecked] = useState(false);
 
   const set = (k: keyof typeof EMPTY) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -113,6 +122,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
     if (aiLoading) return;
     setAiLoading(true);
     setAiNote(null);
+    setAiReport(null);
     try {
       const res = await fetch(isAdmin ? "/api/admin/ai-center-prefill" : "/api/apply/ai-prefill", {
         method: "POST",
@@ -172,6 +182,23 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
       const skipped = unreadable.length
         ? ` Couldn't read ${unreadable.map((u) => u.replace(/^https?:\/\/(www\.)?/, "").slice(0, 40)).join(", ")} — open it, select all (Cmd/Ctrl+A), copy, and paste the text here instead.`
         : "";
+      const labels: Partial<Record<keyof typeof EMPTY, string>> = {
+        name: "Name", phone: "Phone", email: "Email", address: "Address", city: "City", pincode: "Pincode", googleMapsUrl: "Map link", lat: "Map pin",
+        googleRating: "Google rating", websiteUrl: "Website", instagramUrl: "Instagram", facebookUrl: "Facebook", youtubeUrl: "YouTube", hallName: "Hall name", capacity: "Capacity", priceRupees: "Price per slot",
+      };
+      const src = (data.sources ?? {}) as Record<string, "google" | "website" | "text" | "ai">;
+      const filledLabels: { label: string; from?: "google" | "website" | "text" | "ai" }[] = map
+        .filter(([k, v]) => str(v) !== undefined && labels[k] && labels[k] !== "Map pin")
+        .map(([k]) => ({ label: labels[k] as string, from: src[k as string] }));
+      if (found.length) filledLabels.push({ label: `${found.length} amenities`, from: "text" });
+      if (Array.isArray(x.slots) && x.slots.length) filledLabels.push({ label: "Slot timings", from: "text" });
+      const wanted = [...missing, ...(!next.googleRating ? ["Google rating"] : []), ...(!pics.length ? ["Photos"] : [])];
+      setAiReport({
+        filled: filledLabels,
+        missing: wanted.map((label) => ({ label, hint: HINT[label] ?? "paste the details" })),
+        unreadable, photos: pics.length, descriptionWritten: typeof x.description === "string" && !!x.description.trim(),
+        googleNote: gp ? `Rating and map pin came from Google: “${gp.name}”${gp.address ? `, ${gp.address}` : ""}. Check it is the right place.` : undefined,
+      });
       setAiNote(
         missing.length
           ? { ok: false, text: `Filled ${filled} fields. Still needed: ${missing.join(", ")}.${googleNote}${skipped}` }
@@ -305,32 +332,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
         </div>
       )}
 
-      <div className="rounded-xl border border-amber-200 dark:border-amber-800/50 bg-white dark:bg-zinc-900 p-4 space-y-3">
-        <div className="flex items-center gap-2 text-sm font-semibold text-zinc-900 dark:text-zinc-50">
-          <Sparkles className="h-4 w-4 text-amber-500" /> Fill with AI
-          {!isAdmin && <span className="text-xs font-normal text-zinc-400">— paste your website or Google Maps link and we'll fill in what we can</span>}
-        </div>
-        <textarea
-          value={aiText}
-          onChange={(e) => setAiText(e.target.value)}
-          rows={4}
-          placeholder="Paste links (website, Google Maps, Instagram, Facebook) and/or text. Google search results can’t be opened from a link — on that page, select the info panel (address, phone, rating) and paste the text here, and right-click “Directions” → Copy link address and paste that too (it becomes the Maps link)."
-          className={cn(INPUT, "resize-y")}
-        />
-        <div className="flex items-center gap-3 flex-wrap">
-          <button
-            type="button"
-            onClick={fillWithAi}
-            disabled={aiLoading || aiText.trim().length < 5}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            <Sparkles className="h-3.5 w-3.5" /> {aiLoading ? "Reading…" : "Fill form"}
-          </button>
-          {aiNote && (
-            <span className={cn("text-xs", aiNote.ok ? "text-emerald-600" : "text-amber-600")}>{aiNote.text}</span>
-          )}
-        </div>
-      </div>
+      <PrefillSources kind="center" onChange={setAiText} onFill={fillWithAi} loading={aiLoading} note={aiNote} report={aiReport} />
 
       <Section title="Basics">
         <Field label="Type of space">
