@@ -81,3 +81,17 @@ openssl rand -base64 32
 ```
 
 Put the result in `.env` as `SESSION_SECRET`.
+
+## Running it for real (ops notes)
+
+**Browser tests.** With `pnpm dev` running, `pnpm e2e` signs in, creates an order, records a payment, checks team-login limits and the phone contact bar in a real browser. It makes its own throwaway catering account (a reserved `example.com` address, so no welcome email or WhatsApp is sent) and deletes it afterwards. Needs `ADMIN_USERNAME` / `ADMIN_PASSWORD` in `.env`.
+
+**Migrations on Neon.** The app uses the pooled `DATABASE_URL`. For migrations, add `DIRECT_URL` (the non-pooled Neon address) in Vercel; `prisma.config.ts` uses it when present, which avoids the advisory-lock timeout. `PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK=1` is the fallback if you only have the pooled address.
+
+**Health check.** `GET /api/health` returns 200 `{ok:true}` when the database answers, 503 otherwise. Point an uptime monitor (UptimeRobot, Better Stack, free tiers) at it and have it alert you by email or WhatsApp.
+
+**Backups.** Neon keeps point-in-time history (length depends on the plan). Before any risky migration, create a Neon branch from the main branch; it is an instant, restorable copy. Photos still live on local disk, not in the database; they are not covered by Neon backups.
+
+**Daily summary.** Vercel Cron calls `/api/cron/daily-summary` with `CRON_SECRET`. After the first deploy, check Vercel → Project → Cron Jobs → Logs once to confirm it ran and a summary arrived.
+
+**Errors.** Vercel → Logs shows server errors. For alerts when something breaks, add an error tracker such as Sentry (free tier) later.

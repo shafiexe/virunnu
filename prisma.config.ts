@@ -21,6 +21,7 @@ loadDotEnv();
 export default defineConfig({
   schema: "./prisma/schema.prisma",
   datasource: {
-    url: process.env.DATABASE_URL!,
+    // Migrations use the direct (non-pooled) Neon address when DIRECT_URL is set; the app itself keeps using the pooled DATABASE_URL
+    url: (process.env.DIRECT_URL || process.env.DATABASE_URL)!,
   },
 });
