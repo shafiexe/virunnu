@@ -46,7 +46,7 @@ export default async function CatererPurchasesPage({ searchParams }: { searchPar
   const link = (extra: string) => `/caterer/purchases?month=${month}${extra}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-5">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Purchases</h1>

@@ -26,7 +26,7 @@ export default async function OwnerEnquiriesPage({ searchParams }: { searchParam
   ];
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-4xl space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Enquiries</h1>
         <p className="mt-0.5 text-sm text-zinc-500">Customers who asked to book a date. When you approve one, it moves to Bookings and Customers. The date is held for them until you decide.</p>

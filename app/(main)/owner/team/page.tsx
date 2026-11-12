@@ -19,7 +19,7 @@ export default async function OwnerTeamPage() {
   ]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-5">
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Team logins</h1>
         <p className="text-sm text-zinc-500 mt-0.5">Give people their own login. Each sees every page until you hide some. Only you can add or change logins.</p>

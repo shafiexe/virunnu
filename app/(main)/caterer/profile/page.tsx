@@ -23,7 +23,7 @@ export default async function CatererProfilePage() {
   const top = await db.catererBill.aggregate({ where: { catererId: caterer.id }, _max: { number: true } });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-6">
       <ReadOnlyShield page="profile">
       {/* Header */}
       <div className="flex items-start justify-between gap-4">

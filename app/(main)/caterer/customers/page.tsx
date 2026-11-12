@@ -19,7 +19,7 @@ export default async function CatererCustomersPage({ searchParams }: { searchPar
   const paged = await customerPage(ctx.caterer.id, { search, dueOnly, ...parsePaging(sp) });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 space-y-4">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-4">
       <CatererSectionTabs tabs={partyTabs()} active="customers" />
       <CatererCustomersTable
         customers={hidesFor(ctx.session.deny, "phones") ? paged.rows.map((r) => ({ ...r, phone: "" })) : paged.rows} totalCustomers={paged.totalCustomers} totalDuePaise={paged.totalDuePaise}

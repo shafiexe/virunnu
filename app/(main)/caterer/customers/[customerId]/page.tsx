@@ -79,7 +79,7 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
     );
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-4xl space-y-5">
       <BackToList href="/caterer/customers" label="Back to customers" />
 
       <div className="flex items-start justify-between gap-3 flex-wrap">

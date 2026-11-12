@@ -55,7 +55,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
   const unassignedFood = allLines.filter((l) => !l.servingId && l.group === "FOOD");
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-4xl space-y-5">
       <BackToList href="/caterer/orders" label="Back to orders" />
 
       <div className="flex items-start justify-between gap-3 flex-wrap">

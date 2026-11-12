@@ -30,7 +30,7 @@ export default async function EditQuotePage({ params }: { params: Promise<{ quot
   const gst = q.gst as unknown as QuoteGst;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-5">
       <BackToList href={`/caterer/quotes/${q.id}`} label="Back to quotation" />
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Edit quotation — {d.customerName}</h1>
       <CatererOrderForm quote={{ id: q.id, validUntil: q.validUntil?.toISOString().slice(0, 10) ?? "" }} people={[]} catalog={items as PriceItem[]} initial={initial} gstRates={gst} />

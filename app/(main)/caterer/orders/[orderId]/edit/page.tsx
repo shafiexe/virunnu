@@ -25,7 +25,7 @@ export default async function EditOrderPage({ params }: { params: Promise<{ orde
   const gstRates = { FOOD: billGst.FOOD ?? gstFor(ctx.caterer, "FOOD"), SERVICE: billGst.SERVICE ?? gstFor(ctx.caterer, "SERVICE") };
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-5">
       <BackToList href={`/caterer/orders/${initial.id}`} label="Back to order" />
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Edit order — {initial.customerName}</h1>
       <CatererOrderForm people={people.map((e) => ({ id: e.id, name: e.name, role: e.role, payType: (e.payType === "DAILY" ? "DAILY" : "MONTHLY") as "DAILY" | "MONTHLY", ratePaise: (e.payType === "DAILY" ? e.dailyRatePaise : e.salaryPaise) ?? 0 }))} catalog={items as PriceItem[]} initial={initial} gstRates={gstRates} />

@@ -49,7 +49,7 @@ export default async function SupplierLedgerPage({ params, searchParams }: { par
   const overdue = due > 0 && CYCLE_DAYS[cycle] > 0 && waitDays > CYCLE_DAYS[cycle];
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-4xl space-y-5">
       <BackToList href="/caterer/suppliers" label="Back to suppliers" />
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>

@@ -94,7 +94,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
   const ref = booking.id.slice(-10).toUpperCase();
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 space-y-5">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 [&>*]:max-w-3xl space-y-5">
       <BackToList href="/owner/bookings" label="Back to bookings" />
 
       {/* Header */}

@@ -20,7 +20,7 @@ export default async function CatererEnquiriesPage() {
   if (!caterer) redirect("/caterer/onboarding");
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 space-y-6">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 space-y-6">
       <CatererSectionTabs tabs={orderTabs(caterer.enquiries.filter((e) => e.status === "PENDING").length)} active="enquiries" />
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Enquiries</h1>
       <CatererEnquiriesTab

@@ -23,6 +23,9 @@
   --foreground: #ededed;
 }
 
+/* reserve the scrollbar's space, so a page with a scrollbar and one without are the same width */
+html { scrollbar-gutter: stable; }
+
 body {
   background: var(--background);
   color: var(--foreground);
