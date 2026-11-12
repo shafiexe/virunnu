@@ -59,7 +59,7 @@ const RULES: Rule[] = [
   [/^\/caterer\/suppliers/, ["parties", "parties.suppliers"]], [/^\/api\/caterer\/suppliers/, ["parties", "parties.suppliers"]],
   [/^\/caterer\/staff/, ["parties", "parties.staff"]], [/^\/api\/caterer\/staff/, ["parties", "parties.staff"]],
   [/^\/caterer\/items/, ["menu"]], [/^\/api\/caterer\/(items|menu)/, ["menu"]],
-  [/^\/caterer\/profile/, ["profile"]], [/^\/api\/caterer\/invoice-settings/, ["profile"]], [/^\/api\/owner\/logo/, ["profile"]],
+  [/^\/caterer\/profile/, ["profile"]], [/^\/api\/caterer\/photos/, ["profile"]], [/^\/api\/caterer\/invoice-settings/, ["profile"]], [/^\/api\/owner\/logo/, ["profile"]],
   [/^\/caterer\/messages/, ["messages"]], [/^\/api\/caterer\/(summary|summary-settings|message-templates)/, ["messages"]],
   [/^\/api\/caterer\/followup-settings/, ["parties", "parties.followup"]],
 ];

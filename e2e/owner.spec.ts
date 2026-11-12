@@ -56,7 +56,7 @@ test.describe("enquiries tab", () => {
     await c.getByPlaceholder("Mohammed Shafi").fill("Browser Requester");
     await c.getByPlaceholder("+91 98765 43210").fill("9000000321");
     await c.getByRole("button", { name: /Send booking request/ }).click();
-    await expect(c.getByText(/request/i).first()).toBeVisible();
+    await expect(c.getByText("Contact request sent")).toBeVisible();
     await phoneCtx.close();
 
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });

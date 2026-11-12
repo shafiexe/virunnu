@@ -3,7 +3,7 @@ import { account, signIn } from "./helpers";
 
 // No page may scroll sideways on a phone, and no page may fail to load
 const CATERER = ["dashboard", "calendar", "orders", "orders/new", "quotes", "customers", "items", "expenses", "purchases", "suppliers", "staff", "daybook", "reports", "followup", "messages", "enquiries", "profile", "team"].map((p) => `/caterer/${p}`);
-const OWNER = ["dashboard", "calendar", "enquiries", "bookings", "customers", "expenses", "venues", "workflows", "team", "activity"].map((p) => `/owner/${p}`);
+const OWNER = ["dashboard", "calendar", "enquiries", "bookings", "customers", "expenses", "reports", "venues", "workflows", "team", "activity"].map((p) => `/owner/${p}`);
 
 async function sidewaysScroll(page: import("@playwright/test").Page) {
   return page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
