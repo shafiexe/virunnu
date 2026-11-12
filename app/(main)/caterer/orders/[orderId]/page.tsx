@@ -47,7 +47,7 @@ export default async function CatererOrderPage({ params }: { params: Promise<{ o
     id: b.id, type: b.type, number: b.number, shareToken: b.shareToken, createdAt: b.createdAt.toISOString(),
     subtotalPaise: b.subtotalPaise, discountPaise: b.discountPaise, taxPaise: b.taxPaise, gstRateBp: b.gstRateBp, gstInclusive: b.gstInclusive, gstPaise: b.gstPaise, discountReason: b.discountReason, receivedPaise: b.receivedPaise,
     lines: b.lines.map((l) => ({ id: l.id, name: l.name, unit: l.unit, quantity: l.quantity, ratePaise: l.ratePaise, amountPaise: l.amountPaise })),
-    payments: b.payments.map((p) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, note: p.note, paidOn: p.paidOn.toISOString(), recordedBy: p.recordedBy })),
+    payments: b.payments.map((p) => ({ id: p.id, amountPaise: p.amountPaise, method: p.method, note: p.note, paidOn: p.paidOn.toISOString(), recordedBy: p.recordedBy, shareToken: p.shareToken })),
   }));
 
   // Kitchen view: what goes out at each serve time

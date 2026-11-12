@@ -52,8 +52,11 @@ export async function loadReceipt(where: Prisma.BookingPaymentWhereInput) {
     id: payment.id, bookingId: booking.id, shareToken: payment.shareToken, link,
     no, method, note: payment.note, amountPaise: payment.amountPaise, paidOn: long(payment.paidOn),
     customerName, customerPhone,
-    business: venue.org?.name ?? venue.name, venueName: venue.name, address: `${venue.address}${venue.city ? `, ${venue.city}` : ""}`,
-    hallName: slot.hall.name, eventDay, slotLabel: `${slot.template.name} (${slot.template.startTime}–${slot.template.endTime})`, bookingRef: booking.id.slice(-10).toUpperCase(),
+    business: venue.org?.name ?? venue.name, address: `${venue.address}${venue.city ? `, ${venue.city}` : ""}`,
+    // what the payment is towards, in two lines, so a venue and a caterer can use the same receipt
+    towardsTitle: `${slot.hall.name}, ${venue.name}`,
+    towardsLine: `${eventDay} · ${slot.template.name} (${slot.template.startTime}–${slot.template.endTime}) · Booking ${booking.id.slice(-10).toUpperCase()}`,
+    thanksName: venue.name,
     netPaise: net, paidPaise: paidUpToNow, balancePaise: balanceAfter,
     logoUrl: await orgLogoUrl(venue.orgId),
     // the message the owner sends with the link

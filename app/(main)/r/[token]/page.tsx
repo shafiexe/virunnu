@@ -3,6 +3,7 @@ export const instant = false;
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { loadReceipt } from "@/lib/booking-receipt";
+import { loadCatererReceipt } from "@/lib/caterer-receipt";
 import { ReceiptView } from "@/components/receipt-view";
 import { PrintButton } from "@/components/print-button";
 
@@ -15,7 +16,8 @@ export default async function PublicReceiptPage({ params }: { params: Promise<{ 
   const { token } = await params;
   // tokens are long random strings; anything else is not worth a database look-up
   if (!/^[a-z0-9]{20,80}$/i.test(token)) notFound();
-  const r = await loadReceipt({ shareToken: token });
+  // a token belongs to either a convention-centre payment or a caterer's; they are random, so they never clash
+  const r = (await loadReceipt({ shareToken: token })) ?? (await loadCatererReceipt({ shareToken: token }));
   if (!r) notFound();
 
   return (

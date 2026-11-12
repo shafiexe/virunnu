@@ -1,3 +1,4 @@
+import { BookingCaterer } from "@/components/booking-caterer";
 import { BookingPayments } from "@/components/booking-payments";
 import { METHOD_LABEL, receiptNo } from "@/lib/booking-ledger";
 import { long, receiptMessage } from "@/lib/booking-receipt";
@@ -64,6 +65,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
       addons: { orderBy: { name: "asc" } },
       payment: true,
       payments: { orderBy: { createdAt: "asc" } },
+      caterer: { select: { id: true, name: true, city: true, phone: true, whatsappNumber: true } },
       hallSlot: { include: { template: true, hall: { include: { venue: true } } } },
     },
   });
@@ -81,6 +83,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
   const hallPaise = booking.totalPaise - addonsPaise;
   const discountPaise = booking.discountPaise ?? 0;
   const netPaise = booking.totalPaise - discountPaise;
+  const catererEnquiry = booking.catererEnquiryId ? await db.cateringEnquiry.findUnique({ where: { id: booking.catererEnquiryId }, select: { status: true } }) : null;
   const phoneDigits = session.deny?.includes("hide.phones") ? "" : customer.phone.replace(/\D/g, "").slice(-10);
   const closed = booking.status === "CANCELLED" || booking.status === "EXPIRED" || booking.status === "REJECTED";
   const tax = splitForVenue(netPaise, venue);
@@ -204,6 +207,16 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
             Includes GST: {rs(tax.gstPaise)} (CGST {tax.rate}% {rs(tax.cgstPaise)} + SGST {tax.rate}% {rs(tax.sgstPaise)}) on a base of {rs(tax.basePaise)}.
           </p>
         )}
+      </Card>
+
+      <Card title="Caterer">
+        <BookingCaterer
+          bookingId={booking.id}
+          closed={closed}
+          canShare={!session.deny?.includes("hide.phones")}
+          caterer={booking.caterer ? { id: booking.caterer.id, name: booking.caterer.name, city: booking.caterer.city, phone: booking.caterer.phone, whatsapp: booking.caterer.whatsappNumber } : null}
+          sent={booking.catererEnquiryId ? { status: catererEnquiry?.status ?? "PENDING" } : null}
+        />
       </Card>
 
       <Card title="Payments">

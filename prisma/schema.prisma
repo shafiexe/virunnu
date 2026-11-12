@@ -233,32 +233,36 @@ enum SlotStatus {
 }
 
 model Booking {
-  id                String         @id @default(cuid())
-  status            BookingStatus  @default(PENDING)
+  id                String           @id @default(cuid())
+  status            BookingStatus    @default(PENDING)
   totalPaise        Int
   advancePaise      Int?
   cancelReason      String?
-  discountPaise     Int            @default(0)
+  discountPaise     Int              @default(0)
   discountReason    String?
-  refundPaise       Int            @default(0)
+  refundPaise       Int              @default(0)
   refundNote        String?
   guestName         String?
   guestPhone        String?
   guestEmail        String?
   guestAddress      String?
-  razorpayOrderId   String?        @unique
-  razorpayPaymentId String?        @unique
-  paymentMethod     PaymentMethod  @default(ONLINE)
+  razorpayOrderId   String?          @unique
+  razorpayPaymentId String?          @unique
+  paymentMethod     PaymentMethod    @default(ONLINE)
   orgId             String
   userId            String?
-  user              User?          @relation(fields: [userId], references: [id])
+  user              User?            @relation(fields: [userId], references: [id])
   hallSlotId        String
-  hallSlot          HallSlot       @relation(fields: [hallSlotId], references: [id])
+  hallSlot          HallSlot         @relation(fields: [hallSlotId], references: [id])
   payment           Payment?
   addons            BookingAddon[]
   payments          BookingPayment[]
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
+  // the caterer the venue linked to this booking, and the enquiry sent to them (so the venue can see if they replied)
+  catererId         String?
+  caterer           Caterer?         @relation("HallBookingCaterer", fields: [catererId], references: [id], onDelete: SetNull)
+  catererEnquiryId  String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 }
 
 enum PaymentMethod {
@@ -310,6 +314,7 @@ model Caterer {
   org                 Organization?         @relation(fields: [orgId], references: [id])
   menuItems           MenuItem[]
   enquiries           CateringEnquiry[]
+  hallBookings        Booking[]             @relation("HallBookingCaterer")
   // contact & social
   whatsappNumber      String?
   email               String?
@@ -694,6 +699,8 @@ model CatererPayment {
 
   // who on the team recorded it, shown as "by Rahim"
   recordedBy String?
+  // the customer's receipt link (/r/<token>); anyone holding it can read that one receipt
+  shareToken String  @unique @default(cuid())
 
   @@index([billId])
   @@index([paidOn])

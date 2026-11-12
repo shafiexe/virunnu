@@ -31,8 +31,8 @@ export function ReceiptView({ r }: { r: NonNullable<ReceiptData> }) {
       </div>
 
       <div className="text-xs text-zinc-500 mb-1">Towards the booking of</div>
-      <div className="text-sm font-semibold">{r.hallName}, {r.venueName}</div>
-      <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">{r.eventDay} · {r.slotLabel} · Booking {r.bookingRef}</div>
+      <div className="text-sm font-semibold">{r.towardsTitle}</div>
+      <div className="text-sm text-zinc-600 dark:text-zinc-400 mb-6">{r.towardsLine}</div>
 
       <div className="ml-auto max-w-xs space-y-1 text-sm">
         <div className="flex justify-between text-zinc-600 dark:text-zinc-400"><span>Booking total</span><span>₹{formatRupees(r.netPaise)}</span></div>
@@ -41,7 +41,7 @@ export function ReceiptView({ r }: { r: NonNullable<ReceiptData> }) {
       </div>
 
       <div className="mt-12 pt-5 border-t border-zinc-200 dark:border-zinc-700 text-xs text-zinc-400">
-        <p>This is a computer-generated receipt. Thank you for choosing {r.venueName}.</p>
+        <p>This is a computer-generated receipt. Thank you for choosing {r.thanksName}.</p>
       </div>
     </div>
   );
