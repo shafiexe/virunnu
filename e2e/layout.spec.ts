@@ -41,3 +41,28 @@ test.describe("phone layout", () => {
     }
   });
 });
+
+// Switching tabs must not make the page shrink or grow: the tab row stays exactly where it was
+test.describe("tab rows stay put", () => {
+  test.use({ viewport: { width: 1440, height: 800 } });
+
+  const GROUPS: { name: string; pages: string[] }[] = [
+    { name: "Parties", pages: ["customers", "followup", "suppliers", "staff"] },
+    { name: "Orders", pages: ["orders", "enquiries", "quotes"] },
+  ];
+
+  for (const g of GROUPS) {
+    test(`${g.name} tabs`, async ({ page }) => {
+      const a = account();
+      await signIn(page.context(), a.phone, a.password);
+      const seen: number[] = [];
+      for (const p of g.pages) {
+        await page.goto(`/caterer/${p}`);
+        const box = await page.locator("div.inline-flex.rounded-xl:visible").first().boundingBox();
+        expect(box, `${p} has no tab row`).not.toBeNull();
+        seen.push(Math.round(box!.x));
+      }
+      expect(new Set(seen).size, `tab row moves between ${g.pages.join(", ")}: ${seen.join(", ")}`).toBe(1);
+    });
+  }
+});
