@@ -2,7 +2,7 @@ import { connection } from "next/server";
 export const instant = false;
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
-import { OwnerSidebar, OwnerTopTabs } from "@/components/owner-sidebar";
+import { OwnerSidebar, OwnerTopTabs, OwnerSettingsTabs } from "@/components/owner-sidebar";
 import { db } from "@/lib/db";
 import { orgLogoUrl } from "@/lib/org-logo";
 import { canOpenOwner } from "@/lib/owner-access";
@@ -26,6 +26,7 @@ export default async function OwnerLayout({ children }: { children: React.ReactN
         <OwnerSidebar logoUrl={logoUrl} name={org?.name} deny={session.deny} mainOwner={!session.tm} waiting={waiting} />
         <div className="flex-1 flex flex-col min-w-0">
           <OwnerTopTabs deny={session.deny} mainOwner={!session.tm} waiting={waiting} />
+          <OwnerSettingsTabs deny={session.deny} mainOwner={!session.tm} />
           <div className="flex-1">{children}</div>
         </div>
       </div>

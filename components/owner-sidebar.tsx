@@ -1,30 +1,47 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, CalendarCheck,
-  Users2, Inbox, Building2, Workflow, ChevronRight, Receipt, ShieldCheck, History,
+  Users2, Inbox, Settings, ChevronRight, Receipt,
 } from "lucide-react";
 import { CatererQuickFind } from "@/components/caterer-quick-find";
 import { OwnerNewMenu } from "@/components/owner-new-menu";
 import { canOpenOwner } from "@/lib/owner-access";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+// Settings gathers the set-up pages that are not daily work; each keeps its own address
+export const SETTINGS_TABS = [
+  { href: "/owner/venues", label: "Venue", also: ["/owner/facilities"], mainOwnerOnly: false },
+  { href: "/owner/workflows", label: "Templates", also: [], mainOwnerOnly: false },
+  { href: "/owner/team", label: "Team logins", also: [], mainOwnerOnly: true },
+  { href: "/owner/activity", label: "Activity", also: [], mainOwnerOnly: true },
+];
+
+export const settingsTabsFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>
+  SETTINGS_TABS.filter((t) => (mainOwner || !t.mainOwnerOnly) && canOpenOwner(deny, t.href));
+
+export const inSettings = (pathname: string) => SETTINGS_TABS.some((t) => [t.href, ...t.also].some((h) => pathname === h || pathname.startsWith(h + "/")));
+
+type NavItem = { href: string; icon: typeof Settings; label: string; settings?: boolean };
+const NAV: NavItem[] = [
   { href: "/owner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/owner/calendar", icon: CalendarDays, label: "Calendar" },
   { href: "/owner/enquiries", icon: Inbox, label: "Enquiries" },
   { href: "/owner/bookings", icon: CalendarCheck, label: "Bookings" },
   { href: "/owner/customers", icon: Users2, label: "Customers" },
-  { href: "/owner/venues", icon: Building2, label: "Venue Profile" },
   { href: "/owner/expenses", icon: Receipt, label: "Expenses" },
-  { href: "/owner/workflows", icon: Workflow, label: "Templates" },
 ];
 
-// What this person sees: items hidden from them are left out, and only the main owner gets Team logins
-const navFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>
-  [...NAV, ...(mainOwner ? [{ href: "/owner/team", icon: ShieldCheck, label: "Team logins" }, { href: "/owner/activity", icon: History, label: "Activity" }] : [])].filter((i) => canOpenOwner(deny, i.href));
+// What this person sees: items hidden from them are left out; Settings opens on the first set-up page they may use
+const navFor = (deny: readonly string[] | undefined, mainOwner: boolean): NavItem[] => {
+  const first = settingsTabsFor(deny, mainOwner)[0];
+  return [...NAV.filter((i) => canOpenOwner(deny, i.href)), ...(first ? [{ href: first.href, icon: Settings, label: "Settings", settings: true }] : [])];
+};
+
+const isActive = (pathname: string, item: NavItem) => (item.settings ? inSettings(pathname) : pathname === item.href || pathname.startsWith(item.href + "/"));
 
 export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true, waiting = 0 }: { logoUrl?: string | null; name?: string; deny?: string[]; mainOwner?: boolean; waiting?: number }) {
   const pathname = usePathname();
@@ -42,8 +59,9 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true, waiting = 
       </div>
       <CatererQuickFind variant="sidebar" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
       <OwnerNewMenu variant="sidebar" deny={deny} />
-      {navFor(deny, mainOwner).map(({ href, icon: Icon, label }) => {
-        const active = pathname === href || pathname.startsWith(href + "/");
+      {navFor(deny, mainOwner).map((item) => {
+        const { href, icon: Icon, label } = item;
+        const active = isActive(pathname, item);
         return (
           <Link
             key={href}
@@ -68,16 +86,20 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true, waiting = 
 
 export function OwnerTopTabs({ deny, mainOwner = true, waiting = 0 }: { deny?: string[]; mainOwner?: boolean; waiting?: number }) {
   const pathname = usePathname();
+  // keep the current tab in view when the row is wider than the phone
+  useEffect(() => { document.querySelector("[data-owner-tab-active]")?.scrollIntoView({ inline: "center", block: "nearest" }); }, [pathname]);
   return (
     <nav className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-x-auto">
       <div className="flex min-w-max px-2">
         <CatererQuickFind variant="icon" endpoint="/api/owner/find" placeholder="Customer name or phone…" hint={<>Type a customer's name or phone number to jump to them and their bookings.</>} />
-        {navFor(deny, mainOwner).map(({ href, icon: Icon, label }) => {
-          const active = pathname === href || pathname.startsWith(href + "/");
+        {navFor(deny, mainOwner).map((item) => {
+          const { href, icon: Icon, label } = item;
+          const active = isActive(pathname, item);
           return (
             <Link
               key={href}
               href={href}
+              data-owner-tab-active={active ? "" : undefined}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-3 text-xs font-semibold border-b-2 transition-colors whitespace-nowrap",
                 active
@@ -88,6 +110,29 @@ export function OwnerTopTabs({ deny, mainOwner = true, waiting = 0 }: { deny?: s
               <Icon className="h-3.5 w-3.5" />
               {label}
               {href === "/owner/enquiries" && waiting > 0 && <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">{waiting}</span>}
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
+
+// The row of set-up pages, shown on top of each of them
+export function OwnerSettingsTabs({ deny, mainOwner = true }: { deny?: string[]; mainOwner?: boolean }) {
+  const pathname = usePathname();
+  if (!inSettings(pathname)) return null;
+  const tabs = settingsTabsFor(deny, mainOwner);
+  if (tabs.length < 2) return null;
+  return (
+    <nav aria-label="Settings" className="w-full border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/60 overflow-x-auto">
+      <div className="flex min-w-max gap-1.5 px-4 py-2.5">
+        {tabs.map((t) => {
+          const active = [t.href, ...t.also].some((h) => pathname === h || pathname.startsWith(h + "/"));
+          return (
+            <Link key={t.href} href={t.href} aria-current={active ? "page" : undefined}
+              className={cn("whitespace-nowrap rounded-xl px-3.5 py-1.5 text-sm font-medium transition-colors", active ? "bg-amber-500 text-white" : "text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-800")}>
+              {t.label}
             </Link>
           );
         })}

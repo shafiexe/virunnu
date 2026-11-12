@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2, CalendarCheck } from "lucide-react";
+import { LayoutDashboard, UtensilsCrossed, Shield, CalendarDays, Users2, CalendarCheck, Inbox, Settings } from "lucide-react";
+import { inSettings, settingsTabsFor } from "@/components/owner-sidebar";
 import { canOpen } from "@/lib/caterer-access";
 import { canOpenOwner } from "@/lib/owner-access";
 import { cn } from "@/lib/utils";
@@ -13,6 +14,7 @@ type Session = { role: string; deny?: string[] } | null;
 export function BottomNav() {
   const [session, setSession] = useState<Session | undefined>(undefined);
   const pathname = usePathname();
+  const [waiting, setWaiting] = useState(0);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -21,6 +23,13 @@ export function BottomNav() {
       .catch(() => setSession(null));
   }, []);
 
+  // the count on Enquiries is refreshed on every page change, so approving a request clears it
+  const isOwner = session?.role === "OWNER";
+  useEffect(() => {
+    if (!isOwner) return;
+    fetch("/api/owner/waiting").then((r) => r.json()).then((d) => setWaiting(d.count ?? 0)).catch(() => {});
+  }, [isOwner, pathname]);
+
   if (session === undefined) return null;
 
   const role = session?.role;
@@ -28,13 +37,15 @@ export function BottomNav() {
   // Guests, customers and admins use the top header — no bottom nav needed.
   if (!role || role === "CUSTOMER" || role === "ADMIN") return null;
 
-  const links =
+  const links: { href: string; icon: typeof Users2; label: string; settings?: boolean }[] =
     role === "OWNER"
       ? [
           { href: "/owner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
           { href: "/owner/calendar", icon: CalendarDays, label: "Calendar" },
+          { href: "/owner/enquiries", icon: Inbox, label: "Enquiries" },
           { href: "/owner/bookings", icon: CalendarCheck, label: "Bookings" },
-          { href: "/owner/customers", icon: Users2, label: "Customers" },
+          // Settings opens on the first set-up page this person may use
+          { href: settingsTabsFor(session?.deny, !(session as { tm?: boolean } | null)?.tm)[0]?.href ?? "/owner/venues", icon: Settings, label: "Settings", settings: true },
         ]
       : role === "CATERER"
       ? [
@@ -48,13 +59,13 @@ export function BottomNav() {
           { href: "/admin", icon: Shield, label: "Admin" },
         ]
       : [];
-  const shown = links.filter((l) => (role === "CATERER" ? canOpen(session?.deny, l.href) : role === "OWNER" ? canOpenOwner(session?.deny, l.href) : true));
+  const shown = links.filter((l) => (role === "CATERER" ? canOpen(session?.deny, l.href) : role === "OWNER" ? (l.settings ? settingsTabsFor(session?.deny, !(session as { tm?: boolean } | null)?.tm).length > 0 : canOpenOwner(session?.deny, l.href)) : true));
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-50 border-t border-zinc-100 dark:border-zinc-800 bg-white/98 dark:bg-zinc-900/98 backdrop-blur-md md:hidden" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="flex items-stretch h-16">
-        {shown.map(({ href, icon: Icon, label }) => {
-          const active = pathname === href || (href !== "/" && pathname.startsWith(href));
+        {shown.map(({ href, icon: Icon, label, settings }) => {
+          const active = settings ? inSettings(pathname) : pathname === href || (href !== "/" && pathname.startsWith(href));
           return (
             <Link
               key={href}
@@ -74,6 +85,7 @@ export function BottomNav() {
                 active ? "bg-amber-50 dark:bg-amber-950/40" : ""
               )}>
                 <Icon className={cn("h-5 w-5", active && "stroke-[2.5px]")} />
+                {href === "/owner/enquiries" && waiting > 0 && <span className="absolute top-1.5 left-1/2 ml-2 min-w-4 rounded-full bg-amber-500 px-1 text-center text-[9px] font-bold leading-4 text-white">{waiting}</span>}
               </div>
               {label}
             </Link>
