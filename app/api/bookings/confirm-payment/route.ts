@@ -1,3 +1,4 @@
+import { commissionOf } from "@/lib/commission";
 import { todayISO } from "@/lib/booking-ledger";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
           totalPaise,
           status: bookingStatus,
           advancePaise: amountPaise,
-          payments: { create: { orgId: slot.hall.venue.orgId, amountPaise, method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } },
+          payments: { create: { orgId: slot.hall.venue.orgId, amountPaise, commissionPaise: commissionOf(amountPaise), method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } },
           guestName,
           guestPhone,
           guestEmail: guestEmail ?? null,

@@ -1,3 +1,4 @@
+import { commissionOf } from "@/lib/commission";
 import { todayISO } from "@/lib/booking-ledger";
 import Razorpay from "razorpay";
 import { db } from "@/lib/db";
@@ -118,7 +119,7 @@ export async function handleWebhook(body: string, signature: string): Promise<vo
         totalPaise,
         status: bookingStatus,
         advancePaise: amountPaise,
-        payments: { create: { orgId: slot.hall.venue.orgId, amountPaise, method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } },
+        payments: { create: { orgId: slot.hall.venue.orgId, amountPaise, commissionPaise: commissionOf(amountPaise), method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } },
         guestName,
         guestPhone,
         guestEmail,

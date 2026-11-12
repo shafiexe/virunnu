@@ -69,6 +69,11 @@ export default async function AdminPage() {
         </Link>
       </div>
 
+      <Link href="/admin/payouts" className="block rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 hover:border-amber-300 dark:hover:border-amber-700">
+        <div className="font-semibold text-zinc-900 dark:text-zinc-50">Payouts to venues</div>
+        <div className="text-sm text-zinc-500 mt-0.5">Online payments, Virunnu&apos;s 1% commission and what is still to send to each venue</div>
+      </Link>
+
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
