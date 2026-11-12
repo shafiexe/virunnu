@@ -134,12 +134,12 @@ function SlotCard({
       <div className="text-xs text-zinc-500 mt-0.5">
         {slot.template.startTime} – {slot.template.endTime}
       </div>
-      <div className="mt-2 flex items-center justify-between">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
         <span className={cn("font-bold text-sm", selected ? "text-amber-700 dark:text-amber-400" : "text-zinc-900 dark:text-zinc-50")}>
           ₹{(price / 100).toLocaleString("en-IN")}
         </span>
         <span className={cn(
-          "text-xs px-2 py-0.5 rounded-full font-medium",
+          "text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap",
           slot.status === "AVAILABLE"
             ? selected ? "bg-amber-200 text-amber-800" : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400"
             : slot.status === "HELD" ? "bg-orange-100 text-orange-700" : "bg-zinc-200 text-zinc-500"
@@ -490,7 +490,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                     {selectedDayEntries.length > 1 && (
                       <div className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">{hall.name}</div>
                     )}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2">
                       {slots.map((slot) => (
                         <SlotCard key={slot.id} slot={slot} pricePerSlot={hall.pricePerSlot}
                           selected={selectedSlot === slot.id}
@@ -517,7 +517,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                 {checkoutStep === "idle" && selectedSlot && (
                   <div className="space-y-2">
                     <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">How would you like to book?</p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 gap-2">
                       <button type="button"
                         onClick={() => { setBookingPath("pay"); setCheckoutStep("form"); }}
                         className="rounded-xl border-2 border-amber-500 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 px-4 py-3 text-left transition-colors">
