@@ -1,3 +1,4 @@
+import { notRequests } from "@/lib/booking-requests";
 import { db } from "@/lib/db";
 import type { SetupStep } from "@/components/setup-checklist";
 
@@ -25,7 +26,7 @@ export async function venueSetupSteps(orgId: string): Promise<SetupStep[]> {
     db.organization.findUnique({ where: { id: orgId }, select: { logoUpdatedAt: true } }),
     db.venue.findFirst({ where: { orgId }, select: { gstEnabled: true, gstin: true, halls: { select: { description: true } } } }),
     db.hallPhoto.count({ where: { hall: { venue: { orgId } } } }),
-    db.booking.count({ where: { orgId } }),
+    db.booking.count({ where: { orgId, status: notRequests } }),
     db.user.count({ where: { orgId, teamMember: true } }),
   ]);
   return [

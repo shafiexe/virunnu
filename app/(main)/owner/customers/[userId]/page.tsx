@@ -1,3 +1,4 @@
+import { REQUEST_STATUSES } from "@/lib/booking-requests";
 import { connection } from "next/server";
 export const instant = false;
 import { redirect } from "next/navigation";
@@ -20,8 +21,8 @@ export default async function CustomerDetailPage({ params }: Props) {
 
   const bookings = await db.booking.findMany({
     where: isGuest
-      ? { orgId: session.orgId, guestPhone, status: { not: "EXPIRED" } }
-      : { orgId: session.orgId, userId, status: { not: "EXPIRED" } },
+      ? { orgId: session.orgId, guestPhone, status: { notIn: ["EXPIRED", ...REQUEST_STATUSES] } }
+      : { orgId: session.orgId, userId, status: { notIn: ["EXPIRED", ...REQUEST_STATUSES] } },
     include: {
       user: { select: { id: true, name: true, phone: true } },
       hallSlot: {

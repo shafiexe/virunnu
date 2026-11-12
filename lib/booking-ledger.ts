@@ -19,7 +19,7 @@ export const netOf = (b: Money) => b.totalPaise - (b.discountPaise ?? 0);
 
 // What the booking's status should be once `paid` has been received. Cancelled and expired ones never change here.
 export function statusAfterPayment(current: string, net: number, paid: number) {
-  if (current === "CANCELLED" || current === "EXPIRED") return current;
+  if (current === "CANCELLED" || current === "EXPIRED" || current === "REJECTED") return current;
   if (paid >= net && net > 0) return "CONFIRMED";
   if (paid > 0) return "ADVANCE_PAID";
   return current;

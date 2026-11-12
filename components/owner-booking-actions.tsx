@@ -8,7 +8,7 @@ import { WriteOnly, useCanWrite } from "@/components/access-context";
 
 type DropdownPos = { top: number; right: number };
 
-type Status = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
+type Status = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED" | "REJECTED";
 type PaymentMethod = "ONLINE" | "CASH";
 
 interface Props {

@@ -41,6 +41,12 @@ const STATUS_CONFIG: Record<string, { label: string; icon: React.ReactNode; styl
     style: "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/40",
     note: "This booking has been cancelled.",
   },
+  REJECTED: {
+    label: "Request declined",
+    icon: <XCircle className="h-5 w-5" />,
+    style: "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800/40",
+    note: "The venue could not take this date. You can call them, or choose another date.",
+  },
   EXPIRED: {
     label: "Expired",
     icon: <Clock className="h-5 w-5" />,

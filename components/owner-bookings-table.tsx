@@ -8,12 +8,11 @@ import { PaginationBar } from "@/components/pagination-bar";
 import { SendReminderButton } from "@/components/send-reminder";
 import { OwnerBookingActions } from "@/components/owner-booking-actions";
 import { QuickPayButton } from "@/components/quick-pay-button";
-import { PendingRequests } from "@/components/pending-requests";
 import { addonSummary, type BookingAddonItem } from "@/components/booking-addons-button";
 import { cn } from "@/lib/utils";
 import { WriteOnly, useCanWrite, Show } from "@/components/access-context";
 
-type BookingStatus = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED";
+type BookingStatus = "PENDING" | "APPROVED" | "ADVANCE_PAID" | "CONFIRMED" | "CANCELLED" | "EXPIRED" | "REJECTED";
 
 const STATUS_STYLE: Record<BookingStatus, string> = {
   PENDING:      "bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-400",
@@ -22,6 +21,7 @@ const STATUS_STYLE: Record<BookingStatus, string> = {
   CONFIRMED:    "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400",
   CANCELLED:    "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
   EXPIRED:      "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+  REJECTED:     "bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400",
 };
 const STATUS_STRIPE: Record<BookingStatus, string> = {
   PENDING:      "bg-amber-400",
@@ -30,10 +30,11 @@ const STATUS_STRIPE: Record<BookingStatus, string> = {
   CONFIRMED:    "bg-emerald-500",
   CANCELLED:    "bg-red-400",
   EXPIRED:      "bg-zinc-300 dark:bg-zinc-600",
+  REJECTED:     "bg-red-400",
 };
 const STATUS_LABEL: Record<BookingStatus, string> = {
   PENDING: "Pending", APPROVED: "Approved", ADVANCE_PAID: "Advance paid",
-  CONFIRMED: "Confirmed", CANCELLED: "Cancelled", EXPIRED: "Expired",
+  CONFIRMED: "Confirmed", CANCELLED: "Cancelled", EXPIRED: "Expired", REJECTED: "Rejected",
 };
 
 const TABS = [
@@ -54,11 +55,6 @@ type Booking = {
   addons?: BookingAddonItem[];
 };
 
-type PendingBooking = {
-  id: string; guestName: string | null; guestPhone: string | null; guestEmail: string | null;
-  totalPaise: number; createdAt: string;
-  hallSlot: { date: string; template: { name: string; startTime: string; endTime: string }; hall: { name: string; venue: { name: string } } };
-};
 
 function getAmounts(b: Booking) {
   const disc = b.discountPaise ?? 0;
@@ -176,7 +172,6 @@ export type BookingsUrlState = { status: string; search: string; page: number; p
 export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
   const [status, setStatus] = useState(initial.status);
   const [searchInput, setSearchInput] = useState(initial.search);
-  const [pending, setPending] = useState<PendingBooking[]>([]);
   const [view, setView] = useState<"list" | "card">("list");
   useEffect(() => {
     try {
@@ -204,13 +199,6 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
     const qs = p.toString();
     window.history.replaceState(null, "", qs ? `?${qs}` : window.location.pathname);
   }, [status, searchInput, page, pageSize]);
-
-  useEffect(() => {
-    fetch("/api/owner/bookings?page=1&pageSize=200&status=PENDING")
-      .then(r => r.ok ? r.json() : null)
-      .then(j => { if (j) setPending(j.data ?? []); })
-      .catch(() => {});
-  }, []);
 
   const handleStatus = useCallback((s: string) => {
     setStatus(s);
@@ -278,19 +266,6 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
           ))}
         </div>
       </div>
-
-      {/* Pending requests */}
-      {status === "ALL" && pending.length > 0 && (
-        <div className="mb-6">
-          <PendingRequests
-            bookings={pending.map((b) => ({
-              id: b.id, guestName: b.guestName, guestPhone: b.guestPhone, guestEmail: b.guestEmail,
-              totalPaise: b.totalPaise, createdAt: b.createdAt,
-              hallSlot: { date: b.hallSlot.date, template: b.hallSlot.template, hall: b.hallSlot.hall },
-            }))}
-          />
-        </div>
-      )}
 
       {/* ── Card view ── */}
       {view === "card" && (

@@ -3,12 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, Receipt, X } from "lucide-react";
+import { MessageCircle, Plus, Receipt, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { WriteOnly } from "@/components/access-context";
 import { METHOD_LABEL, PAY_METHODS } from "@/lib/booking-ledger";
 
-export type PaymentRow = { id: string; amountPaise: number; method: string; paidOn: string; note: string | null; recordedBy: string | null; receiptNo: string };
+export type PaymentRow = { id: string; amountPaise: number; method: string; paidOn: string; note: string | null; recordedBy: string | null; receiptNo: string; whatsappHref: string | null };
 
 const rs = (paise: number) => `₹${(paise / 100).toLocaleString("en-IN")}`;
 const day = (iso: string) => new Date(iso + "T12:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
@@ -74,11 +74,15 @@ export function BookingPayments({ bookingId, payments, netPaise, closed, canRemo
       ) : (
         <ul className="divide-y divide-zinc-100 dark:divide-zinc-800 rounded-xl border border-zinc-100 dark:border-zinc-800">
           {payments.map((p) => (
-            <li key={p.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2.5">
-              <div className="min-w-0 flex-1">
+            <li key={p.id} className="flex flex-wrap items-center gap-x-2 gap-y-2 px-3 py-2.5">
+              <div className="min-w-0 basis-full sm:basis-0 sm:flex-1">
                 <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{rs(p.amountPaise)} <span className="font-normal text-zinc-500">· {METHOD_LABEL[p.method] ?? p.method}</span></p>
                 <p className="truncate text-xs text-zinc-500">{day(p.paidOn)}{p.recordedBy ? ` · by ${p.recordedBy}` : ""}{p.note ? ` · ${p.note}` : ""}</p>
               </div>
+              {p.whatsappHref && (
+                <a href={p.whatsappHref} target="_blank" rel="noopener noreferrer" aria-label={`Send the ${rs(p.amountPaise)} receipt on WhatsApp`}
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#25D366] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5c]"><MessageCircle className="h-3.5 w-3.5" /> Send</a>
+              )}
               <Link href={`/owner/bookings/${bookingId}/receipt/${p.id}`} className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"><Receipt className="h-3.5 w-3.5" /> Receipt</Link>
               {canRemove && (
                 <WriteOnly page="bookings">

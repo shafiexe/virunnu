@@ -46,7 +46,7 @@ export async function GET(req: NextRequest) {
         template: true,
         hall: { select: { id: true, name: true, pricePerSlot: true } },
         bookings: {
-          where: { status: { notIn: ["CANCELLED", "EXPIRED"] } },
+          where: { status: { notIn: ["CANCELLED", "EXPIRED", "REJECTED"] } },
           select: {
             id: true,
             status: true,

@@ -1,3 +1,4 @@
+import { notRequests } from "@/lib/booking-requests";
 import { connection } from "next/server";
 export const instant = false;
 import Link from "next/link";
@@ -37,7 +38,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
 
   const [allYearBookings, earliest, latestSlot, monthExpenses, yearExpenses, hallCount, templateCount] = await Promise.all([
     db.booking.findMany({
-      where: { orgId: session.orgId!, hallSlot: { date: { gte: yearStart, lt: yearEnd } } },
+      where: { orgId: session.orgId!, status: notRequests, hallSlot: { date: { gte: yearStart, lt: yearEnd } } },
       select: { status: true, totalPaise: true, advancePaise: true, discountPaise: true, refundPaise: true, paymentMethod: true, createdAt: true, hallSlot: { select: { date: true } } },
     }),
     db.booking.findFirst({

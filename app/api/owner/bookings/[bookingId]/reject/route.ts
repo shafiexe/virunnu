@@ -19,10 +19,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ boo
   if (!booking) return NextResponse.json({ error: "Booking not found" }, { status: 404 });
   if (booking.status !== "PENDING") return NextResponse.json({ error: "Booking is not pending" }, { status: 400 });
 
-  await db.booking.update({
-    where: { id: bookingId },
-    data: { status: "CANCELLED", cancelReason: reason ?? "Rejected by owner" },
-  });
+  await db.$transaction([
+    db.booking.update({ where: { id: bookingId }, data: { status: "REJECTED", cancelReason: reason?.trim() || "Rejected by owner" } }),
+    // the date the customer was holding is free again
+    db.hallSlot.updateMany({ where: { id: booking.hallSlotId, status: "HELD" }, data: { status: "AVAILABLE", heldUntil: null } }),
+  ]);
 
   await logActivity(session, `Rejected booking ${bookingId.slice(-6).toUpperCase()}`);
   return NextResponse.json({ ok: true });

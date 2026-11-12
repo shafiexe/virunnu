@@ -13,6 +13,7 @@ const STATUS_LABEL: Record<string, string> = {
   CONFIRMED:    "Confirmed",
   CANCELLED:    "Cancelled",
   EXPIRED:      "Expired",
+  REJECTED:     "Request declined",
 };
 
 const STATUS_DOT: Record<string, string> = {
@@ -21,6 +22,7 @@ const STATUS_DOT: Record<string, string> = {
   CONFIRMED:    "bg-emerald-500",
   CANCELLED:    "bg-red-400",
   EXPIRED:      "bg-zinc-400",
+  REJECTED:     "bg-red-400",
 };
 
 export default async function MyBookingsPage() {

@@ -1,3 +1,4 @@
+import { notRequests } from "@/lib/booking-requests";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
@@ -15,7 +16,7 @@ export async function GET(req: NextRequest) {
   const bookings = await db.booking.findMany({
     where: {
       orgId: session.orgId!,
-      ...(status && status !== "ALL" ? { status: status as never } : {}),
+      status: status && status !== "ALL" ? (status as never) : notRequests,
       ...(search ? {
         user: {
           OR: [

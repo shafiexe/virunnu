@@ -1,3 +1,4 @@
+import { notRequests } from "@/lib/booking-requests";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
 
   const where = {
     orgId: session.orgId!,
-    ...(status !== "ALL" ? { status: status as BookingStatus } : {}),
+    status: status !== "ALL" ? (status as BookingStatus) : notRequests,
     ...(search ? {
       OR: [
         { user: { name: { contains: search, mode: "insensitive" as const } } },
