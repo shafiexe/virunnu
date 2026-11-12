@@ -188,7 +188,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
           <div className="flex items-center gap-2">
             <Link
               href="/owner/calendar"
-              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors"
+              className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-zinc-900 transition-colors"
             >
               <Plus className="h-4 w-4" /> Add booking
             </Link>
@@ -216,18 +216,18 @@ export default async function OwnerDashboard({ searchParams }: Props) {
         <div className="flex items-center justify-between px-5 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800">
           <div>
             <span className="font-semibold text-zinc-900 dark:text-zinc-50">Expenses this month</span>
-            <span className="ml-2 text-xs text-zinc-400">
+            <span className="ml-2 text-xs text-zinc-500 dark:text-zinc-400">
               {now.toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
             </span>
           </div>
-          <Link href="/owner/expenses" className="text-xs font-semibold text-amber-600 hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
+          <Link href="/owner/expenses" className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-300 transition-colors">
             Manage →
           </Link>
         </div>
         {monthExpenses.length === 0 ? (
           <div className="px-5 py-8 text-center">
-            <p className="text-sm text-zinc-400">No expenses recorded this month.</p>
-            <Link href="/owner/expenses" className="mt-2 inline-block text-xs text-amber-600 font-medium hover:underline">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">No expenses recorded this month.</p>
+            <Link href="/owner/expenses" className="mt-2 inline-block text-xs text-amber-700 dark:text-amber-500 font-medium hover:underline">
               + Add expense
             </Link>
           </div>
@@ -237,7 +237,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
               <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">
                 ₹{(monthExpensePaise / 100).toLocaleString("en-IN")}
               </span>
-              <span className="text-xs text-zinc-400">{monthExpenses.length} entries</span>
+              <span className="text-xs text-zinc-500 dark:text-zinc-400">{monthExpenses.length} entries</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {topExpenses.map(([cat, paise]) => {
@@ -251,7 +251,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
                     <div className="h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
                       <div className="h-full bg-amber-400 rounded-full" style={{ width: `${pct}%` }} />
                     </div>
-                    <div className="text-[10px] text-zinc-400">{pct}% of total</div>
+                    <div className="text-[10px] text-zinc-500 dark:text-zinc-400">{pct}% of total</div>
                   </div>
                 );
               })}

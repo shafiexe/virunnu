@@ -81,11 +81,11 @@ export function AdminCreateVenueForm({ orgId }: { orgId: string }) {
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
         <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center shrink-0">
-          <Building2 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+          <Building2 className="h-5 w-5 text-amber-700 dark:text-amber-400" />
         </div>
         <div>
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Create Venue Profile</h3>
-          <p className="text-xs text-zinc-400 mt-0.5">No venue added yet — create one to enable bookings</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">No venue added yet — create one to enable bookings</p>
         </div>
       </div>
 
@@ -101,7 +101,7 @@ export function AdminCreateVenueForm({ orgId }: { orgId: string }) {
                 onClick={() => setVenueType(t.key)}
                 className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                   venueType === t.key
-                    ? "bg-amber-500 border-amber-500 text-white"
+                    ? "bg-amber-500 border-amber-500 text-zinc-900"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300 dark:hover:border-amber-700"
                 }`}
               >
@@ -204,7 +204,7 @@ export function AdminCreateVenueForm({ orgId }: { orgId: string }) {
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors disabled:opacity-60"
+          className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-60"
         >
           {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           {loading ? "Creating…" : "Create Venue"}

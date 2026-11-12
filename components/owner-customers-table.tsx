@@ -49,7 +49,7 @@ function CustomerCard({ c }: { c: Customer }) {
         {/* Booking count badge */}
         <div className="shrink-0 text-right">
           <div className="text-lg font-bold text-zinc-900 dark:text-zinc-50 leading-none">{c.bookingCount}</div>
-          <div className="text-[10px] text-zinc-400 uppercase tracking-wide">booking{c.bookingCount !== 1 ? "s" : ""}</div>
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">booking{c.bookingCount !== 1 ? "s" : ""}</div>
           {c.confirmedCount > 0 && <div className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5">✓ {c.confirmedCount}</div>}
         </div>
       </div>
@@ -57,21 +57,21 @@ function CustomerCard({ c }: { c: Customer }) {
       {/* Finance rows */}
       <div className="px-4 pb-3 space-y-1.5">
         <div className="flex items-center justify-between text-xs">
-          <span className="text-zinc-400">Total</span>
+          <span className="text-zinc-500 dark:text-zinc-400">Total</span>
           <span className="font-semibold text-zinc-800 dark:text-zinc-200">
             {net > 0 ? `₹${(net / 100).toLocaleString("en-IN")}` : "—"}
           </span>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-zinc-400">Paid</span>
-          <span className={cn("font-semibold", c.advancePaise > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-400")}>
+          <span className="text-zinc-500 dark:text-zinc-400">Paid</span>
+          <span className={cn("font-semibold", c.advancePaise > 0 ? "text-emerald-600 dark:text-emerald-400" : "text-zinc-500 dark:text-zinc-400")}>
             {c.advancePaise > 0 ? `₹${(c.advancePaise / 100).toLocaleString("en-IN")}` : "—"}
           </span>
         </div>
         <div className="flex items-center justify-between text-xs">
-          <span className="text-zinc-400">Balance</span>
+          <span className="text-zinc-500 dark:text-zinc-400">Balance</span>
           <span className={cn("font-semibold",
-            net === 0 ? "text-zinc-400" :
+            net === 0 ? "text-zinc-500 dark:text-zinc-400" :
             balance > 0 ? "text-red-600 dark:text-red-400" : "text-emerald-600 dark:text-emerald-400")}>
             {net === 0 ? "—" : balance > 0 ? `₹${(balance / 100).toLocaleString("en-IN")}` : "Clear"}
           </span>
@@ -79,7 +79,7 @@ function CustomerCard({ c }: { c: Customer }) {
       </div>
 
       {/* Footer */}
-      <div className="mt-auto px-4 py-2.5 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-800/30 flex items-center justify-between text-[11px] text-zinc-400">
+      <div className="mt-auto px-4 py-2.5 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-800/30 flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400">
         <div className="flex items-center gap-1">
           <CalendarDays className="h-3 w-3 shrink-0" />
           <span>Last: {new Date(c.lastBooking).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</span>
@@ -125,11 +125,11 @@ export function OwnerCustomersTable() {
           {/* View toggle */}
           <div className="flex items-center rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
             <button onClick={() => toggleView("list")} title="List view"
-              className={cn("px-2.5 py-2 transition-colors", view === "list" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
+              className={cn("px-2.5 py-2 transition-colors", view === "list" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
               <LayoutList className="h-4 w-4" />
             </button>
             <button onClick={() => toggleView("card")} title="Card view"
-              className={cn("px-2.5 py-2 transition-colors", view === "card" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
+              className={cn("px-2.5 py-2 transition-colors", view === "card" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
               <LayoutGrid className="h-4 w-4" />
             </button>
           </div>
@@ -142,7 +142,7 @@ export function OwnerCustomersTable() {
       {/* Search */}
       <div className="mb-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 dark:text-zinc-400 pointer-events-none" />
           <input type="search" placeholder="Search by name or phone…" value={searchInput}
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full max-w-sm pl-9 pr-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
@@ -175,7 +175,7 @@ export function OwnerCustomersTable() {
           )}
           {!error && !loading && customers.length === 0 && (
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-12 text-center">
-              <p className="text-zinc-400 text-sm">{searchInput ? "No customers match your search." : "No customers yet. Bookings will appear here."}</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">{searchInput ? "No customers match your search." : "No customers yet. Bookings will appear here."}</p>
             </div>
           )}
           {!error && !loading && customers.length > 0 && (
@@ -196,7 +196,7 @@ export function OwnerCustomersTable() {
         <>
           {!loading && customers.length === 0 ? (
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-12 text-center">
-              <p className="text-zinc-400 text-sm">{searchInput ? "No customers match your search." : "No customers yet. Bookings will appear here."}</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">{searchInput ? "No customers match your search." : "No customers yet. Bookings will appear here."}</p>
             </div>
           ) : (
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
@@ -210,7 +210,7 @@ export function OwnerCustomersTable() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                    {loading && <tr><td colSpan={8} className="px-4 py-12 text-center text-zinc-400 text-sm">Loading…</td></tr>}
+                    {loading && <tr><td colSpan={8} className="px-4 py-12 text-center text-zinc-500 dark:text-zinc-400 text-sm">Loading…</td></tr>}
                     {!loading && customers.map((c) => {
                       const net = c.totalPaise - c.discountPaise;
                       const balance = Math.max(0, net - c.advancePaise);
@@ -227,7 +227,7 @@ export function OwnerCustomersTable() {
                             </Link>
                           </td>
                           <td className="px-4 py-3">
-                            <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-600 hover:underline">
+                            <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${c.phone}`} className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-500 hover:underline">
                               <Phone className="h-3 w-3" />{c.phone ?? "—"}
                             </a></Show>
                           </td>
@@ -241,14 +241,14 @@ export function OwnerCustomersTable() {
                           <td className="px-4 py-3 font-semibold text-zinc-800 dark:text-zinc-200 whitespace-nowrap">
                             {net > 0 ? `₹${(net / 100).toLocaleString("en-IN")}` : "—"}
                           </td>
-                          <td className="px-4 py-3 text-amber-600 dark:text-amber-400 whitespace-nowrap">
+                          <td className="px-4 py-3 text-amber-700 dark:text-amber-400 whitespace-nowrap">
                             {c.discountPaise > 0 ? `−₹${(c.discountPaise / 100).toLocaleString("en-IN")}` : "—"}
                           </td>
                           <td className="px-4 py-3 text-emerald-600 dark:text-emerald-400 font-medium whitespace-nowrap">
                             {c.advancePaise > 0 ? `₹${(c.advancePaise / 100).toLocaleString("en-IN")}` : "—"}
                           </td>
                           <td className="px-4 py-3 font-semibold whitespace-nowrap">
-                            {net === 0 ? <span className="text-zinc-400">—</span>
+                            {net === 0 ? <span className="text-zinc-500 dark:text-zinc-400">—</span>
                               : balance > 0 ? <span className="text-red-600 dark:text-red-400">₹{(balance / 100).toLocaleString("en-IN")}</span>
                               : <span className="text-emerald-600 dark:text-emerald-400 text-xs">Paid</span>}
                           </td>

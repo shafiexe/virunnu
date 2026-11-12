@@ -81,11 +81,11 @@ function InfoRow({ icon, value, href, label }: { icon: React.ReactNode; value: s
   if (!value) return null;
   return (
     <div className="flex items-start gap-2.5">
-      <span className="mt-0.5 text-zinc-400 shrink-0">{icon}</span>
+      <span className="mt-0.5 text-zinc-500 dark:text-zinc-400 shrink-0">{icon}</span>
       <div className="min-w-0">
-        {label && <p className="text-[10px] text-zinc-400 uppercase tracking-wide font-medium mb-0.5">{label}</p>}
+        {label && <p className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-medium mb-0.5">{label}</p>}
         {href ? (
-          <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-600 dark:text-amber-400 hover:underline break-all">{value}</a>
+          <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm text-amber-700 dark:text-amber-400 hover:underline break-all">{value}</a>
         ) : (
           <span className="text-sm text-zinc-700 dark:text-zinc-300">{value}</span>
         )}
@@ -286,7 +286,7 @@ export function VenueProfileCard({
       <div className="flex items-start justify-between px-5 py-4">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center shrink-0">
-            <Building2 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            <Building2 className="h-5 w-5 text-amber-700 dark:text-amber-400" />
           </div>
           <div className="min-w-0">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-50 truncate">{venue.name}</h2>
@@ -303,7 +303,7 @@ export function VenueProfileCard({
                   {venue.approved ? "Listed" : "Pending"}
                 </span>
               )}
-              {venue.city && <span className="text-xs text-zinc-400">{venue.city}, Kerala</span>}
+              {venue.city && <span className="text-xs text-zinc-500 dark:text-zinc-400">{venue.city}, Kerala</span>}
             </div>
             {venue.googleRating && (
               <div className="flex items-center gap-1 mt-0.5">
@@ -333,7 +333,7 @@ export function VenueProfileCard({
               Edit
             </button>
           ) : (
-            <button onClick={() => setEditing(false)} className="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
+            <button onClick={() => setEditing(false)} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">
               <X className="h-4 w-4" />
             </button>
           )}
@@ -343,8 +343,8 @@ export function VenueProfileCard({
               className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
             >
               {collapsed
-                ? <ChevronDown className="h-4 w-4 text-zinc-400" />
-                : <ChevronUp className="h-4 w-4 text-zinc-400" />}
+                ? <ChevronDown className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
+                : <ChevronUp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
             </button>
           )}
         </div>
@@ -400,13 +400,13 @@ export function VenueProfileCard({
             </div>
           )}
           <div className="text-xs text-zinc-500">
-            <span className="text-[10px] text-zinc-400 uppercase tracking-wide font-medium mr-2">GST on invoices</span>
+            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-medium mr-2">GST on invoices</span>
             {(venue.gstEnabled ?? true)
               ? `On · CGST ${venue.gstRate ?? 9}% + SGST ${venue.gstRate ?? 9}% = ${(venue.gstRate ?? 9) * 2}%`
               : "Off · invoices show no tax"}
           </div>
           {!venue.phone && (
-            <p className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+            <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">
               ⚠ No phone number — tap Edit to add one
             </p>
           )}
@@ -488,7 +488,7 @@ export function VenueProfileCard({
                   onClick={() => setVenueType(t.key)}
                   className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
                     venueType === t.key
-                      ? "bg-amber-500 border-amber-500 text-white"
+                      ? "bg-amber-500 border-amber-500 text-zinc-900"
                       : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300 dark:hover:border-amber-700"
                   }`}
                 >
@@ -521,7 +521,7 @@ export function VenueProfileCard({
           <div>
             <label className={LABEL}>Email address</label>
             <input type="email" value={form.email} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} placeholder="you@example.com (optional)" className={FIELD} />
-            <p className="text-[10px] text-zinc-400 mt-1">Email notifications are only sent when an email is set here.</p>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Email notifications are only sent when an email is set here.</p>
           </div>
 
           <div>
@@ -661,7 +661,7 @@ export function VenueProfileCard({
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors disabled:opacity-60"
             >
               {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               {loading ? "Saving…" : "Save changes"}

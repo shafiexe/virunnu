@@ -68,7 +68,7 @@ export default function PrivacyPage() {
         <div className="mt-4">
           <Link
             href="/terms"
-            className="inline-flex items-center gap-1.5 text-sm text-amber-600 dark:text-amber-400 hover:underline"
+            className="inline-flex items-center gap-1.5 text-sm text-amber-700 dark:text-amber-400 hover:underline"
           >
             View Terms of Service <ExternalLink className="h-3.5 w-3.5" />
           </Link>
@@ -321,7 +321,7 @@ export default function PrivacyPage() {
                 grievance@virunnu.in
               </span>
             </p>
-            <p className="text-xs text-zinc-400 mt-1">Response within 30 days as required by law</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">Response within 30 days as required by law</p>
           </div>
         </div>
       </section>
@@ -453,7 +453,7 @@ export default function PrivacyPage() {
       {/* Contact */}
       <div className="pt-8">
         <div className="rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6">
-          <div className="text-[10px] font-semibold tracking-widest uppercase text-zinc-400 mb-3">
+          <div className="text-[10px] font-semibold tracking-widest uppercase text-zinc-500 dark:text-zinc-400 mb-3">
             Privacy enquiries & data requests
           </div>
           <div className="space-y-1.5 text-sm text-zinc-700 dark:text-zinc-300">
@@ -481,7 +481,7 @@ export default function PrivacyPage() {
                 Virunnu Technologies, Kerala, India
               </span>
             </p>
-            <p className="text-zinc-400 text-xs mt-2">
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-2">
               We respond to privacy requests within 30 days as required under the DPDP Act 2023
             </p>
           </div>

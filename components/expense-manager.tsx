@@ -529,7 +529,7 @@ export function ExpenseManager({
         )}
       </div>
       {hideStaff && (
-        <p className="text-xs text-zinc-500">Salaries, daily wages and advances are recorded under <Link href="/caterer/staff" className="font-semibold text-amber-600 hover:underline">Parties → Staff</Link>, so they are never counted twice.</p>
+        <p className="text-xs text-zinc-500">Salaries, daily wages and advances are recorded under <Link href="/caterer/staff" className="font-semibold text-amber-700 dark:text-amber-500 hover:underline">Parties → Staff</Link>, so they are never counted twice.</p>
       )}
 
       {/* ── EXPENSES TAB ───────────────────────────────────────────────────────── */}
@@ -551,7 +551,7 @@ export function ExpenseManager({
             <div className="flex-1" />
             <WriteOnly page="expenses"><button
               onClick={() => openAdd()}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-900 px-3 py-2 rounded-xl transition-colors"
             >
               <Plus className="h-4 w-4" />
               Add expense
@@ -561,7 +561,7 @@ export function ExpenseManager({
           {/* Search + Filter */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400" />
               <input
                 type="text"
                 placeholder="Search by name, category, notes…"
@@ -570,7 +570,7 @@ export function ExpenseManager({
                 className="w-full pl-8 pr-3 py-2 text-sm rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
               />
               {search && (
-                <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
+                <button onClick={() => setSearch("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600">
                   <X className="h-3.5 w-3.5" />
                 </button>
               )}
@@ -585,7 +585,7 @@ export function ExpenseManager({
                 className={cn(
                   "text-xs font-medium px-3 py-1 rounded-full border transition-colors",
                   filterCategory === "ALL"
-                    ? "border-amber-400 bg-amber-500 text-white"
+                    ? "border-amber-400 bg-amber-500 text-zinc-900"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300"
                 )}
               >
@@ -598,7 +598,7 @@ export function ExpenseManager({
                   className={cn(
                     "text-xs font-medium px-3 py-1 rounded-full border transition-colors",
                     filterCategory === cat
-                      ? "border-amber-400 bg-amber-500 text-white"
+                      ? "border-amber-400 bg-amber-500 text-zinc-900"
                       : `border-transparent ${pillColor(cat)} hover:opacity-80`
                   )}
                 >
@@ -612,11 +612,11 @@ export function ExpenseManager({
           <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             {paginated.length === 0 ? (
               <div className="py-14 text-center px-6">
-                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400"><Receipt className="h-6 w-6" /></span>
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400"><Receipt className="h-6 w-6" /></span>
                 <h3 className="mt-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">{search || filterCategory !== "ALL" ? "No matching expenses" : "No expenses this month"}</h3>
                 <p className="mx-auto mt-1 max-w-sm text-sm text-zinc-500">{search || filterCategory !== "ALL" ? "Try a different word, or show all categories." : "Add what you spend on gas, rent, transport and repairs so your profit is right."}</p>
                 {!search && filterCategory === "ALL" && (
-                  <WriteOnly page="expenses"><button onClick={() => openAdd()} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add expense</button></WriteOnly>
+                  <WriteOnly page="expenses"><button onClick={() => openAdd()} className="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900"><Plus className="h-4 w-4" /> Add expense</button></WriteOnly>
                 )}
               </div>
             ) : (
@@ -646,20 +646,20 @@ export function ExpenseManager({
                             <td className="px-4 py-3">
                               <div className="font-medium text-zinc-800 dark:text-zinc-200">{e.label}</div>
                               {e.employee && (
-                                <div className="text-[10px] text-zinc-400 mt-0.5">👤 {e.employee.name} · {e.employee.role}</div>
+                                <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">👤 {e.employee.name} · {e.employee.role}</div>
                               )}
                             </td>
-                            <td className="px-4 py-3 text-xs text-zinc-400 max-w-[160px] truncate">{e.notes ?? "—"}</td>
+                            <td className="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400 max-w-[160px] truncate">{e.notes ?? "—"}</td>
                             <td className="px-4 py-3 font-semibold text-zinc-900 dark:text-zinc-50 whitespace-nowrap">
                               ₹{(e.amountPaise / 100).toLocaleString("en-IN")}
                             </td>
                             <td className="px-4 py-3">
                               {(
                                 <div className="flex items-center gap-1">
-                                  <WriteOnly page="expenses"><button onClick={() => openEdit(e)} aria-label="Edit expense" className="p-2 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">
+                                  <WriteOnly page="expenses"><button onClick={() => openEdit(e)} aria-label="Edit expense" className="p-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">
                                     <Pencil className="h-3.5 w-3.5" />
                                   </button></WriteOnly>
-                                  <WriteOnly page="expenses"><button onClick={() => handleDelete(e)} aria-label="Delete expense" className="p-2 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
+                                  <WriteOnly page="expenses"><button onClick={() => handleDelete(e)} aria-label="Delete expense" className="p-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
                                     <Trash2 className="h-3.5 w-3.5" />
                                   </button></WriteOnly>
                                 </div>
@@ -702,7 +702,7 @@ export function ExpenseManager({
             <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">New Category</p>
             <div className="flex gap-2 items-end">
               <div className="w-12">
-                <label className="text-xs text-zinc-400 mb-1 block">Icon</label>
+                <label className="text-xs text-zinc-500 dark:text-zinc-400 mb-1 block">Icon</label>
                 <input
                   type="text"
                   maxLength={2}
@@ -712,7 +712,7 @@ export function ExpenseManager({
                 />
               </div>
               <div className="flex-1">
-                <label className="text-xs text-zinc-400 mb-1 block">Category name *</label>
+                <label className="text-xs text-zinc-500 dark:text-zinc-400 mb-1 block">Category name *</label>
                 <input
                   type="text"
                   placeholder="e.g. Staff, Utilities, Maintenance…"
@@ -725,7 +725,7 @@ export function ExpenseManager({
               <button
                 onClick={addCategory}
                 disabled={catFormLoading || !newCatName.trim()}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl transition-colors"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 px-4 py-2 rounded-xl transition-colors"
               >
                 <Plus className="h-4 w-4" />
                 Add
@@ -736,9 +736,9 @@ export function ExpenseManager({
 
           {/* Categories list */}
           {catLoading && !categories.length ? (
-            <p className="text-sm text-zinc-400 text-center py-8">Loading…</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 text-center py-8">Loading…</p>
           ) : categories.length === 0 ? (
-            <div className="text-center py-12 text-zinc-400 text-sm">
+            <div className="text-center py-12 text-zinc-500 dark:text-zinc-400 text-sm">
               No categories yet. Add one above.
             </div>
           ) : (
@@ -769,17 +769,17 @@ export function ExpenseManager({
                             className="flex-1 rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/20 px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                             autoFocus
                           />
-                          <button onClick={() => saveEditCat(cat.id)} className="text-xs font-bold text-amber-600 hover:underline">Save</button>
-                          <button onClick={() => setEditCatId(null)} className="text-xs text-zinc-400">Cancel</button>
+                          <button onClick={() => saveEditCat(cat.id)} className="text-xs font-bold text-amber-700 dark:text-amber-500 hover:underline">Save</button>
+                          <button onClick={() => setEditCatId(null)} className="text-xs text-zinc-500 dark:text-zinc-400">Cancel</button>
                         </>
                       ) : (
                         <>
                           <span className="text-lg">{cat.icon}</span>
                           <span className="font-semibold text-zinc-800 dark:text-zinc-100 flex-1">{cat.name}</span>
-                          <span className="text-xs text-zinc-400">{cat.items.length} item{cat.items.length !== 1 ? "s" : ""}</span>
+                          <span className="text-xs text-zinc-500 dark:text-zinc-400">{cat.items.length} item{cat.items.length !== 1 ? "s" : ""}</span>
                           <button
                             onClick={() => { setEditCatId(cat.id); setEditCatName(cat.name); setEditCatIcon(cat.icon); }}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+                            className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
                           >
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
@@ -787,16 +787,16 @@ export function ExpenseManager({
                             <div className="flex items-center gap-2">
                               <span className="text-xs text-red-600">Delete all?</span>
                               <button onClick={() => deleteCategory(cat.id)} className="text-xs font-bold text-red-600 hover:underline">Yes</button>
-                              <button onClick={() => setConfirmDeleteCatId(null)} className="text-xs text-zinc-400">No</button>
+                              <button onClick={() => setConfirmDeleteCatId(null)} className="text-xs text-zinc-500 dark:text-zinc-400">No</button>
                             </div>
                           ) : (
-                            <button onClick={() => setConfirmDeleteCatId(cat.id)} className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
+                            <button onClick={() => setConfirmDeleteCatId(cat.id)} className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           )}
                           <button
                             onClick={() => setExpandedCat(isExpanded ? null : cat.id)}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                            className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
                           >
                             {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                           </button>
@@ -829,36 +829,36 @@ export function ExpenseManager({
                                         onChange={(e) => setEditItemForm((f) => ({ ...f, amount: e.target.value }))}
                                         className="w-28 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-2 py-1 text-sm focus:outline-none"
                                       />
-                                      <button onClick={() => saveEditItem(item.id, cat.id)} disabled={itemLoading} className="text-xs font-bold text-amber-600 hover:underline">Save</button>
-                                      <button onClick={() => setEditItemId(null)} className="text-xs text-zinc-400">Cancel</button>
+                                      <button onClick={() => saveEditItem(item.id, cat.id)} disabled={itemLoading} className="text-xs font-bold text-amber-700 dark:text-amber-500 hover:underline">Save</button>
+                                      <button onClick={() => setEditItemId(null)} className="text-xs text-zinc-500 dark:text-zinc-400">Cancel</button>
                                     </>
                                   ) : (
                                     <>
                                       <span className="flex-1 text-sm text-zinc-800 dark:text-zinc-200">{item.name}</span>
                                       {item.defaultAmountPaise > 0 && (
-                                        <span className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                                        <span className="text-xs font-semibold text-amber-700 dark:text-amber-400">
                                           ₹{(item.defaultAmountPaise / 100).toLocaleString("en-IN")}
                                         </span>
                                       )}
                                       {item.notes && (
-                                        <span className="text-xs text-zinc-400 max-w-[100px] truncate">{item.notes}</span>
+                                        <span className="text-xs text-zinc-500 dark:text-zinc-400 max-w-[100px] truncate">{item.notes}</span>
                                       )}
                                       <button
                                         onClick={() => {
                                           setEditItemId(item.id);
                                           setEditItemForm({ name: item.name, amount: item.defaultAmountPaise > 0 ? String(item.defaultAmountPaise / 100) : "", notes: item.notes ?? "" });
                                         }}
-                                        className="p-1 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+                                        className="p-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
                                       >
                                         <Pencil className="h-3 w-3" />
                                       </button>
                                       {confirmDeleteItemId === item.id ? (
                                         <div className="flex items-center gap-1.5">
                                           <button onClick={() => deleteItem(item.id, cat.id)} className="text-xs font-bold text-red-600 hover:underline">Del</button>
-                                          <button onClick={() => setConfirmDeleteItemId(null)} className="text-xs text-zinc-400">No</button>
+                                          <button onClick={() => setConfirmDeleteItemId(null)} className="text-xs text-zinc-500 dark:text-zinc-400">No</button>
                                         </div>
                                       ) : (
-                                        <button onClick={() => setConfirmDeleteItemId(item.id)} className="p-1 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
+                                        <button onClick={() => setConfirmDeleteItemId(item.id)} className="p-1 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20">
                                           <Trash2 className="h-3 w-3" />
                                         </button>
                                       )}
@@ -890,7 +890,7 @@ export function ExpenseManager({
                           <button
                             onClick={() => addItem(cat.id)}
                             disabled={itemLoading || !newItem.name.trim()}
-                            className="inline-flex items-center gap-1 text-xs font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white px-3 py-1.5 rounded-xl transition-colors"
+                            className="inline-flex items-center gap-1 text-xs font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 px-3 py-1.5 rounded-xl transition-colors"
                           >
                             <Plus className="h-3 w-3" />
                             Add
@@ -916,7 +916,7 @@ export function ExpenseManager({
             <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide">Add staff member</p>
             <div className="grid grid-cols-2 gap-2">
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Name *</label>
+                <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Name *</label>
                 <input type="text" placeholder="e.g. Rajan Kumar"
                   value={staffForm.name}
                   onChange={(e) => setStaffForm((f) => ({ ...f, name: e.target.value }))}
@@ -924,14 +924,14 @@ export function ExpenseManager({
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Role *</label>
+                <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Role *</label>
                 <select value={staffForm.role} onChange={(e) => setStaffForm((f) => ({ ...f, role: e.target.value }))}
                   className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
                   {STAFF_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
                 </select>
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Phone</label>
+                <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Phone</label>
                 <input type="tel" placeholder="+91 98765 43210"
                   value={staffForm.phone}
                   onChange={(e) => setStaffForm((f) => ({ ...f, phone: e.target.value }))}
@@ -939,7 +939,7 @@ export function ExpenseManager({
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Monthly salary (₹)</label>
+                <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Monthly salary (₹)</label>
                 <input type="number" placeholder="0" min={0}
                   value={staffForm.salary}
                   onChange={(e) => setStaffForm((f) => ({ ...f, salary: e.target.value }))}
@@ -949,7 +949,7 @@ export function ExpenseManager({
             </div>
             {staffError && <p className="text-xs text-red-500">{staffError}</p>}
             <button onClick={addEmployee} disabled={staffLoading || !staffForm.name.trim()}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white px-4 py-2 rounded-xl transition-colors">
+              className="inline-flex items-center gap-1.5 text-sm font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 px-4 py-2 rounded-xl transition-colors">
               <Plus className="h-4 w-4" />
               {staffLoading ? "Adding…" : "Add staff"}
             </button>
@@ -957,7 +957,7 @@ export function ExpenseManager({
 
           {/* Employee list */}
           {employees.length === 0 ? (
-            <div className="text-center py-12 text-zinc-400 text-sm">No staff added yet.</div>
+            <div className="text-center py-12 text-zinc-500 dark:text-zinc-400 text-sm">No staff added yet.</div>
           ) : (
             <div className="space-y-2">
               {employees.map((emp) => {
@@ -972,27 +972,27 @@ export function ExpenseManager({
                       <div className="p-4 space-y-3">
                         <div className="grid grid-cols-2 gap-2">
                           <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Name</label>
+                            <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Name</label>
                             <input type="text" value={editEmpForm.name}
                               onChange={(e) => setEditEmpForm((f) => ({ ...f, name: e.target.value }))}
                               className="w-full rounded-lg border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/20 px-3 py-1.5 text-sm focus:outline-none"
                               autoFocus />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Role</label>
+                            <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Role</label>
                             <select value={editEmpForm.role} onChange={(e) => setEditEmpForm((f) => ({ ...f, role: e.target.value }))}
                               className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm focus:outline-none">
                               {STAFF_ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
                             </select>
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Phone</label>
+                            <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Phone</label>
                             <input type="tel" value={editEmpForm.phone}
                               onChange={(e) => setEditEmpForm((f) => ({ ...f, phone: e.target.value }))}
                               className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm focus:outline-none" />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide">Salary (₹/month)</label>
+                            <label className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">Salary (₹/month)</label>
                             <input type="number" min={0} value={editEmpForm.salary}
                               onChange={(e) => setEditEmpForm((f) => ({ ...f, salary: e.target.value }))}
                               className="w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-sm focus:outline-none" />
@@ -1000,7 +1000,7 @@ export function ExpenseManager({
                         </div>
                         <div className="flex gap-2">
                           <button onClick={() => saveEditEmployee(emp.id)}
-                            className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold">Save</button>
+                            className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold">Save</button>
                           <button onClick={() => setEditEmpId(null)}
                             className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">Cancel</button>
                         </div>
@@ -1020,19 +1020,19 @@ export function ExpenseManager({
                           <div className="text-xs text-zinc-500 mt-0.5 flex flex-wrap gap-x-3">
                             <span>{emp.role}</span>
                             {emp.phone && <span>📞 {emp.phone}</span>}
-                            {emp.salaryPaise && <span className="text-amber-600 dark:text-amber-400 font-medium">₹{(emp.salaryPaise / 100).toLocaleString("en-IN")}/mo</span>}
+                            {emp.salaryPaise && <span className="text-amber-700 dark:text-amber-400 font-medium">₹{(emp.salaryPaise / 100).toLocaleString("en-IN")}/mo</span>}
                           </div>
                           {actionErr && <p className="text-[10px] text-red-500 mt-0.5">{actionErr}</p>}
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           <button onClick={() => { setEditEmpId(emp.id); setEditEmpForm({ name: emp.name, role: emp.role, phone: emp.phone ?? "", salary: emp.salaryPaise ? String(emp.salaryPaise / 100) : "" }); setEmpActionError((p) => ({ ...p, [emp.id]: "" })); }}
-                            className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20" title="Edit">
+                            className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20" title="Edit">
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
                           <button onClick={() => toggleEmployee(emp.id, !emp.isActive)}
                             className={cn("p-1.5 rounded-lg text-xs font-semibold transition-colors",
                               emp.isActive
-                                ? "text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+                                ? "text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
                                 : "text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20")}
                             title={emp.isActive ? "Disable" : "Enable"}>
                             {emp.isActive ? "✕" : "✓"}
@@ -1040,11 +1040,11 @@ export function ExpenseManager({
                           {confirmDeleteEmpId === emp.id ? (
                             <div className="flex items-center gap-1.5">
                               <button onClick={() => deleteEmployee(emp.id)} className="text-xs font-bold text-red-600 hover:underline">Del</button>
-                              <button onClick={() => setConfirmDeleteEmpId(null)} className="text-xs text-zinc-400">No</button>
+                              <button onClick={() => setConfirmDeleteEmpId(null)} className="text-xs text-zinc-500 dark:text-zinc-400">No</button>
                             </div>
                           ) : (
                             <button onClick={() => { setConfirmDeleteEmpId(emp.id); setEmpActionError((p) => ({ ...p, [emp.id]: "" })); }}
-                              className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20" title="Delete">
+                              className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20" title="Delete">
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
                           )}
@@ -1067,7 +1067,7 @@ export function ExpenseManager({
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">
                 {editId ? "Edit expense" : "Add expense"}
               </h3>
-              <button onClick={() => setShowForm(false)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400">
+              <button onClick={() => setShowForm(false)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -1094,7 +1094,7 @@ export function ExpenseManager({
                 <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
                   {categories.filter((c) => c.items.length > 0).map((cat) => (
                     <div key={cat.id}>
-                      <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wide mb-1 pl-1">
+                      <p className="text-[10px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1 pl-1">
                         {cat.icon} {cat.name}
                       </p>
                       <div className="flex flex-wrap gap-1.5">
@@ -1114,7 +1114,7 @@ export function ExpenseManager({
                             className={cn(
                               "text-xs px-2.5 py-1 rounded-full border transition-colors",
                               form.label === item.name && form.category === cat.name
-                                ? "border-amber-400 bg-amber-500 text-white"
+                                ? "border-amber-400 bg-amber-500 text-zinc-900"
                                 : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300 hover:bg-amber-50 dark:hover:bg-amber-950/20"
                             )}
                           >
@@ -1262,7 +1262,7 @@ export function ExpenseManager({
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-50"
                 >
                   {formLoading ? "Saving…" : editId ? "Save changes" : "Add expense"}
                 </button>

@@ -52,7 +52,7 @@ export default async function OwnerVenuesPage() {
           {venues.length === 0 && (
             <Link
               href="/owner/onboarding"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-zinc-900 transition-colors"
             >
               <Plus className="h-4 w-4" />
               Add venue

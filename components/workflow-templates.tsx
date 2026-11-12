@@ -187,7 +187,7 @@ function TemplateEditor({ channel, templateMap, edits, setEdits, serverValues, o
 
       {bodyVars.length > 0 && (
         <div>
-          <p className="text-xs text-zinc-400 mb-1.5">Click to insert a variable at cursor:</p>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-1.5">Click to insert a variable at cursor:</p>
           <div className="flex flex-wrap gap-1.5">
             {bodyVars.map((v) => (
               <button
@@ -279,7 +279,7 @@ function EventCard({ event, templateMap, edits, setEdits, serverValues, onSave, 
               </span>
             )}
           </div>
-          <div className="text-xs text-zinc-400 mt-0.5">{event.description}</div>
+          <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{event.description}</div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-1">
@@ -297,9 +297,9 @@ function EventCard({ event, templateMap, edits, setEdits, serverValues, onSave, 
             ))}
           </div>
           {open ? (
-            <ChevronUp className="h-4 w-4 text-zinc-400" />
+            <ChevronUp className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-zinc-400" />
+            <ChevronDown className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
           )}
         </div>
       </button>
@@ -421,7 +421,7 @@ export function WorkflowTemplates() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16 text-zinc-400">
+      <div className="flex items-center justify-center py-16 text-zinc-500 dark:text-zinc-400">
         <Loader2 className="h-5 w-5 animate-spin mr-2" />
         Loading templates…
       </div>

@@ -16,7 +16,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
       <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between"><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3><button onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-400" /></button></div>
+        <div className="flex items-center justify-between"><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3><button onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button></div>
         {children}
       </div>
     </div>
@@ -69,14 +69,14 @@ function StaffForm({ initial, onDone, roles }: { initial?: StaffFormValue; onDon
         <div className="mb-1.5 text-xs font-medium text-zinc-500">Role</div>
         <div className="flex flex-wrap gap-1.5">
           {allRoles.map((r) => (
-            <button key={r} type="button" onClick={() => setRole(r)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", role === r ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{r}</button>
+            <button key={r} type="button" onClick={() => setRole(r)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", role === r ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{r}</button>
           ))}
           <button type="button" onClick={() => setAddingRole((v) => !v)} className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-dashed border-amber-400 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"><Plus className="h-3 w-3" /> New role</button>
         </div>
         {addingRole && (
           <div className="mt-2 flex gap-2">
             <input className={INPUT} placeholder="e.g. Cashier, Cleaner, Tea master" value={roleText} onChange={(e) => setRoleText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addRole(); } }} autoFocus maxLength={40} />
-            <button type="button" onClick={addRole} className="shrink-0 rounded-lg bg-amber-500 px-3 text-xs font-semibold text-white">Add</button>
+            <button type="button" onClick={addRole} className="shrink-0 rounded-lg bg-amber-500 px-3 text-xs font-semibold text-zinc-900">Add</button>
           </div>
         )}
       </div>
@@ -84,17 +84,17 @@ function StaffForm({ initial, onDone, roles }: { initial?: StaffFormValue; onDon
         <div className="mb-1.5 text-xs font-medium text-zinc-500">How are they paid?</div>
         <div className="grid grid-cols-2 gap-1.5">
           {(["MONTHLY", "DAILY"] as const).map((t) => (
-            <button key={t} type="button" onClick={() => setPayType(t)} className={cn("rounded-lg border px-2 py-2 text-sm font-semibold", payType === t ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{PAY_LABEL[t]}</button>
+            <button key={t} type="button" onClick={() => setPayType(t)} className={cn("rounded-lg border px-2 py-2 text-sm font-semibold", payType === t ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{PAY_LABEL[t]}</button>
           ))}
         </div>
       </div>
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400">₹</span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400">₹</span>
         <input className={cn(INPUT, "pl-6")} inputMode="decimal" placeholder={payType === "MONTHLY" ? "Salary per month" : "Wage per day"} value={rate} onChange={(e) => setRate(e.target.value.replace(/[^\d.]/g, ""))} />
       </div>
       {payType === "DAILY" && <p className="text-xs text-zinc-500">Good for someone who comes now and then too: you pay them only for the days they work.</p>}
       {error && <p className="text-xs text-red-500">{error}</p>}
-      <button type="button" onClick={save} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+      <button type="button" onClick={save} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-50">
         {busy && <Loader2 className="h-4 w-4 animate-spin" />}{initial?.id ? "Save" : "Add to team"}
       </button>
     </div>
@@ -107,7 +107,7 @@ export function AddStaffButton({ roles = [] }: { roles?: string[] }) {
   if (!canWrite) return null;
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Add staff</button>
+      <button type="button" onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900"><Plus className="h-4 w-4" /> Add staff</button>
       {open && <Modal title="New team member" onClose={() => setOpen(false)}><StaffForm roles={roles} onDone={() => setOpen(false)} /></Modal>}
     </>
   );
@@ -156,14 +156,14 @@ export function PayStaffButton({ id, name, payType, toPayPaise, compact }: { id:
   return (
     <>
       <button type="button" onClick={() => { setAmount(toPayPaise > 0 ? String(toPayPaise / 100) : ""); setKind(payType === "DAILY" ? "WAGE" : "SALARY"); setError(""); setOpen(true); }}
-        className={cn("inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-600 font-semibold text-white", compact ? "rounded-lg px-2.5 py-1 text-xs" : "rounded-xl px-4 py-2.5 text-sm")}>
+        className={cn("inline-flex items-center gap-1.5 bg-emerald-700 hover:bg-emerald-800 font-semibold text-white", compact ? "rounded-lg px-2.5 py-1 text-xs" : "rounded-xl px-4 py-2.5 text-sm")}>
         <Wallet className={compact ? "h-3 w-3" : "h-4 w-4"} /> Pay
       </button>
       {open && (
         <Modal title={`Pay ${name}`} onClose={() => setOpen(false)}>
           <div className="flex flex-wrap gap-1.5">
             {PAY_KINDS.map((k) => (
-              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
+              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
             ))}
           </div>
           {toPayPaise > 0 && <p className="text-xs text-zinc-500">Still to pay this month: {rs(toPayPaise)}</p>}
@@ -176,7 +176,7 @@ export function PayStaffButton({ id, name, payType, toPayPaise, compact }: { id:
           </div>
           <input className={INPUT} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} maxLength={120} />
           {error && <p className="text-xs text-red-500">{error}</p>}
-          <button type="button" onClick={pay} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          <button type="button" onClick={pay} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} Record payment
           </button>
         </Modal>
@@ -210,7 +210,7 @@ export function QuickAttendance({ id, date, units: initial }: { id: string; date
         const on = o.value === 0 ? units === null : units === o.value;
         return (
           <button key={o.label} type="button" disabled={busy} onClick={() => set(o.value)}
-            className={cn("px-2.5 py-1 rounded-md text-xs font-semibold transition-colors", on ? (o.value === 0 ? "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200 shadow-sm" : "bg-emerald-500 text-white shadow-sm") : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300")}>
+            className={cn("px-2.5 py-1 rounded-md text-xs font-semibold transition-colors", on ? (o.value === 0 ? "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-200 shadow-sm" : "bg-emerald-700 text-white shadow-sm") : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300")}>
             {on && o.value !== 0 && <Check className="mr-0.5 inline h-3 w-3" />}{o.label}
           </button>
         );
@@ -238,12 +238,12 @@ export function AttendanceGrid({ id, month, marks, today }: { id: string; month:
 
   return (
     <div>
-      <div className="grid grid-cols-7 gap-1 text-center text-[10px] uppercase tracking-wide text-zinc-400 mb-1">{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d}>{d}</div>)}</div>
+      <div className="grid grid-cols-7 gap-1 text-center text-[10px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400 mb-1">{["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((d) => <div key={d}>{d}</div>)}</div>
       <div className="grid grid-cols-7 gap-1">
         {cells.map((d, i) => d === null ? <div key={i} /> : (
           <button key={d} type="button" onClick={() => tap(d)} title="Tap to mark present, half day or clear"
             className={cn("aspect-square rounded-lg border text-sm font-medium transition-colors",
-              state[d] === 1 ? "bg-emerald-500 border-emerald-500 text-white" : state[d] === 0.5 ? "bg-emerald-100 dark:bg-emerald-950/40 border-emerald-300 text-emerald-800 dark:text-emerald-300" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300",
+              state[d] === 1 ? "bg-emerald-700 border-emerald-500 text-white" : state[d] === 0.5 ? "bg-emerald-100 dark:bg-emerald-950/40 border-emerald-300 text-emerald-800 dark:text-emerald-300" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300",
               d === today && state[d] === undefined && "ring-2 ring-amber-400")}>
             {Number(d.slice(8))}{state[d] === 0.5 && <span className="block text-[9px] leading-none">½</span>}
           </button>
@@ -301,7 +301,7 @@ export function PaymentActions({ payment, employeeId }: { payment: StaffPaymentR
         <Modal title="Edit payment" onClose={() => setEditing(false)}>
           <div className="flex flex-wrap gap-1.5">
             {PAY_KINDS.map((k) => (
-              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
+              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
             ))}
           </div>
           <input className={INPUT} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} aria-label="Amount" />
@@ -313,7 +313,7 @@ export function PaymentActions({ payment, employeeId }: { payment: StaffPaymentR
           </div>
           <input className={INPUT} placeholder="Note (optional)" value={note} onChange={(e) => setNote(e.target.value)} maxLength={120} />
           {error && <p className="text-xs text-red-500">{error}</p>}
-          <button type="button" onClick={save} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          <button type="button" onClick={save} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-50">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} Save changes
           </button>
         </Modal>

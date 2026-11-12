@@ -6,7 +6,7 @@ export default function ApplyVenuePage() {
     <div className="mx-auto max-w-5xl px-4 py-10 space-y-8">
       <div className="text-center space-y-3">
         <div className="w-14 h-14 rounded-2xl bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center mx-auto">
-          <Building2 className="h-7 w-7 text-amber-600" />
+          <Building2 className="h-7 w-7 text-amber-700 dark:text-amber-500" />
         </div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Add Your Convention Center</h1>
         <p className="mx-auto max-w-2xl text-sm text-zinc-500 leading-relaxed">

@@ -143,7 +143,7 @@ export function SearchForm({ defaults }: Props) {
               <div className="flex items-end">
                 <button
                   type="submit"
-                  className="flex items-center gap-2 w-full sm:w-auto rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors"
+                  className="flex items-center gap-2 w-full sm:w-auto rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition-colors"
                 >
                   <Search className="h-4 w-4" />
                   Search

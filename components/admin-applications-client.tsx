@@ -52,11 +52,11 @@ function CredentialsBanner({ creds, onDismiss }: { creds: Credentials; onDismiss
         <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
           ✅ Application approved — credentials generated
         </p>
-        <button onClick={onDismiss} className="text-xs text-zinc-400 hover:text-zinc-600">Dismiss</button>
+        <button onClick={onDismiss} className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-600">Dismiss</button>
       </div>
       <div className="bg-white dark:bg-zinc-900 rounded-xl border border-emerald-100 dark:border-emerald-900 p-3 font-mono text-sm space-y-1">
-        <p><span className="text-zinc-400">Phone:    </span><span className="text-zinc-800 dark:text-zinc-200">{creds.phone}</span></p>
-        <p><span className="text-zinc-400">Password: </span><span className="text-zinc-800 dark:text-zinc-200">{creds.password}</span></p>
+        <p><span className="text-zinc-500 dark:text-zinc-400">Phone:    </span><span className="text-zinc-800 dark:text-zinc-200">{creds.phone}</span></p>
+        <p><span className="text-zinc-500 dark:text-zinc-400">Password: </span><span className="text-zinc-800 dark:text-zinc-200">{creds.password}</span></p>
       </div>
       <p className="text-xs text-emerald-700 dark:text-emerald-400">
         Credentials have been sent via WhatsApp and email. Copy them above as a backup.
@@ -88,7 +88,7 @@ function DetailsPanel({ d }: { d: CenterDetails }) {
 
   return (
     <div className="pt-1">
-      <button onClick={() => setOpen((v) => !v)} className="text-xs font-semibold text-amber-600 hover:underline">
+      <button onClick={() => setOpen((v) => !v)} className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">
         {open ? "Hide details" : "View full details"}
         {d.photos?.length ? ` · ${d.photos.length} photos` : ""}
       </button>
@@ -116,7 +116,7 @@ function DetailsPanel({ d }: { d: CenterDetails }) {
           {links.length > 0 && (
             <div className="flex flex-wrap gap-3">
               {links.map(([label, url]) => (
-                <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">{label}</a>
+                <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-700 dark:text-amber-500 hover:underline">{label}</a>
               ))}
             </div>
           )}
@@ -155,7 +155,7 @@ function CatererDetailsPanel({ d }: { d: CatererDetails }) {
 
   return (
     <div className="pt-1">
-      <button onClick={() => setOpen((v) => !v)} className="text-xs font-semibold text-amber-600 hover:underline">
+      <button onClick={() => setOpen((v) => !v)} className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">
         {open ? "Hide details" : "View full details"}
         {d.packages?.length ? ` · ${d.packages.length} packages` : ""}
         {d.photos?.length ? ` · ${d.photos.length} photos` : ""}
@@ -181,7 +181,7 @@ function CatererDetailsPanel({ d }: { d: CatererDetails }) {
               {d.packages.map((p) => (
                 <div key={p.name}>
                   {b(p.name)} — ₹{p.pricePerPlate}/plate{p.isVeg ? "" : " (non-veg)"}
-                  {p.dishes?.length ? <span className="text-zinc-400"> · {p.dishes.join(", ")}</span> : null}
+                  {p.dishes?.length ? <span className="text-zinc-500 dark:text-zinc-400"> · {p.dishes.join(", ")}</span> : null}
                 </div>
               ))}
             </div>
@@ -193,7 +193,7 @@ function CatererDetailsPanel({ d }: { d: CatererDetails }) {
           {links.length > 0 && (
             <div className="flex flex-wrap gap-3">
               {links.map(([label, url]) => (
-                <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-600 hover:underline">{label}</a>
+                <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-700 dark:text-amber-500 hover:underline">{label}</a>
               ))}
             </div>
           )}
@@ -243,12 +243,12 @@ function AppCard({
             </span>
           </div>
           <div className="text-sm text-zinc-500">{phone} · {email}</div>
-          <div className="text-xs text-zinc-400">{address}, {city}</div>
+          <div className="text-xs text-zinc-500 dark:text-zinc-400">{address}, {city}</div>
           {cuisines && cuisines.length > 0 && (
-            <div className="text-xs text-zinc-400">{cuisines.join(", ")}</div>
+            <div className="text-xs text-zinc-500 dark:text-zinc-400">{cuisines.join(", ")}</div>
           )}
           {website && (
-            <a href={website} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-600 hover:underline">{website}</a>
+            <a href={website} target="_blank" rel="noopener noreferrer" className="text-xs text-amber-700 dark:text-amber-500 hover:underline">{website}</a>
           )}
           {details && typeof details === "object"
             ? kind === "caterer"
@@ -264,7 +264,7 @@ function AppCard({
                 <button
                   onClick={async () => { if (loadingApprove) return; setLoadingApprove(true); try { await onApprove(); } finally { setLoadingApprove(false); } }}
                   disabled={loadingApprove}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60"
                 >
                   <CheckCircle className="h-3.5 w-3.5" />
                   {loadingApprove ? "Approving…" : "Approve"}
@@ -291,7 +291,7 @@ function AppCard({
                 >
                   {loadingReject ? "…" : "Confirm"}
                 </button>
-                <button onClick={() => setShowReject(false)} className="text-xs text-zinc-400 hover:text-zinc-600">
+                <button onClick={() => setShowReject(false)} className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-600">
                   Cancel
                 </button>
               </div>
@@ -382,7 +382,7 @@ export function AdminApplicationsClient({
           >
             {label}
             {count > 0 && (
-              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] font-bold">
+              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-zinc-900 text-[10px] font-bold">
                 {count}
               </span>
             )}
@@ -396,7 +396,7 @@ export function AdminApplicationsClient({
           {ownerApps.length === 0 && (
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-10 text-center">
               <Clock className="h-8 w-8 text-zinc-300 mx-auto mb-2" />
-              <p className="text-zinc-400 text-sm">No applications yet.</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">No applications yet.</p>
             </div>
           )}
           {ownerApps.map((a) => (
@@ -422,7 +422,7 @@ export function AdminApplicationsClient({
           {catererApps.length === 0 && (
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-10 text-center">
               <Clock className="h-8 w-8 text-zinc-300 mx-auto mb-2" />
-              <p className="text-zinc-400 text-sm">No applications yet.</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">No applications yet.</p>
             </div>
           )}
           {catererApps.map((a) => (

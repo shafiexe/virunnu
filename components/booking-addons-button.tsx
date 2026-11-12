@@ -118,7 +118,7 @@ export function BookingAddonsDialog({
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Add-on services</h3>
                 <p className="text-xs text-zinc-500 mt-0.5">Changes update this booking&apos;s total and invoice.</p>
               </div>
-              <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400" aria-label="Close">
+              <button onClick={() => setOpen(false)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400" aria-label="Close">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -140,7 +140,7 @@ export function BookingAddonsDialog({
                 />
               ))}
 
-              {loading && <p className="text-xs text-zinc-400 flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" /> Loading add-ons…</p>}
+              {loading && <p className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-1.5"><Loader2 className="h-3 w-3 animate-spin" /> Loading add-ons…</p>}
 
               {unlisted.map((a) => (
                 <AddonRow
@@ -162,7 +162,7 @@ export function BookingAddonsDialog({
                   </span>
                   <span className="flex items-center gap-2 shrink-0 text-zinc-500">
                     +₹{(addonLine(c.unit, c.priceRupees * 100, c.quantity) / 100).toLocaleString("en-IN")}
-                    <button type="button" onClick={() => setCustom((x) => x.filter((_, j) => j !== i))} aria-label="Remove" className="text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setCustom((x) => x.filter((_, j) => j !== i))} aria-label="Remove" className="text-zinc-500 dark:text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
                   </span>
                 </div>
               ))}
@@ -177,7 +177,7 @@ export function BookingAddonsDialog({
                         onClick={() => setDraft((d) => ({ ...d, name: q.name, unit: q.unit }))}
                         className={cn(
                           "px-2.5 py-1 rounded-full border text-xs font-medium transition-colors",
-                          draft.name === q.name ? "bg-amber-500 border-amber-500 text-white" : "border-dashed border-amber-400 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+                          draft.name === q.name ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-dashed border-amber-400 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"
                         )}
                       >
                         {q.name}
@@ -187,7 +187,7 @@ export function BookingAddonsDialog({
                   <input className={FIELD} placeholder="Service name, e.g. Air conditioning" maxLength={60} value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} />
                   <div className="grid grid-cols-[1fr_1fr] gap-2">
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400">₹</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400">₹</span>
                       <input className={cn(FIELD, "pl-6")} inputMode="numeric" placeholder={draft.unit === "HOUR" ? "Rate per hour" : "Price"} value={draft.price} onChange={(e) => setDraft((d) => ({ ...d, price: e.target.value.replace(/\D/g, "") }))} />
                     </div>
                     <select className={FIELD} value={draft.unit} onChange={(e) => setDraft((d) => ({ ...d, unit: e.target.value as "FIXED" | "HOUR" }))}>
@@ -206,12 +206,12 @@ export function BookingAddonsDialog({
                     Save to my add-on list for next time
                   </label>
                   <div className="flex gap-2">
-                    <button type="button" onClick={addCustom} className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold">Add to booking</button>
+                    <button type="button" onClick={addCustom} className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold">Add to booking</button>
                     <button type="button" onClick={() => { setFormOpen(false); setError(""); }} className="px-3 py-1.5 rounded-lg text-sm text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800">Cancel</button>
                   </div>
                 </div>
               ) : (
-                <button type="button" onClick={() => { setFormOpen(true); setError(""); }} className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline pt-1">
+                <button type="button" onClick={() => { setFormOpen(true); setError(""); }} className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700 dark:text-amber-500 hover:underline pt-1">
                   <Plus className="h-4 w-4" /> Add a service
                 </button>
               )}
@@ -238,7 +238,7 @@ export function BookingAddonsDialog({
                 type="button"
                 onClick={save}
                 disabled={saving}
-                className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-50"
               >
                 {saving ? "Saving…" : "Save changes"}
               </button>

@@ -48,7 +48,7 @@ function Card({ title, hint, children }: { title: string; hint?: string; childre
   return (
     <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
       <div>
-        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{title}</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{title}</h2>
         {hint && <p className="text-xs text-zinc-500 mt-0.5">{hint}</p>}
       </div>
       {children}
@@ -349,7 +349,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
           <span>You have an unfinished {quote ? "quotation" : "order"}{draft.pending.value.customerName ? ` for ${draft.pending.value.customerName}` : ""} from {new Date(draft.pending.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}.</span>
           <span className="flex gap-2">
-            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white">Continue it</button>
+            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900">Continue it</button>
             <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold">Start fresh</button>
           </span>
         </div>
@@ -363,12 +363,12 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
               <div className="space-y-2 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 p-3">
                 <textarea autoFocus className={cn(INPUT, "resize-none")} rows={4} value={pasted} onChange={(e) => setPasted(e.target.value)} placeholder="Paste the customer's message here, for example: Hi, I'm Shafi, wedding on 14 Dec at Rozia Hall, 300 people, 98470 00000" />
                 <div className="flex gap-2">
-                  <button type="button" onClick={applyPaste} disabled={!pasted.trim()} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">Fill the form from it</button>
+                  <button type="button" onClick={applyPaste} disabled={!pasted.trim()} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900 disabled:opacity-50">Fill the form from it</button>
                   <button type="button" onClick={() => { setPasteOpen(false); setPasted(""); }} className="px-3 py-1.5 text-xs text-zinc-500">Cancel</button>
                 </div>
               </div>
             ) : (
-              <button type="button" onClick={() => setPasteOpen(true)} className="text-xs font-semibold text-amber-600 hover:underline">📋 Paste the customer&apos;s message to fill this in</button>
+              <button type="button" onClick={() => setPasteOpen(true)} className="text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">📋 Paste the customer&apos;s message to fill this in</button>
             )}
           </div>
         )}
@@ -397,7 +397,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
         <div className="flex flex-wrap gap-1.5">
           {EVENT_TYPES.map((t) => (
             <button key={t} type="button" onClick={() => setEventType(eventType === t ? "" : t)}
-              className={cn("px-3 py-1 rounded-full border text-xs font-medium transition-colors", eventType === t ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
+              className={cn("px-3 py-1 rounded-full border text-xs font-medium transition-colors", eventType === t ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
               {t}
             </button>
           ))}
@@ -411,7 +411,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             const on = servings.some((s) => s.label === p.label);
             return (
               <button key={p.label} type="button" onClick={() => toggleServing(p.label, p.time)}
-                className={cn("px-3 py-1.5 rounded-full border text-xs font-medium transition-colors", on ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
+                className={cn("px-3 py-1.5 rounded-full border text-xs font-medium transition-colors", on ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
                 {p.label}
               </button>
             );
@@ -425,10 +425,10 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             <Field label={i === 0 ? "Name" : " "}><input className={INPUT} value={s.label} onChange={(e) => patchServing(i, { label: e.target.value })} /></Field>
             <Field label={i === 0 ? "Time" : " "}><input type="time" className={INPUT} value={s.time} onChange={(e) => patchServing(i, { time: e.target.value })} /></Field>
             <Field label={i === 0 ? "Guests" : " "}><input className={INPUT} inputMode="numeric" value={s.guests} onChange={(e) => patchServing(i, { guests: e.target.value.replace(/\D/g, "") })} placeholder="—" /></Field>
-            <button type="button" onClick={() => removeServing(i)} aria-label="Remove time" className="p-2 text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
+            <button type="button" onClick={() => removeServing(i)} aria-label="Remove time" className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
           </div>
         ))}
-        {servings.length === 0 && <p className="text-xs text-zinc-400">Optional. You can skip this for orders that are only equipment or staff.</p>}
+        {servings.length === 0 && <p className="text-xs text-zinc-500 dark:text-zinc-400">Optional. You can skip this for orders that are only equipment or staff.</p>}
       </Card>
 
       {/* 3. items */}
@@ -446,8 +446,8 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             const count = lines.filter((l) => l.group === g).length;
             return (
               <button key={g} type="button" onClick={() => setTab(g)}
-                className={cn("px-3.5 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors", tab === g ? "bg-amber-500 text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
-                {GROUP_LABEL[g]}{count > 0 && <span className={cn("ml-1.5 text-xs", tab === g ? "text-amber-100" : "text-amber-600")}>{count}</span>}
+                className={cn("px-3.5 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors", tab === g ? "bg-amber-500 text-zinc-900" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
+                {GROUP_LABEL[g]}{count > 0 && <span className={cn("ml-1.5 text-xs", tab === g ? "text-amber-100" : "text-amber-700 dark:text-amber-500")}>{count}</span>}
               </button>
             );
           })}
@@ -463,8 +463,8 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
                     <input type="checkbox" checked={!!line} onChange={() => toggleItem(item)} className="h-4 w-4 accent-amber-500 shrink-0" />
                     <span className="text-sm truncate">{item.name}</span>
                     {(() => { const u = usual?.rates[`i:${item.id}`]; return u !== undefined && u !== item.ratePaise
-                      ? <span className="text-xs shrink-0 text-amber-600 dark:text-amber-400" title={`Usual rate for ${known?.name ?? "this customer"}`}>{rs(u / 100)}/{item.unit} · usual</span>
-                      : <span className="text-xs text-zinc-400 shrink-0">{rs(item.ratePaise / 100)}/{item.unit}</span>; })()}
+                      ? <span className="text-xs shrink-0 text-amber-700 dark:text-amber-400" title={`Usual rate for ${known?.name ?? "this customer"}`}>{rs(u / 100)}/{item.unit} · usual</span>
+                      : <span className="text-xs text-zinc-500 dark:text-zinc-400 shrink-0">{rs(item.ratePaise / 100)}/{item.unit}</span>; })()}
                   </label>
                   {line && (
                     <span className="hidden sm:block text-sm font-medium text-zinc-700 dark:text-zinc-200 shrink-0">{rs(num(line.quantity) * num(line.rate))}</span>
@@ -493,22 +493,22 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             );
           })}
           {activeCatalog.filter((i) => i.group === tab).length === 0 && (
-            <p className="text-xs text-zinc-400">No {GROUP_LABEL[tab].toLowerCase()} items in your price list yet. Add one below.</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">No {GROUP_LABEL[tab].toLowerCase()} items in your price list yet. Add one below.</p>
           )}
         </div>
 
         {/* one-off lines (not in the price list) */}
         {customLines.length > 0 && (
           <div className="space-y-1.5">
-            <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">One-off items</div>
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">One-off items</div>
             {customLines.map((l) => (
               <div key={l.key} className="flex flex-wrap items-center gap-2 rounded-xl border border-amber-400 bg-amber-50/60 dark:bg-amber-950/10 px-3 py-2">
-                <span className="text-sm flex-1 min-w-[8rem]">{l.name} <span className="text-xs text-zinc-400">({GROUP_LABEL[l.group]})</span></span>
+                <span className="text-sm flex-1 min-w-[8rem]">{l.name} <span className="text-xs text-zinc-500 dark:text-zinc-400">({GROUP_LABEL[l.group]})</span></span>
                 <input className={cn(SMALL, "w-20")} inputMode="decimal" value={l.quantity} onChange={(e) => patchLine(l.key, { quantity: e.target.value.replace(/[^\d.]/g, "") })} aria-label="Quantity" />
                 <span className="text-xs text-zinc-500">{l.unit} × ₹</span>
                 <input className={cn(SMALL, "w-24")} inputMode="decimal" value={l.rate} onChange={(e) => patchLine(l.key, { rate: e.target.value.replace(/[^\d.]/g, "") })} aria-label="Rate" />
                 <span className="text-sm font-medium w-24 text-right">{rs(num(l.quantity) * num(l.rate))}</span>
-                <button type="button" onClick={() => setLines((ls) => ls.filter((x) => x.key !== l.key))} aria-label="Remove" className="text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
+                <button type="button" onClick={() => setLines((ls) => ls.filter((x) => x.key !== l.key))} aria-label="Remove" className="text-zinc-500 dark:text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
               </div>
             ))}
           </div>
@@ -532,12 +532,12 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
               Save to my price list for next time
             </label>
             <div className="flex gap-2">
-              <button type="submit" className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold">Add to order</button>
+              <button type="submit" className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold">Add to order</button>
               <button type="button" onClick={() => setCustomOpen(false)} className="px-3 py-1.5 rounded-lg text-sm text-zinc-500">Cancel</button>
             </div>
           </form>
         ) : (
-          <button type="button" onClick={() => { setCustom((c) => ({ ...c, group: tab })); setCustomOpen(true); }} className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline">
+          <button type="button" onClick={() => { setCustom((c) => ({ ...c, group: tab })); setCustomOpen(true); }} className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700 dark:text-amber-500 hover:underline">
             <Plus className="h-4 w-4" /> Add an item that isn&apos;t listed
           </button>
         )}
@@ -549,12 +549,12 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
           <div className="space-y-2">
             {team.map((t) => (
               <div key={t.employeeId} className="grid grid-cols-[1fr_8rem_auto] items-center gap-2">
-                <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50 truncate">{t.name}<span className="ml-2 text-xs font-normal text-zinc-400">{people.find((p) => p.id === t.employeeId)?.role}</span></span>
+                <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50 truncate">{t.name}<span className="ml-2 text-xs font-normal text-zinc-500 dark:text-zinc-400">{people.find((p) => p.id === t.employeeId)?.role}</span></span>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400">₹</span>
                   <input className={cn(INPUT, "pl-6")} inputMode="decimal" placeholder="Pay" value={t.amount} onChange={(e) => setTeam((x) => x.map((y) => (y.employeeId === t.employeeId ? { ...y, amount: e.target.value.replace(/[^\d.]/g, "") } : y)))} aria-label={`Pay for ${t.name}`} />
                 </div>
-                <button type="button" onClick={() => setTeam((x) => x.filter((y) => y.employeeId !== t.employeeId))} aria-label={`Remove ${t.name}`} className="p-1.5 text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
+                <button type="button" onClick={() => setTeam((x) => x.filter((y) => y.employeeId !== t.employeeId))} aria-label={`Remove ${t.name}`} className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
               </div>
             ))}
             <div className="text-xs text-zinc-500">{team.length} {team.length === 1 ? "person" : "people"}{teamCost > 0 && <> · team pay <span className="font-semibold text-zinc-800 dark:text-zinc-200">{rs(teamCost)}</span></>}</div>
@@ -565,7 +565,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             <option value="">Choose from the staff list…</option>
             {people.filter((p) => !team.some((t) => t.employeeId === p.id)).map((p) => <option key={p.id} value={p.id}>{p.name} · {p.role}</option>)}
           </select>
-          <button type="button" onClick={() => setAddingPerson((v) => !v)} className="shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 text-xs font-semibold text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">+ New person</button>
+          <button type="button" onClick={() => setAddingPerson((v) => !v)} className="shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20">+ New person</button>
         </div>
         {addingPerson && (
           <div className="rounded-xl border border-zinc-200 dark:border-zinc-700 p-3 space-y-2">
@@ -573,14 +573,14 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
               <input className={INPUT} placeholder="Name" value={newPerson.name} onChange={(e) => setNewPerson((p) => ({ ...p, name: e.target.value }))} autoFocus />
               <input className={INPUT} inputMode="tel" placeholder="Phone (optional)" value={newPerson.phone} onChange={(e) => setNewPerson((p) => ({ ...p, phone: e.target.value }))} />
               <div className="relative col-span-2 sm:col-span-1">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-400">₹</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-zinc-500 dark:text-zinc-400">₹</span>
                 <input className={cn(INPUT, "pl-6")} inputMode="decimal" placeholder="Daily wage" value={newPerson.wage} onChange={(e) => setNewPerson((p) => ({ ...p, wage: e.target.value.replace(/[^\d.]/g, "") }))} />
               </div>
             </div>
-            <p className="text-[11px] text-zinc-400">Added as a daily-wage person: paid for the days they work. You can change this later under Parties → Staff.</p>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Added as a daily-wage person: paid for the days they work. You can change this later under Parties → Staff.</p>
             {personError && <p className="text-xs text-red-500">{personError}</p>}
             <div className="flex gap-2">
-              <button type="button" onClick={createPerson} className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold">Add and put on this function</button>
+              <button type="button" onClick={createPerson} className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold">Add and put on this function</button>
               <button type="button" onClick={() => setAddingPerson(false)} className="px-3 py-1.5 rounded-lg text-sm text-zinc-500">Cancel</button>
             </div>
           </div>
@@ -594,22 +594,22 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             const m = t === "FOOD" ? food : service;
             const rows = lines.filter((l) => billTypeOfGroup(l.group) === t);
             return (
-              <div key={t} className={cn("rounded-xl border p-4 space-y-3", m.count ? "border-zinc-200 dark:border-zinc-700" : "border-dashed border-zinc-200 dark:border-zinc-800 opacity-60")}>
+              <div key={t} className={cn("rounded-xl border p-4 space-y-3", m.count ? "border-zinc-200 dark:border-zinc-700" : "border-dashed border-zinc-200 dark:border-zinc-800")}>
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">{BILL_LABEL[t]}</h3>
-                  <span className="text-xs text-zinc-400">{m.count} item{m.count === 1 ? "" : "s"}</span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">{m.count} item{m.count === 1 ? "" : "s"}</span>
                 </div>
                 {rows.length > 0 ? (
                   <div className="space-y-1 text-sm">
                     {rows.map((l) => (
                       <div key={l.key} className="flex justify-between gap-3">
-                        <span className="text-zinc-600 dark:text-zinc-400 truncate">{l.name} <span className="text-xs text-zinc-400">{num(l.quantity)} × {rs(num(l.rate))}</span></span>
+                        <span className="text-zinc-600 dark:text-zinc-400 truncate">{l.name} <span className="text-xs text-zinc-500 dark:text-zinc-400">{num(l.quantity)} × {rs(num(l.rate))}</span></span>
                         <span className="shrink-0">{rs(num(l.quantity) * num(l.rate))}</span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-zinc-400">No {t === "FOOD" ? "food" : "service or setting"} items ticked, so there is no {t === "FOOD" ? "food" : "service"} bill.</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">No {t === "FOOD" ? "food" : "service or setting"} items ticked, so there is no {t === "FOOD" ? "food" : "service"} bill.</p>
                 )}
                 {m.count > 0 && (
                   <>
@@ -621,10 +621,10 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
                       )}
                     </div>
                     <div className="border-t border-zinc-200 dark:border-zinc-700 pt-2 text-sm space-y-0.5">
-                      {m.discount > 0 && <div className="flex justify-between text-amber-600 dark:text-amber-400"><span>Discount</span><span>−{rs(m.discount)}</span></div>}
+                      {m.discount > 0 && <div className="flex justify-between text-amber-700 dark:text-amber-400"><span>Discount</span><span>−{rs(m.discount)}</span></div>}
                       {m.gst && !m.gstInclusive && <div className="flex justify-between text-zinc-500"><span>GST {m.gstRateBp / 100}%</span><span>+{rs(m.gst.gstPaise / 100)}</span></div>}
                       <div className="flex justify-between font-semibold"><span>Total</span><span>{rs(m.net)}</span></div>
-                      {m.gst && m.gstInclusive && <div className="text-[11px] text-zinc-400">Includes GST {m.gstRateBp / 100}% ({rs(m.gst.gstPaise / 100)})</div>}
+                      {m.gst && m.gstInclusive && <div className="text-[11px] text-zinc-500 dark:text-zinc-400">Includes GST {m.gstRateBp / 100}% ({rs(m.gst.gstPaise / 100)})</div>}
                       {showAdvance && m.advance > 0 && <div className="flex justify-between text-xs text-red-500"><span>Balance after advance</span><span>{rs(m.balance)}</span></div>}
                     </div>
                   </>
@@ -653,7 +653,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             <div className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{rs(grandNet)}{showAdvance && grandAdvance > 0 && <span className="ml-2 text-xs font-medium text-red-500">Balance {rs(Math.max(0, grandNet - grandAdvance))}</span>}</div>
           </div>
           {error && <p className="text-xs text-red-500 max-w-xs">{error}</p>}
-          <button type="button" onClick={submit} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+          <button type="button" onClick={submit} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-6 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-60">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}
             {quote ? (quote.id ? "Save quotation" : "Create quotation") : initial ? "Save changes" : "Save order"}
           </button>

@@ -211,10 +211,10 @@ export function AISearchBar({ onParsed }: Props) {
     <div className="mb-4 space-y-2">
       <div className="flex items-center gap-1.5 mb-1">
         <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-        <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+        <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
           {t("aiLabel")}
         </span>
-        <span className="text-xs text-zinc-400 dark:text-zinc-500 font-normal normal-case tracking-normal">
+        <span className="text-xs text-zinc-500 dark:text-zinc-500 font-normal normal-case tracking-normal">
           {t("aiSub")}
         </span>
       </div>
@@ -258,7 +258,7 @@ export function AISearchBar({ onParsed }: Props) {
           type="button"
           onClick={() => parse(query)}
           disabled={loading || listening || !query.trim()}
-          className="shrink-0 flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50 px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+          className="shrink-0 flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 disabled:opacity-50 px-4 py-2.5 text-sm font-semibold text-zinc-900 transition-colors"
         >
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
           <span className="hidden sm:inline">{loading ? loaderMsg : t("aiBtn")}</span>
@@ -279,7 +279,7 @@ export function AISearchBar({ onParsed }: Props) {
           <Sparkles className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
           <p className="text-xs text-amber-800 dark:text-amber-300">
             <span className="font-semibold">AI understood: </span>{summary}
-            <span className="text-amber-600 dark:text-amber-400 ml-1">— filters filled below ↓</span>
+            <span className="text-amber-700 dark:text-amber-400 ml-1">— filters filled below ↓</span>
           </p>
         </div>
       )}

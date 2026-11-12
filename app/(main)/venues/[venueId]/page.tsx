@@ -138,7 +138,7 @@ function AmenityIcon({ name }: { name: string }) {
   const iconName = match?.[1] ?? "check_circle";
   return (
     <span
-      className="material-symbols-rounded text-[18px] leading-none text-amber-600 dark:text-amber-400"
+      className="material-symbols-rounded text-[18px] leading-none text-amber-700 dark:text-amber-400"
       style={{ fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}
     >
       {iconName}
@@ -289,18 +289,18 @@ export default async function VenuePage({ params }: Props) {
         <div className="mx-auto max-w-5xl px-4 pt-4">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 px-4 sm:px-5 py-4 flex flex-wrap items-center justify-center gap-2.5">
             {venue.phone && (
-              <a href={`tel:${venue.phone}`} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors shadow-sm">
+              <a href={`tel:${venue.phone}`} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold transition-colors shadow-sm">
                 <Phone className="h-4 w-4" /> Call
               </a>
             )}
             {(venue.whatsappPhone ?? venue.phone) && (
               <a href={`https://wa.me/${(venue.whatsappPhone ?? venue.phone)!.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5c] text-white text-sm font-semibold transition-colors shadow-sm">
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#25D366] hover:bg-[#1ebe5c] text-zinc-900 text-sm font-semibold transition-colors shadow-sm">
                 <MessageCircle className="h-4 w-4" /> WhatsApp
               </a>
             )}
             {hallsWithSlots[0] && (
-              <a href={`#hall-${hallsWithSlots[0].id}`} className="hidden md:inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors shadow-sm">
+              <a href={`#hall-${hallsWithSlots[0].id}`} className="hidden md:inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors shadow-sm">
                 <CalendarDays className="h-4 w-4" /> Check dates
               </a>
             )}
@@ -373,8 +373,8 @@ export default async function VenuePage({ params }: Props) {
                     </div>
                     {hall.pricePerSlot > 0 && (
                       <div className="text-right">
-                        <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Hall rent</p>
-                        <p className="text-xl font-bold text-amber-600 dark:text-amber-400">₹{(hall.pricePerSlot / 100).toLocaleString("en-IN")}<span className="text-xs font-medium text-zinc-500"> / slot</span></p>
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Hall rent</p>
+                        <p className="text-xl font-bold text-amber-700 dark:text-amber-400">₹{(hall.pricePerSlot / 100).toLocaleString("en-IN")}<span className="text-xs font-medium text-zinc-500"> / slot</span></p>
                       </div>
                     )}
                   </div>
@@ -395,7 +395,7 @@ export default async function VenuePage({ params }: Props) {
                     </div>
                   )}
                   {hall.description && <ClampText text={hall.description} className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed" />}
-                  <p className="text-xs text-zinc-400">Pick a date in the calendar to see slots and book.</p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">Pick a date in the calendar to see slots and book.</p>
                 </div>
 
                 {/* Included facilities */}
@@ -408,7 +408,7 @@ export default async function VenuePage({ params }: Props) {
                     <div className="p-4 flex flex-wrap gap-2">
                       {includedFacilities.map((f) => (
                         <span key={f.id} className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-2.5 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                          <span className="material-symbols-rounded leading-none text-amber-600 dark:text-amber-400" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>{facilityIcon(f.name, f.icon)}</span>
+                          <span className="material-symbols-rounded leading-none text-amber-700 dark:text-amber-400" style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}>{facilityIcon(f.name, f.icon)}</span>
                           {f.name}
                         </span>
                       ))}
@@ -421,20 +421,20 @@ export default async function VenuePage({ params }: Props) {
                   <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
                     <div className="px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
                       <h3 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">Available add-ons</h3>
-                      <p className="text-xs text-zinc-400 mt-0.5">Optional extras you can request when booking</p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Optional extras you can request when booking</p>
                     </div>
                     <div className="p-4 grid grid-cols-2 gap-2">
                       {addonFacilities.map((f) => (
                         <div key={f.id} className="flex items-center gap-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/50 px-3 py-2.5">
                           <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/30 flex items-center justify-center shrink-0">
                             <span
-                              className="material-symbols-rounded leading-none text-amber-600 dark:text-amber-400"
+                              className="material-symbols-rounded leading-none text-amber-700 dark:text-amber-400"
                               style={{ fontSize: 16, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20" }}
                             >{facilityIcon(f.name, f.icon)}</span>
                           </div>
                           <div className="min-w-0">
                             <p className="text-xs font-medium text-zinc-800 dark:text-zinc-100 truncate">{f.name}</p>
-                            <p className="text-xs font-semibold text-amber-600 dark:text-amber-400">₹{(f.amountPaise / 100).toLocaleString("en-IN")}</p>
+                            <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">₹{(f.amountPaise / 100).toLocaleString("en-IN")}</p>
                           </div>
                         </div>
                       ))}
@@ -465,7 +465,7 @@ export default async function VenuePage({ params }: Props) {
                   href={directionsHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-white bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg transition-colors"
                 >
                   <MapPin className="h-3 w-3" />
                   Get Directions

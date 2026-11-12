@@ -45,7 +45,7 @@ export function CatererInvoiceSettings({ initial }: { initial: { nextInvoiceNumb
         <label className="block space-y-1">
           <span className="text-xs font-medium text-zinc-500">Next invoice number</span>
           <input className={INPUT} inputMode="numeric" value={next} onChange={(e) => { setNext(e.target.value.replace(/\D/g, "")); setSaved(false); }} />
-          <span className="block text-[11px] text-zinc-400">{initial.lastUsed > 0 ? `Last invoice issued: ${initial.lastUsed}.` : "No invoice issued yet, so you can start from any number, for example where Vyapar left off."}</span>
+          <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">{initial.lastUsed > 0 ? `Last invoice issued: ${initial.lastUsed}.` : "No invoice issued yet, so you can start from any number, for example where Vyapar left off."}</span>
         </label>
         <label className="block space-y-1">
           <span className="text-xs font-medium text-zinc-500">UPI ID (printed for payments)</span>
@@ -92,12 +92,12 @@ export function CatererInvoiceSettings({ initial }: { initial: { nextInvoiceNumb
                 </button>
               ))}
             </div>
-            <p className="text-[11px] text-zinc-400">Common rates: 5% for catering, 18% for service and equipment hire. Check with your accountant.</p>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">Common rates: 5% for catering, 18% for service and equipment hire. Check with your accountant.</p>
           </div>
         )}
       </div>
       {error && <p className="text-xs text-red-500">{error}</p>}
-      <button type="button" onClick={save} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+      <button type="button" onClick={save} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-5 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-60">
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <Check className="h-4 w-4" /> : null}{saved ? "Saved" : "Save invoice settings"}
       </button>
     </section>

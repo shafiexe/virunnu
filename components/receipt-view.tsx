@@ -23,9 +23,9 @@ export function ReceiptView({ r }: { r: NonNullable<ReceiptData> }) {
       </div>
 
       <div className="rounded-xl border-2 border-zinc-200 dark:border-zinc-700 px-5 py-5 mb-6">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Received from</div>
+        <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Received from</div>
         <div className="text-base font-semibold">{r.customerName}</div>
-        <div className="mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-400">Amount</div>
+        <div className="mt-4 text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Amount</div>
         <div className="text-3xl font-bold">₹{formatRupees(r.amountPaise)}</div>
         <div className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{r.method}{r.note ? ` · ${r.note}` : ""}</div>
       </div>
@@ -40,7 +40,7 @@ export function ReceiptView({ r }: { r: NonNullable<ReceiptData> }) {
         <div className="flex justify-between font-bold border-t-2 border-zinc-200 dark:border-zinc-700 pt-2 mt-1 text-base"><span>Balance due</span><span>{r.balancePaise > 0 ? `₹${formatRupees(r.balancePaise)}` : "Nil"}</span></div>
       </div>
 
-      <div className="mt-12 pt-5 border-t border-zinc-200 dark:border-zinc-700 text-xs text-zinc-400">
+      <div className="mt-12 pt-5 border-t border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 dark:text-zinc-400">
         <p>This is a computer-generated receipt. Thank you for choosing {r.thanksName}.</p>
       </div>
     </div>

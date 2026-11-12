@@ -95,19 +95,19 @@ function TemplateTag({
     return (
       <form onSubmit={handleSave} className="flex flex-wrap items-end gap-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-amber-300 dark:border-amber-700/60">
         <div className="space-y-1">
-          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Slot name</label>
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Slot name</label>
           <input className={cn(input, "w-28 block")} value={draft.name} onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))} required autoFocus />
         </div>
         <div className="space-y-1">
-          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Start</label>
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Start</label>
           <input type="time" className={cn(input, "w-28 block")} value={draft.startTime} onChange={(e) => setDraft((d) => ({ ...d, startTime: e.target.value }))} required />
         </div>
         <div className="space-y-1">
-          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">End</label>
+          <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">End</label>
           <input type="time" className={cn(input, "w-28 block")} value={draft.endTime} onChange={(e) => setDraft((d) => ({ ...d, endTime: e.target.value }))} required />
         </div>
         <div className="flex gap-1.5">
-          <button type="submit" disabled={loading} className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold disabled:opacity-50">
+          <button type="submit" disabled={loading} className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
             {loading ? "…" : "Save"}
           </button>
           <button type="button" onClick={() => { setEditing(false); setError(""); setDraft({ name: tpl.name, startTime: tpl.startTime, endTime: tpl.endTime }); }} className="px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
@@ -140,16 +140,16 @@ function TemplateTag({
           >
             {loading ? "…" : "Delete"}
           </button>
-          <button onClick={() => { setConfirm(false); setError(""); }} className="text-zinc-400">
+          <button onClick={() => { setConfirm(false); setError(""); }} className="text-zinc-500 dark:text-zinc-400">
             <X className="h-3 w-3" />
           </button>
         </>
       ) : (
         <>
-          <button onClick={() => { setDraft({ name: tpl.name, startTime: tpl.startTime, endTime: tpl.endTime }); setEditing(true); setError(""); }} title="Edit slot" className="ml-0.5 text-zinc-400 hover:text-amber-600 transition-colors">
+          <button onClick={() => { setDraft({ name: tpl.name, startTime: tpl.startTime, endTime: tpl.endTime }); setEditing(true); setError(""); }} title="Edit slot" className="ml-0.5 text-zinc-500 dark:text-zinc-400 hover:text-amber-600 transition-colors">
             <Pencil className="h-3 w-3" />
           </button>
-          <button onClick={() => { setConfirm(true); setError(""); }} title="Delete slot" className="text-zinc-400 hover:text-red-500 transition-colors">
+          <button onClick={() => { setConfirm(true); setError(""); }} title="Delete slot" className="text-zinc-500 dark:text-zinc-400 hover:text-red-500 transition-colors">
             <X className="h-3 w-3" />
           </button>
         </>
@@ -188,7 +188,7 @@ function AddTemplateForm({ hallId, onAdded }: { hallId: string; onAdded: (tpl: S
     return (
       <button
         onClick={() => setShow(true)}
-        className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline"
+        className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline"
       >
         <Plus className="h-3 w-3" /> Add slot
       </button>
@@ -198,7 +198,7 @@ function AddTemplateForm({ hallId, onAdded }: { hallId: string; onAdded: (tpl: S
   return (
     <form onSubmit={submit} className="flex flex-wrap items-end gap-2 mt-2 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-200 dark:border-zinc-700">
       <div className="space-y-1">
-        <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Slot name</label>
+        <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Slot name</label>
         <input
           type="text"
           placeholder="e.g. Evening"
@@ -210,7 +210,7 @@ function AddTemplateForm({ hallId, onAdded }: { hallId: string; onAdded: (tpl: S
         />
       </div>
       <div className="space-y-1">
-        <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Start</label>
+        <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Start</label>
         <input
           type="time"
           value={form.startTime}
@@ -220,7 +220,7 @@ function AddTemplateForm({ hallId, onAdded }: { hallId: string; onAdded: (tpl: S
         />
       </div>
       <div className="space-y-1">
-        <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">End</label>
+        <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">End</label>
         <input
           type="time"
           value={form.endTime}
@@ -231,7 +231,7 @@ function AddTemplateForm({ hallId, onAdded }: { hallId: string; onAdded: (tpl: S
       </div>
       <div className="flex gap-1.5">
         <button type="submit" disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold disabled:opacity-50">
+          className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
           {loading ? "…" : "Add"}
         </button>
         <button type="button" onClick={() => setShow(false)}
@@ -268,7 +268,7 @@ function CopyHallSetup({ halls }: { halls: { id: string; name: string }[] }) {
       <select className={sel} value={from} onChange={(e) => setFrom(e.target.value)}>{halls.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}</select>
       <span>to</span>
       <select className={sel} value={to} onChange={(e) => setTo(e.target.value)}>{halls.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}</select>
-      <button type="button" onClick={copy} disabled={busy || from === to} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 font-semibold text-white disabled:opacity-50">{busy ? "Copying…" : "Copy"}</button>
+      <button type="button" onClick={copy} disabled={busy || from === to} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 font-semibold text-zinc-900 disabled:opacity-50">{busy ? "Copying…" : "Copy"}</button>
       {msg && <span className="text-emerald-600">{msg}</span>}
     </div>
   );
@@ -404,7 +404,7 @@ function HallCard({
 
   const slotsSection = (
     <div className="mt-3 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-      <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-2">Slots</div>
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Slots</div>
       <div className="flex flex-wrap gap-2">
         {templates.map((tpl) => (
           <TemplateTag key={tpl.id} tpl={tpl} onDelete={deleteTemplate} onUpdate={updateTemplate} />
@@ -474,13 +474,13 @@ function HallCard({
         <>
         <form onSubmit={saveEdit} className="p-5 space-y-4">
           <div className="flex items-center justify-end">
-            <button type="button" onClick={() => setEditing(false)} className="text-zinc-400 hover:text-zinc-600">
+            <button type="button" onClick={() => setEditing(false)} className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-600">
               <X className="h-4 w-4" />
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Capacity</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Capacity</label>
               <input
                 type="number"
                 min={1}
@@ -491,7 +491,7 @@ function HallCard({
               />
             </div>
             <div className="sm:col-span-2 space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Price per slot (₹)</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Price per slot (₹)</label>
               <input
                 type="number"
                 min={1}
@@ -504,7 +504,7 @@ function HallCard({
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Minimum advance (₹)</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Minimum advance (₹)</label>
               <input
                 type="number"
                 min={100}
@@ -515,10 +515,10 @@ function HallCard({
                 className="w-full rounded-xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                 required
               />
-              <p className="text-[10px] text-zinc-400">Minimum amount customer must pay online to confirm booking</p>
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-400">Minimum amount customer must pay online to confirm booking</p>
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Payment requirement</label>
+              <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Payment requirement</label>
               <button
                 type="button"
                 onClick={() => setEditForm((f) => ({ ...f, requireFullPayment: !f.requireFullPayment }))}
@@ -540,13 +540,13 @@ function HallCard({
                   )} />
                 </span>
               </button>
-              <p className="text-[10px] text-zinc-400">
+              <p className="text-[10px] text-zinc-500 dark:text-zinc-400">
                 {editForm.requireFullPayment ? "Customer must pay full slot price online" : "Customer pays advance online, balance in cash"}
               </p>
             </div>
           </div>
           <div className="space-y-1">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Description</label>
+            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Description</label>
             <textarea
               rows={3}
               placeholder="Describe the hall — layout, special features, ideal events…"
@@ -557,7 +557,7 @@ function HallCard({
           </div>
           {/* Photos in edit mode */}
           <div className="space-y-2">
-            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-400">Photos</label>
+            <label className="text-[10px] font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Photos</label>
             <div className="flex flex-wrap gap-2">
               {photos.map((p) => (
                 <div key={p.id} className="relative group w-20 h-20 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 shrink-0">
@@ -576,7 +576,7 @@ function HallCard({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingPhoto}
-                className="w-20 h-20 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex flex-col items-center justify-center gap-1 text-zinc-400 hover:border-amber-400 hover:text-amber-500 disabled:opacity-50 transition-colors shrink-0"
+                className="w-20 h-20 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex flex-col items-center justify-center gap-1 text-zinc-500 dark:text-zinc-400 hover:border-amber-400 hover:text-amber-500 disabled:opacity-50 transition-colors shrink-0"
               >
                 {uploadingPhoto ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
                 {!uploadingPhoto && <span className="text-[10px] font-medium">Upload</span>}
@@ -596,7 +596,7 @@ function HallCard({
                 />
                 <div className="flex gap-2">
                   <button type="button" onClick={uploadPhotoUrl} disabled={uploadingPhoto}
-                    className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold disabled:opacity-50">
+                    className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
                     {uploadingPhoto ? "Adding…" : "Add photos"}
                   </button>
                   <button type="button" onClick={() => { setShowUrlInput(false); setPhotoUrl(""); }}
@@ -607,7 +607,7 @@ function HallCard({
               </div>
             ) : (
               <button type="button" onClick={() => setShowUrlInput(true)}
-                className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+                className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
                 🔗 Add from URL (Google Maps photo)
               </button>
             )}
@@ -616,7 +616,7 @@ function HallCard({
           {editError && <p className="text-sm text-red-500">{editError}</p>}
           <div className="flex gap-2">
             <button type="submit" disabled={editLoading}
-              className="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold disabled:opacity-50">
+              className="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold disabled:opacity-50">
               {editLoading ? "Saving…" : "Save changes"}
             </button>
             <button type="button" onClick={() => setEditing(false)}
@@ -638,7 +638,7 @@ function HallCard({
             </div>
             <button
               onClick={() => { setEditing(true); setEditForm({ name: hall.name, capacity: String(hall.capacity), priceRupees: String(Math.round(hall.pricePerSlot / 100)), minimumAdvanceRupees: String(Math.round(hall.minimumAdvancePaise / 100)), requireFullPayment: hall.requireFullPayment, description: hall.description ?? "" }); setPhotoError(""); }}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
               title="Edit details"
             >
               <Pencil className="h-3.5 w-3.5" />
@@ -668,7 +668,7 @@ function HallCard({
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingPhoto}
                   title="Upload from device"
-                  className="shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex flex-col items-center justify-center text-zinc-400 hover:border-amber-400 hover:text-amber-500 disabled:opacity-50 transition-colors"
+                  className="shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 hover:border-amber-400 hover:text-amber-500 disabled:opacity-50 transition-colors"
                 >
                   {uploadingPhoto ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
                 </button>
@@ -676,7 +676,7 @@ function HallCard({
                   <button
                     onClick={() => setShowUrlInput(true)}
                     title="Add from URL"
-                    className="shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex flex-col items-center justify-center text-zinc-400 hover:border-amber-400 hover:text-amber-500 transition-colors text-lg"
+                    className="shrink-0 w-16 h-16 rounded-lg border-2 border-dashed border-zinc-300 dark:border-zinc-600 flex flex-col items-center justify-center text-zinc-500 dark:text-zinc-400 hover:border-amber-400 hover:text-amber-500 transition-colors text-lg"
                   >
                     🔗
                   </button>
@@ -696,7 +696,7 @@ function HallCard({
                   />
                   <div className="flex gap-2">
                     <button onClick={uploadPhotoUrl} disabled={uploadingPhoto}
-                      className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold disabled:opacity-50">
+                      className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
                       {uploadingPhoto ? "Adding…" : "Add photos"}
                     </button>
                     <button onClick={() => { setShowUrlInput(false); setPhotoUrl(""); }}
@@ -713,14 +713,14 @@ function HallCard({
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploadingPhoto}
-                className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors disabled:opacity-50"
               >
                 {uploadingPhoto ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Camera className="h-3.5 w-3.5" />}
                 {uploadingPhoto ? "Uploading…" : "Upload photo"}
               </button>
               <span className="text-zinc-300 dark:text-zinc-600 text-xs">or</span>
               <button onClick={() => setShowUrlInput(true)}
-                className="inline-flex items-center gap-1 text-xs text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
+                className="inline-flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors">
                 🔗 Add from URL
               </button>
             </div>
@@ -739,7 +739,7 @@ function HallCard({
               />
               <div className="flex gap-2">
                 <button onClick={uploadPhotoUrl} disabled={uploadingPhoto}
-                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold disabled:opacity-50">
+                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
                   {uploadingPhoto ? "Adding…" : "Add photos"}
                 </button>
                 <button onClick={() => { setShowUrlInput(false); setPhotoUrl(""); }}
@@ -806,7 +806,7 @@ function VenueCard({ venue: initialVenue }: { venue: Venue }) {
         <>
           <VenueAddonsManager venueId={initialVenue.id} initial={initialVenue.addons ?? []} />
           <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100 dark:border-zinc-800">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Halls &amp; Slots</span>
+            <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Halls &amp; Slots</span>
           </div>
           <div className="px-5 pb-5 space-y-3">
             <CopyHallSetup halls={halls} />

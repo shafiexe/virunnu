@@ -34,15 +34,15 @@ function Credentials({ business, product, member, password, onClose }: { busines
         <button type="button" onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-emerald-700" /></button>
       </div>
       <div className="rounded-xl bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-900/40 px-4 py-3 font-mono text-sm space-y-0.5">
-        <div><span className="text-zinc-400">Phone </span>{phone}</div>
-        <div><span className="text-zinc-400">Password </span><span className="font-bold tracking-wide">{password}</span></div>
+        <div><span className="text-zinc-500 dark:text-zinc-400">Phone </span>{phone}</div>
+        <div><span className="text-zinc-500 dark:text-zinc-400">Password </span><span className="font-bold tracking-wide">{password}</span></div>
       </div>
       <div className="flex flex-wrap gap-2">
         <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(`Phone: ${phone}\nPassword: ${password}`); setCopied(true); } catch { /* the details are on screen */ } }}
           className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
           {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />} {copied ? "Copied" : "Copy"}
         </button>
-        <a href={whatsappLink(member.phone, text)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-3.5 py-2 text-sm font-semibold text-white"><MessageCircle className="h-4 w-4" /> Send on WhatsApp</a>
+        <a href={whatsappLink(member.phone, text)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-3.5 py-2 text-sm font-semibold text-white"><MessageCircle className="h-4 w-4" /> Send on WhatsApp</a>
       </div>
     </div>
   );
@@ -76,7 +76,7 @@ function AccessEditor({ member, tree, apiBase, onClose, onSaved }: { member: Mem
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">What {member.name ?? member.phone} can open</h3>
             <p className="text-xs text-zinc-500 mt-0.5">Ticked pages are visible. Untick to hide a page or a tab. They are signed out when you save, so the change applies at once.</p>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-400" /></button>
+          <button type="button" onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
         </div>
         <div className="flex gap-2 px-5 pb-2">
           <button type="button" onClick={() => setAll(true)} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">Open everything</button>
@@ -85,7 +85,7 @@ function AccessEditor({ member, tree, apiBase, onClose, onSaved }: { member: Mem
         <div className="flex-1 overflow-y-auto px-5 pb-3 space-y-4">
           {tree.map((g) => (
             <section key={g.title} className="space-y-1.5">
-              <h4 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{g.title}</h4>
+              <h4 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{g.title}</h4>
               {g.items.map((i) => {
                 const visible = !has(i.key);
                 return (
@@ -93,7 +93,7 @@ function AccessEditor({ member, tree, apiBase, onClose, onSaved }: { member: Mem
                     <div className="flex items-center gap-3">
                       <label className="flex flex-1 items-center gap-2.5 cursor-pointer min-w-0">
                         <input type="checkbox" className="h-4 w-4 accent-amber-500" checked={visible} onChange={(e) => toggle(i.key, !e.target.checked)} />
-                        <span className="min-w-0"><span className="block text-sm font-medium text-zinc-900 dark:text-zinc-50">{i.label}</span>{i.hint && <span className="block text-[11px] text-zinc-400">{i.hint}</span>}</span>
+                        <span className="min-w-0"><span className="block text-sm font-medium text-zinc-900 dark:text-zinc-50">{i.label}</span>{i.hint && <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">{i.hint}</span>}</span>
                       </label>
                       {visible && i.key !== "dashboard" && !i.key.startsWith("hide.") && (
                         <label className="flex items-center gap-1.5 text-xs text-zinc-500 cursor-pointer whitespace-nowrap" title="They can look but not add, change or delete">
@@ -118,7 +118,7 @@ function AccessEditor({ member, tree, apiBase, onClose, onSaved }: { member: Mem
         </div>
         <div className="p-5 pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-2">
           {error && <p className="text-xs text-red-500">{error}</p>}
-          <button type="button" onClick={save} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+          <button type="button" onClick={save} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-50">
             {busy && <Loader2 className="h-4 w-4 animate-spin" />} Save access
           </button>
         </div>
@@ -177,7 +177,7 @@ export function CatererTeamManager({ initial, business, tree = ACCESS_TREE, apiB
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden">
         {members.length === 0 && !adding && (
           <div className="px-6 py-12 text-center">
-            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/40 text-amber-600"><ShieldCheck className="h-6 w-6" /></span>
+            <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-500"><ShieldCheck className="h-6 w-6" /></span>
             <h3 className="mt-3 text-sm font-semibold text-zinc-900 dark:text-zinc-50">No team logins yet</h3>
             <p className="mx-auto mt-1 max-w-sm text-sm text-zinc-500">Give your accountant, manager or staff their own login. Each person sees every page until you untick what to hide from them.</p>
           </div>
@@ -196,7 +196,7 @@ export function CatererTeamManager({ initial, business, tree = ACCESS_TREE, apiB
                   <button type="button" onClick={() => patch(m, { disabled: !m.disabled }, "off")} disabled={busy === m.id + "off"} className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-2.5 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300"><Power className="h-3.5 w-3.5" /> {m.disabled ? "Switch on" : "Switch off"}</button>
                   {removing === m.id
                     ? <span className="inline-flex items-center gap-2 text-xs"><button type="button" onClick={() => remove(m)} className="font-bold text-red-600">Remove for good</button><button type="button" onClick={() => setRemoving(null)} className="text-zinc-500">Keep</button></span>
-                    : <button type="button" onClick={() => setRemoving(m.id)} aria-label="Remove login" className="p-2 text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>}
+                    : <button type="button" onClick={() => setRemoving(m.id)} aria-label="Remove login" className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>}
                 </div>
               </div>
             </li>
@@ -208,9 +208,9 @@ export function CatererTeamManager({ initial, business, tree = ACCESS_TREE, apiB
               <label className="block space-y-1"><span className="text-xs font-medium text-zinc-500">Name</span><input className={INPUT} autoFocus value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Rahim" maxLength={80} /></label>
               <label className="block space-y-1"><span className="text-xs font-medium text-zinc-500">Phone number (their login)</span><input className={INPUT} inputMode="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="98470 00000" /></label>
             </div>
-            <p className="text-[11px] text-zinc-400">A phone number can have only one login. They will see every page until you hide some.</p>
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400">A phone number can have only one login. They will see every page until you hide some.</p>
             <div className="flex gap-2">
-              <button type="submit" disabled={busy === "add"} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">{busy === "add" && <Loader2 className="h-4 w-4 animate-spin" />} Create login</button>
+              <button type="submit" disabled={busy === "add"} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-zinc-900 disabled:opacity-50">{busy === "add" && <Loader2 className="h-4 w-4 animate-spin" />} Create login</button>
               <button type="button" onClick={() => { setAdding(false); setError(""); }} className="px-3 py-2 text-sm text-zinc-500">Cancel</button>
             </div>
           </form>
@@ -219,7 +219,7 @@ export function CatererTeamManager({ initial, business, tree = ACCESS_TREE, apiB
       {error && <p className="text-sm text-red-500">{error}</p>}
       {!adding && members.length >= MAX_TEAM_LOGINS && <p className="text-sm text-zinc-500">You have added the most logins allowed ({MAX_TEAM_LOGINS}). Remove one to add another.</p>}
       {!adding && members.length < MAX_TEAM_LOGINS && (
-        <button type="button" onClick={() => { setAdding(true); setCreds(null); }} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">
+        <button type="button" onClick={() => { setAdding(true); setCreds(null); }} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900">
           {members.length === 0 ? <UserPlus className="h-4 w-4" /> : <Plus className="h-4 w-4" />} Add a login <span className="text-xs font-normal opacity-80">({members.length} of {MAX_TEAM_LOGINS})</span>
         </button>
       )}

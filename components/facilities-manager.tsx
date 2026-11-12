@@ -69,7 +69,7 @@ const CAT_COLORS: Record<string, string> = {
 function FacilityIcon({ icon, size = 20 }: { icon: string; size?: number }) {
   return (
     <span
-      className="material-symbols-rounded leading-none text-amber-600 dark:text-amber-400"
+      className="material-symbols-rounded leading-none text-amber-700 dark:text-amber-400"
       style={{
         fontSize: size,
         fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20",
@@ -253,11 +253,11 @@ export function FacilitiesManager({ initial, orgId }: Props) {
           </div>
           <div>
             <p className="font-semibold text-zinc-700 dark:text-zinc-300">No amenities added yet</p>
-            <p className="text-sm text-zinc-400 mt-1">Search and add what your venue offers — all are free by default.</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Search and add what your venue offers — all are free by default.</p>
           </div>
           <button
             onClick={openAdd}
-            className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors mx-auto"
+            className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-5 py-2.5 text-sm font-semibold text-zinc-900 transition-colors mx-auto"
           >
             <Plus className="h-4 w-4" />
             Add amenity
@@ -279,7 +279,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                   onClick={() => setActiveTab(c.key)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
                     activeTab === c.key
-                      ? "bg-amber-500 text-white"
+                      ? "bg-amber-500 text-zinc-900"
                       : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
                   }`}
                 >
@@ -294,7 +294,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
             </div>
             <button
               onClick={openAdd}
-              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white transition-colors ml-2"
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900 transition-colors ml-2"
             >
               <Plus className="h-3.5 w-3.5" />
               Add
@@ -329,14 +329,14 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">{f.name}</p>
                         {f.description && (
-                          <p className="text-xs text-zinc-400 truncate">{f.description}</p>
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">{f.description}</p>
                         )}
                       </div>
                       <div className="flex items-center gap-0.5 shrink-0">
                         <button onClick={() => handleToggle(f)} disabled={togglingId === f.id} title={f.isActive ? "Deactivate" : "Activate"}>
                           {f.isActive
                             ? <ToggleRight className="h-4 w-4 text-emerald-500" />
-                            : <ToggleLeft className="h-4 w-4 text-zinc-400" />}
+                            : <ToggleLeft className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />}
                         </button>
                         <button onClick={() => openEdit(f)} className="p-1 text-zinc-300 hover:text-zinc-600 dark:hover:text-zinc-300">
                           <Pencil className="h-3 w-3" />
@@ -357,7 +357,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <div className="h-px flex-1 bg-zinc-100 dark:bg-zinc-800" />
-                <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-widest px-2 flex items-center gap-1.5">
+                <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-widest px-2 flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
                   Paid add-ons
                 </span>
@@ -388,7 +388,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                       <button
                         onClick={() => handleToggle(f)}
                         disabled={togglingId === f.id}
-                        className="shrink-0 mt-0.5 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors disabled:opacity-40"
+                        className="shrink-0 mt-0.5 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors disabled:opacity-40"
                         title={f.isActive ? "Deactivate" : "Activate"}
                       >
                         {f.isActive
@@ -403,16 +403,16 @@ export function FacilitiesManager({ initial, orgId }: Props) {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                        <span className="text-sm font-bold text-amber-700 dark:text-amber-400">
                           ₹{(f.amountPaise / 100).toLocaleString("en-IN")}
                         </span>
-                        <span className="text-xs text-zinc-400">add-on</span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">add-on</span>
                       </div>
                       <div className="flex items-center gap-1">
-                        <button onClick={() => openEdit(f)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">
+                        <button onClick={() => openEdit(f)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
-                        <button onClick={() => setDeleteId(f.id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-zinc-400 hover:text-red-500 transition-colors">
+                        <button onClick={() => setDeleteId(f.id)} className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-zinc-500 dark:text-zinc-400 hover:text-red-500 transition-colors">
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
@@ -424,7 +424,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
           )}
 
           {filtered.length === 0 && facilities.length > 0 && (
-            <p className="text-center text-sm text-zinc-400 py-6">No facilities in this category.</p>
+            <p className="text-center text-sm text-zinc-500 dark:text-zinc-400 py-6">No facilities in this category.</p>
           )}
         </>
       )}
@@ -441,7 +441,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
           >
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Add amenity</h3>
-              <button onClick={() => setShowAdd(false)}><X className="h-4 w-4 text-zinc-400" /></button>
+              <button onClick={() => setShowAdd(false)}><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
             </div>
 
             {/* Dropdown picker */}
@@ -459,11 +459,11 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                         <FacilityIcon icon={selected.icon} size={14} />
                       </div>
                     )}
-                    <span className={selected ? "text-zinc-800 dark:text-zinc-100 truncate" : "text-zinc-400"}>
+                    <span className={selected ? "text-zinc-800 dark:text-zinc-100 truncate" : "text-zinc-500 dark:text-zinc-400"}>
                       {selected ? selected.name : "Choose from list…"}
                     </span>
                   </div>
-                  <ChevronDown className={`h-3.5 w-3.5 text-zinc-400 shrink-0 transition-transform ${dropOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown className={`h-3.5 w-3.5 text-zinc-500 dark:text-zinc-400 shrink-0 transition-transform ${dropOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {dropOpen && (
@@ -480,7 +480,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                     </div>
                     <ul className="max-h-48 overflow-y-auto py-1">
                       {dropResults.length === 0 && (
-                        <li className="px-3 py-2 text-xs text-zinc-400">No more options — type above to add custom</li>
+                        <li className="px-3 py-2 text-xs text-zinc-500 dark:text-zinc-400">No more options — type above to add custom</li>
                       )}
                       {dropResults.map((item) => (
                         <li key={item.name}>
@@ -494,7 +494,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                             </div>
                             <div className="min-w-0">
                               <p className="text-sm font-medium text-zinc-800 dark:text-zinc-100 truncate">{item.name}</p>
-                              <p className="text-[10px] text-zinc-400 truncate">{item.description}</p>
+                              <p className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">{item.description}</p>
                             </div>
                           </button>
                         </li>
@@ -562,7 +562,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
               </div>
               {addType === "paid" && (
                 <div className="relative mt-2">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 text-sm">₹</span>
                   <input
                     autoFocus
                     type="number"
@@ -582,7 +582,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
             <button
               onClick={handleAdd}
               disabled={adding}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2 transition-colors"
             >
               {adding && <Loader2 className="h-4 w-4 animate-spin" />}
               Add amenity
@@ -607,9 +607,9 @@ export function FacilitiesManager({ initial, orgId }: Props) {
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 text-sm">{editTarget.name}</h3>
-                <p className="text-xs text-zinc-400">Edit details</p>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">Edit details</p>
               </div>
-              <button onClick={() => setEditTarget(null)}><X className="h-4 w-4 text-zinc-400" /></button>
+              <button onClick={() => setEditTarget(null)}><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
             </div>
 
             <div className="space-y-3">
@@ -629,7 +629,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                   Price (₹) <span className="font-normal">— leave 0 to keep it free</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 text-sm">₹</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 text-sm">₹</span>
                   <input
                     type="number"
                     min={0}
@@ -647,7 +647,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
             <button
               onClick={saveEdit}
               disabled={editLoading}
-              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2 transition-colors"
+              className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2 transition-colors"
             >
               {editLoading && <Loader2 className="h-4 w-4 animate-spin" />}
               Save

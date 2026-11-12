@@ -160,7 +160,7 @@ export function CatererInvoice({ party, bills, quote }: { party: InvoiceParty; b
             </div>
           )}
           {party.caterer.invoiceNote && <div className="whitespace-pre-line">{party.caterer.invoiceNote}</div>}
-          <div className="text-zinc-400">This is a computer-generated {quote ? "quotation" : "invoice"}.</div>
+          <div className="text-zinc-500 dark:text-zinc-400">This is a computer-generated {quote ? "quotation" : "invoice"}.</div>
         </div>
         <div className="border border-zinc-800 p-3 text-center">
           <div className="font-semibold text-left mb-8">For {party.caterer.name}:</div>

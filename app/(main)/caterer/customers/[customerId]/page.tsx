@@ -43,7 +43,7 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
   const table = (list: typeof rows, title: string, dim = false) =>
     list.length > 0 && (
       <section className="space-y-2">
-        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{title} · {list.length}</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{title} · {list.length}</h2>
         <div className="overflow-x-auto rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
           <table className="w-full text-sm">
             <thead className="bg-zinc-50 dark:bg-zinc-800/50 text-[11px] uppercase tracking-wide text-zinc-500">
@@ -67,7 +67,7 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
                     <td className="px-4 py-2.5 whitespace-nowrap text-zinc-600 dark:text-zinc-400">{r.functionDate.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })}</td>
                     <td className="px-4 py-2.5 text-right">{rs(m.netPaise)}</td>
                     <td className="px-4 py-2.5 text-right text-emerald-600 dark:text-emerald-400">{rs(r.receivedPaise)}</td>
-                    <td className={cn("px-4 py-2.5 text-right font-semibold", m.balancePaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-400")}>{m.balancePaise > 0 ? rs(m.balancePaise) : "—"}</td>
+                    <td className={cn("px-4 py-2.5 text-right font-semibold", m.balancePaise > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-500 dark:text-zinc-400")}>{m.balancePaise > 0 ? rs(m.balancePaise) : "—"}</td>
                     <td className="px-4 py-2.5"><div className="flex items-center gap-2"><span className={cn("text-xs font-medium px-2 py-0.5 rounded-full", STATE_STYLE[m.state])}>{STATE_LABEL[m.state]}</span>{m.balancePaise > 0 && <><QuickPay compact customer={customer.name} bills={[{ id: r.id, number: r.number, type: r.type, balancePaise: m.balancePaise }]} /><Show what="phones"><SendReminder compact customerId={customer.id} customerName={customer.name} phone={customer.phone} balancePaise={m.balancePaise} invoices={`Invoice ${r.number}`} date={r.functionDate.toISOString()} path={`/b/${r.shareToken}`} /></Show></>}</div></td>
                   </tr>
                 );
@@ -86,12 +86,12 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
         <div>
           <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">{customer.name}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-x-4 text-sm text-zinc-500">
-            <Show what="phones"><a href={`tel:${customer.phone}`} className="inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{customer.phone}</a></Show>
+            <Show what="phones"><a href={`tel:${customer.phone}`} className="inline-flex items-center gap-1 text-amber-700 dark:text-amber-400 hover:underline"><Phone className="h-3.5 w-3.5" />{customer.phone}</a></Show>
             {customer.address && <span>{customer.address}</span>}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <WriteOnly page="orders"><Link href={`/caterer/orders/new?customer=${customer.id}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white">
+          <WriteOnly page="orders"><Link href={`/caterer/orders/new?customer=${customer.id}`} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900">
           <Plus className="h-4 w-4" /> New order
         </Link></WriteOnly>
           <WriteOnly page="orders"><Link href={`/caterer/quotes/new?customer=${customer.id}`} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800" >New quotation</Link></WriteOnly>
@@ -103,7 +103,7 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
         <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/20 p-3"><div className="text-[11px] text-emerald-700 dark:text-emerald-400">Received</div><div className="text-lg font-bold text-emerald-800 dark:text-emerald-300">{rs(totals.received)}</div></div>
         <div className={cn("rounded-xl border p-3", totals.due > 0 ? "border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20" : "border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900")}>
           <div className={cn("text-[11px]", totals.due > 0 ? "text-red-600 dark:text-red-400" : "text-zinc-500")}>Balance due</div>
-          <div className={cn("text-lg font-bold", totals.due > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-400")}>{totals.due > 0 ? rs(totals.due) : "Nil"}</div>
+          <div className={cn("text-lg font-bold", totals.due > 0 ? "text-red-700 dark:text-red-300" : "text-zinc-500 dark:text-zinc-400")}>{totals.due > 0 ? rs(totals.due) : "Nil"}</div>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ export default async function CatererCustomerPage({ params, searchParams }: { pa
 </Show>        <Link href={`/s/${customer.shareToken}`} target="_blank" className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800">
           <ExternalLink className="h-4 w-4" /> View statement
         </Link>
-        <span className="text-xs text-zinc-400">{live.length} invoice{live.length === 1 ? "" : "s"} · {closedCount} closed · {open.length} with balance</span>
+        <span className="text-xs text-zinc-500 dark:text-zinc-400">{live.length} invoice{live.length === 1 ? "" : "s"} · {closedCount} closed · {open.length} with balance</span>
       </div>
 
       {table(open, "Open invoices (balance due)")}

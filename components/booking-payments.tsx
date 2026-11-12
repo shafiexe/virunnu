@@ -81,7 +81,7 @@ export function BookingPayments({ bookingId, payments, netPaise, closed, canRemo
               </div>
               {p.whatsappHref && (
                 <a href={p.whatsappHref} target="_blank" rel="noopener noreferrer" aria-label={`Send the ${rs(p.amountPaise)} receipt on WhatsApp`}
-                  className="inline-flex items-center gap-1 rounded-lg bg-[#25D366] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#1ebe5c]"><MessageCircle className="h-3.5 w-3.5" /> Send</a>
+                  className="inline-flex items-center gap-1 rounded-lg bg-[#25D366] px-2.5 py-1.5 text-xs font-semibold text-zinc-900 hover:bg-[#1ebe5c]"><MessageCircle className="h-3.5 w-3.5" /> Send</a>
               )}
               <Link href={`/owner/bookings/${bookingId}/receipt/${p.id}`} className="inline-flex items-center gap-1 rounded-lg border border-zinc-200 dark:border-zinc-700 px-2.5 py-1.5 text-xs font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800"><Receipt className="h-3.5 w-3.5" /> Receipt</Link>
               {canRemove && (
@@ -92,7 +92,7 @@ export function BookingPayments({ bookingId, payments, netPaise, closed, canRemo
                       <button type="button" onClick={() => setRemoving(null)} className="text-zinc-500">Keep</button>
                     </span>
                   ) : (
-                    <button type="button" onClick={() => setRemoving(p.id)} aria-label="Remove this payment" className="rounded-lg p-1.5 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-500"><X className="h-4 w-4" /></button>
+                    <button type="button" onClick={() => setRemoving(p.id)} aria-label="Remove this payment" className="rounded-lg p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-500"><X className="h-4 w-4" /></button>
                   )}
                 </WriteOnly>
               )}
@@ -105,7 +105,7 @@ export function BookingPayments({ bookingId, payments, netPaise, closed, canRemo
       {!closed && balance > 0 && (
         <WriteOnly page="bookings">
           {!open ? (
-            <button type="button" onClick={start} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-white"><Plus className="h-4 w-4" /> Record payment</button>
+            <button type="button" onClick={start} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2.5 text-sm font-semibold text-zinc-900"><Plus className="h-4 w-4" /> Record payment</button>
           ) : (
             <form onSubmit={save} className="space-y-3 rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/50 dark:bg-amber-950/10 p-4">
               <div className="grid gap-3 sm:grid-cols-2">
@@ -127,7 +127,7 @@ export function BookingPayments({ bookingId, payments, netPaise, closed, canRemo
                 <input className={FIELD} value={note} maxLength={200} placeholder="e.g. UPI ref 4821, paid by his brother" onChange={(e) => setNote(e.target.value)} /></label>
               {error && <p className="text-sm text-red-500" role="alert">{error}</p>}
               <div className="flex gap-2">
-                <button type="submit" disabled={busy} className="rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 px-5 py-2.5 text-sm font-semibold text-white">{busy ? "Saving…" : "Save payment"}</button>
+                <button type="submit" disabled={busy} className="rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 px-5 py-2.5 text-sm font-semibold text-zinc-900">{busy ? "Saving…" : "Save payment"}</button>
                 <button type="button" onClick={() => setOpen(false)} className="rounded-xl border border-zinc-200 dark:border-zinc-700 px-4 py-2.5 text-sm text-zinc-600 dark:text-zinc-400">Cancel</button>
               </div>
             </form>

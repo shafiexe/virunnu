@@ -24,7 +24,7 @@ export function LanguageToggle() {
         onClick={() => changeLang("ml")}
         className={`px-2 py-0.5 rounded-md transition-colors ${
           locale === "ml"
-            ? "bg-amber-500 text-white"
+            ? "bg-amber-500 text-zinc-900"
             : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
         }`}
       >
@@ -35,7 +35,7 @@ export function LanguageToggle() {
         onClick={() => changeLang("en")}
         className={`px-2 py-0.5 rounded-md transition-colors ${
           locale === "en"
-            ? "bg-amber-500 text-white"
+            ? "bg-amber-500 text-zinc-900"
             : "text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
         }`}
       >

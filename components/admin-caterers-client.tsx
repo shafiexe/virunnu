@@ -184,7 +184,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
         </div>
         <button
           onClick={() => { setShowAdd(true); setEditId(null); setForm(EMPTY_FORM); setServices([]); setPhotos([]); setError(""); }}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold px-4 py-2 transition-colors"
         >
           <Plus className="h-4 w-4" /> Add catering team
         </button>
@@ -202,12 +202,12 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
         <div className="rounded-2xl border border-amber-200 dark:border-amber-800/50 bg-amber-50/60 dark:bg-amber-950/20 p-5 space-y-5">
           <div className="flex items-center justify-between">
             <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Edit caterer</h2>
-            <button onClick={closeForm} className="p-1 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
+            <button onClick={closeForm} className="p-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
           </div>
 
           {/* Basic info */}
           <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-3">Basic info</p>
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">Basic info</p>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {([["Name", "name", "Catering service name"], ["Phone", "phone", "+91…"], ["City", "city", "Kozhikode"],
                 ["State", "state", "Kerala"]] as const).map(([label, field, placeholder]) => (
@@ -229,7 +229,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
 
           {/* Contact & Social */}
           <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-3">Contact & Social</p>
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">Contact & Social</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="space-y-1">
                 <span className={labelCls}><Phone className="h-3 w-3" /> WhatsApp number</span>
@@ -260,7 +260,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
 
           {/* Services */}
           <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-3">Services offered</p>
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">Services offered</p>
             <div className="flex flex-wrap gap-2">
               {ALL_SERVICES.map((s) => (
                 <button
@@ -270,7 +270,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                   className={cn(
                     "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
                     services.includes(s.key)
-                      ? "bg-amber-500 text-white border-amber-500"
+                      ? "bg-amber-500 text-zinc-900 border-amber-500"
                       : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
                   )}
                 >
@@ -282,7 +282,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
 
           {/* Photos */}
           <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-3">Photos</p>
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">Photos</p>
             <div className="flex gap-2">
               <input
                 value={photoInput}
@@ -291,7 +291,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                 placeholder="Paste image URL and press Enter…"
                 className={cn(inputCls, "flex-1")}
               />
-              <button type="button" onClick={addPhoto} className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors">
+              <button type="button" onClick={addPhoto} className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors">
                 Add
               </button>
             </div>
@@ -314,7 +314,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
             <button
               onClick={handleEdit}
               disabled={formLoading}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-60"
             >
               <Check className="h-3.5 w-3.5" />
               {formLoading ? "Saving…" : "Save changes"}
@@ -328,7 +328,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
 
       <div className="space-y-2">
         {filtered.length === 0 && (
-          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-10 text-center text-zinc-400">
+          <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-10 text-center text-zinc-500 dark:text-zinc-400">
             {search ? "No caterers match your search." : "No caterers yet."}
           </div>
         )}
@@ -359,7 +359,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                     </div>
                     <div className="text-sm text-zinc-500">{c.phone} · {c.city}, {c.state}</div>
                     {c.cuisines.length > 0 && (
-                      <div className="text-xs text-zinc-400">{c.cuisines.join(", ")}</div>
+                      <div className="text-xs text-zinc-500 dark:text-zinc-400">{c.cuisines.join(", ")}</div>
                     )}
                   </div>
                 </div>
@@ -369,7 +369,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                     <div className="flex items-center gap-1.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 rounded-xl px-3 py-1.5">
                       <span className="text-xs text-red-700 dark:text-red-400 font-medium">Delete?</span>
                       <button onClick={() => handleDelete(c.id)} disabled={deletingActing} className="text-xs font-bold text-red-600 hover:underline disabled:opacity-50">Yes</button>
-                      <button onClick={() => setDeleteId(null)} className="text-xs text-zinc-400 hover:text-zinc-600">No</button>
+                      <button onClick={() => setDeleteId(null)} className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-600">No</button>
                     </div>
                   ) : (
                     <>
@@ -385,7 +385,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                       )}
                       <Link
                         href={`/admin/caterers/${c.id}`}
-                        className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                        className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
                         title="Manage caterer"
                       >
                         <Settings className="h-4 w-4" />
@@ -393,7 +393,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                       <Link
                         href={`/caterers/${c.id}`}
                         target="_blank"
-                        className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                        className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
                         title="View public profile"
                       >
                         <ExternalLink className="h-4 w-4" />
@@ -405,7 +405,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                           "p-1.5 rounded-lg transition-colors disabled:opacity-40",
                           c.disabled
                             ? "text-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-950/20"
-                            : "text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
+                            : "text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20"
                         )}
                         title={c.disabled ? "Enable" : "Disable"}
                       >
@@ -414,14 +414,14 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                       <AdminResetPassword kind="caterers" id={c.id} business={c.name} />
                       <button
                         onClick={() => openEdit(c)}
-                        className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                        className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
                         title="Edit"
                       >
                         <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => setDeleteId(c.id)}
-                        className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                        className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
                         title="Delete"
                       >
                         <Trash2 className="h-4 w-4" />

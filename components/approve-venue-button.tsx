@@ -37,7 +37,7 @@ export function ApproveVenueButton({ venueId }: { venueId: string }) {
     <button
       onClick={approve}
       disabled={loading}
-      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold transition-colors disabled:opacity-60"
+      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold transition-colors disabled:opacity-60"
     >
       <CheckCircle2 className="h-4 w-4" />
       {loading ? "Approving…" : "Approve & publish venue"}

@@ -79,9 +79,9 @@ export default async function DayBookPage({ searchParams }: { searchParams: Prom
       )}
 
       <div className="flex flex-wrap gap-1.5">
-        <Link href={link("")} className={cn("rounded-full border px-3 py-1 text-xs font-medium", !kind ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>All</Link>
+        <Link href={link("")} className={cn("rounded-full border px-3 py-1 text-xs font-medium", !kind ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>All</Link>
         {KINDS.map((k) => (
-          <Link key={k} href={link(k)} title={KIND_HINT[k]} className={cn("rounded-full border px-3 py-1 text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_LABEL[k]}</Link>
+          <Link key={k} href={link(k)} title={KIND_HINT[k]} className={cn("rounded-full border px-3 py-1 text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_LABEL[k]}</Link>
         ))}
       </div>
 
@@ -114,7 +114,7 @@ export default async function DayBookPage({ searchParams }: { searchParams: Prom
         })}
         <UrlPagination basePath="/caterer/daybook" query={baseQuery} page={paged.page} totalPages={paged.totalPages} total={paged.total} pageSize={paged.pageSize} />
       </div>
-      <p className="text-xs text-zinc-400">Sales and purchases are bills on credit. Receipts, payments and expenses are the money that actually moved.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">Sales and purchases are bills on credit. Receipts, payments and expenses are the money that actually moved.</p>
     </div>
   );
 }

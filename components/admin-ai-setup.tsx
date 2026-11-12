@@ -260,14 +260,14 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                   <div className="flex items-center gap-2 mb-2.5">
                     <Users className="h-3.5 w-3.5 text-purple-500" />
                     <span className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">Halls</span>
-                    <span className="text-[11px] text-zinc-400 ml-1">Set a price per slot for each hall</span>
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 ml-1">Set a price per slot for each hall</span>
                   </div>
                   <div className="space-y-2">
                     {halls.map((hall, i) => (
                       <div key={i} className="flex items-center gap-3 rounded-xl bg-white dark:bg-zinc-800/50 border border-purple-100 dark:border-purple-900/40 px-3.5 py-2.5">
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">{hall.name || `Hall ${i + 1}`}</p>
-                          <p className="text-xs text-zinc-400 mt-0.5">
+                          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                             {hall.capacitySeated ? `${hall.capacitySeated} seated` : ""}
                             {hall.capacitySeated && hall.capacityStanding ? " · " : ""}
                             {hall.capacityStanding ? `${hall.capacityStanding} standing` : ""}
@@ -275,7 +275,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                           </p>
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
-                          <IndianRupee className="h-3 w-3 text-zinc-400" />
+                          <IndianRupee className="h-3 w-3 text-zinc-500 dark:text-zinc-400" />
                           <input
                             type="number"
                             min="0"
@@ -288,7 +288,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                       </div>
                     ))}
                   </div>
-                  <p className="text-[11px] text-zinc-400 mt-1.5">
+                  <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1.5">
                     Each hall gets Morning (8am–2pm) and Evening (2pm–10pm) slots for 90 days. Adjust after setup.
                   </p>
                 </section>
@@ -300,7 +300,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                   <div className="flex items-center gap-2 mb-2.5">
                     <Zap className="h-3.5 w-3.5 text-purple-500" />
                     <span className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">Amenities</span>
-                    <span className="text-[11px] text-zinc-400 ml-1">Tap to deselect any that don&apos;t apply</span>
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 ml-1">Tap to deselect any that don&apos;t apply</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {amenities.map(amenity => {
@@ -317,7 +317,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                           className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
                             on
                               ? "bg-purple-600 border-purple-600 text-white"
-                              : "border-zinc-200 dark:border-zinc-700 text-zinc-400 line-through"
+                              : "border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 line-through"
                           }`}
                         >
                           {amenity}
@@ -334,7 +334,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                   <div className="flex items-center gap-2 mb-2.5">
                     <ImageIcon className="h-3.5 w-3.5 text-purple-500" />
                     <span className="text-xs font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400">Photos Found</span>
-                    <span className="text-[11px] text-zinc-400 ml-1">Tap to deselect any to exclude · added to first hall</span>
+                    <span className="text-[11px] text-zinc-500 dark:text-zinc-400 ml-1">Tap to deselect any to exclude · added to first hall</span>
                   </div>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {photos.map(photoUrl => {
@@ -409,7 +409,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
 function PreviewRow({ label, value, truncate }: { label: string; value: string; truncate?: boolean }) {
   return (
     <div className="flex gap-3 px-3.5 py-2">
-      <span className="text-[11px] font-medium text-zinc-400 w-16 shrink-0 mt-px">{label}</span>
+      <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400 w-16 shrink-0 mt-px">{label}</span>
       <span className={`text-xs text-zinc-700 dark:text-zinc-300 ${truncate ? "truncate" : "break-all"}`}>{value}</span>
     </div>
   );

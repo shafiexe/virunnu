@@ -48,7 +48,7 @@ function Field({ label, required, hint, children }: { label: string; required?: 
     <label className="block space-y-1">
       <span className="text-xs font-medium text-zinc-500">
         {label}{required && <span className="text-red-500"> *</span>}
-        {hint && <span className="font-normal text-zinc-400"> — {hint}</span>}
+        {hint && <span className="font-normal text-zinc-500 dark:text-zinc-400"> — {hint}</span>}
       </span>
       {children}
     </label>
@@ -58,7 +58,7 @@ function Field({ label, required, hint, children }: { label: string; required?: 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-3">
-      <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{title}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{title}</div>
       {children}
     </div>
   );
@@ -72,7 +72,7 @@ function Chip({ on, suggestion, onClick, children }: { on: boolean; suggestion?:
       className={cn(
         "px-3 py-1 rounded-full border text-xs font-medium transition-colors inline-flex items-center gap-1",
         on
-          ? "bg-amber-500 border-amber-500 text-white"
+          ? "bg-amber-500 border-amber-500 text-zinc-900"
           : suggestion
             ? "border-dashed border-amber-400 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"
             : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
@@ -96,7 +96,7 @@ function TagInput({ values, onChange, placeholder }: { values: string[]; onChang
       {values.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {values.map((v) => (
-            <span key={v} className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1 text-xs font-medium text-white">
+            <span key={v} className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-3 py-1 text-xs font-medium text-zinc-900">
               {v}
               <button type="button" onClick={() => onChange(values.filter((x) => x !== v))} aria-label={`Remove ${v}`}>
                 <X className="h-3 w-3" />
@@ -416,7 +416,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
           Thank you for registering {f.name} on Virunnu. Our team will review your details and get back to you within 1–2 business days.
           Once approved, your profile goes live and your login is sent to your WhatsApp and email. You can update everything later from your dashboard.
         </p>
-        <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm transition-colors">
+        <Link href="/" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm transition-colors">
           Back to home
         </Link>
       </div>
@@ -443,7 +443,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
           >
             <Copy className="h-3.5 w-3.5" /> {copied ? "Copied" : "Copy login"}
           </button>
-          <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors">
+          <button onClick={() => window.location.reload()} className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors">
             Done
           </button>
         </div>
@@ -465,7 +465,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
       {isAdmin && (
         <div className="flex items-center justify-between">
           <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">Add catering team</h2>
-          <button onClick={onClose} className="p-1 text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
+          <button onClick={onClose} className="p-1 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600"><X className="h-4 w-4" /></button>
         </div>
       )}
 
@@ -529,7 +529,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
           <input className={INPUT} value={f.googleMapsUrl} onChange={(e) => onMapsUrl(e.target.value)} placeholder="https://www.google.com/maps/place/…" />
         </Field>
         {f.googleMapsUrl && (
-          <p className={cn("text-xs", hasPin ? "text-emerald-600" : "text-amber-600")}>
+          <p className={cn("text-xs", hasPin ? "text-emerald-600" : "text-amber-700 dark:text-amber-500")}>
             {hasPin ? `📍 ${Number(f.lat).toFixed(4)}, ${Number(f.lng).toFixed(4)}` : "Couldn't read coordinates from this link — enter them below"}
           </p>
         )}
@@ -590,7 +590,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
         </div>
 
         <div className="space-y-2">
-          <span className="text-xs font-medium text-zinc-500">Packages <span className="font-normal text-zinc-400">— set menus priced per plate; travellers see “from ₹X per plate”</span></span>
+          <span className="text-xs font-medium text-zinc-500">Packages <span className="font-normal text-zinc-500 dark:text-zinc-400">— set menus priced per plate; travellers see “from ₹X per plate”</span></span>
           {packages.map((p, i) => (
             <div key={i} className="grid grid-cols-[1fr_7rem_auto_auto] gap-2 items-start rounded-lg border border-zinc-100 dark:border-zinc-800 p-2">
               <div className="space-y-2">
@@ -602,13 +602,13 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
                 className={cn("rounded-lg border px-2 py-2 text-xs font-semibold", p.isVeg ? "border-emerald-300 text-emerald-600" : "border-red-300 text-red-600")}>
                 {p.isVeg ? "Veg" : "Non-veg"}
               </button>
-              <button type="button" onClick={() => setPackages((l) => l.filter((_, j) => j !== i))} className="p-2 text-zinc-400 hover:text-red-500" aria-label="Remove package">
+              <button type="button" onClick={() => setPackages((l) => l.filter((_, j) => j !== i))} className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-red-500" aria-label="Remove package">
                 <X className="h-4 w-4" />
               </button>
             </div>
           ))}
           <button type="button" onClick={() => setPackages((l) => [...l, { name: "", pricePerPlate: "", isVeg: true, dishes: "" }])}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:underline">
+            className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">
             <Plus className="h-3.5 w-3.5" /> Add package
           </button>
         </div>
@@ -625,7 +625,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
                   className={cn("rounded-lg border px-2 py-2 text-xs font-semibold", it.isVeg ? "border-emerald-300 text-emerald-600" : "border-red-300 text-red-600")}>
                   {it.isVeg ? "Veg" : "Non-veg"}
                 </button>
-                <button type="button" onClick={() => setItems((l) => l.filter((_, j) => j !== i))} className="p-2 text-zinc-400 hover:text-red-500" aria-label="Remove item">
+                <button type="button" onClick={() => setItems((l) => l.filter((_, j) => j !== i))} className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-red-500" aria-label="Remove item">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -640,7 +640,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
             <Chip key={k} on={services.includes(k)} suggestion={suggestedServices.includes(k)} onClick={() => toggle(services, setServices, k)}>{l}</Chip>
           ))}
         </div>
-        {suggestedServices.length > 0 && <p className="text-xs text-zinc-400">Dashed chips are AI suggestions that weren&apos;t in your source — tap to include.</p>}
+        {suggestedServices.length > 0 && <p className="text-xs text-zinc-500 dark:text-zinc-400">Dashed chips are AI suggestions that weren&apos;t in your source — tap to include.</p>}
       </Section>
 
       <Section title="Team & credentials">
@@ -657,13 +657,13 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
             <input className={INPUT} value={e.title} onChange={(ev) => setPastEvents((l) => l.map((x, j) => (j === i ? { ...x, title: ev.target.value } : x)))} placeholder="e.g. Wedding reception, Kozhikode" />
             <input className={INPUT} value={e.type} onChange={(ev) => setPastEvents((l) => l.map((x, j) => (j === i ? { ...x, type: ev.target.value } : x)))} placeholder="Type" />
             <input className={INPUT} value={e.guests} onChange={(ev) => setPastEvents((l) => l.map((x, j) => (j === i ? { ...x, guests: ev.target.value } : x)))} placeholder="Guests" inputMode="numeric" />
-            <button type="button" onClick={() => setPastEvents((l) => l.filter((_, j) => j !== i))} className="p-2 text-zinc-400 hover:text-red-500" aria-label="Remove event">
+            <button type="button" onClick={() => setPastEvents((l) => l.filter((_, j) => j !== i))} className="p-2 text-zinc-500 dark:text-zinc-400 hover:text-red-500" aria-label="Remove event">
               <X className="h-4 w-4" />
             </button>
           </div>
         ))}
         <button type="button" onClick={() => setPastEvents((l) => [...l, { title: "", type: "", guests: "", note: "" }])}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:underline">
+          className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">
           <Plus className="h-3.5 w-3.5" /> Add an event
         </button>
       </Section>
@@ -671,7 +671,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
       <Section title="Photos">
         {visiblePhotos.length > 0 && (
           <>
-            <p className="text-xs text-zinc-400">Tap to include or remove ({selectedPhotos.filter((u) => !brokenPhotos.includes(u)).length} selected).</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">Tap to include or remove ({selectedPhotos.filter((u) => !brokenPhotos.includes(u)).length} selected).</p>
             <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
               {visiblePhotos.map((u) => {
                 const on = selectedPhotos.includes(u);
@@ -682,7 +682,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={u} alt="" referrerPolicy="no-referrer" loading="lazy" onError={() => setBrokenPhotos((p) => [...p, u])} className="h-full w-full object-cover" />
                     {on && (
-                      <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white">
+                      <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-zinc-900">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                       </span>
                     )}
@@ -717,7 +717,7 @@ export function CatererForm({ mode, onClose }: { mode: "admin" | "apply"; onClos
 
       <div className="flex gap-2">
         <button onClick={submit} disabled={loading}
-          className="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-60">
+          className="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-60">
           {loading ? (isAdmin ? "Creating…" : "Submitting…") : isAdmin ? "Create & publish" : "Submit application"}
         </button>
         {isAdmin && (

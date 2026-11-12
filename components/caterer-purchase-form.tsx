@@ -136,13 +136,13 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
           <span>You have an unfinished purchase from {new Date(draft.pending.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}.</span>
           <span className="flex gap-2">
-            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white">Continue it</button>
+            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900">Continue it</button>
             <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold">Start fresh</button>
           </span>
         </div>
       )}
       <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-4">
-        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Purchase details</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Purchase details</h2>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Date" required><input type="date" className={INPUT} value={date} onChange={(e) => setDate(e.target.value)} /></Field>
           <Field label="Supplier" required>
@@ -151,12 +151,12 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
                 <option value="">Choose a supplier…</option>
                 {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name} · {s.category}</option>)}
               </select>
-              <button type="button" onClick={() => setAddingSupplier((v) => !v)} className="shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 text-xs font-semibold text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">+ New</button>
+              <button type="button" onClick={() => setAddingSupplier((v) => !v)} className="shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20">+ New</button>
             </div>
             {addingSupplier && (
               <div className="flex gap-2 pt-1">
                 <input className={INPUT} placeholder="Supplier name" value={newSupplier} onChange={(e) => setNewSupplier(e.target.value)} autoFocus />
-                <button type="button" onClick={addSupplier} className="shrink-0 rounded-lg bg-amber-500 px-3 text-xs font-semibold text-white">Add</button>
+                <button type="button" onClick={addSupplier} className="shrink-0 rounded-lg bg-amber-500 px-3 text-xs font-semibold text-zinc-900">Add</button>
               </div>
             )}
           </Field>
@@ -167,19 +167,19 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
                 <option value="">Not recorded</option>
                 {people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
-              <button type="button" onClick={() => setAddingPerson((v) => !v)} className="shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 text-xs font-semibold text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20">+ Person</button>
+              <button type="button" onClick={() => setAddingPerson((v) => !v)} className="shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/20">+ Person</button>
             </div>
             {addingPerson && (
               <div className="flex gap-2 pt-1">
                 <input className={INPUT} placeholder="Name" value={newPerson} onChange={(e) => setNewPerson(e.target.value)} autoFocus />
-                <button type="button" onClick={addPerson} className="shrink-0 rounded-lg bg-amber-500 px-3 text-xs font-semibold text-white">Add</button>
+                <button type="button" onClick={addPerson} className="shrink-0 rounded-lg bg-amber-500 px-3 text-xs font-semibold text-zinc-900">Add</button>
               </div>
             )}
           </Field>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {PURCHASE_CATEGORIES.map((c) => (
-            <button key={c} type="button" onClick={() => setCategory(c)} className={cn("px-3 py-1 rounded-full border text-xs font-medium transition-colors", category === c ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</button>
+            <button key={c} type="button" onClick={() => setCategory(c)} className={cn("px-3 py-1 rounded-full border text-xs font-medium transition-colors", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</button>
           ))}
         </div>
         <Field label="For which function? (optional — shows the cost against that function)">
@@ -192,7 +192,7 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
 
       <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
         <div className="flex items-center justify-between gap-3 flex-wrap">
-          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">What was bought</h2>
+          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">What was bought</h2>
           <label className="flex items-center gap-2 text-xs text-zinc-500 cursor-pointer">
             <input type="checkbox" checked={justTotal} onChange={(e) => setJustTotal(e.target.checked)} className="h-4 w-4 accent-amber-500" />
             I only know the total
@@ -203,23 +203,23 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
           <Field label="Total amount (₹)" required><input className={INPUT} inputMode="decimal" value={total} onChange={(e) => setTotal(e.target.value.replace(/[^\d.]/g, ""))} placeholder="e.g. 4500" /></Field>
         ) : (
           <>
-            {rows.length === 0 && <p className="text-xs text-zinc-400">Add each item with quantity and rate, or tick “I only know the total”.</p>}
+            {rows.length === 0 && <p className="text-xs text-zinc-500 dark:text-zinc-400">Add each item with quantity and rate, or tick “I only know the total”.</p>}
             {rows.map((r) => (
               <div key={r.key} className="grid grid-cols-[1fr_4.5rem_4.5rem_5rem_auto] items-center gap-2">
                 <input className={INPUT} placeholder="Item, e.g. Onion" value={r.name} onChange={(e) => patchRow(r.key, { name: e.target.value })} />
                 <input className={INPUT} inputMode="decimal" placeholder="Qty" value={r.quantity} onChange={(e) => patchRow(r.key, { quantity: e.target.value.replace(/[^\d.]/g, "") })} />
                 <select className={INPUT} value={r.unit} onChange={(e) => patchRow(r.key, { unit: e.target.value })}>{[...new Set([...UNITS, r.unit])].map((u) => <option key={u} value={u}>{u}</option>)}</select>
                 <input className={INPUT} inputMode="decimal" placeholder="Rate ₹" value={r.rate} onChange={(e) => patchRow(r.key, { rate: e.target.value.replace(/[^\d.]/g, "") })} />
-                <button type="button" onClick={() => setRows((x) => x.filter((y) => y.key !== r.key))} aria-label="Remove" className="p-1.5 text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
+                <button type="button" onClick={() => setRows((x) => x.filter((y) => y.key !== r.key))} aria-label="Remove" className="p-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500"><X className="h-4 w-4" /></button>
               </div>
             ))}
-            <button type="button" onClick={addRow} className="inline-flex items-center gap-1 text-sm font-semibold text-amber-600 hover:underline"><Plus className="h-4 w-4" /> Add item</button>
+            <button type="button" onClick={addRow} className="inline-flex items-center gap-1 text-sm font-semibold text-amber-700 dark:text-amber-500 hover:underline"><Plus className="h-4 w-4" /> Add item</button>
           </>
         )}
       </section>
 
       <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
-        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Payment</h2>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Payment</h2>
         {initial ? (
           <p className="text-sm text-zinc-500">Paid so far {rs(initial.paidPaise)}. Add or undo payments from the purchase list.</p>
         ) : (
@@ -242,7 +242,7 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
             <div className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{rs(Math.round(grand * 100))}{!initial && grand > 0 && paidNum < grand && <span className="ml-2 text-xs font-medium text-red-500">Due {rs(Math.round((grand - paidNum) * 100))}</span>}</div>
           </div>
           {error && <p className="text-xs text-red-500 max-w-xs">{error}</p>}
-          <button type="button" onClick={submit} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-6 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+          <button type="button" onClick={submit} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-6 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-60">
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}{initial ? "Save changes" : "Save purchase"}
           </button>
         </div></div>

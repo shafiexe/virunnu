@@ -63,7 +63,7 @@ export function CancelBookingButton({ bookingId }: { bookingId: string }) {
   return (
     <button
       onClick={() => setConfirming(true)}
-      className="text-sm text-zinc-400 hover:text-red-500 transition-colors underline underline-offset-2"
+      className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-red-500 transition-colors underline underline-offset-2"
     >
       Cancel booking
     </button>

@@ -39,7 +39,7 @@ export function AdminResetPassword({ kind, id, business }: { kind: "owners" | "c
 
   return (
     <>
-      <button type="button" onClick={show} title="Make a new password" aria-label="Make a new password" className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors">
+      <button type="button" onClick={show} title="Make a new password" aria-label="Make a new password" className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors">
         <KeyRound className="h-4 w-4" />
       </button>
       {open && (
@@ -50,20 +50,20 @@ export function AdminResetPassword({ kind, id, business }: { kind: "owners" | "c
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">New password · {business}</h3>
                 <p className="text-xs text-zinc-500 mt-0.5">Pick the login. The old password stops working straight away.</p>
               </div>
-              <button type="button" onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-400" /></button>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
             </div>
 
-            {logins === null ? <p className="text-sm text-zinc-400 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</p> : logins.length === 0 ? (
+            {logins === null ? <p className="text-sm text-zinc-500 dark:text-zinc-400 flex items-center gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Loading…</p> : logins.length === 0 ? (
               <p className="text-sm text-zinc-500">This one has no login yet.</p>
             ) : (
               <ul className="space-y-1.5">
                 {logins.map((l) => (
                   <li key={l.id} className="flex items-center gap-3 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3 py-2">
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50 truncate">{l.name ?? "No name"} {l.main ? <span className="ml-1 text-[10px] font-semibold text-amber-600">MAIN</span> : <span className="ml-1 text-[10px] font-semibold text-zinc-400">TEAM</span>}{l.disabled && <span className="ml-1 text-[10px] font-semibold text-red-500">OFF</span>}</div>
+                      <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50 truncate">{l.name ?? "No name"} {l.main ? <span className="ml-1 text-[10px] font-semibold text-amber-700 dark:text-amber-500">MAIN</span> : <span className="ml-1 text-[10px] font-semibold text-zinc-500 dark:text-zinc-400">TEAM</span>}{l.disabled && <span className="ml-1 text-[10px] font-semibold text-red-500">OFF</span>}</div>
                       <div className="text-xs text-zinc-500">{phone(l.phone)}</div>
                     </div>
-                    <button type="button" onClick={() => reset(l.id)} disabled={busy === l.id} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50">
+                    <button type="button" onClick={() => reset(l.id)} disabled={busy === l.id} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900 disabled:opacity-50">
                       {busy === l.id && <Loader2 className="h-3.5 w-3.5 animate-spin" />} New password
                     </button>
                   </li>
@@ -76,15 +76,15 @@ export function AdminResetPassword({ kind, id, business }: { kind: "owners" | "c
               <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50 dark:bg-emerald-950/20 p-4 space-y-3">
                 <p className="text-xs text-emerald-800 dark:text-emerald-300">Shown only now. Send it to {done.name ?? phone(done.phone)}.</p>
                 <div className="rounded-lg bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-900/40 px-3 py-2 font-mono text-sm space-y-0.5">
-                  <div><span className="text-zinc-400">Phone </span>{phone(done.phone)}</div>
-                  <div><span className="text-zinc-400">Password </span><span className="font-bold tracking-wide">{done.password}</span></div>
+                  <div><span className="text-zinc-500 dark:text-zinc-400">Phone </span>{phone(done.phone)}</div>
+                  <div><span className="text-zinc-500 dark:text-zinc-400">Password </span><span className="font-bold tracking-wide">{done.password}</span></div>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button type="button" onClick={async () => { try { await navigator.clipboard.writeText(`Phone: ${phone(done.phone)}\nPassword: ${done.password}`); setCopied(true); } catch { /* it is on screen */ } }}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-700 dark:text-zinc-300">
                     {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />} {copied ? "Copied" : "Copy"}
                   </button>
-                  <a href={whatsappLink(done.phone, message)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white"><MessageCircle className="h-3.5 w-3.5" /> WhatsApp</a>
+                  <a href={whatsappLink(done.phone, message)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 text-xs font-semibold text-white"><MessageCircle className="h-3.5 w-3.5" /> WhatsApp</a>
                 </div>
               </div>
             )}

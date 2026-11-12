@@ -20,7 +20,7 @@ function Card({ label, value, sub, tone }: { label: string; value: string; sub?:
     <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4">
       <p className="text-xs text-zinc-500">{label}</p>
       <p className={cn("mt-1 text-xl font-bold tabular-nums", tone === "good" && "text-emerald-600 dark:text-emerald-400", tone === "bad" && "text-red-600 dark:text-red-400", !tone && "text-zinc-900 dark:text-zinc-50")}>{value}</p>
-      {sub && <p className="mt-0.5 text-[11px] text-zinc-400">{sub}</p>}
+      {sub && <p className="mt-0.5 text-[11px] text-zinc-500 dark:text-zinc-400">{sub}</p>}
     </div>
   );
 }
@@ -62,7 +62,7 @@ export default async function OwnerReportsPage({ searchParams }: { searchParams:
             <span className="min-w-32 text-center text-sm font-semibold text-zinc-900 dark:text-zinc-50">{p.label}</span>
             <Link href={`/owner/reports?month=${next}`} aria-label="Next month" className="p-2.5 text-zinc-500 hover:text-zinc-900"><ChevronRight className="h-4 w-4" /></Link>
           </div>
-          <a href={`/api/owner/reports/export?month=${p.key}`} download className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-white"><FileSpreadsheet className="h-4 w-4" /> Excel</a>
+          <a href={`/api/owner/reports/export?month=${p.key}`} download className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-zinc-900"><FileSpreadsheet className="h-4 w-4" /> Excel</a>
           <PrintButton />
         </div>
       </div>

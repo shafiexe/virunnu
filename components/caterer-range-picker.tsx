@@ -16,7 +16,7 @@ export function CatererRangePicker({ tab, range, exportType }: { tab: string; ra
             <Link
               key={p.label}
               href={`/caterer/reports?tab=${tab}&from=${p.from}&to=${p.to}`}
-              className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-colors", active ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}
+              className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-colors", active ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}
             >
               {p.label}
             </Link>
@@ -33,7 +33,7 @@ export function CatererRangePicker({ tab, range, exportType }: { tab: string; ra
           <span className="block text-[11px] font-medium text-zinc-500">To</span>
           <input type="date" name="to" defaultValue={range.toKey} required className="rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-amber-400" />
         </label>
-        <button type="submit" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-white">
+        <button type="submit" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-4 py-2 text-sm font-semibold text-zinc-900">
           <CalendarRange className="h-4 w-4" /> Show report
         </button>
         {exportType && (
@@ -42,7 +42,7 @@ export function CatererRangePicker({ tab, range, exportType }: { tab: string; ra
           </a>
         )}
       </form>
-      <p className="text-xs text-zinc-400">Showing <span className="font-medium text-zinc-600 dark:text-zinc-300">{range.label}</span>. Functions are counted by their function date.</p>
+      <p className="text-xs text-zinc-500 dark:text-zinc-400">Showing <span className="font-medium text-zinc-600 dark:text-zinc-300">{range.label}</span>. Functions are counted by their function date.</p>
     </div>
   );
 }

@@ -91,7 +91,7 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
             <div className="text-xs text-zinc-500 mt-0.5">
               {b.hallSlot.template.name} · {b.hallSlot.template.startTime}–{b.hallSlot.template.endTime}
             </div>
-            <div className="text-xs text-zinc-400 mt-0.5">{b.hallSlot.hall.venue.name} · {b.hallSlot.hall.name}</div>
+            <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{b.hallSlot.hall.venue.name} · {b.hallSlot.hall.name}</div>
           </div>
           <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full shrink-0", STATUS_STYLE[status] ?? STATUS_STYLE.EXPIRED)}>
             {STATUS_LABEL[status] ?? status}
@@ -113,15 +113,15 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
         <div className="flex items-end justify-between gap-2">
           <div>
             <div className="text-base font-bold text-zinc-900 dark:text-zinc-50">₹{(b.totalPaise / 100).toLocaleString("en-IN")}</div>
-            {(b.addons?.length ?? 0) > 0 && <div className="text-xs text-zinc-400">incl. {addonSummary(b.addons!)}</div>}
-            {disc > 0 && <div className="text-xs text-amber-600 dark:text-amber-400">🏷️ −₹{(disc / 100).toLocaleString("en-IN")}</div>}
+            {(b.addons?.length ?? 0) > 0 && <div className="text-xs text-zinc-500 dark:text-zinc-400">incl. {addonSummary(b.addons!)}</div>}
+            {disc > 0 && <div className="text-xs text-amber-700 dark:text-amber-400">🏷️ −₹{(disc / 100).toLocaleString("en-IN")}</div>}
           </div>
           <div className="text-right text-xs space-y-0.5">
             {!cancelled && !awaiting && paid > 0 && <div className="text-emerald-600 dark:text-emerald-400">Paid ₹{(paid / 100).toLocaleString("en-IN")}</div>}
             {!cancelled && !awaiting && balance > 0 && <div className="text-red-500 dark:text-red-400 font-medium">Due ₹{(balance / 100).toLocaleString("en-IN")}</div>}
             {!cancelled && !awaiting && balance === 0 && paid > 0 && <div className="text-emerald-600 dark:text-emerald-400">Fully paid</div>}
-            {awaiting && <div className="text-zinc-400">Awaiting payment</div>}
-            {b.paymentMethod === "CASH" && !awaiting && <div className="text-zinc-400">💵 Cash</div>}
+            {awaiting && <div className="text-zinc-500 dark:text-zinc-400">Awaiting payment</div>}
+            {b.paymentMethod === "CASH" && !awaiting && <div className="text-zinc-500 dark:text-zinc-400">💵 Cash</div>}
           </div>
         </div>
 
@@ -130,10 +130,10 @@ function BookingCard({ b, idx, page, pageSize, onSuccess }: { b: Booking; idx: n
 
         {/* Actions */}
         <div className="flex items-center gap-2 pt-3 border-t border-zinc-100 dark:border-zinc-800 flex-wrap">
-          <Link href={`/owner/bookings/${b.id}`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline">
+          <Link href={`/owner/bookings/${b.id}`} className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline">
             Details
           </Link>
-          <Link href={`/owner/bookings/${b.id}/invoice`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline">
+          <Link href={`/owner/bookings/${b.id}/invoice`} className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline">
             Invoice
           </Link>
           {(b.status === "PENDING" || b.status === "APPROVED" || b.status === "ADVANCE_PAID") && (
@@ -223,17 +223,17 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <WriteOnly page="bookings"><Link href="/owner/calendar" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-white transition-colors">
+          <WriteOnly page="bookings"><Link href="/owner/calendar" className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 text-sm font-semibold text-zinc-900 transition-colors">
             <Plus className="h-4 w-4" /> Add booking
           </Link></WriteOnly>
           {/* View toggle */}
           <div className="flex items-center rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
             <button onClick={() => toggleView("list")} title="List view"
-              className={cn("px-2.5 py-2 transition-colors", view === "list" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
+              className={cn("px-2.5 py-2 transition-colors", view === "list" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
               <LayoutList className="h-4 w-4" />
             </button>
             <button onClick={() => toggleView("card")} title="Card view"
-              className={cn("px-2.5 py-2 transition-colors", view === "card" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
+              className={cn("px-2.5 py-2 transition-colors", view === "card" ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900" : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800")}>
               <LayoutGrid className="h-4 w-4" />
             </button>
           </div>
@@ -246,7 +246,7 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
       {/* Filter bar */}
       <div className="mb-4 flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 dark:text-zinc-400 pointer-events-none" />
           <input type="search" placeholder="Search by name or phone…" value={searchInput}
             onChange={(e) => handleSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
@@ -255,7 +255,7 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
           {TABS.map(({ key, label }) => (
             <button key={key} onClick={() => handleStatus(key)}
               className={cn("px-3 py-2 rounded-xl text-xs font-medium transition-colors whitespace-nowrap",
-                status === key ? "bg-amber-500 text-white shadow-sm" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
+                status === key ? "bg-amber-500 text-zinc-900 shadow-sm" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700")}>
               {label}
             </button>
           ))}
@@ -286,7 +286,7 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
           )}
           {!error && !loading && bookings.length === 0 && (
             <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-12 text-center">
-              <p className="text-zinc-400 text-sm">{searchInput || status !== "ALL" ? "No bookings match your filter." : "No bookings yet."}</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">{searchInput || status !== "ALL" ? "No bookings match your filter." : "No bookings yet."}</p>
             </div>
           )}
           {!error && !loading && bookings.length > 0 && (
@@ -329,9 +329,9 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                {loading && <tr><td colSpan={6} className="px-4 py-12 text-center text-zinc-400 text-sm">Loading…</td></tr>}
+                {loading && <tr><td colSpan={6} className="px-4 py-12 text-center text-zinc-500 dark:text-zinc-400 text-sm">Loading…</td></tr>}
                 {!loading && bookings.length === 0 && (
-                  <tr><td colSpan={6} className="px-4 py-12 text-center text-zinc-400 text-sm">
+                  <tr><td colSpan={6} className="px-4 py-12 text-center text-zinc-500 dark:text-zinc-400 text-sm">
                     {searchInput || status !== "ALL" ? "No bookings match your filter." : "No bookings yet."}
                   </td></tr>
                 )}
@@ -341,7 +341,7 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
                   const date = new Date(b.hallSlot.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
                   return (
                     <tr key={b.id} className="bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors">
-                      <td className="p-0 text-xs font-medium text-zinc-400 tabular-nums">
+                      <td className="p-0 text-xs font-medium text-zinc-500 dark:text-zinc-400 tabular-nums">
                         <Link href={`/owner/bookings/${b.id}`} className="block px-4 py-3" aria-label="Open booking details">{(page - 1) * pageSize + idx + 1}</Link>
                       </td>
                       <td className="p-0 whitespace-nowrap">
@@ -357,25 +357,25 @@ export function OwnerBookingsTable({ initial }: { initial: BookingsUrlState }) {
                       <td className="px-4 py-3 whitespace-nowrap">
                         <div className="space-y-0.5 text-xs">
                           <div className="font-semibold text-sm text-zinc-900 dark:text-zinc-50">₹{(b.totalPaise / 100).toLocaleString("en-IN")}</div>
-                          {(b.addons?.length ?? 0) > 0 && <div className="text-zinc-400 max-w-[180px] truncate" title={addonSummary(b.addons!)}>incl. {addonSummary(b.addons!)}</div>}
-                          {disc > 0 && <div className="text-amber-600 dark:text-amber-400" title={b.discountReason ?? undefined}>🏷️ −₹{(disc / 100).toLocaleString("en-IN")}{b.discountReason && <span className="text-zinc-400 ml-1">· {b.discountReason}</span>}</div>}
+                          {(b.addons?.length ?? 0) > 0 && <div className="text-zinc-500 dark:text-zinc-400 max-w-[180px] truncate" title={addonSummary(b.addons!)}>incl. {addonSummary(b.addons!)}</div>}
+                          {disc > 0 && <div className="text-amber-700 dark:text-amber-400" title={b.discountReason ?? undefined}>🏷️ −₹{(disc / 100).toLocaleString("en-IN")}{b.discountReason && <span className="text-zinc-500 dark:text-zinc-400 ml-1">· {b.discountReason}</span>}</div>}
                           {!cancelled && !awaiting && paid > 0 && <div className="text-emerald-600 dark:text-emerald-400">Paid ₹{(paid / 100).toLocaleString("en-IN")}</div>}
                           {!cancelled && !awaiting && balance > 0 && <div className="text-red-500 dark:text-red-400 font-medium">Due ₹{(balance / 100).toLocaleString("en-IN")}</div>}
                           {!cancelled && !awaiting && balance === 0 && paid > 0 && <div className="text-emerald-600 dark:text-emerald-400">Fully paid</div>}
-                          {awaiting && <div className="text-zinc-400">Awaiting payment</div>}
-                          {b.paymentMethod === "CASH" && !awaiting && <div className="text-zinc-400">💵 Cash</div>}
+                          {awaiting && <div className="text-zinc-500 dark:text-zinc-400">Awaiting payment</div>}
+                          {b.paymentMethod === "CASH" && !awaiting && <div className="text-zinc-500 dark:text-zinc-400">💵 Cash</div>}
                         </div>
                       </td>
                       <td className="px-4 py-3">
                         <span className={cn("text-xs font-medium px-2.5 py-1 rounded-full", STATUS_STYLE[s] ?? STATUS_STYLE.EXPIRED)}>
                           {STATUS_LABEL[s] ?? b.status}
                         </span>
-                        {b.cancelReason && <div className="text-[10px] text-zinc-400 mt-1 max-w-[120px] truncate" title={b.cancelReason}>{b.cancelReason}</div>}
+                        {b.cancelReason && <div className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 max-w-[120px] truncate" title={b.cancelReason}>{b.cancelReason}</div>}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Link href={`/owner/bookings/${b.id}`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline whitespace-nowrap">Details</Link>
-                          <Link href={`/owner/bookings/${b.id}/invoice`} className="text-xs font-medium text-amber-600 dark:text-amber-400 hover:underline whitespace-nowrap">Invoice</Link>
+                          <Link href={`/owner/bookings/${b.id}`} className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap">Details</Link>
+                          <Link href={`/owner/bookings/${b.id}/invoice`} className="text-xs font-medium text-amber-700 dark:text-amber-400 hover:underline whitespace-nowrap">Invoice</Link>
                           {(b.status === "PENDING" || b.status === "APPROVED" || b.status === "ADVANCE_PAID") && (
                             <QuickPayButton
                               bookingId={b.id} totalPaise={b.totalPaise} advancePaise={b.advancePaise}

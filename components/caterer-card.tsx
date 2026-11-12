@@ -62,7 +62,7 @@ export function CatererCard({ caterer, enquiry }: { caterer: Caterer; enquiry?: 
         {(caterer.startingPriceRupees || caterer.maxGuests || (caterer.serviceAreas?.length ?? 0) > 0) && (
           <div className="space-y-1 text-xs text-zinc-500 pointer-events-none">
             {caterer.startingPriceRupees ? (
-              <div>From <span className="font-semibold text-amber-600 dark:text-amber-400">₹{caterer.startingPriceRupees.toLocaleString("en-IN")}</span> per plate</div>
+              <div>From <span className="font-semibold text-amber-700 dark:text-amber-400">₹{caterer.startingPriceRupees.toLocaleString("en-IN")}</span> per plate</div>
             ) : null}
             {caterer.minGuests || caterer.maxGuests ? (
               <div>Serves {caterer.minGuests ?? 1}–{caterer.maxGuests ?? "any"} guests</div>
@@ -93,7 +93,7 @@ export function CatererCard({ caterer, enquiry }: { caterer: Caterer; enquiry?: 
             href={waLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 active:bg-emerald-700 px-3 py-2 text-sm font-semibold text-white transition-colors"
+            className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-700 px-3 py-2 text-sm font-semibold text-white transition-colors"
           >
             WhatsApp
           </a>

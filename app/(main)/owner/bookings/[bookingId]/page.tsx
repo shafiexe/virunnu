@@ -37,7 +37,7 @@ const rs = (paise: number) => `₹${formatRupees(paise)}`;
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 space-y-3">
-      <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">{title}</h2>
+      <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{title}</h2>
       {children}
     </section>
   );
@@ -131,7 +131,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
         />
         <Link
           href={`/owner/bookings/${booking.id}/invoice`}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2 text-sm font-medium text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3.5 py-2 text-sm font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
         >
           <FileText className="h-4 w-4" /> Invoice
         </Link>
@@ -166,7 +166,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
 
         <Card title="Customer">
           <Row label="Name">{customer.name}</Row>
-          <Row label="Phone">{customer.phone !== "—" ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${customer.phone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{customer.phone}</a></Show> : "—"}</Row>
+          <Row label="Phone">{customer.phone !== "—" ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${customer.phone}`} className="text-amber-700 dark:text-amber-400 hover:underline">{customer.phone}</a></Show> : "—"}</Row>
           {customer.email && <Row label="Email">{customer.email}</Row>}
           {booking.guestAddress && <Row label="Address">{booking.guestAddress}</Row>}
         </Card>
@@ -176,12 +176,12 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
         <Row label="Hall rental">{rs(hallPaise)}</Row>
         {booking.addons.length > 0 ? (
           <div className="rounded-xl bg-zinc-50 dark:bg-zinc-800/50 px-3 py-2 space-y-1.5">
-            <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Add-ons</div>
+            <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Add-ons</div>
             {booking.addons.map((a) => (
               <div key={a.id} className="flex items-start justify-between gap-3 text-sm">
                 <span className="text-zinc-700 dark:text-zinc-300">
                   {a.name}
-                  {addonDetail(a) && <span className="block text-xs text-zinc-400">{addonDetail(a)}</span>}
+                  {addonDetail(a) && <span className="block text-xs text-zinc-500 dark:text-zinc-400">{addonDetail(a)}</span>}
                 </span>
                 <span className="text-zinc-900 dark:text-zinc-50">{rs(a.pricePaise)}</span>
               </div>
@@ -191,11 +191,11 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
             </div>
           </div>
         ) : (
-          <Row label="Add-ons"><span className="text-zinc-400">None — use Add-ons above to add AC, security, etc.</span></Row>
+          <Row label="Add-ons"><span className="text-zinc-500 dark:text-zinc-400">None — use Add-ons above to add AC, security, etc.</span></Row>
         )}
         {discountPaise > 0 && (
           <Row label={`Discount${booking.discountReason ? ` (${booking.discountReason})` : ""}`}>
-            <span className="text-amber-600 dark:text-amber-400">−{rs(discountPaise)}</span>
+            <span className="text-amber-700 dark:text-amber-400">−{rs(discountPaise)}</span>
           </Row>
         )}
         <div className="flex items-center justify-between border-t border-zinc-200 dark:border-zinc-700 pt-3">
@@ -203,7 +203,7 @@ export default async function OwnerBookingDetailPage({ params }: Params) {
           <span className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{rs(netPaise)}</span>
         </div>
         {tax.enabled && (
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-zinc-500 dark:text-zinc-400">
             Includes GST: {rs(tax.gstPaise)} (CGST {tax.rate}% {rs(tax.cgstPaise)} + SGST {tax.rate}% {rs(tax.sgstPaise)}) on a base of {rs(tax.basePaise)}.
           </p>
         )}

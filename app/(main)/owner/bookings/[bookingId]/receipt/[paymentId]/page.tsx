@@ -30,7 +30,7 @@ export default async function ReceiptPage({ params }: Params) {
         <div className="flex flex-wrap gap-2">
           {digits.length === 10 && (
             <a href={`https://wa.me/91${digits}?text=${encodeURIComponent(r.message)}`} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-4 py-2 text-sm font-semibold text-white"><MessageCircle className="h-4 w-4" /> Send on WhatsApp</a>
+              className="inline-flex items-center gap-1.5 rounded-xl bg-[#25D366] px-4 py-2 text-sm font-semibold text-zinc-900"><MessageCircle className="h-4 w-4" /> Send on WhatsApp</a>
           )}
           <CopyLinkButton url={r.link} label="Copy customer link" />
           <PrintButton />

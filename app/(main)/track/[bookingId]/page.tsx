@@ -94,7 +94,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
 
       {/* Payment success flash */}
       {paid === "1" && (
-        <div className="rounded-2xl bg-emerald-500 px-5 py-4 flex items-center gap-3 text-white shadow-lg">
+        <div className="rounded-2xl bg-emerald-700 px-5 py-4 flex items-center gap-3 text-white shadow-lg">
           <CheckCircle2 className="h-6 w-6 shrink-0" />
           <div>
             <p className="font-bold text-base">Payment received!</p>
@@ -118,7 +118,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
       <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 divide-y divide-zinc-100 dark:divide-zinc-800">
         {/* Venue & hall */}
         <div className="p-5 space-y-1">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2">Venue</p>
+          <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-2">Venue</p>
           <h2 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">{venue.name}</h2>
           <p className="text-sm text-zinc-500">{hall.name} · {hall.capacity.toLocaleString()} guests capacity</p>
           {venue.address && (
@@ -138,14 +138,14 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
         {/* Date & slot */}
         <div className="p-5 grid sm:grid-cols-2 gap-4">
           <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-1.5">Date</p>
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1.5">Date</p>
             <div className="flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50">
               <CalendarDays className="h-4 w-4 text-amber-500 shrink-0" />
               {date}
             </div>
           </div>
           <div>
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-1.5">Slot</p>
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1.5">Slot</p>
             <div className="flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-50">
               <Clock className="h-4 w-4 text-amber-500 shrink-0" />
               {template.name} · {template.startTime}–{template.endTime}
@@ -155,7 +155,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
 
         {/* Payment */}
         <div className="p-5">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-3">Payment</p>
+          <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-3">Payment</p>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-zinc-500">Total amount</span>
@@ -191,7 +191,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
         {/* Guest info */}
         {(guestName || maskedPhone) && (
           <div className="p-5">
-            <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-2">Booked by</p>
+            <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-2">Booked by</p>
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-950/40 flex items-center justify-center text-sm font-bold text-amber-700 dark:text-amber-400">
                 {(guestName ?? "?")[0].toUpperCase()}
@@ -206,7 +206,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
 
         {/* Reference */}
         <div className="p-5">
-          <p className="text-xs font-semibold text-zinc-400 uppercase tracking-wide mb-1.5">Booking reference</p>
+          <p className="text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1.5">Booking reference</p>
           <code className="text-xs font-mono text-zinc-600 dark:text-zinc-400 break-all">{booking.id}</code>
         </div>
       </div>
@@ -218,7 +218,7 @@ export default async function PublicBookingPage({ params, searchParams }: Props)
           <p className="text-xs opacity-80 mb-3">Sign in with your phone number to make the payment and fully confirm your booking.</p>
           <Link
             href={`/login?next=/bookings/${booking.id}`}
-            className="inline-block rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-xs font-semibold px-4 py-2 transition-colors"
+            className="inline-block rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold px-4 py-2 transition-colors"
           >
             Sign in to pay →
           </Link>

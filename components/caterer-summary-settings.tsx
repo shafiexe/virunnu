@@ -76,7 +76,7 @@ export function CatererSummarySettings({ initial }: { initial: { enabled: boolea
         <button type="button" onClick={show} disabled={!!busy} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50">
           {busy === "preview" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Eye className="h-4 w-4" />} {preview ? "Hide preview" : "Preview today"}
         </button>
-        <button type="button" onClick={sendNow} disabled={!!busy} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3.5 py-2 text-sm font-semibold text-white disabled:opacity-50">
+        <button type="button" onClick={sendNow} disabled={!!busy} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3.5 py-2 text-sm font-semibold text-zinc-900 disabled:opacity-50">
           {busy === "send" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Send it to me now
         </button>
         {note && <span className="inline-flex items-center gap-1 text-xs text-emerald-600"><Check className="h-3.5 w-3.5" />{note}</span>}

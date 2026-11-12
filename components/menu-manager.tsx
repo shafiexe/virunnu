@@ -114,7 +114,7 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
         <button
           type="button"
           onClick={() => { setShowForm((v) => !v); setError(""); }}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-900 px-3 py-1.5 rounded-lg transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           Add item
@@ -167,7 +167,7 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
             </div>
 
             <div className="sm:col-span-2 space-y-1">
-              <Label htmlFor="item-desc">Description <span className="text-zinc-400 font-normal">(optional)</span></Label>
+              <Label htmlFor="item-desc">Description <span className="text-zinc-500 dark:text-zinc-400 font-normal">(optional)</span></Label>
               <Input
                 id="item-desc"
                 placeholder="Ingredients, portion size, allergens…"
@@ -215,7 +215,7 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+              className="flex-1 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-50"
             >
               {loading ? "Adding…" : "Add to menu"}
             </button>
@@ -235,7 +235,7 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
         <div className="p-10 text-center">
           <div className="text-3xl mb-3">🍽️</div>
           <p className="text-zinc-500 text-sm">No menu items yet.</p>
-          <p className="text-zinc-400 text-xs mt-1">Click &quot;Add item&quot; to build your menu.</p>
+          <p className="text-zinc-500 dark:text-zinc-400 text-xs mt-1">Click &quot;Add item&quot; to build your menu.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -268,14 +268,14 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
                       )}
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="font-semibold text-amber-600 dark:text-amber-400 text-sm">
+                      <span className="font-semibold text-amber-700 dark:text-amber-400 text-sm">
                         ₹{item.priceRupees.toLocaleString("en-IN")}
                       </span>
                       <button
                         type="button"
                         onClick={() => deleteItem(item.id)}
                         disabled={deletingId === item.id}
-                        className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors disabled:opacity-40"
+                        className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors disabled:opacity-40"
                         aria-label="Delete item"
                       >
                         <Trash2 className="h-3.5 w-3.5" />

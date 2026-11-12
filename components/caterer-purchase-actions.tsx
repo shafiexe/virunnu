@@ -35,20 +35,20 @@ export function PayButton({ purchaseId, duePaise, label = "Pay" }: { purchaseId:
   if (!canWrite) return null;
   return (
     <>
-      <button type="button" onClick={() => { setAmount(String(duePaise / 100)); setError(""); setOpen(true); }} className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 px-2.5 py-1 text-xs font-semibold text-white">
+      <button type="button" onClick={() => { setAmount(String(duePaise / 100)); setError(""); setOpen(true); }} className="inline-flex items-center gap-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 px-2.5 py-1 text-xs font-semibold text-white">
         <Wallet className="h-3 w-3" /> {label}
       </button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
           <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between"><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Pay supplier</h3><button onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-400" /></button></div>
+            <div className="flex items-center justify-between"><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Pay supplier</h3><button onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button></div>
             <p className="text-xs text-zinc-500">Still due: {rs(duePaise)}. You can pay part of it.</p>
             <input className={INPUT} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} aria-label="Amount" />
             <select className={INPUT} value={method} onChange={(e) => setMethod(e.target.value)}>
               <option value="CASH">Cash</option><option value="UPI">UPI</option><option value="CARD">Card</option><option value="BANK">Bank transfer</option>
             </select>
             {error && <p className="text-xs text-red-500">{error}</p>}
-            <button type="button" onClick={pay} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
+            <button type="button" onClick={pay} disabled={busy} className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 py-2.5 text-sm font-semibold text-white disabled:opacity-50">
               {busy && <Loader2 className="h-4 w-4 animate-spin" />} Confirm payment
             </button>
           </div>
@@ -89,7 +89,7 @@ export function PurchasePayments({ purchaseId, totalPaise, paidPaise, payments }
         <div className="text-sm">
           <span className="text-zinc-500">Total </span><span className="font-semibold">{rs(totalPaise)}</span>
           <span className="mx-2 text-zinc-300">·</span><span className="text-zinc-500">Paid </span><span className="font-semibold text-emerald-600">{rs(paidPaise)}</span>
-          <span className="mx-2 text-zinc-300">·</span><span className="text-zinc-500">Due </span><span className={due > 0 ? "font-semibold text-red-600" : "font-semibold text-zinc-400"}>{due > 0 ? rs(due) : "Nil"}</span>
+          <span className="mx-2 text-zinc-300">·</span><span className="text-zinc-500">Due </span><span className={due > 0 ? "font-semibold text-red-600" : "font-semibold text-zinc-500 dark:text-zinc-400"}>{due > 0 ? rs(due) : "Nil"}</span>
         </div>
         {due > 0 && <PayButton purchaseId={purchaseId} duePaise={due} label="Pay supplier" />}
       </div>
@@ -99,13 +99,13 @@ export function PurchasePayments({ purchaseId, totalPaise, paidPaise, payments }
             <div key={p.id} className="flex items-center justify-between gap-2 text-xs text-zinc-600 dark:text-zinc-400">
               <span>{new Date(p.paidOn).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" })} · {METHOD[p.method] ?? p.method}{p.note ? ` · ${p.note}` : ""}{p.recordedBy ? ` · by ${p.recordedBy}` : ""}</span>
               <span className="flex items-center gap-2"><span className="font-medium text-zinc-900 dark:text-zinc-50">{rs(p.amountPaise)}</span>
-                <WriteOnly page="purchases"><button type="button" disabled={busy} onClick={() => undo(p)} title="Undo this payment" className="p-1.5 -m-1.5 text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button></WriteOnly></span>
+                <WriteOnly page="purchases"><button type="button" disabled={busy} onClick={() => undo(p)} title="Undo this payment" className="p-1.5 -m-1.5 text-zinc-500 dark:text-zinc-400 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button></WriteOnly></span>
             </div>
           ))}
         </div>
       )}
       <div className="pt-1">
-        <WriteOnly page="purchases"><button type="button" onClick={remove} disabled={deleting} className="inline-flex items-center gap-1 rounded-lg px-1 py-2 text-xs text-zinc-400 hover:text-red-500 disabled:opacity-50"><Trash2 className="h-3.5 w-3.5" /> {deleting ? "Deleting…" : "Delete purchase"}</button></WriteOnly>
+        <WriteOnly page="purchases"><button type="button" onClick={remove} disabled={deleting} className="inline-flex items-center gap-1 rounded-lg px-1 py-2 text-xs text-zinc-500 dark:text-zinc-400 hover:text-red-500 disabled:opacity-50"><Trash2 className="h-3.5 w-3.5" /> {deleting ? "Deleting…" : "Delete purchase"}</button></WriteOnly>
       </div>
     </section>
   );

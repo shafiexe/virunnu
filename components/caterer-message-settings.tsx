@@ -49,21 +49,21 @@ export function CatererMessageSettings({ initial }: { initial: Partial<Templates
       </div>
       <div className="flex flex-wrap gap-1.5">
         {TEMPLATE_KEYS.map((k) => (
-          <button key={k} type="button" onClick={() => setOpen(k)} className={cn("rounded-full border px-3 py-1.5 text-xs font-semibold", open === k ? "bg-amber-500 border-amber-500 text-white" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{TEMPLATE_INFO[k].label}</button>
+          <button key={k} type="button" onClick={() => setOpen(k)} className={cn("rounded-full border px-3 py-1.5 text-xs font-semibold", open === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{TEMPLATE_INFO[k].label}</button>
         ))}
       </div>
       <p className="text-xs text-zinc-500">Used by: {info.when}</p>
       <textarea ref={area} className={AREA} rows={9} value={texts[open]} onChange={(e) => set(open, e.target.value)} maxLength={1500} />
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-[11px] text-zinc-400">Tap to add:</span>
+        <span className="text-[11px] text-zinc-500 dark:text-zinc-400">Tap to add:</span>
         {info.vars.map((v) => <button key={v} type="button" onClick={() => insert(v)} className="rounded-md bg-zinc-100 dark:bg-zinc-800 px-2 py-1 text-[11px] font-mono text-zinc-600 dark:text-zinc-300 hover:bg-amber-100 dark:hover:bg-amber-950/30">{v}</button>)}
       </div>
       <div>
-        <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-1">What the customer sees</div>
+        <div className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">What the customer sees</div>
         <pre className="whitespace-pre-wrap rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/40 p-4 text-sm text-zinc-800 dark:text-zinc-200 font-sans">{renderTemplate(open, SAMPLE_VARS, texts)}</pre>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <button type="button" onClick={save} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60">
+        <button type="button" onClick={save} disabled={busy} className="inline-flex items-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-600 px-5 py-2.5 text-sm font-semibold text-zinc-900 disabled:opacity-60">
           {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <Check className="h-4 w-4" /> : null}{saved ? "Saved" : "Save messages"}
         </button>
         {changed && <button type="button" onClick={() => set(open, TEMPLATE_DEFAULTS[open])} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"><RotateCcw className="h-4 w-4" /> Use standard wording</button>}

@@ -391,7 +391,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               className={cn(
                 "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
                 v.id === selectedVenueId
-                  ? "bg-amber-500 text-white"
+                  ? "bg-amber-500 text-zinc-900"
                   : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
               )}
             >
@@ -413,7 +413,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
           <button onClick={nextMonth} aria-label="Next month" className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800">
             <ChevronRight className="h-4 w-4 text-zinc-500" />
           </button>
-          {loading && <span className="text-xs text-zinc-400 ml-2 animate-pulse">Refreshing…</span>}
+          {loading && <span className="text-xs text-zinc-500 dark:text-zinc-400 ml-2 animate-pulse">Refreshing…</span>}
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 text-xs text-zinc-500">
@@ -435,7 +435,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
       {/* Weekday header */}
       <div className="grid grid-cols-7">
         {WEEKDAYS.map((d) => (
-          <div key={d} className="py-1.5 text-center text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+          <div key={d} className="py-1.5 text-center text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400">
             {d}
           </div>
         ))}
@@ -476,11 +476,11 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               <div className="flex items-center gap-1 mb-1">
                 <div className={cn(
                   "w-6 h-6 flex items-center justify-center rounded-full text-xs font-semibold shrink-0",
-                  isToday ? "bg-amber-500 text-white" : isPast ? "text-zinc-400" : "text-zinc-700 dark:text-zinc-300"
+                  isToday ? "bg-amber-500 text-zinc-900" : isPast ? "text-zinc-500 dark:text-zinc-400" : "text-zinc-700 dark:text-zinc-300"
                 )}>
                   {cell.day}
                 </div>
-                {isBlocked && <Ban className="h-3 w-3 text-zinc-400" />}
+                {isBlocked && <Ban className="h-3 w-3 text-zinc-500 dark:text-zinc-400" />}
               </div>
 
               {/* Slot pills — desktop shows label, mobile shows dots */}
@@ -503,7 +503,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                   ))}
                 </div>
                 {daySlots.length > 2 && (
-                  <div className="hidden sm:block text-[9px] text-zinc-400 pl-1">
+                  <div className="hidden sm:block text-[9px] text-zinc-500 dark:text-zinc-400 pl-1">
                     +{daySlots.length - 2} more
                   </div>
                 )}
@@ -533,13 +533,13 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                     })}
                   </span>
                 </div>
-                <div className="text-xs text-zinc-400 mt-0.5">
+                <div className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                   {selectedDaySlots.length} slot{selectedDaySlots.length !== 1 ? "s" : ""}
                 </div>
               </div>
               <button
                 onClick={() => setSelectedDay(null)}
-                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-400 transition-colors shrink-0 lg:order-3"
+                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 text-zinc-500 dark:text-zinc-400 transition-colors shrink-0 lg:order-3"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -571,7 +571,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                 onClick={() => openAdd()}
                 disabled={selectedDateBlocked}
                 title={selectedDateBlocked ? "This date is blocked — unblock it to take bookings" : undefined}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-500"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-900 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-500"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add booking
@@ -587,7 +587,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               </p>
               <button
                 onClick={() => toggleBlock(selectedDay)}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 transition-colors"
               >
                 <Ban className="h-3.5 w-3.5" />
                 Unblock date
@@ -602,7 +602,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
             </div>
           ) : selectedDaySlots.length === 0 ? (
             <div className="p-10 text-center">
-              <p className="text-zinc-400 text-sm">No slot templates configured.</p>
+              <p className="text-zinc-500 dark:text-zinc-400 text-sm">No slot templates configured.</p>
               <p className="text-zinc-300 dark:text-zinc-600 text-xs mt-1">
                 Add slot templates in Settings.
               </p>
@@ -642,7 +642,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                     </span>
                                     <span className="flex items-center gap-1">
                                       <Phone className="h-3 w-3" />
-                                      {(booking.user?.phone ?? booking.guestPhone) ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${booking.user?.phone ?? booking.guestPhone}`} className="text-amber-600 dark:text-amber-400 hover:underline">{booking.user?.phone ?? booking.guestPhone}</a></Show> : ""}
+                                      {(booking.user?.phone ?? booking.guestPhone) ? <Show what="phones" fallback={<span className="text-zinc-300">—</span>}><a href={`tel:${booking.user?.phone ?? booking.guestPhone}`} className="text-amber-700 dark:text-amber-400 hover:underline">{booking.user?.phone ?? booking.guestPhone}</a></Show> : ""}
                                     </span>
                                     <span className="flex items-center gap-1 font-medium text-zinc-700 dark:text-zinc-300">
                                       <IndianRupee className="h-3 w-3" />
@@ -671,14 +671,14 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                 <div className="flex items-center gap-1 shrink-0">
                                   <button
                                     onClick={() => openAdd(slot.template.id)}
-                                    className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/20 px-2.5 py-1.5 rounded-lg transition-colors"
+                                    className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/20 px-2.5 py-1.5 rounded-lg transition-colors"
                                   >
                                     <Plus className="h-3 w-3" />
                                     Book
                                   </button>
                                   <button
                                     onClick={() => toggleSlotBlock(slot)}
-                                    className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 px-2.5 py-1.5 rounded-lg transition-colors"
+                                    className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 px-2.5 py-1.5 rounded-lg transition-colors"
                                     title="Block this slot"
                                   >
                                     <Ban className="h-3 w-3" />
@@ -687,7 +687,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                 </div>
                               ) : !booking && slot.status === "HELD" ? (
                                 <div className="flex items-center gap-2 shrink-0">
-                                <span className="hidden sm:inline text-xs text-zinc-400">Unblock to book this slot</span>
+                                <span className="hidden sm:inline text-xs text-zinc-500 dark:text-zinc-400">Unblock to book this slot</span>
                                 <button
                                   onClick={() => toggleSlotBlock(slot)}
                                   className="shrink-0 inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 px-2.5 py-1.5 rounded-lg transition-colors border border-zinc-200 dark:border-zinc-700"
@@ -702,7 +702,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                   <button
                                     onClick={() => openAdd(slot.template.id)}
                                     disabled={selectedDateBlocked}
-                                    className="inline-flex items-center gap-1 text-xs font-semibold text-amber-600 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/20 px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+                                    className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/20 px-2.5 py-1.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent"
                                     title={selectedDateBlocked ? "Date is blocked" : "Book this slot"}
                                   >
                                     <Plus className="h-3 w-3" />
@@ -710,7 +710,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                   </button>
                                   <button
                                     onClick={() => toggleSlotBlock(slot)}
-                                    className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 px-2.5 py-1.5 rounded-lg transition-colors"
+                                    className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 px-2.5 py-1.5 rounded-lg transition-colors"
                                     title="Block this slot"
                                   >
                                     <Ban className="h-3 w-3" />
@@ -730,7 +730,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                       </button>
                                       <button
                                         onClick={() => setConfirmDeleteId(null)}
-                                        className="text-xs text-zinc-400 hover:text-zinc-600"
+                                        className="text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-600"
                                       >
                                         No
                                       </button>
@@ -752,14 +752,14 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                                           });
                                           setFormError("");
                                         }}
-                                        className="p-1.5 rounded-lg text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
+                                        className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/20 transition-colors"
                                         title="Edit booking"
                                       >
                                         <Pencil className="h-3.5 w-3.5" />
                                       </button>
                                       <button
                                         onClick={() => setConfirmDeleteId(booking.id)}
-                                        className="p-1.5 rounded-lg text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
+                                        className="p-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors"
                                         title="Cancel booking"
                                       >
                                         <Trash2 className="h-3.5 w-3.5" />
@@ -795,7 +795,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               </div>
               <button
                 onClick={() => setShowAddModal(false)}
-                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400"
+                className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -809,7 +809,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                   className="w-full rounded-lg border border-amber-200 dark:border-amber-900/50 bg-white dark:bg-zinc-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500" />
                 <div className="flex items-center gap-3">
                   <button type="button" onClick={fillFromMessage} disabled={drafting || pasteText.trim().length < 5}
-                    className="rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 px-3 py-1.5 text-xs font-semibold text-white">{drafting ? "Reading…" : "Fill the form"}</button>
+                    className="rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 px-3 py-1.5 text-xs font-semibold text-zinc-900">{drafting ? "Reading…" : "Fill the form"}</button>
                   {draftNote && <span className="text-xs text-zinc-600 dark:text-zinc-400">{draftNote}</span>}
                 </div>
               </div>
@@ -837,9 +837,9 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                     ))}
                   </select>
                   {selectedDateBlocked ? (
-                    <p className="text-xs text-amber-600 dark:text-amber-400">This date is blocked. Close this and unblock the date to continue booking.</p>
+                    <p className="text-xs text-amber-700 dark:text-amber-400">This date is blocked. Close this and unblock the date to continue booking.</p>
                   ) : slotBlockReason.size > 0 ? (
-                    <p className="text-xs text-zinc-400">Greyed-out slots are blocked or booked — unblock a slot to book it.</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Greyed-out slots are blocked or booked — unblock a slot to book it.</p>
                   ) : null}
                 </div>
 
@@ -945,7 +945,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-50"
                 >
                   {formLoading ? "Creating…" : "Confirm booking"}
                 </button>
@@ -968,7 +968,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
           <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-sm border border-zinc-200 dark:border-zinc-800">
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Edit booking</h3>
-              <button onClick={() => setEditing(null)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400">
+              <button onClick={() => setEditing(null)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -1068,7 +1068,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold transition-colors disabled:opacity-50"
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold transition-colors disabled:opacity-50"
                 >
                   {formLoading ? "Saving…" : "Save changes"}
                 </button>

@@ -76,8 +76,8 @@ export function BottomNav() {
               className={cn(
                 "flex-1 flex flex-col items-center justify-center gap-0.5 text-[10px] font-semibold transition-all relative",
                 active
-                  ? "text-amber-600 dark:text-amber-400"
-                  : "text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
+                  ? "text-amber-700 dark:text-amber-400"
+                  : "text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200"
               )}
             >
               {active && (
@@ -88,7 +88,7 @@ export function BottomNav() {
                 active ? "bg-amber-50 dark:bg-amber-950/40" : ""
               )}>
                 <Icon className={cn("h-5 w-5", active && "stroke-[2.5px]")} />
-                {href === "/owner/enquiries" && waiting > 0 && <span className="absolute top-1.5 left-1/2 ml-2 min-w-4 rounded-full bg-amber-500 px-1 text-center text-[9px] font-bold leading-4 text-white">{waiting}</span>}
+                {href === "/owner/enquiries" && waiting > 0 && <span className="absolute top-1.5 left-1/2 ml-2 min-w-4 rounded-full bg-amber-500 px-1 text-center text-[9px] font-bold leading-4 text-zinc-900">{waiting}</span>}
               </div>
               {label}
             </Link>

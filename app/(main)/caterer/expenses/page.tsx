@@ -46,13 +46,13 @@ export default async function CatererExpensesPage({ searchParams }: Props) {
           </p>
         </div>
         <div className="text-right">
-          <div className="text-xs text-zinc-400 uppercase tracking-wide font-semibold">
+          <div className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wide font-semibold">
             {new Date(year, month - 1).toLocaleDateString("en-IN", { month: "long", year: "numeric" })}
           </div>
           <div className="text-2xl font-bold text-zinc-900 dark:text-zinc-50 mt-0.5">
             ₹{(totalPaise / 100).toLocaleString("en-IN")}
           </div>
-          <div className="text-xs text-zinc-400">total this month</div>
+          <div className="text-xs text-zinc-500 dark:text-zinc-400">total this month</div>
         </div>
       </div>
       <ExpenseManager

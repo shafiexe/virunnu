@@ -50,11 +50,11 @@ export function AdvancePaymentForm({
       </div>
 
       <div className="space-y-1">
-        <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+        <label className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">
           Advance amount (₹)
         </label>
         <div className="relative">
-          <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+          <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500 dark:text-zinc-400" />
           <input
             type="number"
             min={1000}
@@ -69,7 +69,7 @@ export function AdvancePaymentForm({
         {advanceNum > 0 && isValid && (
           <div className="flex justify-between text-xs pt-1">
             <span className="text-zinc-500">Remaining to pay later</span>
-            <span className="font-semibold text-amber-600 dark:text-amber-400">
+            <span className="font-semibold text-amber-700 dark:text-amber-400">
               ₹{remainingRupees.toLocaleString("en-IN")}
             </span>
           </div>
@@ -78,7 +78,7 @@ export function AdvancePaymentForm({
           <p className="text-xs text-red-500">Minimum advance is ₹1,000</p>
         )}
         {advanceNum >= totalRupees && (
-          <p className="text-xs text-amber-600">That covers the full amount — use the full payment button below</p>
+          <p className="text-xs text-amber-700 dark:text-amber-500">That covers the full amount — use the full payment button below</p>
         )}
       </div>
 
@@ -87,7 +87,7 @@ export function AdvancePaymentForm({
       <button
         onClick={payAdvance}
         disabled={!isValid || loading}
-        className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
+        className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors"
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" />}
         {loading
@@ -149,7 +149,7 @@ export function RemainingPaymentSection({
         </div>
         <div className="flex justify-between border-t border-amber-200 dark:border-amber-900/50 pt-2 font-bold text-base">
           <span className="text-zinc-900 dark:text-zinc-50">Remaining due</span>
-          <span className="text-amber-600 dark:text-amber-400">
+          <span className="text-amber-700 dark:text-amber-400">
             ₹{(remainingPaise / 100).toLocaleString("en-IN")}
           </span>
         </div>
@@ -161,7 +161,7 @@ export function RemainingPaymentSection({
         <button
           onClick={payRemaining}
           disabled={loading}
-          className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2 transition-colors"
+          className="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-zinc-900 font-semibold text-sm disabled:opacity-40 flex items-center justify-center gap-2 transition-colors"
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
           {loading ? "Processing…" : `✓ Confirm remaining payment ₹${(remainingPaise / 100).toLocaleString("en-IN")}`}

@@ -9,7 +9,7 @@ export function ClampText({ text, className }: { text: string; className?: strin
   return (
     <div>
       <p className={`${className ?? ""} ${!open && long ? "line-clamp-2" : ""}`}>{text}</p>
-      {long && <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-xs font-semibold text-amber-600 hover:underline">{open ? "Show less" : "Read more"}</button>}
+      {long && <button type="button" onClick={() => setOpen((o) => !o)} className="mt-1 text-xs font-semibold text-amber-700 dark:text-amber-500 hover:underline">{open ? "Show less" : "Read more"}</button>}
     </div>
   );
 }

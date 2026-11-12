@@ -83,7 +83,7 @@ export function LogoUploader({ initialUrl, name }: { initialUrl: string | null; 
           <p className="text-xs text-zinc-500 mt-0.5">Printed at the top of your invoices and statements. A square or wide image on a plain or transparent background looks best.</p>
           <div className="mt-3 flex items-center gap-2 flex-wrap">
             <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => pick(e.target.files?.[0])} />
-            <button type="button" disabled={busy} onClick={() => input.current?.click()} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 px-4 py-2 text-sm font-semibold text-white">
+            <button type="button" disabled={busy} onClick={() => input.current?.click()} className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-60 px-4 py-2 text-sm font-semibold text-zinc-900">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImagePlus className="h-4 w-4" />} {url ? "Change logo" : "Upload logo"}
             </button>
             {url && <button type="button" disabled={busy} onClick={remove} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"><Trash2 className="h-4 w-4" /> Remove</button>}

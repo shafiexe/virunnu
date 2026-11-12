@@ -21,7 +21,7 @@ export default async function SharedQuotePage({ params }: { params: Promise<{ to
     <div className="py-6">
       <style>{`@media print { body { background: white !important } .no-print { display: none !important } }`}</style>
       <div className="no-print max-w-3xl mx-auto px-5 pb-4 flex flex-wrap items-center justify-end gap-2">
-        {state === "OPEN" && <a href={reply} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">Accept on WhatsApp</a>}
+        {state === "OPEN" && <a href={reply} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 px-4 py-2 text-sm font-semibold text-white">Accept on WhatsApp</a>}
         <PdfButton href={`/api/pdf/q/${token}`} />
         <PrintButton />
       </div>

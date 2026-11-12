@@ -84,7 +84,7 @@ export function RazorpayCheckout({ bookingId, amountPaise }: Props) {
           <div className="w-6 h-6 border-2 border-amber-500 border-t-transparent rounded-full animate-spin" />
         </div>
         <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Confirming your payment…</p>
-        <p className="text-xs text-amber-600 dark:text-amber-400">This usually takes a few seconds.</p>
+        <p className="text-xs text-amber-700 dark:text-amber-400">This usually takes a few seconds.</p>
       </div>
     );
   }
@@ -99,11 +99,11 @@ export function RazorpayCheckout({ bookingId, amountPaise }: Props) {
       <button
         onClick={startPayment}
         disabled={loading || !ready}
-        className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-semibold text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-zinc-900 font-semibold text-base transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? "Preparing payment…" : `Pay ₹${(amountPaise / 100).toLocaleString("en-IN")}`}
       </button>
-      <p className="text-xs text-center text-zinc-400">
+      <p className="text-xs text-center text-zinc-500 dark:text-zinc-400">
         Secured by Razorpay · test mode — no real charges
       </p>
     </>

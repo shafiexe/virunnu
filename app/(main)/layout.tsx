@@ -78,7 +78,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-5">
                 <div className="space-y-1.5 text-center md:text-left text-zinc-900 dark:text-zinc-50">
                   <VirunnuLogo fontSize={22} />
-                  <p className="text-xs text-zinc-400 max-w-xs leading-relaxed mx-auto md:mx-0">
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 max-w-xs leading-relaxed mx-auto md:mx-0">
                     Find and book halls for weddings, receptions &amp; celebrations across Kerala.
                   </p>
                 </div>
@@ -91,7 +91,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                     { label: "YouTube",   href: "#", hover: "hover:text-[#FF0000] hover:bg-red-50 dark:hover:bg-red-950/20",     svg: <svg viewBox="0 0 24 24" fill="currentColor" className="h-[18px] w-[18px]"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg> },
                   ].map(({ label, href, hover, svg }) => (
                     <a key={label} href={href} aria-label={label} target="_blank" rel="noopener noreferrer"
-                      className={`p-2 rounded-xl text-zinc-400 transition-all ${hover}`}>
+                      className={`p-2 rounded-xl text-zinc-500 dark:text-zinc-400 transition-all ${hover}`}>
                       {svg}
                     </a>
                   ))}
@@ -100,7 +100,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               {/* Divider */}
               <div className="border-t border-zinc-100 dark:border-zinc-800" />
               {/* Bottom row: copyright + legal */}
-              <div className="flex flex-wrap items-center justify-center md:justify-between gap-3 text-xs text-zinc-400">
+              <div className="flex flex-wrap items-center justify-center md:justify-between gap-3 text-xs text-zinc-500 dark:text-zinc-400">
                 <span>{f.copyright ?? "© 2025 Virunnu Technologies, Kerala"}</span>
                 <div className="flex items-center gap-4">
                   <a href="/terms" className="hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors">{f.terms ?? "Terms of Service"}</a>

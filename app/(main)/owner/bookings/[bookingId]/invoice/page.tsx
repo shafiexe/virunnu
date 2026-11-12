@@ -127,16 +127,16 @@ export default async function InvoicePage({ params }: Params) {
         {/* Bill to */}
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">Bill To</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">Bill To</div>
             <div className="text-sm font-semibold text-zinc-900">{customer.name ?? "Guest"}</div>
             <div className="text-xs text-zinc-500">{customer.phone}</div>
           </div>
           <div>
-            <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1">Booking Details</div>
+            <div className="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-1">Booking Details</div>
             <div className="text-xs text-zinc-600">
-              <div><span className="text-zinc-400">Date:</span> {bookingDate}</div>
-              <div><span className="text-zinc-400">Slot:</span> {template.name} ({template.startTime}–{template.endTime})</div>
-              <div><span className="text-zinc-400">Booking ID:</span> {booking.id.slice(-10).toUpperCase()}</div>
+              <div><span className="text-zinc-500 dark:text-zinc-400">Date:</span> {bookingDate}</div>
+              <div><span className="text-zinc-500 dark:text-zinc-400">Slot:</span> {template.name} ({template.startTime}–{template.endTime})</div>
+              <div><span className="text-zinc-500 dark:text-zinc-400">Booking ID:</span> {booking.id.slice(-10).toUpperCase()}</div>
             </div>
           </div>
         </div>
@@ -145,9 +145,9 @@ export default async function InvoicePage({ params }: Params) {
         <table className="w-full text-sm mb-2 border-collapse">
           <thead>
             <tr className="border-b-2 border-zinc-200">
-              <th className="text-left py-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Description</th>
-              {gstOn && <th className="text-right py-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">HSN</th>}
-              <th className="text-right py-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">Amount</th>
+              <th className="text-left py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Description</th>
+              {gstOn && <th className="text-right py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">HSN</th>}
+              <th className="text-right py-2 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Amount</th>
             </tr>
           </thead>
           <tbody>
@@ -155,7 +155,7 @@ export default async function InvoicePage({ params }: Params) {
               <tr key={i} className="border-b border-zinc-100">
                 <td className="py-3 text-zinc-800">
                   {l.label}<br />
-                  <span className="text-xs text-zinc-400">{l.sub}</span>
+                  <span className="text-xs text-zinc-500 dark:text-zinc-400">{l.sub}</span>
                 </td>
                 {gstOn && <td className="py-3 text-right text-zinc-500 text-xs">9963</td>}
                 <td className="py-3 text-right font-medium">₹{formatRupees(l.split.basePaise)}</td>
@@ -192,11 +192,11 @@ export default async function InvoicePage({ params }: Params) {
               <div className="flex justify-between font-semibold text-zinc-900"><span>Balance due</span><span>{dueAfterPaise > 0 ? `₹${formatRupees(dueAfterPaise)}` : "Nil"}</span></div>
             </>
           )}
-          <div className="text-[10px] text-zinc-400 text-right">All amounts in Indian Rupees (INR)</div>
+          <div className="text-[10px] text-zinc-500 dark:text-zinc-400 text-right">All amounts in Indian Rupees (INR)</div>
         </div>
 
         {/* Footer */}
-        <div className="mt-12 pt-6 border-t border-zinc-200 text-xs text-zinc-400 flex justify-between">
+        <div className="mt-12 pt-6 border-t border-zinc-200 text-xs text-zinc-500 dark:text-zinc-400 flex justify-between">
           <div>
             <p>This is a computer-generated invoice.</p>
             <p>Thank you for choosing {venue.name}.</p>
