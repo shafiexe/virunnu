@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
 import { catererSchema, createCaterer, sendCatererCredentials } from "@/services/caterer-setup.service";
 import { CenterError } from "@/services/center-setup.service";
+import { isTestEmail } from "@/lib/test-address";
 
 function generatePassword(len = 10) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
@@ -87,7 +88,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     });
   });
 
-  Promise.allSettled([
+  Promise.allSettled(isTestEmail(app.email) ? [] : [
     sendCredentialsMail({ to: app.email, name: app.name, phone: app.phone, password: plainPassword, type: "caterer" }),
     sendCredentialsWhatsApp({ to: app.phone, name: app.name, phone: app.phone, password: plainPassword, type: "caterer" }),
   ]).then((results) => {

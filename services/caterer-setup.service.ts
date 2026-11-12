@@ -3,6 +3,7 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
 import { CenterError, generatePassword, normalizePhone } from "@/services/center-setup.service";
+import { isTestEmail } from "@/lib/test-address";
 
 export const SERVICE_KEYS = ["FOOD", "DECORATION", "SERVING_STAFF", "TENT_SHAMIANA", "SOUND_LIGHT", "TRANSPORT"] as const;
 export const MEAL_TYPES = ["BREAKFAST", "LUNCH", "DINNER", "SNACKS"] as const;
@@ -175,6 +176,8 @@ export async function createCaterer(d: CatererInput) {
 }
 
 export function sendCatererCredentials(opts: { name: string; phone: string; email: string; password: string }) {
+  // an example/test address is never a real person: send nothing (no email, no WhatsApp)
+  if (isTestEmail(opts.email)) return;
   const creds = { name: opts.name, phone: opts.phone, password: opts.password, type: "caterer" as const };
   Promise.allSettled([
     sendCredentialsMail({ ...creds, to: opts.email }),

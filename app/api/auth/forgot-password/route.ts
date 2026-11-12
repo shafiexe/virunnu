@@ -3,6 +3,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { isTestEmail } from "@/lib/test-address";
 
 const schema = z.object({
   phone: z.string().min(1),
@@ -39,7 +40,7 @@ export async function POST(req: NextRequest) {
   const type: "owner" | "caterer" = user.role === "OWNER" ? "owner" : "caterer";
   const name = user.name ?? normalized;
 
-  Promise.allSettled([
+  Promise.allSettled(isTestEmail(user.email) ? [] : [
     user.email
       ? sendCredentialsMail({ to: user.email, name, phone: normalized, password: plainPassword, type })
       : Promise.resolve(),

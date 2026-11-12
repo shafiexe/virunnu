@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
 import { centerSchema, createCenter, CenterError, sendCenterCredentials } from "@/services/center-setup.service";
+import { isTestEmail } from "@/lib/test-address";
 
 function generatePassword(len = 10) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
@@ -78,7 +79,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   // Send notifications (non-blocking — failures don't roll back the approval)
   const notifyName = app.orgName;
-  Promise.allSettled([
+  Promise.allSettled(isTestEmail(app.email) ? [] : [
     app.email ? sendCredentialsMail({ to: app.email, name: notifyName, phone: app.phone, password: plainPassword, type: "owner" }) : Promise.resolve(),
     sendCredentialsWhatsApp({ to: app.phone, name: notifyName, phone: app.phone, password: plainPassword, type: "owner" }),
   ]).then((results) => {
