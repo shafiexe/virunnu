@@ -6,7 +6,6 @@ import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import { TrendingUp, CalendarCheck, Clock, Hash, Plus } from "lucide-react";
 import { AnalyticsCharts } from "@/components/analytics-charts";
-import { PendingRequests } from "@/components/pending-requests";
 import { SetupChecklist } from "@/components/setup-checklist";
 import { venueSetupSteps } from "@/lib/setup-steps";
 
@@ -36,7 +35,7 @@ export default async function OwnerDashboard({ searchParams }: Props) {
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-  const [allYearBookings, earliest, latestSlot, monthExpenses, yearExpenses, hallCount, templateCount, pendingBookings] = await Promise.all([
+  const [allYearBookings, earliest, latestSlot, monthExpenses, yearExpenses, hallCount, templateCount] = await Promise.all([
     db.booking.findMany({
       where: { orgId: session.orgId!, hallSlot: { date: { gte: yearStart, lt: yearEnd } } },
       select: { status: true, totalPaise: true, advancePaise: true, discountPaise: true, refundPaise: true, paymentMethod: true, createdAt: true, hallSlot: { select: { date: true } } },
@@ -61,18 +60,6 @@ export default async function OwnerDashboard({ searchParams }: Props) {
     }),
     db.hall.count({ where: { venue: { orgId: session.orgId! } } }),
     db.slotTemplate.count({ where: { hall: { venue: { orgId: session.orgId! } } } }),
-    db.booking.findMany({
-      where: { orgId: session.orgId!, status: "PENDING" },
-      include: {
-        hallSlot: {
-          include: {
-            template: true,
-            hall: { include: { venue: { select: { name: true } } } },
-          },
-        },
-      },
-      orderBy: { createdAt: "asc" },
-    }),
   ]);
 
   const firstYear = earliest ? earliest.createdAt.getFullYear() : currentYear;
@@ -206,24 +193,6 @@ export default async function OwnerDashboard({ searchParams }: Props) {
           </div>
         </div>
       </div>
-
-      {/* Pending booking requests */}
-      <PendingRequests
-        bookings={pendingBookings.map((b) => ({
-          id: b.id,
-          guestName: b.guestName,
-          guestPhone: b.guestPhone,
-          guestEmail: b.guestEmail,
-          totalPaise: b.totalPaise,
-          createdAt: b.createdAt.toISOString(),
-          heldUntil: b.hallSlot.heldUntil?.toISOString() ?? null,
-          hallSlot: {
-            date: b.hallSlot.date.toISOString().slice(0, 10),
-            template: { name: b.hallSlot.template.name, startTime: b.hallSlot.template.startTime, endTime: b.hallSlot.template.endTime },
-            hall: { name: b.hallSlot.hall.name, venue: { name: b.hallSlot.hall.venue.name } },
-          },
-        }))}
-      />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

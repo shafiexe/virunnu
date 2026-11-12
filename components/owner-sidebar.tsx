@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard, CalendarDays, CalendarCheck,
-  Users2, Building2, Workflow, ChevronRight, Receipt, ShieldCheck, History,
+  Users2, Inbox, Building2, Workflow, ChevronRight, Receipt, ShieldCheck, History,
 } from "lucide-react";
 import { CatererQuickFind } from "@/components/caterer-quick-find";
 import { OwnerNewMenu } from "@/components/owner-new-menu";
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { href: "/owner/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/owner/calendar", icon: CalendarDays, label: "Calendar" },
+  { href: "/owner/enquiries", icon: Inbox, label: "Enquiries" },
   { href: "/owner/bookings", icon: CalendarCheck, label: "Bookings" },
   { href: "/owner/customers", icon: Users2, label: "Customers" },
   { href: "/owner/venues", icon: Building2, label: "Venue Profile" },
@@ -25,7 +26,7 @@ const NAV = [
 const navFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>
   [...NAV, ...(mainOwner ? [{ href: "/owner/team", icon: ShieldCheck, label: "Team logins" }, { href: "/owner/activity", icon: History, label: "Activity" }] : [])].filter((i) => canOpenOwner(deny, i.href));
 
-export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true }: { logoUrl?: string | null; name?: string; deny?: string[]; mainOwner?: boolean }) {
+export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true, waiting = 0 }: { logoUrl?: string | null; name?: string; deny?: string[]; mainOwner?: boolean; waiting?: number }) {
   const pathname = usePathname();
   return (
     <aside className="hidden md:flex flex-col w-52 shrink-0 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 py-3 gap-0.5">
@@ -56,6 +57,7 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true }: { logoUr
           >
             <Icon className={cn("h-4 w-4 shrink-0", active && "text-amber-600 dark:text-amber-400")} />
             <span className="flex-1">{label}</span>
+            {href === "/owner/enquiries" && waiting > 0 && <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">{waiting}</span>}
             {active && <ChevronRight className="h-3 w-3 text-amber-400 shrink-0" />}
           </Link>
         );
@@ -64,7 +66,7 @@ export function OwnerSidebar({ logoUrl, name, deny, mainOwner = true }: { logoUr
   );
 }
 
-export function OwnerTopTabs({ deny, mainOwner = true }: { deny?: string[]; mainOwner?: boolean }) {
+export function OwnerTopTabs({ deny, mainOwner = true, waiting = 0 }: { deny?: string[]; mainOwner?: boolean; waiting?: number }) {
   const pathname = usePathname();
   return (
     <nav className="md:hidden border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-x-auto">
@@ -85,6 +87,7 @@ export function OwnerTopTabs({ deny, mainOwner = true }: { deny?: string[]; main
             >
               <Icon className="h-3.5 w-3.5" />
               {label}
+              {href === "/owner/enquiries" && waiting > 0 && <span className="rounded-full bg-amber-500 px-1.5 text-[10px] font-bold text-white">{waiting}</span>}
             </Link>
           );
         })}

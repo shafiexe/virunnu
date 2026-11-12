@@ -1,3 +1,4 @@
+import { isTestEmail } from "@/lib/test-address";
 import nodemailer from "nodemailer";
 import { getAppUrl } from "@/lib/app-url";
 import { db } from "@/lib/db";
@@ -429,6 +430,8 @@ export async function notifyBookingApproved(opts: BookingNotifyOpts) {
 // ── 3. Owner — New Booking Request ────────────────────────────────────────────
 
 export async function notifyOwnerNewBooking(opts: OwnerBookingAlertOpts) {
+  // a throwaway test centre (example.com address) must never be messaged
+  if (isTestEmail(opts.ownerEmail)) return;
   const { orgId, ownerPhone, ownerEmail, customerName, customerPhone, venueName, hallName, date, timeSlot, totalPaise, bookingRef } = opts;
   const appUrl = getAppUrl();
   const vars: TemplateVars = {
