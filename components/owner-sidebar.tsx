@@ -18,6 +18,7 @@ export const SETTINGS_TABS = [
   { href: "/owner/workflows", label: "Templates", also: [], mainOwnerOnly: false },
   { href: "/owner/team", label: "Team logins", also: [], mainOwnerOnly: true },
   { href: "/owner/activity", label: "Activity", also: [], mainOwnerOnly: true },
+  { href: "/owner/backup", label: "Backup", also: [], mainOwnerOnly: true },
 ];
 
 export const settingsTabsFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>

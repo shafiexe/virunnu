@@ -28,7 +28,7 @@ type Rule = [RegExp, string[]];
 const RULES: Rule[] = [
   [/^\/owner\/(onboarding)/, []],
   [/^\/owner\/no-access/, []],
-  [/^\/owner\/(team|activity)/, ["__owner"]], [/^\/api\/owner\/team/, ["__owner"]],
+  [/^\/owner\/(team|activity|backup)/, ["__owner"]], [/^\/api\/owner\/team/, ["__owner"]], [/^\/api\/backup/, ["__owner"]],
   [/^\/owner\/dashboard/, ["dashboard"]],
   [/^\/owner\/calendar/, ["calendar"]], [/^\/api\/owner\/(calendar|blocked-dates)/, ["calendar"]], [/^\/api\/owner\/hall-slots\/toggle-block/, ["calendar"]],
   [/^\/owner\/enquiries/, ["bookings"]], [/^\/api\/owner\/caterers/, ["bookings"]],
