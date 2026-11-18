@@ -887,6 +887,8 @@ model BookingPayment {
   amountPaise     Int
   // Virunnu's share of an ONLINE payment (see lib/commission.ts); 0 for money the venue took itself
   commissionPaise Int      @default(0)
+  // what Razorpay charged on an ONLINE payment, GST included (paid by the venue, out of its share); empty until Razorpay has reported it
+  gatewayFeePaise Int?
   // CASH, UPI, BANK, CARD, CHEQUE or ONLINE (paid through the website)
   method          String   @default("CASH")
   note            String?

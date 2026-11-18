@@ -3,6 +3,7 @@ import Razorpay from "razorpay";
 import { db } from "@/lib/db";
 import { splitGST } from "@/lib/gst";
 import { resolveAddons, type AddonPick } from "@/lib/venue-addons";
+import { feeOf } from "@/lib/commission-math";
 import { checkOnlineAmount, signatureMatches, MIN_ONLINE_PAYMENT_PAISE } from "@/lib/online-amount";
 
 export { checkOnlineAmount, signatureMatches, MIN_ONLINE_PAYMENT_PAISE };
@@ -53,6 +54,7 @@ export async function confirmWithRazorpay(o: { orderId: string; paymentId: strin
   const [payment, order] = await Promise.all([rz.payments.fetch(o.paymentId), rz.orders.fetch(o.orderId)]);
   if (payment.order_id !== o.orderId || Number(payment.amount) !== o.amountPaise || !["captured", "authorized"].includes(String(payment.status))) throw new PaymentRefused("This payment could not be confirmed with Razorpay");
   if (Number(order.amount) !== o.amountPaise || (o.slotId && order.notes?.hallSlotId !== o.slotId)) throw new PaymentRefused("This payment was not made for this booking");
+  return { gatewayFeePaise: feeOf(payment) };
 }
 
 // Money that arrived for a booking we could not make (the date was taken a moment earlier, an add-on went, the amount was not allowed)

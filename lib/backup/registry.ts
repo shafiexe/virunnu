@@ -43,7 +43,7 @@ export const ENTITIES: Entity[] = [
   { key: "bookings", label: "Bookings", model: "booking", kinds: ["OWNER"], where: org, forced: (c) => ({ orgId: c.orgId }), parents: [{ field: "hallSlotId", entity: "hallSlots" }], noRestore: ["razorpayOrderId", "razorpayPaymentId", "userId", "catererId", "catererEnquiryId"], name: (r) => `${s(r.guestName)} ${s(r.id).slice(-6).toUpperCase()}` },
   { key: "bookingAddons", label: "Booking add-ons", model: "bookingAddon", kinds: ["OWNER"], where: (c) => ({ booking: org(c) }), parents: [{ field: "bookingId", entity: "bookings" }], name: (r) => s(r.name) },
   // payments made on the website are Virunnu's to account for (commission, payouts), so they are neither saved nor restored
-  { key: "bookingPayments", label: "Booking payments", model: "bookingPayment", kinds: ["OWNER"], where: (c) => ({ ...org(c), method: { not: "ONLINE" } }), forced: (c) => ({ orgId: c.orgId }), parents: [{ field: "bookingId", entity: "bookings" }], noRestore: ["commissionPaise"], name: (r) => `${day(r.paidOn)} ${s(r.method)}` },
+  { key: "bookingPayments", label: "Booking payments", model: "bookingPayment", kinds: ["OWNER"], where: (c) => ({ ...org(c), method: { not: "ONLINE" } }), forced: (c) => ({ orgId: c.orgId }), parents: [{ field: "bookingId", entity: "bookings" }], noRestore: ["commissionPaise", "gatewayFeePaise"], name: (r) => `${day(r.paidOn)} ${s(r.method)}` },
 
   // ── caterer
   { key: "menuItems", label: "Public menu", model: "menuItem", kinds: ["CATERER"], where: viaCaterer, forced: (c) => ({ catererId: c.catererId! }), name: (r) => s(r.name) },

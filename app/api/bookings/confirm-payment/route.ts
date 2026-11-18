@@ -1,4 +1,4 @@
-import { commissionOf } from "@/lib/commission";
+import { commissionOf } from "@/lib/commission-math";
 import { todayISO } from "@/lib/booking-ledger";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -70,12 +70,13 @@ export async function POST(req: NextRequest) {
 
   // The payment must be proved, and on a live site a missing secret means "refuse", never "skip the check"
   const secret = process.env.RAZORPAY_KEY_SECRET;
+  let gatewayFeePaise: number | null = null; // Razorpay's own fee on this payment, when it has already worked it out
   let proven = false; // set once Razorpay itself has said the money arrived
   if (!secret && process.env.NODE_ENV === "production") return NextResponse.json({ error: "Online payments are not set up" }, { status: 503 });
   if (secret) {
     if (!signatureMatches(secret, razorpayOrderId, razorpayPaymentId, razorpaySignature)) return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
     // and Razorpay itself says this money arrived, for this order, for exactly this amount
-    try { await confirmWithRazorpay({ orderId: razorpayOrderId, paymentId: razorpayPaymentId, amountPaise, slotId: rawSlotId }); }
+    try { ({ gatewayFeePaise } = await confirmWithRazorpay({ orderId: razorpayOrderId, paymentId: razorpayPaymentId, amountPaise, slotId: rawSlotId })); }
     catch (e) { if (e instanceof PaymentRefused) return NextResponse.json({ error: e.message }, { status: e.status }); console.error("[confirm-payment] razorpay lookup failed", e); return NextResponse.json({ error: "Could not confirm the payment right now" }, { status: 502 }); }
     proven = true;
   }
@@ -125,7 +126,7 @@ export async function POST(req: NextRequest) {
           totalPaise,
           status: bookingStatus,
           advancePaise: amountPaise,
-          payments: { create: { orgId: slot.hall.venue.orgId, amountPaise, commissionPaise: commissionOf(amountPaise), method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } },
+          payments: { create: { orgId: slot.hall.venue.orgId, amountPaise, commissionPaise: commissionOf(amountPaise), gatewayFeePaise, method: "ONLINE", note: "Paid on the website", paidOn: new Date(todayISO() + "T00:00:00Z") } },
           guestName,
           guestPhone,
           guestEmail: guestEmail ?? null,
