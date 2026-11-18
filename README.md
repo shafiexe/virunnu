@@ -88,11 +88,11 @@ Put the result in `.env` as `SESSION_SECRET`.
 
 **Migrations on Neon.** The app uses the pooled `DATABASE_URL`. For migrations, add `DIRECT_URL` (the non-pooled Neon address) in Vercel; `prisma.config.ts` uses it when present, which avoids the advisory-lock timeout. `PRISMA_SCHEMA_DISABLE_ADVISORY_LOCK=1` is the fallback if you only have the pooled address.
 
-**Health check.** `GET /api/health` returns 200 `{ok:true}` when the database answers, 503 otherwise. Point an uptime monitor (UptimeRobot, Better Stack, free tiers) at it and have it alert you by email or WhatsApp.
+**Health check.** `GET /api/health` returns 200 `{"ok":true}` when the site answers; it never touches the database. `GET /api/health?db=1` also needs the database: 200 `{"ok":true,"db":true}`, or 503 when it cannot answer within 8 seconds.
 
 **Error alerts.** Set `ALERT_EMAIL` (needs the SMTP settings) and every server error, every page that crashes in a browser, and every refund Razorpay would not make is emailed to that address (`lib/alert.ts`: the same problem is mailed at most once every ten minutes). A failed refund means a customer's money is held and must be returned by hand in the Razorpay dashboard.
 
-**Uptime monitor (set this up once, outside the app).** The app cannot tell you when it is down, so a free monitor must ask it: in UptimeRobot (or Better Stack), add an HTTPS monitor for `https://<your domain>/api/health` every 5 minutes, add your email (and the phone's push alert) as the contact, and set the keyword `"ok":true` so a 200 with a broken body also counts as down.
+**Uptime monitor (set this up once, outside the app).** The app cannot tell you when it is down, so a free monitor must ask it. In UptimeRobot (or Better Stack) add two HTTPS monitors with your email (and the phone's push alert) as the contact, keyword `"ok":true`: (1) `https://<your domain>/api/health` every 5 minutes, which tells you the site is up; (2) `https://<your domain>/api/health?db=1` every 60 minutes, which tells you the database is up. Keep the database one slow: a pay-per-use database (Neon) sleeps when idle and every call wakes it, so a 5-minute database check would keep it running all month and use up the free compute hours.
 
 **Backups.** Neon keeps point-in-time history (length depends on the plan). Before any risky migration, create a Neon branch from the main branch; it is an instant, restorable copy. Photos still live on local disk, not in the database; they are not covered by Neon backups.
 

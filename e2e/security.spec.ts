@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { account } from "./helpers";
+import { account, signIn } from "./helpers";
 
 test.describe("sign-in is protected", () => {
   test("repeated wrong passwords are slowed, and a correct login still works for everyone else", async ({ playwright }) => {
@@ -65,4 +65,28 @@ test.describe("deleting an account", () => {
     await admin.delete(`/api/admin/caterers/${c2.catererId}`);
     await admin.dispose(); await team.dispose();
   });
+});
+
+test.describe("AI helpers have a spending limit", () => {
+  // The limit is checked before anything is read or sent to the AI, so empty requests use up the allowance without costing anything.
+  test("an account is slowed after its hourly allowance, and each helper has its own", async ({ page }) => {
+    const a = account();
+    await signIn(page.context(), a.phone, a.password);
+    const api = page.context().request;
+    const statuses: number[] = [];
+    for (let i = 0; i < 12; i++) statuses.push((await api.post("/api/caterer/ai-prefill", { data: {} })).status());
+    expect(statuses.slice(0, 10).every((s) => s !== 429), statuses.join()).toBe(true);
+    expect(statuses.slice(10).every((s) => s === 429), statuses.join()).toBe(true);
+    // the bill reader has its own allowance, so it is still open
+    expect((await api.post("/api/owner/expenses/read-bill", { data: {} })).status()).not.toBe(429);
+  });
+});
+
+test("the uptime check answers without the database, and the database check is separate", async ({ request }) => {
+  const site = await request.get("/api/health");
+  expect(site.status()).toBe(200);
+  expect(await site.json()).toEqual({ ok: true });
+  const db = await request.get("/api/health?db=1");
+  expect(db.status()).toBe(200);
+  expect(await db.json()).toEqual({ ok: true, db: true });
 });

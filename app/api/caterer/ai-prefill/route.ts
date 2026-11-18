@@ -1,3 +1,4 @@
+import { aiLimited } from "@/lib/ai-limit";
 import { fetchGuarded } from "@/lib/safe-fetch";
 import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
@@ -112,6 +113,8 @@ export async function POST(req: NextRequest) {
   if (!session || (session.role !== "CATERER" && session.role !== "ADMIN")) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
+  const slow = aiLimited("prefill", session);
+  if (slow) return slow;
 
   const body = await req.json().catch(() => null);
   let rawText: string = (body?.rawText ?? "").trim();

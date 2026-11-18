@@ -78,7 +78,7 @@ export function renderTemplate(key: TemplateKey, vars: Record<string, string>, t
 // Words used to try a template with made-up details
 export const SAMPLE_VARS: Record<string, string> = {
   businessName: "Kahani Caterers", customerName: "Ayesha", balance: "₹26,500", invoiceNo: "Invoice 12", functionDate: "14-11-2026",
-  upiLine: "Pay by UPI to kahani@upi.", link: "https://virunnu.com/b/abc123", billLabel: "food bill", total: "₹53,000", received: "₹26,500",
+  upiLine: "Pay by UPI to kahani@upi.", link: "https://virunnu.in/b/abc123", billLabel: "food bill", total: "₹53,000", received: "₹26,500",
   balanceLine: "*Balance: ₹26,500*", invoiceLines: "Invoice 12 · Food bill: ₹53,000\nInvoice 13 · Service & Settings bill: ₹13,000", billed: "₹66,000",
   quoteNo: "Q-004", validLine: "Price valid until 20-11-2026", 
 };
