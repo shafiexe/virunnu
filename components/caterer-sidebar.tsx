@@ -49,6 +49,7 @@ export const SETTINGS_TABS = [
   { href: "/caterer/messages", label: "Messages", mainOwnerOnly: false },
   { href: "/caterer/team", label: "Team logins", mainOwnerOnly: true },
   { href: "/caterer/activity", label: "Activity", mainOwnerOnly: true },
+  { href: "/caterer/backup", label: "Backup", mainOwnerOnly: true },
 ];
 
 export const settingsTabsFor = (deny: readonly string[] | undefined, mainOwner: boolean) =>

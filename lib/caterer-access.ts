@@ -44,7 +44,7 @@ const RULES: Rule[] = [
   [/^\/caterer\/(no-access|onboarding)/, []],
   [/^\/api\/caterer\/find/, []],
   [/^\/api\/caterer\/customers\/[^/]+\/reminded/, []],
-  [/^\/caterer\/(team|activity)/, ["__owner"]], [/^\/api\/caterer\/team/, ["__owner"]],
+  [/^\/caterer\/(team|activity|backup)/, ["__owner"]], [/^\/api\/caterer\/team/, ["__owner"]], [/^\/api\/backup/, ["__owner"]],
   [/^\/caterer\/dashboard/, ["dashboard"]],
   [/^\/caterer\/calendar/, ["calendar"]],
   [/^\/caterer\/enquiries/, ["orders", "orders.enquiries"]], [/^\/api\/caterer\/enquiries/, ["orders", "orders.enquiries"]],
