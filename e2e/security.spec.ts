@@ -81,3 +81,12 @@ test.describe("AI helpers have a spending limit", () => {
     expect((await api.post("/api/owner/expenses/read-bill", { data: {} })).status()).not.toBe(429);
   });
 });
+
+test("the uptime check answers without the database, and the database check is separate", async ({ request }) => {
+  const site = await request.get("/api/health");
+  expect(site.status()).toBe(200);
+  expect(await site.json()).toEqual({ ok: true });
+  const db = await request.get("/api/health?db=1");
+  expect(db.status()).toBe(200);
+  expect(await db.json()).toEqual({ ok: true, db: true });
+});
