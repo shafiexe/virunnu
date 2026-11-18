@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   // pdfkit reads its own data files at run time, so it must stay a normal package rather than being bundled
   serverExternalPackages: ["pdfkit"],
   partialPrefetching: true,
+  experimental: {
+    agentUpgrade: "security",
+  },
   // Headers every page and API answer carries: no guessing a file's type, no showing our pages inside someone else's page,
   // no leaking full addresses to other sites, and only the device features we use (the voice search needs the microphone).
   async headers() {
