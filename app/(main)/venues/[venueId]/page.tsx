@@ -1,3 +1,4 @@
+import { SITE_URL } from "@/lib/site-url";
 import { connection } from "next/server";
 export const instant = false;
 import { YoutubeIcon, LinkedinIcon, XIcon } from "@/components/social-icons";
@@ -46,7 +47,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const rawOg = venue.halls.flatMap((h) => h.photos).find((p) => p?.url)?.url ?? null;
   const ogImage = rawOg && rawOg.startsWith("/") ? `${getAppUrl()}${rawOg}` : rawOg;
 
-  const url = `https://virunnu.com/venues/${venueId}`;
+  const url = `${SITE_URL}/venues/${venueId}`;
 
   return {
     title,
@@ -208,7 +209,7 @@ export default async function VenuePage({ params }: Props) {
     },
     geo: { "@type": "GeoCoordinates", latitude: lat, longitude: lng },
     telephone: venue.phone ?? undefined,
-    url: `https://virunnu.com/venues/${venueId}`,
+    url: `${SITE_URL}/venues/${venueId}`,
     ...(allPhotos[0]?.url ? { image: allPhotos[0].url.startsWith("/") ? `${getAppUrl()}${allPhotos[0].url}` : allPhotos[0].url } : {}),
     ...(maxCap ? { maximumAttendeeCapacity: maxCap } : {}),
   };

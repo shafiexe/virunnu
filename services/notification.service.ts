@@ -135,7 +135,7 @@ Hi {{customerName}}, your 1-hour slot hold has expired and the slot has been rel
 ⏰ {{timeSlot}}
 ━━━━━━━━━━━━━━━━━━
 
-If you'd still like to book this slot, please check if it's still available at virunnu.com.
+If you'd still like to book this slot, please check if it's still available at virunnu.in.
 
 — Team Virunnu`,
 

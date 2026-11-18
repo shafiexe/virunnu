@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 import { connection } from "next/server";
 import { db } from "@/lib/db";
-
-const BASE = "https://virunnu.com";
+import { SITE_URL as BASE } from "@/lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   await connection();
