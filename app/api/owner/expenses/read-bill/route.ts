@@ -1,3 +1,4 @@
+import { aiLimited } from "@/lib/ai-limit";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import Anthropic from "@anthropic-ai/sdk";
@@ -15,6 +16,8 @@ const schema = z.object({
 export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session || (session.role !== "OWNER" && session.role !== "CATERER") || !session.orgId) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const slow = aiLimited("read-bill", session);
+  if (slow) return slow;
   const parsed = schema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Send a photo of the bill" }, { status: 400 });
   if (!process.env.ANTHROPIC_API_KEY) return NextResponse.json({ error: "Reading bills is not set up yet" }, { status: 503 });
