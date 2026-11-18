@@ -9,17 +9,25 @@ export async function GET(req: NextRequest) {
 
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&countrycodes=in`;
 
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "Virunnu/1.0 (Kerala hall booking app)",
-      "Accept-Language": "en",
-    },
-    next: { revalidate: 0 },
-  });
+  // the map service is outside our control: when it is slow or down, say so politely instead of crashing
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      headers: {
+        "User-Agent": "Virunnu/1.0 (Kerala hall booking app)",
+        "Accept-Language": "en",
+      },
+      signal: AbortSignal.timeout(8000),
+      next: { revalidate: 0 },
+    });
+  } catch {
+    return NextResponse.json({ error: "Geocode failed" }, { status: 502 });
+  }
 
   if (!res.ok) return NextResponse.json({ error: "Geocode failed" }, { status: 502 });
 
-  const data = await res.json();
+  const data = await res.json().catch(() => null);
+  if (!data) return NextResponse.json({ error: "Geocode failed" }, { status: 502 });
   if (!data[0]) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   return NextResponse.json({ lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) });
