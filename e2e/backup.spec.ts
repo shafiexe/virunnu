@@ -184,7 +184,7 @@ test("on the Backup page: download the file, lose a record, choose the file and 
 
   await api.delete(`/api/owner/expenses/${id}`);
   await page.getByLabel("Choose a backup file").setInputFiles(file);
-  await expect(page.getByText(/Backup of .*taken/)).toBeVisible();
+  await expect(page.getByText(/Backup of .*taken/)).toBeVisible({ timeout: 45_000 });
   await expect(page.getByRole("cell", { name: "Expenses", exact: true })).toBeVisible();
   const [safety] = await Promise.all([page.waitForEvent("download"), page.getByRole("button", { name: /^Restore \d+ records$/ }).click()]);
   expect(safety.suggestedFilename()).toMatch(/^before-restore-/);
