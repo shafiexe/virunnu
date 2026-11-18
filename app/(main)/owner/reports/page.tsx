@@ -45,7 +45,7 @@ export default async function OwnerReportsPage({ searchParams }: { searchParams:
 
   const r = await monthReport(session.orgId, parseMonth((await searchParams).month).key);
   const [bal, payouts] = await Promise.all([payoutBalances([session.orgId]), db.payout.findMany({ where: { orgId: session.orgId }, orderBy: { paidOn: "desc" }, take: 6 })]);
-  const money = bal.get(session.orgId) ?? { onlinePaise: 0, commissionPaise: 0, paidOutPaise: 0, owedPaise: 0 };
+  const money = bal.get(session.orgId) ?? { onlinePaise: 0, commissionPaise: 0, gatewayFeePaise: 0, unknownFees: 0, paidOutPaise: 0, owedPaise: 0 };
   const { period: p, summary: s } = r;
   const prev = shiftMonth(p.key, -1);
   const next = shiftMonth(p.key, 1);
@@ -132,10 +132,11 @@ export default async function OwnerReportsPage({ searchParams }: { searchParams:
       </Section>
 
       {(money.onlinePaise > 0 || payouts.length > 0) && (
-        <Section title="Online payments and payouts" hint="Customers who pay on the website pay Virunnu, which keeps 1% and sends you the rest. All time, not just this month.">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <Section title="Online payments and payouts" hint="Customers who pay on the website pay Virunnu, which keeps 1%, takes Razorpay's own fee out of your share, and sends you the rest. All time, not just this month.">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
             <Card label="Paid online" value={rs(money.onlinePaise)} />
             <Card label="Virunnu's 1%" value={rs(money.commissionPaise)} />
+            <Card label="Razorpay fee" value={rs(money.gatewayFeePaise)} sub={money.unknownFees > 0 ? `${money.unknownFees} not reported yet` : undefined} />
             <Card label="Sent to you" value={rs(money.paidOutPaise)} />
             <Card label="Still to come" value={rs(money.owedPaise)} tone={money.owedPaise > 0 ? "good" : undefined} />
           </div>

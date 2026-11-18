@@ -229,6 +229,15 @@ export default function TermsPage() {
             before you confirm. Failure to pay the remaining amount by the due date may result in
             cancellation of the booking at the venue owner&apos;s discretion.
           </p>
+          <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">
+            Online payments and payouts to venues
+          </h3>
+          <p>
+            Money you pay on the website is received by Virunnu and passed on to the venue owner.
+            Before passing it on, Virunnu keeps a <strong>1% service fee</strong> and deducts the
+            fee that the payment gateway (Razorpay) charges on that payment. These are taken from the
+            venue owner&apos;s share: you always pay only the price shown to you.
+          </p>
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-50 pt-2">Cash payments</h3>
           <p>
             Some venue owners offer the option to pay all or part of the booking amount in cash
