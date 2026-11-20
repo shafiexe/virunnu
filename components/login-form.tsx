@@ -88,7 +88,7 @@ export function LoginForm() {
           <div className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-950/20 dark:border-amber-800 p-3 text-left">
             <p className="text-[10px] font-bold text-amber-700 dark:text-amber-500 uppercase tracking-wide mb-1">Dev mode — new password</p>
             <p className="font-mono text-sm font-bold text-zinc-900 dark:text-zinc-50">{devPassword}</p>
-            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Not shown in production. Configure SMTP/Twilio in .env to send real notifications.</p>
+            <p className="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">Not shown in production. Configure SMTP in .env to send real emails.</p>
           </div>
         )}
         <button

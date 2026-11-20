@@ -55,6 +55,7 @@ test.describe("enquiries tab", () => {
     await c.getByRole("button", { name: /Request to Book/ }).click();
     await c.getByPlaceholder("Mohammed Shafi").fill("Browser Requester");
     await c.getByPlaceholder("+91 98765 43210").fill("9000000321");
+    await c.getByPlaceholder(/your confirmation is sent here/).fill("zz-e2e-request@example.com");
     await c.getByRole("button", { name: /Send booking request/ }).click();
     await expect(c.getByText("Contact request sent")).toBeVisible();
     await phoneCtx.close();

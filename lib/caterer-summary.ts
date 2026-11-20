@@ -2,9 +2,8 @@ import { db } from "@/lib/db";
 import { cashBook } from "@/lib/caterer-books";
 import { billMoney, formatInvoiceDate, formatTime, rs } from "@/lib/caterer-orders";
 import { getAppUrl } from "@/lib/app-url";
-import { normalizeCustomerPhone } from "@/lib/caterer-orders";
 import { quoteState } from "@/lib/caterer-quotes";
-import { sendRawMail, sendRawWhatsApp, whatsappAutoOn } from "@/services/notification.service";
+import { sendRawMail } from "@/services/notification.service";
 
 type SummaryCaterer = { id: string; orgId: string | null; name: string; phone: string; whatsappNumber: string | null; email: string | null; summaryVia: string; summaryEmail: string | null };
 
@@ -77,20 +76,12 @@ export async function buildSummary(caterer: SummaryCaterer, now = new Date()) {
   return { subject: `${caterer.name}: your day on ${formatInvoiceDate(day)}`, text: lines.join("\n"), key };
 }
 
-const mobileOf = (c: SummaryCaterer) => normalizeCustomerPhone(c.whatsappNumber || c.phone);
 
-// Sends the summary the way the caterer chose. Returns what happened for each way, so the settings page can say.
+// Emails the summary. Returns what happened, so the settings page can say.
 export async function sendSummary(caterer: SummaryCaterer) {
   const { subject, text, key } = await buildSummary(caterer);
-  const result: { whatsapp?: string; email?: string; key: string } = { key };
-  const wantsWa = caterer.summaryVia === "WHATSAPP" || caterer.summaryVia === "BOTH";
-  const wantsMail = caterer.summaryVia === "EMAIL" || caterer.summaryVia === "BOTH";
-  if (wantsWa) {
-    if (!whatsappAutoOn()) result.whatsapp = "Automatic WhatsApp is switched off for now";
-    else if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) result.whatsapp = "WhatsApp sending is not set up on this server";
-    else try { await sendRawWhatsApp(mobileOf(caterer), text); result.whatsapp = "sent"; } catch (e) { result.whatsapp = e instanceof Error ? e.message : "failed"; }
-  }
-  if (wantsMail) {
+  const result: { email?: string; key: string } = { key };
+  {
     const to = caterer.summaryEmail || caterer.email;
     if (!to) result.email = "no email address";
     else if (!process.env.SMTP_USER) result.email = "email sending is not set up on this server";

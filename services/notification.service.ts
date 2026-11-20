@@ -260,32 +260,8 @@ function getMailTransport() {
   });
 }
 
-function whatsappClient() {
-  const sid = process.env.TWILIO_ACCOUNT_SID;
-  const token = process.env.TWILIO_AUTH_TOKEN;
-  if (!sid || !token) return null;
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  return require("twilio")(sid, token);
-}
-
-export async function sendRawWhatsApp(to: string, body: string) {
-  return sendWhatsApp(to, body);
-}
-
 export async function sendRawMail(to: string, subject: string, body: string) {
   return sendMail(to, subject, body);
-}
-
-// Messages sent by the system itself over WhatsApp cost money per message, so they are off unless WHATSAPP_AUTO=true.
-// People send their own messages with the wa.me buttons instead. Only sign-in details (`always`) are still sent.
-export const whatsappAutoOn = () => process.env.WHATSAPP_AUTO === "true";
-
-async function sendWhatsApp(to: string, body: string, opts?: { always?: boolean }) {
-  if (!opts?.always && !whatsappAutoOn()) return;
-  const client = whatsappClient();
-  if (!client) { console.warn("[WhatsApp] Not configured — skipping"); return; }
-  const from = process.env.TWILIO_WHATSAPP_FROM ?? "whatsapp:+14155238886";
-  await client.messages.create({ from, to: `whatsapp:${to}`, body });
 }
 
 function wrapEmailHtml(body: string): string {
@@ -330,23 +306,6 @@ export async function sendCredentialsMail(opts: {
       </div>
     </div>`,
   });
-}
-
-export async function sendCredentialsWhatsApp(opts: {
-  to: string; name: string; phone: string; password: string; type: "owner" | "caterer";
-}) {
-  const { to, name, phone, password, type } = opts;
-  const role = type === "owner" ? "Convention Center" : "Caterer";
-  const appUrl = getAppUrl();
-  const body = [
-    `🎉 *Virunnu — Welcome, ${name}!*`, ``,
-    `Your *${role}* account has been approved.`, ``,
-    `📱 Phone: *${phone}*`,
-    `🔑 Password: *${password}*`, ``,
-    `Login: ${appUrl}/login`,
-    `— Team Virunnu`,
-  ].join("\n");
-  await sendWhatsApp(to, body, { always: true });
 }
 
 // ── Notification types ────────────────────────────────────────────────────────
@@ -396,14 +355,12 @@ export async function notifyBookingConfirmed(opts: BookingNotifyOpts) {
     trackUrl: `${appUrl}/track/${bookingRef}`,
   };
 
-  const [waBody, emailBody, emailSubject] = await Promise.all([
-    loadTemplate(orgId, "customer_booking_confirmed_whatsapp"),
+  const [emailBody, emailSubject] = await Promise.all([
     loadTemplate(orgId, "customer_booking_confirmed_email"),
     loadTemplateSubject(orgId, "customer_booking_confirmed_email_subject"),
   ]);
 
   await Promise.allSettled([
-    sendWhatsApp(customerPhone, interpolate(waBody, vars)),
     customerEmail ? sendMail(customerEmail, interpolate(emailSubject ?? `Booking Confirmed — ${venueName}`, vars), interpolate(emailBody, vars)) : Promise.resolve(),
   ]);
 }
@@ -420,14 +377,12 @@ export async function notifyBookingApproved(opts: BookingNotifyOpts) {
     trackUrl: `${appUrl}/track/${bookingRef}`,
   };
 
-  const [waBody, emailBody, emailSubject] = await Promise.all([
-    loadTemplate(orgId, "customer_booking_approved_whatsapp"),
+  const [emailBody, emailSubject] = await Promise.all([
     loadTemplate(orgId, "customer_booking_approved_email"),
     loadTemplateSubject(orgId, "customer_booking_approved_email_subject"),
   ]);
 
   await Promise.allSettled([
-    sendWhatsApp(customerPhone, interpolate(waBody, vars)),
     customerEmail ? sendMail(customerEmail, interpolate(emailSubject ?? `Booking Approved — ${venueName}`, vars), interpolate(emailBody, vars)) : Promise.resolve(),
   ]);
 }
@@ -446,33 +401,14 @@ export async function notifyOwnerNewBooking(opts: OwnerBookingAlertOpts) {
     dashboardUrl: `${appUrl}/owner/bookings`,
   };
 
-  const [waBody, emailBody, emailSubject] = await Promise.all([
-    loadTemplate(orgId, "owner_new_booking_whatsapp"),
+  const [emailBody, emailSubject] = await Promise.all([
     loadTemplate(orgId, "owner_new_booking_email"),
     loadTemplateSubject(orgId, "owner_new_booking_email_subject"),
   ]);
 
   await Promise.allSettled([
-    sendWhatsApp(ownerPhone, interpolate(waBody, vars)),
     ownerEmail ? sendMail(ownerEmail, interpolate(emailSubject ?? `New Booking — ${venueName}`, vars), interpolate(emailBody, vars)) : Promise.resolve(),
   ]);
-}
-
-// ── 4. Booking Expired ────────────────────────────────────────────────────────
-
-export async function notifyBookingExpired(opts: {
-  orgId: string;
-  customerPhone: string;
-  customerName: string;
-  venueName: string;
-  hallName: string;
-  date: string;
-  timeSlot: string;
-}) {
-  const { orgId, customerPhone, customerName, venueName, hallName, date, timeSlot } = opts;
-  const vars: TemplateVars = { customerName, venueName, hallName, date, timeSlot };
-  const waBody = await loadTemplate(orgId, "customer_booking_expired_whatsapp");
-  await sendWhatsApp(customerPhone, interpolate(waBody, vars));
 }
 
 // ── 5. Balance Reminder ───────────────────────────────────────────────────────
@@ -490,14 +426,12 @@ export async function notifyBalanceReminder(opts: BookingNotifyOpts) {
     trackUrl: `${appUrl}/track/${bookingRef}`,
   };
 
-  const [waBody, emailBody, emailSubject] = await Promise.all([
-    loadTemplate(orgId, "customer_balance_reminder_whatsapp"),
+  const [emailBody, emailSubject] = await Promise.all([
     loadTemplate(orgId, "customer_balance_reminder_email"),
     loadTemplateSubject(orgId, "customer_balance_reminder_email_subject"),
   ]);
 
   await Promise.allSettled([
-    sendWhatsApp(customerPhone, interpolate(waBody, vars)),
     customerEmail ? sendMail(customerEmail, interpolate(emailSubject ?? `Payment Reminder — ${venueName}`, vars), interpolate(emailBody, vars)) : Promise.resolve(),
   ]);
 }

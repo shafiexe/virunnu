@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/lib/db";
-import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { sendCredentialsMail } from "@/services/notification.service";
 import { CenterError, generatePassword, normalizePhone } from "@/services/center-setup.service";
 import { isTestEmail } from "@/lib/test-address";
 
@@ -176,12 +176,11 @@ export async function createCaterer(d: CatererInput) {
 }
 
 export function sendCatererCredentials(opts: { name: string; phone: string; email: string; password: string }) {
-  // an example/test address is never a real person: send nothing (no email, no WhatsApp)
+  // an example/test address is never a real person: send nothing
   if (isTestEmail(opts.email)) return;
   const creds = { name: opts.name, phone: opts.phone, password: opts.password, type: "caterer" as const };
   Promise.allSettled([
     sendCredentialsMail({ ...creds, to: opts.email }),
-    sendCredentialsWhatsApp({ ...creds, to: opts.phone }),
   ]).then((results) => {
     results.forEach((r, i) => {
       if (r.status === "rejected") console.error(`[Notify][${i}]`, r.reason);

@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
   for (const c of due) {
     try {
       const r = await sendSummary(c);
-      const ok = r.whatsapp === "sent" || r.email === "sent";
+      const ok = r.email === "sent";
       // mark the day done only when something went out, so a failure is tried again on the next run
       if (ok) { await db.caterer.update({ where: { id: c.id }, data: { lastSummaryOn: today } }); sent++; } else failed++;
     } catch { failed++; }

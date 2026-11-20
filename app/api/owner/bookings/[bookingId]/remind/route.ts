@@ -31,6 +31,10 @@ export async function POST(
     return NextResponse.json({ error: "No phone number on record for this customer" }, { status: 400 });
   }
 
+  if (!(booking.user?.email ?? booking.guestEmail)) {
+    return NextResponse.json({ error: "No email address on record for this customer — use Open in WhatsApp instead" }, { status: 400 });
+  }
+
   const paidPaise = booking.advancePaise ?? 0;
   const balancePaise = booking.totalPaise - paidPaise;
   if (balancePaise <= 0) {

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { sendCredentialsMail } from "@/services/notification.service";
 import { centerSchema, createCenter, CenterError, sendCenterCredentials } from "@/services/center-setup.service";
 import { isTestEmail } from "@/lib/test-address";
 
@@ -84,7 +84,6 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   const notifyName = app.orgName;
   Promise.allSettled(isTestEmail(app.email) ? [] : [
     app.email ? sendCredentialsMail({ to: app.email, name: notifyName, phone: app.phone, password: plainPassword, type: "owner" }) : Promise.resolve(),
-    sendCredentialsWhatsApp({ to: app.phone, name: notifyName, phone: app.phone, password: plainPassword, type: "owner" }),
   ]).then((results) => {
     results.forEach((r, i) => {
       if (r.status === "rejected") console.error(`[Notify][${i}]`, r.reason);

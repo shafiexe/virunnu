@@ -2,15 +2,13 @@
 
 import { useState } from "react";
 import { Check, Eye, Loader2, Send } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 const INPUT =
   "w-full rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-amber-400";
-const VIA = [["WHATSAPP", "WhatsApp"], ["EMAIL", "Email"], ["BOTH", "Both"]] as const;
 
 export function CatererSummarySettings({ initial }: { initial: { enabled: boolean; via: string; email: string | null; phone: string } }) {
   const [enabled, setEnabled] = useState(initial.enabled);
-  const [via, setVia] = useState(initial.via);
+  const via = "EMAIL"; // the summary is sent by email
   const [email, setEmail] = useState(initial.email ?? "");
   const [busy, setBusy] = useState("");
   const [note, setNote] = useState("");
@@ -43,7 +41,7 @@ export function CatererSummarySettings({ initial }: { initial: { enabled: boolea
       if (!(await save({ via, email }))) return;
       const res = await fetch("/api/caterer/summary", { method: "POST" }); const data = await res.json().catch(() => ({}));
       if (!res.ok) { setError(data.error ?? "Could not send"); return; }
-      const parts = [data.whatsapp && `WhatsApp: ${data.whatsapp}`, data.email && `Email: ${data.email}`].filter(Boolean);
+      const parts = [data.email && `Email: ${data.email}`].filter(Boolean);
       setNote(parts.join(" · ") || "Nothing to send");
     } finally { setBusy(""); }
   }
@@ -59,18 +57,10 @@ export function CatererSummarySettings({ initial }: { initial: { enabled: boolea
         <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">Send me the daily summary</span>
       </label>
       <div className="space-y-3">
-        <div className="inline-flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1">
-          {VIA.map(([k, label]) => (
-            <button key={k} type="button" onClick={() => { setVia(k); save({ via: k }); }} className={cn("px-3.5 py-1.5 rounded-lg text-xs font-semibold", via === k ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-500")}>{label}</button>
-          ))}
-        </div>
-        {(via === "WHATSAPP" || via === "BOTH") && <p className="text-xs text-zinc-500">WhatsApp goes to {initial.phone}.</p>}
-        {(via === "EMAIL" || via === "BOTH") && (
-          <label className="block space-y-1">
-            <span className="text-xs font-medium text-zinc-500">Email address</span>
-            <input className={INPUT} type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => save({ email })} />
-          </label>
-        )}
+        <label className="block space-y-1">
+          <span className="text-xs font-medium text-zinc-500">Email address</span>
+          <input className={INPUT} type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} onBlur={() => save({ email })} />
+        </label>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         <button type="button" onClick={show} disabled={!!busy} className="inline-flex items-center gap-1.5 rounded-xl border border-zinc-200 dark:border-zinc-700 px-3.5 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-50">

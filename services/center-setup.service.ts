@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { buildFacilities } from "@/lib/facility-catalog";
-import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { sendCredentialsMail } from "@/services/notification.service";
 import { isTestEmail } from "@/lib/test-address";
 
 export const VENUE_TYPES = ["CONVENTION_CENTER", "AUDITORIUM", "BANQUET_HALL", "RESORT", "HOTEL_RESTAURANT"] as const;
@@ -193,12 +193,11 @@ export async function createCenter(d: CenterInput) {
 }
 
 export function sendCenterCredentials(opts: { name: string; phone: string; email?: string; password: string }) {
-  // an example/test address is never a real person: send nothing (no email, no WhatsApp)
+  // an example/test address is never a real person: send nothing
   if (isTestEmail(opts.email)) return;
   const creds = { name: opts.name, phone: opts.phone, password: opts.password, type: "owner" as const };
   Promise.allSettled([
     opts.email ? sendCredentialsMail({ ...creds, to: opts.email }) : Promise.resolve(),
-    sendCredentialsWhatsApp({ ...creds, to: opts.phone }),
   ]).then((results) => {
     results.forEach((r, i) => {
       if (r.status === "rejected") console.error(`[Notify][${i}]`, r.reason);

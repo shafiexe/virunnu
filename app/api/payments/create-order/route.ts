@@ -10,7 +10,7 @@ const schema = z.object({
   isFullPayment: z.boolean(),
   guestName: z.string().min(1),
   guestPhone: z.string().min(10),
-  guestEmail: z.string().nullable().optional(),
+  guestEmail: z.string().trim().email("A valid email address is required"),
   guestAddress: z.string().nullable().optional(),
   addons: z.array(z.object({ id: z.string(), quantity: z.number().min(0.5).max(48).default(1) })).max(20).optional(),
 });
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
         isFullPayment: isFullPayment ? "1" : "0",
         guestName,
         guestPhone,
-        guestEmail: guestEmail ?? "",
+        guestEmail,
         guestAddress: guestAddress ?? "",
       },
     });

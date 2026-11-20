@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
-import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { sendCredentialsMail } from "@/services/notification.service";
 import { isTestEmail } from "@/lib/test-address";
 import { randomInt } from "crypto";
 import { clearFailures, clientIp, rateLimited, recordFailure, TOO_MANY, tooManyFailures } from "@/lib/rate-limit";
@@ -49,14 +49,13 @@ export async function POST(req: NextRequest) {
     user.email
       ? sendCredentialsMail({ to: user.email, name, phone: normalized, password: plainPassword, type })
       : Promise.resolve(),
-    sendCredentialsWhatsApp({ to: normalized, name, phone: normalized, password: plainPassword, type }),
   ]).then((results) => {
     results.forEach((r, i) => {
       if (r.status === "rejected") console.error(`[ForgotPw][${i}]`, r.reason);
     });
   });
 
-  // In development, return the password on-screen (SMTP/Twilio may not be configured)
+  // In development, return the password on-screen (SMTP may not be configured)
   const devPassword = process.env.NODE_ENV === "development" ? plainPassword : undefined;
   return NextResponse.json({ ok: true, devPassword });
 }

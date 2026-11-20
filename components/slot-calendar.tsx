@@ -552,7 +552,7 @@ export function SlotCalendar({ venueId, halls: initialHalls, initialMonth, gstIn
                       <InputField label="Full name" required value={guestName} onChange={setGuestName} placeholder="Mohammed Shafi" />
                       <InputField label="Phone number" required type="tel" value={guestPhone} onChange={setGuestPhone} placeholder="+91 98765 43210" />
                     </div>
-                    <InputField label="Email address" value={guestEmail} onChange={setGuestEmail} placeholder="optional" type="email" />
+                    <InputField label="Email address" required value={guestEmail} onChange={setGuestEmail} placeholder="you@example.com — your confirmation is sent here" type="email" />
                     <InputField label="Address" value={guestAddress} onChange={setGuestAddress} placeholder="optional" />
                     {addons.length > 0 && (
                       <div className="space-y-1.5">

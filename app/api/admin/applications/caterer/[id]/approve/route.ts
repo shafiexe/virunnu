@@ -3,7 +3,7 @@ import { NextRequest, NextResponse, after } from "next/server";
 import { getSession } from "@/lib/session";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { sendCredentialsMail, sendCredentialsWhatsApp } from "@/services/notification.service";
+import { sendCredentialsMail } from "@/services/notification.service";
 import { catererSchema, createCaterer, sendCatererCredentials } from "@/services/caterer-setup.service";
 import { CenterError } from "@/services/center-setup.service";
 import { isTestEmail } from "@/lib/test-address";
@@ -93,7 +93,6 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
   Promise.allSettled(isTestEmail(app.email) ? [] : [
     sendCredentialsMail({ to: app.email, name: app.name, phone: app.phone, password: plainPassword, type: "caterer" }),
-    sendCredentialsWhatsApp({ to: app.phone, name: app.name, phone: app.phone, password: plainPassword, type: "caterer" }),
   ]).then((results) => {
     results.forEach((r, i) => {
       if (r.status === "rejected") console.error(`[Notify][${i}]`, r.reason);

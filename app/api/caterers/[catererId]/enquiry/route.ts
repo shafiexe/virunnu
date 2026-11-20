@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { sendRawWhatsApp } from "@/services/notification.service";
+import { sendRawMail } from "@/services/notification.service";
+import { isTestEmail } from "@/lib/test-address";
 import { clientIp, rateLimited, TOO_MANY } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ catererId: string }> }) {
@@ -11,7 +12,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cat
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   const { name, phone, eventDate, guestCount, message } = body;
-  // each enquiry sends the caterer a WhatsApp message, so one visitor, or one number, cannot send many
+  // each enquiry emails the caterer, so one visitor, or one number, cannot send many
   if (rateLimited(`enq-ip:${clientIp(req)}`, 6, 60 * 60_000) || rateLimited(`enq:${catererId}:${String(phone ?? "").replace(/\D/g, "").slice(-10)}`, 3, 60 * 60_000)) return NextResponse.json(TOO_MANY, { status: 429 });
 
   if (!name?.trim() || !phone?.trim()) return NextResponse.json({ error: "Name and phone are required" }, { status: 400 });
@@ -27,12 +28,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cat
     },
   });
 
-  // Notify caterer via WhatsApp
-  const toPhone = caterer.whatsappNumber || caterer.phone;
+  // Tell the caterer by email (test caterers with an example.com address are never emailed)
   const eventStr = eventDate ? new Date(eventDate).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "Not specified";
-  const notifyMsg = `🔔 *New Enquiry — ${caterer.name}*\n\n👤 *${name}*\n📞 ${phone}\n📅 Event date: ${eventStr}${guestCount ? `\n👥 Guests: ${guestCount}` : ""}${message ? `\n💬 ${message}` : ""}\n\nReply to this customer directly on ${phone}`;
+  const notifyMsg = `New enquiry for ${caterer.name}\n\nName: ${name}\nPhone: ${phone}\nEvent date: ${eventStr}${guestCount ? `\nGuests: ${guestCount}` : ""}${message ? `\nMessage: ${message}` : ""}\n\nReply to this customer directly on ${phone}, or open Enquiries in your Virunnu dashboard.`;
 
-  sendRawWhatsApp(toPhone, notifyMsg).catch(() => {});
+  if (caterer.email && !isTestEmail(caterer.email)) sendRawMail(caterer.email, `New enquiry — ${caterer.name}`, notifyMsg).catch(() => {});
 
   return NextResponse.json({ enquiry }, { status: 201 });
 }

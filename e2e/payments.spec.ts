@@ -43,7 +43,7 @@ test.describe("online payment rules", () => {
     const cal = await (await api.get(`/api/owner/calendar?venueId=${centre.venueId}&year=${event.getFullYear()}&month=${event.getMonth() + 1}`)).json();
     const hall = cal.venue.halls[0];
     const slot = `virtual_${hall.slotTemplates[0].id}_${date}`;
-    const guest = { guestName: "Cheap Booker", guestPhone: "9000000990" };
+    const guest = { guestName: "Cheap Booker", guestPhone: "9000000990", guestEmail: "zz-e2e-booker@example.com" };
 
     // ₹1 as the "full payment" of a ₹1,18,000 hall
     const cheap = await api.post("/api/payments/create-order", { data: { hallSlotId: slot, amountPaise: 100, isFullPayment: true, ...guest } });

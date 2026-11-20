@@ -15,7 +15,7 @@ const schema = z.object({
   hallSlotId: z.string().min(1),
   guestName: z.string().min(1, "Name is required"),
   guestPhone: z.string().min(10, "Valid phone number required"),
-  guestEmail: z.string().email().optional().or(z.literal("")),
+  guestEmail: z.string().trim().email("A valid email address is required"),
   guestAddress: z.string().optional(),
   addons: z.array(z.object({ id: z.string(), quantity: z.number().min(0.5).max(48).default(1) })).max(20).optional(),
 });
@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
           status: "PENDING",
           guestName,
           guestPhone,
-          guestEmail: guestEmail || null,
+          guestEmail,
           guestAddress: guestAddress || null,
           addons: { create: extras.rows },
         },

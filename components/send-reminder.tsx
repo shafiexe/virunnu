@@ -131,7 +131,7 @@ export function SendReminderButton({ data }: { data: ReminderData }) {
 
             {/* Actions */}
             <div className="px-5 pb-5 flex flex-col gap-2">
-              {/* Auto-send via Virunnu (Twilio) */}
+              {/* Email the customer from Virunnu */}
               <button
                 onClick={sendViaVirunnu}
                 disabled={sending || sent}
@@ -142,7 +142,7 @@ export function SendReminderButton({ data }: { data: ReminderData }) {
                 ) : sending ? (
                   <><Send className="h-4 w-4 animate-pulse" /> Sending…</>
                 ) : (
-                  <><Send className="h-4 w-4" /> Auto-send via Virunnu</>
+                  <><Send className="h-4 w-4" /> Send by email</>
                 )}
               </button>
               {sendError && <p className="text-xs text-red-500 text-center">{sendError}</p>}
@@ -179,7 +179,7 @@ export function SendReminderButton({ data }: { data: ReminderData }) {
               </button>
 
               <p className="text-center text-[10px] text-zinc-500 dark:text-zinc-400 mt-1">
-                Auto-send uses Twilio WhatsApp + email. Manual: message opens in your WhatsApp.
+                The email goes from Virunnu. Open in WhatsApp sends it from your own WhatsApp.
               </p>
             </div>
           </div>

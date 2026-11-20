@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { logActivity } from "@/lib/activity";
 import { bookingRef } from "@/lib/booking-ledger";
 import { isTestEmail } from "@/lib/test-address";
-import { sendRawWhatsApp } from "@/services/notification.service";
+import { sendRawMail } from "@/services/notification.service";
 
 const day = (d: Date) => d.toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 
@@ -37,9 +37,9 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ bo
   await db.booking.update({ where: { id: bookingId }, data: { catererEnquiryId: enquiry.id } });
 
   // tests use example.com caterers, who must never be messaged
-  const to = booking.caterer.whatsappNumber || booking.caterer.phone;
-  if (to && !isTestEmail(booking.caterer.email)) {
-    sendRawWhatsApp(to, `🔔 *New enquiry — ${booking.caterer.name}*\n\n👤 *${name}*\n📞 ${phone}\n📅 ${day(slot.date)}\n🏛️ ${slot.hall.venue.name}\n\n${message}\n\nOpen Enquiries in your Virunnu dashboard to make an order.`).catch(() => {});
+  const to = booking.caterer.email;
+  if (to && !isTestEmail(to)) {
+    sendRawMail(to, `New enquiry — ${booking.caterer.name}`, `New enquiry for ${booking.caterer.name}\n\nName: ${name}\nPhone: ${phone}\nDate: ${day(slot.date)}\nVenue: ${slot.hall.venue.name}\n\n${message}\n\nOpen Enquiries in your Virunnu dashboard to make an order.`).catch(() => {});
   }
   await logActivity(session, `Sent booking ${bookingRef(bookingId).slice(-6)} to the caterer ${booking.caterer.name}`);
   return NextResponse.json({ ok: true }, { status: 201 });
