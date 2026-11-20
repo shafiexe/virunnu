@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 import {
-  Sparkles, ChevronLeft, ChevronRight, Plus, Pencil, Trash2, X, Phone, User, IndianRupee, Ban, CalendarDays,
+  Sparkles, ChevronLeft, ChevronRight, Plus, Pencil, Trash2, X, Phone, User, IndianRupee, Ban, CalendarDays, LayoutList,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AddonRow, addonLine } from "@/components/addon-row";
 import { SendReminderButton } from "@/components/send-reminder";
 import { BulkBlockButton } from "@/components/bulk-block-button";
+import { DiaryImport } from "@/components/diary-import";
+import { CalendarTable, type TableRow } from "@/components/calendar-table";
 import { WriteOnly, useCanWrite, Show } from "@/components/access-context";
 
 type SlotTemplate = { id: string; name: string; startTime: string; endTime: string };
@@ -84,6 +86,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
   const [pasteText, setPasteText] = useState("");
   const [drafting, setDrafting] = useState(false);
   const [draftNote, setDraftNote] = useState("");
+  const [view, setView] = useState<"calendar" | "table">("calendar");
 
   const venue = venues.find((v) => v.id === selectedVenueId);
   const year = currentDate.getFullYear();
@@ -109,6 +112,19 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect -- loads the month from the server when the venue or month changes
   useEffect(() => { fetchSlots(); }, [fetchSlots]);
+
+  // The month as table rows: one per booking, plus held slots that have no booking yet
+  const tableRows: TableRow[] = slots.flatMap((s): TableRow[] => {
+    const base = { date: s.date.slice(0, 10), hallName: venue && venue.halls.length > 1 ? s.hall.name : "", slotName: s.template.name, time: `${s.template.startTime}–${s.template.endTime}` };
+    const live = s.bookings.filter((b) => b.status === "CONFIRMED" || b.status === "ADVANCE_PAID" || b.status === "PENDING");
+    if (live.length === 0) return s.status === "HELD" ? [] : s.status === "BOOKED" ? [{ ...base, key: s.id, state: "OTHER" as const, name: null, phone: null, totalPaise: null, receivedPaise: 0 }] : [];
+    return live.map((b) => ({
+      ...base, key: b.id,
+      state: b.status === "ADVANCE_PAID" ? "ADVANCE_PAID" as const : b.status === "PENDING" ? "HELD" as const : "CONFIRMED" as const,
+      name: b.user?.name ?? b.guestName ?? null, phone: b.user?.phone || b.guestPhone || null,
+      totalPaise: b.totalPaise, receivedPaise: b.advancePaise ?? 0,
+    }));
+  });
 
   // Slot map: "YYYY-MM-DD" → CalendarSlot[]
   const slotsByDate = new Map<string, CalendarSlot[]>();
@@ -415,8 +431,13 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
           </button>
           {loading && <span className="text-xs text-zinc-500 dark:text-zinc-400 ml-2 animate-pulse">Refreshing…</span>}
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3 text-xs text-zinc-500">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1" role="group" aria-label="Calendar or table">
+            <button type="button" onClick={() => setView("calendar")} aria-pressed={view === "calendar"} className={cn("inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold", view === "calendar" ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}><CalendarDays className="h-3.5 w-3.5" /> Calendar</button>
+            <button type="button" onClick={() => setView("table")} aria-pressed={view === "table"} className={cn("inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold", view === "table" ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}><LayoutList className="h-3.5 w-3.5" /> Table</button>
+          </div>
+          <WriteOnly page="calendar"><DiaryImport venueId={selectedVenueId} hall={venue?.halls[0]} onDone={() => { void fetchSlots(); }} /></WriteOnly>
+          <div className="hidden lg:flex items-center gap-3 text-xs text-zinc-500">
             <span className="flex items-center gap-1.5"><span className={cn("w-2 h-2 rounded-full", DOT_COLOR.AVAILABLE)} /> Available</span>
             <span className="flex items-center gap-1.5"><span className={cn("w-2 h-2 rounded-full", DOT_COLOR.BLOCKED)} /> Blocked</span>
             <span className="flex items-center gap-1.5"><span className={cn("w-2 h-2 rounded-full", DOT_COLOR.HELD)} /> On hold</span>
@@ -425,6 +446,12 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
         </div>
       </div>
 
+      {view === "table" && (
+        <CalendarTable rows={tableRows} monthLabel={monthLabel} loading={loading} todayStr={todayStr} onOpenDay={(d) => { setSelectedDay(d); setView("calendar"); }} />
+      )}
+
+      {view === "calendar" && (
+        <>
       {!selectedDay && (
         <div className="flex items-center gap-2 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-2.5 text-sm text-amber-800 dark:text-amber-300">
           <CalendarDays className="h-4 w-4 shrink-0" />
@@ -512,9 +539,11 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
           );
         })}
       </div>
+        </>
+      )}
 
       {/* Day detail panel */}
-      {selectedDay && (
+      {view === "calendar" && selectedDay && (
         <div className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 overflow-hidden shadow-sm">
           {/* Panel header */}
           <div className="px-5 py-3.5 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800 space-y-2.5 lg:space-y-0 lg:flex lg:items-center lg:gap-3">

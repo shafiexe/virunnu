@@ -7,6 +7,7 @@ import type { SessionPayload } from "@/lib/session";
 const LIMITS = {
   "booking-draft": { hour: 60, day: 200 },
   "read-bill": { hour: 40, day: 150 },
+  "diary-read": { hour: 60, day: 200 },
   prefill: { hour: 10, day: 30 },
 } as const;
 

@@ -14,7 +14,7 @@ export const billPrompt = (categories: string[], todayISO: string) => `Today's d
 
 Use null for anything you cannot read clearly. Never guess an amount.`;
 
-const isRealDate = (s: string) => /^\d{4}-\d{2}-\d{2}$/.test(s) && new Date(s + "T00:00:00Z").toISOString().slice(0, 10) === s;
+const isRealDate = (s: string) => { if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false; const d = new Date(s + "T00:00:00Z"); return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s; };
 
 export function cleanBill(raw: Record<string, unknown>, categories: string[], todayISO: string): BillDraft {
   const str = (v: unknown, max: number) => (typeof v === "string" && v.trim() ? v.trim().slice(0, max) : null);
