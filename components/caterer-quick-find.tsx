@@ -83,7 +83,7 @@ export function CatererQuickFind({ variant, endpoint = "/api/caterer/find", plac
                 className="flex-1 bg-transparent py-3.5 text-base text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none" />
               {loading && <span className="text-[11px] text-zinc-500 dark:text-zinc-400">…</span>}
             </div>
-            <ul className="max-h-[50vh] overflow-y-auto py-1">
+            <ul className="max-h-[50dvh] overflow-y-auto py-1">
               {hits.map((h, i) => (
                 <li key={h.href + h.title}>
                   <button type="button" onMouseEnter={() => setAt(i)} onClick={() => go(h)} className={cn("w-full flex items-center gap-3 px-4 py-2.5 text-left", i === at && "bg-amber-50 dark:bg-amber-950/20")}>

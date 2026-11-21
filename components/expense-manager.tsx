@@ -583,7 +583,7 @@ export function ExpenseManager({
               <button
                 onClick={() => { setFilterCategory("ALL"); setPage(1); }}
                 className={cn(
-                  "text-xs font-medium px-3 py-1 rounded-full border transition-colors",
+                  "text-xs font-medium px-3 py-2 md:py-1 rounded-full border transition-colors",
                   filterCategory === "ALL"
                     ? "border-amber-400 bg-amber-500 text-zinc-900"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-zinc-300"
@@ -596,7 +596,7 @@ export function ExpenseManager({
                   key={cat}
                   onClick={() => { setFilterCategory((f) => f === cat ? "ALL" : cat); setPage(1); }}
                   className={cn(
-                    "text-xs font-medium px-3 py-1 rounded-full border transition-colors",
+                    "text-xs font-medium px-3 py-2 md:py-1 rounded-full border transition-colors",
                     filterCategory === cat
                       ? "border-amber-400 bg-amber-500 text-zinc-900"
                       : `border-transparent ${pillColor(cat)} hover:opacity-80`
@@ -890,7 +890,7 @@ export function ExpenseManager({
                           <button
                             onClick={() => addItem(cat.id)}
                             disabled={itemLoading || !newItem.name.trim()}
-                            className="inline-flex items-center gap-1 text-xs font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 px-3 py-1.5 rounded-xl transition-colors"
+                            className="inline-flex items-center gap-1 text-xs font-semibold bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 px-3 py-2 md:py-1.5 rounded-xl transition-colors"
                           >
                             <Plus className="h-3 w-3" />
                             Add
@@ -1000,9 +1000,9 @@ export function ExpenseManager({
                         </div>
                         <div className="flex gap-2">
                           <button onClick={() => saveEditEmployee(emp.id)}
-                            className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold">Save</button>
+                            className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold">Save</button>
                           <button onClick={() => setEditEmpId(null)}
-                            className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">Cancel</button>
+                            className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">Cancel</button>
                         </div>
                       </div>
                     ) : (
@@ -1061,7 +1061,7 @@ export function ExpenseManager({
 
       {/* ── ADD / EDIT EXPENSE MODAL ────────────────────────────────────────────── */}
       {showForm && (
-        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center sm:p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-zinc-900 rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg border-t sm:border border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden" style={{ maxHeight: "calc(92vh - env(safe-area-inset-bottom, 0px))" }}>
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800 sticky top-0 bg-white dark:bg-zinc-900 z-10">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">

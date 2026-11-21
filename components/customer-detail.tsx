@@ -119,11 +119,11 @@ function DiscountEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (
         <button
           onClick={save}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 text-xs font-semibold"
+          className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-zinc-900 text-xs font-semibold"
         >
           {loading ? "Saving…" : "Save"}
         </button>
-        <button onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
+        <button onClick={() => setOpen(false)} className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
           Cancel
         </button>
       </div>
@@ -184,10 +184,10 @@ function RefundEditor({ booking, onUpdated }: { booking: Booking; onUpdated: (b:
       {error && <p className="text-xs text-red-500">{error}</p>}
       <div className="flex gap-2">
         <button onClick={save} disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-xs font-semibold">
+          className="px-3 py-2 md:py-1.5 rounded-lg bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white text-xs font-semibold">
           {loading ? "Saving…" : "Save refund"}
         </button>
-        <button onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">Cancel</button>
+        <button onClick={() => setOpen(false)} className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">Cancel</button>
       </div>
     </div>
   );
@@ -288,10 +288,10 @@ function CashPaymentEditor({ booking }: { booking: Booking }) {
       {error && <p className="text-xs text-red-500">{error}</p>}
       <div className="flex gap-2">
         <button onClick={save} disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-xs font-semibold">
+          className="px-3 py-2 md:py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-xs font-semibold">
           {loading ? "Saving…" : "Confirm payment received"}
         </button>
-        <button onClick={() => setOpen(false)} className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
+        <button onClick={() => setOpen(false)} className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
           Cancel
         </button>
       </div>

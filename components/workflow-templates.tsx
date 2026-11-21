@@ -313,7 +313,7 @@ function EventCard({ event, templateMap, edits, setEdits, serverValues, onSave, 
                   key={ch.tab}
                   type="button"
                   onClick={() => setActiveChannel(i)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                     activeChannel === i
                       ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900"
                       : "text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"

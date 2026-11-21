@@ -49,7 +49,7 @@ export function CatererMessageSettings({ initial }: { initial: Partial<Templates
       </div>
       <div className="flex flex-wrap gap-1.5">
         {TEMPLATE_KEYS.map((k) => (
-          <button key={k} type="button" onClick={() => setOpen(k)} className={cn("rounded-full border px-3 py-1.5 text-xs font-semibold", open === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{TEMPLATE_INFO[k].label}</button>
+          <button key={k} type="button" onClick={() => setOpen(k)} className={cn("rounded-full border px-3 py-2 md:py-1.5 text-xs font-semibold", open === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{TEMPLATE_INFO[k].label}</button>
         ))}
       </div>
       <p className="text-xs text-zinc-500">Used by: {info.when}</p>

@@ -68,9 +68,9 @@ export default async function CatererPurchasesPage({ searchParams }: { searchPar
         <section className="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 space-y-2">
           <h2 className="text-[10px] font-semibold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">Spent by each person · {label}</h2>
           <div className="flex flex-wrap gap-2">
-            <Link href={link("")} className={cn("rounded-full border px-3 py-1 text-xs font-medium", !person ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>Everyone</Link>
+            <Link href={link("")} className={cn("rounded-full border px-3 py-2 md:py-1 text-xs font-medium", !person ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>Everyone</Link>
             {byPerson.map((p) => (
-              <Link key={p.id ?? "none"} href={link(`&person=${p.id ?? "none"}`)} className={cn("rounded-full border px-3 py-1 text-xs font-medium", person === (p.id ?? "none") ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
+              <Link key={p.id ?? "none"} href={link(`&person=${p.id ?? "none"}`)} className={cn("rounded-full border px-3 py-2 md:py-1 text-xs font-medium", person === (p.id ?? "none") ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
                 {p.name} · {rs(p.totalPaise)} <span className="opacity-70">({p.count})</span>
               </Link>
             ))}

@@ -111,7 +111,7 @@ export function BookingAddonsDialog({
   return (
     <>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-sm">
           <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md border border-zinc-200 dark:border-zinc-800 overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
               <div>
@@ -123,7 +123,7 @@ export function BookingAddonsDialog({
               </button>
             </div>
 
-            <div className="p-5 space-y-2 max-h-[70vh] overflow-y-auto">
+            <div className="p-5 space-y-2 max-h-[70dvh] overflow-y-auto">
               {addons.length === 0 && unlisted.length === 0 && custom.length === 0 && !loading && !formOpen && (
                 <p className="text-sm text-zinc-500">No add-ons on this booking yet. Add a service below, for example AC or security.</p>
               )}
@@ -207,7 +207,7 @@ export function BookingAddonsDialog({
                   </label>
                   <div className="flex gap-2">
                     <button type="button" onClick={addCustom} className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold">Add to booking</button>
-                    <button type="button" onClick={() => { setFormOpen(false); setError(""); }} className="px-3 py-1.5 rounded-lg text-sm text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800">Cancel</button>
+                    <button type="button" onClick={() => { setFormOpen(false); setError(""); }} className="px-3 py-2 md:py-1.5 rounded-lg text-sm text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-800">Cancel</button>
                   </div>
                 </div>
               ) : (

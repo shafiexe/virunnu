@@ -16,7 +16,7 @@ export function CatererRangePicker({ tab, range, exportType }: { tab: string; ra
             <Link
               key={p.label}
               href={`/caterer/reports?tab=${tab}&from=${p.from}&to=${p.to}`}
-              className={cn("rounded-full border px-3 py-1 text-xs font-medium transition-colors", active ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}
+              className={cn("rounded-full border px-3 py-2 md:py-1 text-xs font-medium transition-colors", active ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}
             >
               {p.label}
             </Link>

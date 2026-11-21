@@ -30,11 +30,11 @@ export function NavUser() {
   if (!session) {
     return (
       <div className="flex items-center gap-1.5">
-        <Link href="/track" className="flex items-center gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-2.5 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+        <Link href="/track" className="flex items-center justify-center min-h-10 min-w-10 sm:min-w-0 gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-2.5 py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
           <Navigation className="h-4 w-4 shrink-0" />
           <span className="hidden sm:inline">Track booking</span>
         </Link>
-        <Link href="/login" className="flex items-center gap-1.5 text-sm font-semibold text-zinc-900 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap">
+        <Link href="/login" className="flex items-center justify-center min-h-10 min-w-10 sm:min-w-0 gap-1.5 text-sm font-semibold text-zinc-900 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 px-3 py-2 md:py-1.5 rounded-lg transition-colors whitespace-nowrap">
           <LogIn className="h-4 w-4 shrink-0" />
           <span className="hidden sm:inline">Sign in</span>
         </Link>
@@ -59,7 +59,7 @@ export function NavUser() {
       )}
       <button
         onClick={logout}
-        className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors ml-1"
+        className="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 font-medium px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors ml-1"
       >
         <ResponsiveText mobile="Out" desktop="Logout" />
       </button>

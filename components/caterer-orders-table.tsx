@@ -96,7 +96,7 @@ export function CatererOrdersTable({ initial }: { initial: OrdersUrlState }) {
         <div className="rounded-2xl border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20 p-5 flex items-center gap-3 mb-4">
           <AlertCircle className="h-5 w-5 text-red-500 shrink-0" />
           <p className="flex-1 text-sm text-red-700 dark:text-red-400">{error}</p>
-          <button onClick={refresh} className="text-xs font-medium px-3 py-1.5 rounded-lg bg-red-100 text-red-700">Retry</button>
+          <button onClick={refresh} className="text-xs font-medium px-3 py-2 md:py-1.5 rounded-lg bg-red-100 text-red-700">Retry</button>
         </div>
       )}
 

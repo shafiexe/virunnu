@@ -112,7 +112,7 @@ export function CatererOnboardingForm() {
                 key={c}
                 type="button"
                 onClick={() => toggle(c)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors border ${
+                className={`px-3 py-2 md:py-1.5 rounded-full text-xs font-medium transition-colors border ${
                   selected
                     ? "bg-amber-500 text-zinc-900 border-amber-500"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"

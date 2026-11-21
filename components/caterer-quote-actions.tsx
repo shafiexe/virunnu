@@ -81,8 +81,8 @@ export function CatererQuoteActions(p: Props) {
       {error && !confirming && <p className="text-sm text-red-500">{error}</p>}
 
       {confirming && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setConfirming(false)}>
-          <form className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4" onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); convert(); }}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm" onClick={() => setConfirming(false)}>
+          <form className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); convert(); }}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Make this an order</h3>

@@ -349,8 +349,8 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
           <span>You have an unfinished {quote ? "quotation" : "order"}{draft.pending.value.customerName ? ` for ${draft.pending.value.customerName}` : ""} from {new Date(draft.pending.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}.</span>
           <span className="flex gap-2">
-            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900">Continue it</button>
-            <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold">Start fresh</button>
+            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-900">Continue it</button>
+            <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-2 md:py-1.5 text-xs font-semibold">Start fresh</button>
           </span>
         </div>
       )}
@@ -363,8 +363,8 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
               <div className="space-y-2 rounded-xl bg-zinc-50 dark:bg-zinc-800/40 p-3">
                 <textarea autoFocus className={cn(INPUT, "resize-none")} rows={4} value={pasted} onChange={(e) => setPasted(e.target.value)} placeholder="Paste the customer's message here, for example: Hi, I'm Shafi, wedding on 14 Dec at Rozia Hall, 300 people, 98470 00000" />
                 <div className="flex gap-2">
-                  <button type="button" onClick={applyPaste} disabled={!pasted.trim()} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900 disabled:opacity-50">Fill the form from it</button>
-                  <button type="button" onClick={() => { setPasteOpen(false); setPasted(""); }} className="px-3 py-1.5 text-xs text-zinc-500">Cancel</button>
+                  <button type="button" onClick={applyPaste} disabled={!pasted.trim()} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-900 disabled:opacity-50">Fill the form from it</button>
+                  <button type="button" onClick={() => { setPasteOpen(false); setPasted(""); }} className="px-3 py-2 md:py-1.5 text-xs text-zinc-500">Cancel</button>
                 </div>
               </div>
             ) : (
@@ -397,7 +397,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
         <div className="flex flex-wrap gap-1.5">
           {EVENT_TYPES.map((t) => (
             <button key={t} type="button" onClick={() => setEventType(eventType === t ? "" : t)}
-              className={cn("px-3 py-1 rounded-full border text-xs font-medium transition-colors", eventType === t ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
+              className={cn("px-3 py-2 md:py-1 rounded-full border text-xs font-medium transition-colors", eventType === t ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
               {t}
             </button>
           ))}
@@ -411,12 +411,12 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             const on = servings.some((s) => s.label === p.label);
             return (
               <button key={p.label} type="button" onClick={() => toggleServing(p.label, p.time)}
-                className={cn("px-3 py-1.5 rounded-full border text-xs font-medium transition-colors", on ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
+                className={cn("px-3 py-2 md:py-1.5 rounded-full border text-xs font-medium transition-colors", on ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>
                 {p.label}
               </button>
             );
           })}
-          <button type="button" onClick={addCustomServing} className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-dashed border-amber-400 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30">
+          <button type="button" onClick={addCustomServing} className="inline-flex items-center gap-1 px-3 py-2 md:py-1.5 rounded-full border border-dashed border-amber-400 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30">
             <Plus className="h-3 w-3" /> Other time
           </button>
         </div>
@@ -533,7 +533,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             </label>
             <div className="flex gap-2">
               <button type="submit" className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold">Add to order</button>
-              <button type="button" onClick={() => setCustomOpen(false)} className="px-3 py-1.5 rounded-lg text-sm text-zinc-500">Cancel</button>
+              <button type="button" onClick={() => setCustomOpen(false)} className="px-3 py-2 md:py-1.5 rounded-lg text-sm text-zinc-500">Cancel</button>
             </div>
           </form>
         ) : (
@@ -581,7 +581,7 @@ export function CatererOrderForm({ catalog, initial, template, gstRates, quote, 
             {personError && <p className="text-xs text-red-500">{personError}</p>}
             <div className="flex gap-2">
               <button type="button" onClick={createPerson} className="px-4 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-sm font-semibold">Add and put on this function</button>
-              <button type="button" onClick={() => setAddingPerson(false)} className="px-3 py-1.5 rounded-lg text-sm text-zinc-500">Cancel</button>
+              <button type="button" onClick={() => setAddingPerson(false)} className="px-3 py-2 md:py-1.5 rounded-lg text-sm text-zinc-500">Cancel</button>
             </div>
           </div>
         )}

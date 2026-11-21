@@ -405,7 +405,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               key={v.id}
               onClick={() => { setSelectedVenueId(v.id); setSelectedDay(null); }}
               className={cn(
-                "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+                "px-3 py-2 md:py-1.5 rounded-lg text-sm font-medium transition-colors",
                 v.id === selectedVenueId
                   ? "bg-amber-500 text-zinc-900"
                   : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
@@ -433,8 +433,8 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="inline-flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1" role="group" aria-label="Calendar or table">
-            <button type="button" onClick={() => setView("calendar")} aria-pressed={view === "calendar"} className={cn("inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold", view === "calendar" ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}><CalendarDays className="h-3.5 w-3.5" /> Calendar</button>
-            <button type="button" onClick={() => setView("table")} aria-pressed={view === "table"} className={cn("inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold", view === "table" ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}><LayoutList className="h-3.5 w-3.5" /> Table</button>
+            <button type="button" onClick={() => setView("calendar")} aria-pressed={view === "calendar"} className={cn("inline-flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded-lg text-xs font-semibold", view === "calendar" ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}><CalendarDays className="h-3.5 w-3.5" /> Calendar</button>
+            <button type="button" onClick={() => setView("table")} aria-pressed={view === "table"} className={cn("inline-flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded-lg text-xs font-semibold", view === "table" ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}><LayoutList className="h-3.5 w-3.5" /> Table</button>
           </div>
           <WriteOnly page="calendar"><DiaryImport venueId={selectedVenueId} hall={venue?.halls[0]} onDone={() => { void fetchSlots(); }} /></WriteOnly>
           <div className="hidden lg:flex items-center gap-3 text-xs text-zinc-500">
@@ -582,7 +582,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                   <button
                     onClick={() => selectedDay && toggleBlock(selectedDay)}
                     className={cn(
-                      "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-colors",
+                      "inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 md:py-1.5 rounded-lg transition-colors",
                       isDateBlocked
                         ? "bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-300 dark:hover:bg-zinc-600"
                         : "border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800"
@@ -600,7 +600,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                 onClick={() => openAdd()}
                 disabled={selectedDateBlocked}
                 title={selectedDateBlocked ? "This date is blocked — unblock it to take bookings" : undefined}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-900 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-500"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-900 px-3 py-2 md:py-1.5 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-amber-500"
               >
                 <Plus className="h-3.5 w-3.5" />
                 Add booking
@@ -616,7 +616,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
               </p>
               <button
                 onClick={() => toggleBlock(selectedDay)}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 transition-colors"
               >
                 <Ban className="h-3.5 w-3.5" />
                 Unblock date
@@ -809,8 +809,8 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
 
       {/* Add Booking Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md border border-zinc-200 dark:border-zinc-800">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-md border border-zinc-200 dark:border-zinc-800 max-h-[90dvh] overflow-y-auto">
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
               <div>
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Add phone booking</h3>
@@ -829,7 +829,7 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <form onSubmit={submitAdd} className="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
+            <form onSubmit={submitAdd} className="p-5 space-y-4 max-h-[80dvh] overflow-y-auto">
               {/* Paste a WhatsApp message or note and the form fills itself */}
               <div className="rounded-xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20 p-3 space-y-2">
                 <label className="flex items-center gap-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300"><Sparkles className="h-3.5 w-3.5" /> Paste the customer&apos;s message</label>
@@ -993,8 +993,8 @@ export function OwnerCalendar({ venues }: { venues: Venue[] }) {
 
       {/* Edit Booking Modal */}
       {editing && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-sm border border-zinc-200 dark:border-zinc-800">
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-sm border border-zinc-200 dark:border-zinc-800 max-h-[90dvh] overflow-y-auto">
             <div className="flex items-center justify-between px-5 py-4 border-b border-zinc-100 dark:border-zinc-800">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Edit booking</h3>
               <button onClick={() => setEditing(null)} className="p-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400">

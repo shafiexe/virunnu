@@ -59,8 +59,8 @@ export function QuickPay({ bills, customer, onDone, compact = false }: { bills: 
         <Wallet className="h-3 w-3" /> Receive
       </button>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
-          <form className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 text-left" onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); save(); }}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
+          <form className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 text-left max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()} onSubmit={(e) => { e.preventDefault(); save(); }}>
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Payment received</h3>

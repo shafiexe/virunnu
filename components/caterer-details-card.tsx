@@ -143,7 +143,7 @@ export function CatererDetailsCard({ initial, adminCatererId }: { initial: Cater
             <button
               key={k} type="button"
               onClick={() => setMeals(meals.includes(k) ? meals.filter((m) => m !== k) : [...meals, k])}
-              className={cn("px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
+              className={cn("px-3 py-2 md:py-1.5 rounded-full text-xs font-medium border transition-colors",
                 meals.includes(k) ? "bg-amber-500 text-zinc-900 border-amber-500" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}
             >{l}</button>
           ))}

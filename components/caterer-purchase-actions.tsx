@@ -39,8 +39,8 @@ export function PayButton({ purchaseId, duePaise, label = "Pay" }: { purchaseId:
         <Wallet className="h-3 w-3" /> {label}
       </button>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
-          <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between"><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Pay supplier</h3><button onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button></div>
             <p className="text-xs text-zinc-500">Still due: {rs(duePaise)}. You can pay part of it.</p>
             <input className={INPUT} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} aria-label="Amount" />

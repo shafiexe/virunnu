@@ -107,7 +107,7 @@ function TemplateTag({
           <input type="time" className={cn(input, "w-28 block")} value={draft.endTime} onChange={(e) => setDraft((d) => ({ ...d, endTime: e.target.value }))} required />
         </div>
         <div className="flex gap-1.5">
-          <button type="submit" disabled={loading} className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
+          <button type="submit" disabled={loading} className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
             {loading ? "…" : "Save"}
           </button>
           <button type="button" onClick={() => { setEditing(false); setError(""); setDraft({ name: tpl.name, startTime: tpl.startTime, endTime: tpl.endTime }); }} className="px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
@@ -231,7 +231,7 @@ function AddTemplateForm({ hallId, onAdded }: { hallId: string; onAdded: (tpl: S
       </div>
       <div className="flex gap-1.5">
         <button type="submit" disabled={loading}
-          className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
+          className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
           {loading ? "…" : "Add"}
         </button>
         <button type="button" onClick={() => setShow(false)}
@@ -268,7 +268,7 @@ function CopyHallSetup({ halls }: { halls: { id: string; name: string }[] }) {
       <select className={sel} value={from} onChange={(e) => setFrom(e.target.value)}>{halls.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}</select>
       <span>to</span>
       <select className={sel} value={to} onChange={(e) => setTo(e.target.value)}>{halls.map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}</select>
-      <button type="button" onClick={copy} disabled={busy || from === to} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 font-semibold text-zinc-900 disabled:opacity-50">{busy ? "Copying…" : "Copy"}</button>
+      <button type="button" onClick={copy} disabled={busy || from === to} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 font-semibold text-zinc-900 disabled:opacity-50">{busy ? "Copying…" : "Copy"}</button>
       {msg && <span className="text-emerald-600">{msg}</span>}
     </div>
   );
@@ -435,7 +435,7 @@ function HallCard({
       {/* Lightbox — uses fixed positioning so works from anywhere in the tree */}
       {lightboxIdx !== null && photos[lightboxIdx] && (
         <div
-          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4"
           onClick={() => setLightboxIdx(null)}
         >
           <div className="relative max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
@@ -443,7 +443,7 @@ function HallCard({
             <img
               src={photos[lightboxIdx].url}
               alt={photos[lightboxIdx].caption ?? "Hall photo"}
-              className="w-full max-h-[80vh] object-contain rounded-xl"
+              className="w-full max-h-[80dvh] object-contain rounded-xl"
             />
             {photos[lightboxIdx].caption && (
               <p className="text-center text-white/80 text-sm mt-2">{photos[lightboxIdx].caption}</p>
@@ -596,11 +596,11 @@ function HallCard({
                 />
                 <div className="flex gap-2">
                   <button type="button" onClick={uploadPhotoUrl} disabled={uploadingPhoto}
-                    className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
+                    className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
                     {uploadingPhoto ? "Adding…" : "Add photos"}
                   </button>
                   <button type="button" onClick={() => { setShowUrlInput(false); setPhotoUrl(""); }}
-                    className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
+                    className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
                     Cancel
                   </button>
                 </div>
@@ -696,11 +696,11 @@ function HallCard({
                   />
                   <div className="flex gap-2">
                     <button onClick={uploadPhotoUrl} disabled={uploadingPhoto}
-                      className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
+                      className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
                       {uploadingPhoto ? "Adding…" : "Add photos"}
                     </button>
                     <button onClick={() => { setShowUrlInput(false); setPhotoUrl(""); }}
-                      className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
+                      className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
                       Cancel
                     </button>
                   </div>
@@ -739,11 +739,11 @@ function HallCard({
               />
               <div className="flex gap-2">
                 <button onClick={uploadPhotoUrl} disabled={uploadingPhoto}
-                  className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
+                  className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">
                   {uploadingPhoto ? "Adding…" : "Add photos"}
                 </button>
                 <button onClick={() => { setShowUrlInput(false); setPhotoUrl(""); }}
-                  className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
+                  className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">
                   Cancel
                 </button>
               </div>

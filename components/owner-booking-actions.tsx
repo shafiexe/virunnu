@@ -179,7 +179,7 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
 
           {open && (
             <div
-              className="fixed z-50 w-48 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1"
+              className="fixed z-[55] w-48 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-lg py-1"
               style={{ top: pos.top, right: pos.right }}
             >
               {cancelReason && (
@@ -209,8 +209,8 @@ export function OwnerBookingActions({ bookingId, status, totalPaise, advancePais
 
       {/* Panel overlay */}
       {panel && (
-        <div className="fixed inset-0 z-30 flex items-end sm:items-center justify-center p-4 bg-black/30 backdrop-blur-sm" onClick={() => setPanel(null)}>
-          <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/30 backdrop-blur-sm" onClick={() => setPanel(null)}>
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
 
             {/* Cancel panel */}
             {panel === "cancel" && (

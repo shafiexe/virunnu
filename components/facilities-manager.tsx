@@ -277,7 +277,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
                 <button
                   key={c.key}
                   onClick={() => setActiveTab(c.key)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
+                  className={`px-3 py-2 md:py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
                     activeTab === c.key
                       ? "bg-amber-500 text-zinc-900"
                       : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700"
@@ -294,7 +294,7 @@ export function FacilitiesManager({ initial, orgId }: Props) {
             </div>
             <button
               onClick={openAdd}
-              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900 transition-colors ml-2"
+              className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-900 transition-colors ml-2"
             >
               <Plus className="h-3.5 w-3.5" />
               Add
@@ -432,11 +432,11 @@ export function FacilitiesManager({ initial, orgId }: Props) {
       {/* ── Add modal ──────────────────────────────────────────── */}
       {showAdd && (
         <div
-          className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm"
           onClick={() => setShowAdd(false)}
         >
           <div
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl space-y-4"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
@@ -594,11 +594,11 @@ export function FacilitiesManager({ initial, orgId }: Props) {
       {/* ── Edit modal ─────────────────────────────────────────── */}
       {editTarget && (
         <div
-          className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm"
           onClick={() => setEditTarget(null)}
         >
           <div
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl space-y-4"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-3">
@@ -659,11 +659,11 @@ export function FacilitiesManager({ initial, orgId }: Props) {
       {/* ── Delete confirm ─────────────────────────────────────── */}
       {deleteId && (
         <div
-          className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
           onClick={() => setDeleteId(null)}
         >
           <div
-            className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl space-y-4"
+            className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Remove amenity?</h3>

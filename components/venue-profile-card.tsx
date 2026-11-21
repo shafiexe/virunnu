@@ -327,7 +327,7 @@ export function VenueProfileCard({
           {!editing ? (
             <button
               onClick={startEdit}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded-xl text-xs font-semibold border border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
             >
               <Pencil className="h-3.5 w-3.5" />
               Edit
@@ -486,7 +486,7 @@ export function VenueProfileCard({
                   key={t.key}
                   type="button"
                   onClick={() => setVenueType(t.key)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                  className={`px-3 py-2 md:py-1 rounded-full text-xs font-medium border transition-colors ${
                     venueType === t.key
                       ? "bg-amber-500 border-amber-500 text-zinc-900"
                       : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300 dark:hover:border-amber-700"

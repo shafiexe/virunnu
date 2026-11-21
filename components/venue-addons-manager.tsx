@@ -105,7 +105,7 @@ export function VenueAddonsManager({ venueId, initial }: { venueId: string; init
             key={s}
             type="button"
             onClick={() => add(s)}
-            className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-dashed border-amber-400 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"
+            className="inline-flex items-center gap-1 px-3 py-2 md:py-1 rounded-full border border-dashed border-amber-400 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"
           >
             <Sparkles className="h-3 w-3" /> {s}
           </button>

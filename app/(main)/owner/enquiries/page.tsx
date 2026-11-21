@@ -37,7 +37,7 @@ export default async function OwnerEnquiriesPage({ searchParams }: { searchParam
           const on = (t.key === "past") === past;
           return (
             <Link key={t.key} href={t.href} aria-current={on ? "page" : undefined}
-              className={cn("rounded-xl px-3 py-1.5 text-sm font-medium", on ? "bg-amber-500 text-zinc-900" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400")}>
+              className={cn("rounded-xl px-3 py-2 md:py-1.5 text-sm font-medium", on ? "bg-amber-500 text-zinc-900" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400")}>
               {t.label} <span className="opacity-70">{t.count}</span>
             </Link>
           );

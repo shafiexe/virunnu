@@ -103,7 +103,7 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                     <a
                       href={`https://wa.me/${b.guestPhone.replace(/\D/g, "")}`}
                       target="_blank" rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 bg-[#25D366] hover:bg-[#1ebe5c] px-3 py-1.5 rounded-lg transition-colors shrink-0"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 bg-[#25D366] hover:bg-[#1ebe5c] px-3 py-2 md:py-1.5 rounded-lg transition-colors shrink-0"
                     >
                       <MessageCircle className="h-3.5 w-3.5" />
                       WhatsApp
@@ -138,13 +138,13 @@ export function PendingRequests({ bookings: initial }: { bookings: PendingBookin
                     <button
                       onClick={() => reject(b.id)}
                       disabled={actingId === b.id}
-                      className="px-3 py-1.5 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors disabled:opacity-60"
+                      className="px-3 py-2 md:py-1.5 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors disabled:opacity-60"
                     >
                       {actingId === b.id ? "Rejecting…" : "Confirm reject"}
                     </button>
                     <button
                       onClick={() => { setRejecting(null); setRejectReason(""); }}
-                      className="px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-500 hover:text-zinc-700 transition-colors"
+                      className="px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs font-medium text-zinc-500 hover:text-zinc-700 transition-colors"
                     >
                       Cancel
                     </button>

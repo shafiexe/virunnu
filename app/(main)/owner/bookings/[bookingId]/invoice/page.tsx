@@ -86,9 +86,9 @@ export default async function InvoicePage({ params }: Params) {
       `}</style>
 
       {/* Print controls — hidden in print */}
-      <div className="print:hidden bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-6 py-3 flex items-center justify-between gap-3">
+      <div className="print:hidden bg-zinc-100 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
         <span className="text-sm text-zinc-600 dark:text-zinc-400">Invoice {invoiceNo}</span>
-        <div className="flex gap-2">
+        <div className="flex w-full sm:w-auto gap-2">
           <PdfButton href={`/api/owner/bookings/${booking.id}/pdf`} />
           <PrintButton />
         </div>

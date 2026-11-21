@@ -81,8 +81,8 @@ export function BookingCaterer({ bookingId, caterer, sent, closed, canShare }: {
           <p className="text-xs text-zinc-500">{caterer.city}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <a href={`tel:${caterer.phone}`} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-1.5 text-xs font-semibold text-white"><Phone className="h-3.5 w-3.5" /> Call</a>
-          <a href={`https://wa.me/${wa.length === 10 ? `91${wa}` : wa}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-1.5 text-xs font-semibold text-zinc-900"><MessageCircle className="h-3.5 w-3.5" /> WhatsApp</a>
+          <a href={`tel:${caterer.phone}`} className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 px-3 py-2 md:py-1.5 text-xs font-semibold text-white"><Phone className="h-3.5 w-3.5" /> Call</a>
+          <a href={`https://wa.me/${wa.length === 10 ? `91${wa}` : wa}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-[#25D366] px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-900"><MessageCircle className="h-3.5 w-3.5" /> WhatsApp</a>
           {!closed && !sent && (
             <WriteOnly page="bookings">
               <button type="button" disabled={busy} onClick={() => call(`/api/owner/bookings/${bookingId}/caterer`, "PATCH", { catererId: null })} aria-label="Remove this caterer" className="rounded-lg p-1.5 text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-red-500"><X className="h-4 w-4" /></button>

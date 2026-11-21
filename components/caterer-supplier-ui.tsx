@@ -13,8 +13,8 @@ const INPUT =
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between"><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3><button onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button></div>
         {children}
       </div>
@@ -55,7 +55,7 @@ function SupplierForm({ initial, onDone }: { initial?: SupplierFormValue; onDone
         <div className="mb-1.5 text-xs font-medium text-zinc-500">What do they supply?</div>
         <div className="flex flex-wrap gap-1.5">
           {SUPPLIER_CATEGORIES.map((c) => (
-            <button key={c} type="button" onClick={() => setCategory(c)} className={cn("px-3 py-1 rounded-full border text-xs font-medium transition-colors", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</button>
+            <button key={c} type="button" onClick={() => setCategory(c)} className={cn("px-3 py-2 md:py-1 rounded-full border text-xs font-medium transition-colors", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</button>
           ))}
         </div>
       </div>

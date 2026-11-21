@@ -40,7 +40,7 @@ export default async function CatererInvoicePage({
             customer={{ name: order.customer.name, phone: order.customer.phone }} catererName={ctx.caterer.name} selected={selected}
             bills={order.bills.map((b) => ({ number: b.number, type: b.type, shareToken: b.shareToken, subtotalPaise: b.subtotalPaise, discountPaise: b.discountPaise, taxPaise: b.taxPaise, receivedPaise: b.receivedPaise }))}
           />
-          <div className="flex items-center gap-2"><PdfButton href={`/api/caterer/orders/${order.id}/pdf${selected === "ALL" ? "" : `?bill=${selected}`}`} /><PrintButton /></div>
+          <div className="flex w-full sm:w-auto items-center gap-2"><PdfButton href={`/api/caterer/orders/${order.id}/pdf${selected === "ALL" ? "" : `?bill=${selected}`}`} /><PrintButton /></div>
         </div>
       </div>
       <div className="mt-4 mb-10 mx-auto max-w-3xl rounded-2xl bg-white shadow-sm border border-zinc-200 print:border-0 print:shadow-none print:m-0">

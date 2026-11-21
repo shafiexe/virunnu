@@ -136,8 +136,8 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-900/40 bg-amber-50 dark:bg-amber-950/20 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
           <span>You have an unfinished purchase from {new Date(draft.pending.at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit" })}.</span>
           <span className="flex gap-2">
-            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900">Continue it</button>
-            <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-semibold">Start fresh</button>
+            <button type="button" onClick={restoreDraft} className="rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-900">Continue it</button>
+            <button type="button" onClick={draft.clear} className="rounded-lg border border-amber-300 px-3 py-2 md:py-1.5 text-xs font-semibold">Start fresh</button>
           </span>
         </div>
       )}
@@ -179,7 +179,7 @@ export function CatererPurchaseForm({ people: initialPeople, functions, supplier
         </div>
         <div className="flex flex-wrap gap-1.5">
           {PURCHASE_CATEGORIES.map((c) => (
-            <button key={c} type="button" onClick={() => setCategory(c)} className={cn("px-3 py-1 rounded-full border text-xs font-medium transition-colors", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</button>
+            <button key={c} type="button" onClick={() => setCategory(c)} className={cn("px-3 py-2 md:py-1 rounded-full border text-xs font-medium transition-colors", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</button>
           ))}
         </div>
         <Field label="For which function? (optional — shows the cost against that function)">

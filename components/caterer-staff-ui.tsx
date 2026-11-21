@@ -14,8 +14,8 @@ const INPUT =
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center justify-between"><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{title}</h3><button onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button></div>
         {children}
       </div>
@@ -69,9 +69,9 @@ function StaffForm({ initial, onDone, roles }: { initial?: StaffFormValue; onDon
         <div className="mb-1.5 text-xs font-medium text-zinc-500">Role</div>
         <div className="flex flex-wrap gap-1.5">
           {allRoles.map((r) => (
-            <button key={r} type="button" onClick={() => setRole(r)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", role === r ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{r}</button>
+            <button key={r} type="button" onClick={() => setRole(r)} className={cn("px-3 py-2 md:py-1 rounded-full border text-xs font-medium", role === r ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{r}</button>
           ))}
-          <button type="button" onClick={() => setAddingRole((v) => !v)} className="inline-flex items-center gap-1 px-3 py-1 rounded-full border border-dashed border-amber-400 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"><Plus className="h-3 w-3" /> New role</button>
+          <button type="button" onClick={() => setAddingRole((v) => !v)} className="inline-flex items-center gap-1 px-3 py-2 md:py-1 rounded-full border border-dashed border-amber-400 text-xs font-medium text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30"><Plus className="h-3 w-3" /> New role</button>
         </div>
         {addingRole && (
           <div className="mt-2 flex gap-2">
@@ -163,7 +163,7 @@ export function PayStaffButton({ id, name, payType, toPayPaise, compact }: { id:
         <Modal title={`Pay ${name}`} onClose={() => setOpen(false)}>
           <div className="flex flex-wrap gap-1.5">
             {PAY_KINDS.map((k) => (
-              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
+              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-2 md:py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
             ))}
           </div>
           {toPayPaise > 0 && <p className="text-xs text-zinc-500">Still to pay this month: {rs(toPayPaise)}</p>}
@@ -301,7 +301,7 @@ export function PaymentActions({ payment, employeeId }: { payment: StaffPaymentR
         <Modal title="Edit payment" onClose={() => setEditing(false)}>
           <div className="flex flex-wrap gap-1.5">
             {PAY_KINDS.map((k) => (
-              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
+              <button key={k} type="button" onClick={() => setKind(k)} className={cn("px-3 py-2 md:py-1 rounded-full border text-xs font-medium", kind === k ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{KIND_NAME[k]}</button>
             ))}
           </div>
           <input className={INPUT} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} aria-label="Amount" />

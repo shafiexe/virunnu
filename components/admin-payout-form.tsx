@@ -29,7 +29,7 @@ export function AdminPayoutForm({ orgId, owedRupees, details }: { orgId: string;
       <div className="space-y-1.5">
         <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400" htmlFor={`where-${orgId}`}>Send money to (UPI id or bank details)</label>
         <textarea id={`where-${orgId}`} rows={3} value={where} onChange={(e) => setWhere(e.target.value)} className={FIELD} />
-        <button type="button" disabled={busy} onClick={async () => { if (await call("PATCH", { orgId, payoutDetails: where })) setMsg("Saved"); }} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-medium">Save details</button>
+        <button type="button" disabled={busy} onClick={async () => { if (await call("PATCH", { orgId, payoutDetails: where })) setMsg("Saved"); }} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-2 md:py-1.5 text-xs font-medium">Save details</button>
       </div>
       <form className="space-y-1.5" onSubmit={async (e) => {
         e.preventDefault();
@@ -41,7 +41,7 @@ export function AdminPayoutForm({ orgId, owedRupees, details }: { orgId: string;
         <input id={`amt-${orgId}`} inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ""))} className={FIELD} />
         <label className="text-xs font-medium text-zinc-600 dark:text-zinc-400" htmlFor={`ref-${orgId}`}>Bank or UPI reference</label>
         <input id={`ref-${orgId}`} value={reference} onChange={(e) => setReference(e.target.value)} className={FIELD} />
-        <button type="submit" disabled={busy} className="rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-60 px-3 py-1.5 text-xs font-semibold text-zinc-900">Record payout</button>
+        <button type="submit" disabled={busy} className="rounded-lg bg-amber-500 hover:bg-amber-600 disabled:opacity-60 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-900">Record payout</button>
       </form>
       {msg && <p role="status" className="sm:col-span-2 text-xs text-zinc-600 dark:text-zinc-400">{msg}</p>}
     </div>

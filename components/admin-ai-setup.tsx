@@ -314,7 +314,7 @@ export function AdminAiSetup({ orgId, hasVenue }: { orgId: string; hasVenue: boo
                             on ? n.delete(amenity) : n.add(amenity);
                             return n;
                           })}
-                          className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                          className={`px-3 py-2 md:py-1.5 rounded-full text-xs font-medium border transition-colors ${
                             on
                               ? "bg-purple-600 border-purple-600 text-white"
                               : "border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 line-through"

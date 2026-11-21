@@ -94,7 +94,7 @@ export function CatererSearchForm({ defaults }: Props) {
             key={chip.value}
             type="button"
             onClick={() => setCuisine(chip.value)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+            className={`px-3 py-2 md:py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               cuisine === chip.value
                 ? "bg-orange-700 text-white border-orange-700"
                 : "bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700 hover:border-orange-300"

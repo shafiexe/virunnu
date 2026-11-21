@@ -106,7 +106,7 @@ export function PhotoCarousel({ photos, venueName, overlay }: { photos: Photo[];
           {/* See all photos button */}
           <button
             onClick={() => setLightbox(true)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-white bg-black/45 backdrop-blur-sm hover:bg-black/65 active:scale-95 px-3 py-1.5 rounded-xl transition-all"
+            className="flex items-center gap-1.5 text-xs font-semibold text-white bg-black/45 backdrop-blur-sm hover:bg-black/65 active:scale-95 px-3 py-2 md:py-1.5 rounded-xl transition-all"
           >
             <Images className="h-3.5 w-3.5" />
             See all {photos.length} photos

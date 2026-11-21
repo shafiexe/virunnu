@@ -55,7 +55,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
             key={f}
             onClick={() => { setFilter(f); setPage(1); }}
             className={cn(
-              "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap",
+              "px-3 py-2 md:py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap",
               filter === f
                 ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm"
                 : "text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300"
@@ -150,7 +150,7 @@ export function CatererEnquiriesTab({ initialEnquiries }: { initialEnquiries: En
               {e.status !== "IGNORED" && (
                 <Link
                   href={`/caterer/orders/new?enquiry=${e.id}`}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-zinc-900 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 text-zinc-900 transition-colors"
                 >
                   <ClipboardPlus className="h-3.5 w-3.5" /> Create order
                 </Link>

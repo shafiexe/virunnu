@@ -364,7 +364,7 @@ export function OwnerOnboardingForm() {
                   key={a}
                   type="button"
                   onClick={() => toggleAmenity(a)}
-                  className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                  className={`px-3 py-2 md:py-1.5 rounded-full text-sm border transition-colors ${
                     s2.amenities.includes(a)
                       ? "bg-zinc-900 dark:bg-zinc-50 text-white dark:text-zinc-900 border-zinc-900 dark:border-zinc-50"
                       : "bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-zinc-400"

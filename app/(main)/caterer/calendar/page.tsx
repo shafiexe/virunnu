@@ -79,7 +79,7 @@ export default async function CatererCalendarPage({ searchParams }: { searchPara
               <h2 className="font-semibold text-zinc-900 dark:text-zinc-50">{new Date(day + "T00:00:00Z").toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}</h2>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">{dayOrders.length} order{dayOrders.length === 1 ? "" : "s"}</p>
             </div>
-            <WriteOnly page="orders"><Link href={`/caterer/orders/new?date=${day}`} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-1.5 text-xs font-semibold text-zinc-900"><Plus className="h-3.5 w-3.5" /> New order</Link></WriteOnly>
+            <WriteOnly page="orders"><Link href={`/caterer/orders/new?date=${day}`} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-900"><Plus className="h-3.5 w-3.5" /> New order</Link></WriteOnly>
           </div>
           {dayOrders.length === 0 ? <p className="p-6 text-center text-sm text-zinc-500 dark:text-zinc-400">Nothing booked on this day.</p> : (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800">

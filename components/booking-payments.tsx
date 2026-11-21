@@ -119,7 +119,7 @@ export function BookingPayments({ bookingId, payments, netPaise, closed, canRemo
                 <div className="flex flex-wrap gap-1.5">
                   {PAY_METHODS.map((m) => (
                     <button key={m} type="button" onClick={() => setMethod(m)} aria-pressed={method === m}
-                      className={cn("rounded-lg border px-3 py-1.5 text-sm font-medium", method === m ? "border-amber-500 bg-white dark:bg-zinc-900 text-amber-800 dark:text-amber-300" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300")}>{METHOD_LABEL[m]}</button>
+                      className={cn("rounded-lg border px-3 py-2 md:py-1.5 text-sm font-medium", method === m ? "border-amber-500 bg-white dark:bg-zinc-900 text-amber-800 dark:text-amber-300" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-300")}>{METHOD_LABEL[m]}</button>
                   ))}
                 </div>
               </div>

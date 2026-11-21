@@ -466,7 +466,7 @@ export default async function VenuePage({ params }: Props) {
                   href={directionsHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-900 bg-amber-500 hover:bg-amber-600 px-3 py-2 md:py-1.5 rounded-lg transition-colors"
                 >
                   <MapPin className="h-3 w-3" />
                   Get Directions

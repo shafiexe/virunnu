@@ -347,7 +347,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
                 type="button"
                 onClick={() => setVenueType(t.key)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full border text-xs font-medium transition-colors",
+                  "px-3 py-2 md:py-1.5 rounded-full border text-xs font-medium transition-colors",
                   venueType === t.key
                     ? "bg-amber-500 border-amber-500 text-zinc-900"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
@@ -528,7 +528,7 @@ export function CenterForm({ mode, onClose }: { mode: "admin" | "apply"; onClose
                   type="button"
                   onClick={() => setAmenities((p) => (on ? p.filter((x) => x !== a) : [...p, a]))}
                   className={cn(
-                    "px-3 py-1 rounded-full border text-xs font-medium transition-colors inline-flex items-center gap-1",
+                    "px-3 py-2 md:py-1 rounded-full border text-xs font-medium transition-colors inline-flex items-center gap-1",
                     on
                       ? "bg-amber-500 border-amber-500 text-zinc-900"
                       : isSuggestion

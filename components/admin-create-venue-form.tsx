@@ -99,7 +99,7 @@ export function AdminCreateVenueForm({ orgId }: { orgId: string }) {
                 key={t.key}
                 type="button"
                 onClick={() => setVenueType(t.key)}
-                className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                className={`px-3 py-2 md:py-1 rounded-full text-xs font-medium border transition-colors ${
                   venueType === t.key
                     ? "bg-amber-500 border-amber-500 text-zinc-900"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300 dark:hover:border-amber-700"

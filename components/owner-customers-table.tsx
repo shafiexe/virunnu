@@ -157,7 +157,7 @@ export function OwnerCustomersTable() {
             <p className="text-sm font-medium text-red-700 dark:text-red-400">Failed to load customers</p>
             <p className="text-xs text-red-500 dark:text-red-500 mt-0.5">{error}</p>
           </div>
-          <button onClick={refresh} className="text-xs font-medium px-3 py-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors shrink-0">
+          <button onClick={refresh} className="text-xs font-medium px-3 py-2 md:py-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors shrink-0">
             Retry
           </button>
         </div>

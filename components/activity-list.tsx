@@ -19,7 +19,7 @@ export async function ActivityList({ orgId, basePath, sp }: { orgId: string; bas
 
   const dayOf = (d: Date) => d.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", timeZone: "Asia/Kolkata" });
   const days = [...new Set(rows.map((r) => dayOf(r.at)))];
-  const chip = (active: boolean) => cn("rounded-full border px-3 py-1 text-xs font-medium", active ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300");
+  const chip = (active: boolean) => cn("rounded-full border px-3 py-2 md:py-1 text-xs font-medium", active ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300");
 
   return (
     <div className="space-y-4">

@@ -77,7 +77,7 @@ export function CalendarTable({ rows, monthLabel, loading, todayStr, onOpenDay }
         <div className="inline-flex rounded-xl bg-zinc-100 dark:bg-zinc-800 p-1" role="group" aria-label="Filter by status">
           {([["ALL", "All"], ["CONFIRMED", "Confirmed"], ["ADVANCE_PAID", "Advance paid"], ["HELD", "On hold"]] as const).map(([k, label]) => (
             <button key={k} type="button" onClick={() => setState(k)} aria-pressed={state === k}
-              className={cn("px-3 py-1.5 rounded-lg text-xs font-semibold", state === k ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}>{label}</button>
+              className={cn("px-3 py-2 md:py-1.5 rounded-lg text-xs font-semibold", state === k ? "bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-50 shadow-sm" : "text-zinc-600 dark:text-zinc-300")}>{label}</button>
           ))}
         </div>
         <p className="ml-auto text-xs text-zinc-500" aria-live="polite">

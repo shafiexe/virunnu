@@ -69,8 +69,8 @@ function AccessEditor({ member, tree, apiBase, onClose, onSaved }: { member: Mem
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={onClose}>
-      <div className="w-full max-w-lg max-h-[88vh] flex flex-col rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm" onClick={onClose}>
+      <div className="w-full max-w-lg max-h-[88dvh] flex flex-col rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between gap-3 p-5 pb-3">
           <div>
             <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">What {member.name ?? member.phone} can open</h3>
@@ -79,8 +79,8 @@ function AccessEditor({ member, tree, apiBase, onClose, onSaved }: { member: Mem
           <button type="button" onClick={onClose} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>
         </div>
         <div className="flex gap-2 px-5 pb-2">
-          <button type="button" onClick={() => setAll(true)} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">Open everything</button>
-          <button type="button" onClick={() => setAll(false)} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">Hide everything</button>
+          <button type="button" onClick={() => setAll(true)} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">Open everything</button>
+          <button type="button" onClick={() => setAll(false)} className="rounded-lg border border-zinc-200 dark:border-zinc-700 px-3 py-2 md:py-1.5 text-xs font-semibold text-zinc-600 dark:text-zinc-300">Hide everything</button>
         </div>
         <div className="flex-1 overflow-y-auto px-5 pb-3 space-y-4">
           {tree.map((g) => (

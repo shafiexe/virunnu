@@ -117,12 +117,12 @@ export default async function AdminPage() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   <form action={`/api/admin/venues/${v.id}/approve`} method="POST">
-                    <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 transition-colors">
+                    <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-2 md:py-1.5 transition-colors">
                       <CheckCircle className="h-3.5 w-3.5" /> Approve
                     </button>
                   </form>
                   <form action={`/api/admin/venues/${v.id}/reject`} method="POST">
-                    <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30 text-xs font-semibold px-3 py-1.5 transition-colors">
+                    <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30 text-xs font-semibold px-3 py-2 md:py-1.5 transition-colors">
                       <XCircle className="h-3.5 w-3.5" /> Reject
                     </button>
                   </form>
@@ -155,7 +155,7 @@ export default async function AdminPage() {
                   <div className="text-sm text-zinc-500">{c.city} · {c.phone}{c.cuisines.length > 0 ? ` · ${c.cuisines.slice(0, 2).join(", ")}` : ""}</div>
                 </div>
                 <form action={`/api/admin/caterers/${c.id}/approve`} method="POST">
-                  <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 transition-colors">
+                  <button type="submit" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-2 md:py-1.5 transition-colors">
                     <CheckCircle className="h-3.5 w-3.5" /> Approve
                   </button>
                 </form>

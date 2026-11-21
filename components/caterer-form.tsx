@@ -70,7 +70,7 @@ function Chip({ on, suggestion, onClick, children }: { on: boolean; suggestion?:
       type="button"
       onClick={onClick}
       className={cn(
-        "px-3 py-1 rounded-full border text-xs font-medium transition-colors inline-flex items-center gap-1",
+        "px-3 py-2 md:py-1 rounded-full border text-xs font-medium transition-colors inline-flex items-center gap-1",
         on
           ? "bg-amber-500 border-amber-500 text-zinc-900"
           : suggestion

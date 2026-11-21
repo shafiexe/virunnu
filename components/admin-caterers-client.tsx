@@ -268,7 +268,7 @@ export function AdminCaterersClient({ initialCaterers }: { initialCaterers: Cate
                   type="button"
                   onClick={() => toggleService(s.key)}
                   className={cn(
-                    "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
+                    "px-3 py-2 md:py-1.5 rounded-full text-xs font-medium border transition-colors",
                     services.includes(s.key)
                       ? "bg-amber-500 text-zinc-900 border-amber-500"
                       : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"

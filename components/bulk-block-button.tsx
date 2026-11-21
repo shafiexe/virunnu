@@ -35,12 +35,12 @@ export function BulkBlockButton({ hallId, from }: { hallId?: string; from?: stri
   return (
     <>
       <button type="button" onClick={() => { setStart(from ?? start); setEnd(from ?? end); setResult(""); setError(""); setOpen(true); }}
-        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+        className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-2 md:py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-zinc-500 hover:text-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
         <CalendarX2 className="h-3.5 w-3.5" /> Block several days
       </button>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
-          <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4" onClick={(e) => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)}>
+          <div className="w-full max-w-sm rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-5 shadow-xl space-y-4 max-h-[90dvh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-start justify-between gap-3">
               <div><h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Block several days</h3><p className="text-xs text-zinc-500 mt-0.5">Days that already have a booking stay open.</p></div>
               <button type="button" onClick={() => setOpen(false)} aria-label="Close"><X className="h-4 w-4 text-zinc-500 dark:text-zinc-400" /></button>

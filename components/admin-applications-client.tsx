@@ -264,14 +264,14 @@ function AppCard({
                 <button
                   onClick={async () => { if (loadingApprove) return; setLoadingApprove(true); try { await onApprove(); } finally { setLoadingApprove(false); } }}
                   disabled={loadingApprove}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-60"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-emerald-700 hover:bg-emerald-800 px-3 py-2 md:py-1.5 rounded-lg transition-colors disabled:opacity-60"
                 >
                   <CheckCircle className="h-3.5 w-3.5" />
                   {loadingApprove ? "Approving…" : "Approve"}
                 </button>
                 <button
                   onClick={() => setShowReject(true)}
-                  className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 px-3 py-1.5 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-red-600 border border-red-200 dark:border-red-800 hover:bg-red-50 dark:hover:bg-red-950/20 px-3 py-2 md:py-1.5 rounded-lg transition-colors"
                 >
                   <XCircle className="h-3.5 w-3.5" /> Reject
                 </button>

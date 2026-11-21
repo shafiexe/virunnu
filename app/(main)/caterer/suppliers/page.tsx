@@ -40,9 +40,9 @@ export default async function CatererSuppliersPage({ searchParams }: { searchPar
 
       {used.length > 1 && (
         <div className="flex flex-wrap gap-1.5">
-          <Link href="/caterer/suppliers" className={cn("rounded-full border px-3 py-1 text-xs font-medium", !category ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>All</Link>
+          <Link href="/caterer/suppliers" className={cn("rounded-full border px-3 py-2 md:py-1 text-xs font-medium", !category ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400")}>All</Link>
           {used.map((c) => (
-            <Link key={c} href={`/caterer/suppliers?category=${encodeURIComponent(c)}`} className={cn("rounded-full border px-3 py-1 text-xs font-medium", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</Link>
+            <Link key={c} href={`/caterer/suppliers?category=${encodeURIComponent(c)}`} className={cn("rounded-full border px-3 py-2 md:py-1 text-xs font-medium", category === c ? "bg-amber-500 border-amber-500 text-zinc-900" : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300")}>{c}</Link>
           ))}
         </div>
       )}

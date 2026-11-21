@@ -132,7 +132,7 @@ function AddRow({ group, onAdded }: { group: ItemGroupKey; onAdded: (i: PriceIte
           <input className={cn(FIELD, "w-full pl-6")} inputMode="decimal" placeholder="Rate" value={rate} onChange={(e) => setRate(e.target.value.replace(/[^\d.]/g, ""))} />
         </div>
         <div className="flex gap-1.5">
-          <button type="submit" disabled={saving} className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">{saving ? "…" : "Add"}</button>
+          <button type="submit" disabled={saving} className="px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold disabled:opacity-50">{saving ? "…" : "Add"}</button>
           <button type="button" onClick={() => setOpen(false)} className="px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500">Cancel</button>
         </div>
       </div>

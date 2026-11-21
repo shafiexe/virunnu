@@ -249,7 +249,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
                       type="button"
                       onClick={addAiMenuItems}
                       disabled={addingMenus}
-                      className="shrink-0 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold transition-colors disabled:opacity-50"
+                      className="shrink-0 px-3 py-2 md:py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-zinc-900 text-xs font-semibold transition-colors disabled:opacity-50"
                     >
                       {addingMenus ? "Adding…" : "Add to menu"}
                     </button>
@@ -348,7 +348,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
                 type="button"
                 onClick={() => toggleCuisine(c)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-xs font-medium border transition-colors",
+                  "px-3 py-2 md:py-1.5 rounded-full text-xs font-medium border transition-colors",
                   form.cuisines.includes(c)
                     ? "bg-amber-500 text-zinc-900 border-amber-500"
                     : "border-zinc-200 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:border-amber-300"
@@ -423,7 +423,7 @@ export function CatererServiceTab({ caterer, adminCatererId }: { caterer: Catere
                 <img src={url} alt="" className="w-full h-full object-cover" />
                 {idx === 0
                   ? <span className="absolute left-1 top-1 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-zinc-900">Cover</span>
-                  : <button type="button" onClick={() => setForm((f) => ({ ...f, photos: [url, ...f.photos.filter((_, i) => i !== idx)] }))} className="absolute left-1 top-1 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-semibold text-white sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">Make cover</button>}
+                  : <button type="button" onClick={() => setForm((f) => ({ ...f, photos: [url, ...f.photos.filter((_, i) => i !== idx)] }))} className="absolute left-1 top-1 rounded-full bg-black/60 px-3 py-1.5 text-xs md:px-2 md:py-0.5 md:text-[10px] font-semibold text-white sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">Make cover</button>}
                 <button
                   type="button"
                   onClick={() => removePhoto(idx)}

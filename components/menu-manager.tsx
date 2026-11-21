@@ -114,7 +114,7 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
         <button
           type="button"
           onClick={() => { setShowForm((v) => !v); setError(""); }}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-900 px-3 py-1.5 rounded-lg transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-zinc-900 px-3 py-2 md:py-1.5 rounded-lg transition-colors"
         >
           <Plus className="h-3.5 w-3.5" />
           Add item
@@ -184,7 +184,7 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
               type="button"
               onClick={() => setForm((f) => ({ ...f, isVeg: !f.isVeg }))}
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors",
+                "inline-flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded-full text-xs font-semibold border transition-colors",
                 form.isVeg
                   ? "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800"
                   : "bg-red-50 text-red-600 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-800"
@@ -198,7 +198,7 @@ export function MenuManager({ initialItems, catererId }: { initialItems: MenuIte
               type="button"
               onClick={() => setForm((f) => ({ ...f, isSpecial: !f.isSpecial }))}
               className={cn(
-                "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors",
+                "inline-flex items-center gap-1.5 px-3 py-2 md:py-1.5 rounded-full text-xs font-semibold border transition-colors",
                 form.isSpecial
                   ? "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800"
                   : "border-zinc-200 text-zinc-500 dark:border-zinc-700"
